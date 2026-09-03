@@ -1,0 +1,310 @@
+{
+  "binding_sha256": "c4293003045f54ebe1011fe94af90bfa08474869d2e73c8175bdb6939abdddfa",
+  "claim_boundary": {
+    "artifact_discovered": false,
+    "artifact_eligible": false,
+    "external_review_or_consensus": false,
+    "field_result_or_paper_claim": false,
+    "property_classified": false,
+    "provider_and_query_binding_only": true,
+    "source_inspected": false
+  },
+  "execution_state": {
+    "candidate_result_count": 0,
+    "candidate_source_inspection_count": 0,
+    "general_web_candidate_query_count": 0,
+    "github_candidate_query_count": 0,
+    "paper_or_publisher_candidate_fetch_count": 0
+  },
+  "frozen_at_utc": "2026-09-03T07:04:58Z",
+  "general_web_search": {
+    "endpoint": "https://html.duckduckgo.com/html/",
+    "method": "GET",
+    "parser": "stdlib_html_parser__anchors_whose_class_contains_result__a",
+    "preserve_first_n_items": 20,
+    "preserved_identity_fields": [
+      "rank",
+      "title",
+      "url"
+    ],
+    "provider": "DuckDuckGo HTML",
+    "query_parameter": "q",
+    "query_template": "\"{exact_title}\" \"source code\"",
+    "redirect_url_normalization": "decode_uddg_query_parameter_when_present",
+    "redirects_followed": true,
+    "user_agent": "RTDL-Goal5839-Census/1.0"
+  },
+  "github_repository_search": {
+    "accept_header": "application/vnd.github+json",
+    "api_version_header": "2022-11-28",
+    "authentication": "authenticated when GITHUB_TOKEN is available; token never recorded",
+    "endpoint": "https://api.github.com/search/repositories",
+    "method": "GET",
+    "page": 1,
+    "per_page": 50,
+    "preserve_first_n_items": 50,
+    "preserved_identity_fields": [
+      "rank",
+      "id",
+      "node_id",
+      "full_name",
+      "html_url",
+      "owner_login",
+      "fork",
+      "archived",
+      "default_branch",
+      "created_at",
+      "updated_at",
+      "pushed_at",
+      "description"
+    ],
+    "provider": "GitHub REST API",
+    "query_template": "\"{exact_title}\" in:name,description,readme",
+    "sort": "best_match_by_omitting_sort_and_order_parameters"
+  },
+  "goal": 5839,
+  "paper_and_publisher_discovery": {
+    "candidate_source_classification_during_link_discovery": false,
+    "order": [
+      "exact bibliography DOI field",
+      "exact bibliography URL field",
+      "canonical paper URL discovered in frozen search results",
+      "publisher supplementary-material links in paper order",
+      "paper full-text code/repository/artifact links in document order"
+    ],
+    "preserve": [
+      "requested URL",
+      "resolved URL",
+      "retrieval status",
+      "retrieved_at_utc",
+      "response SHA-256 when bytes are retained",
+      "repository or artifact links in source order"
+    ]
+  },
+  "preregistration": {
+    "authority_sha256": "767fb5e8601268aea8c505babec0fcbf25d6c9407b54cb9801c5271c8015df0c",
+    "commit": "17c189c0f",
+    "file_sha256": "995dbbf1e23cb561a97472a83e240a1c29d7972899bf586e8748f7b8a0ba26f3",
+    "work_count": 29
+  },
+  "query_rows": [
+    {
+      "citation_key": "Chan2018ParticlemeshCI",
+      "general_web_query": "\"Particle\u2013mesh coupling in the interaction of fluid and deformable bodies with screen space refraction rendering\" \"source code\"",
+      "github_query": "\"Particle\u2013mesh coupling in the interaction of fluid and deformable bodies with screen space refraction rendering\" in:name,description,readme",
+      "title": "Particle\u2013mesh coupling in the interaction of fluid and deformable bodies with screen space refraction rendering",
+      "work_id": "survey_bib:Chan2018ParticlemeshCI"
+    },
+    {
+      "citation_key": "Cui2024RTSRTAM",
+      "general_web_query": "\"RTSRT: Accelerating Monte Carlo Particle Transport with Ray Tracing Shared Cache Architecture\" \"source code\"",
+      "github_query": "\"RTSRT: Accelerating Monte Carlo Particle Transport with Ray Tracing Shared Cache Architecture\" in:name,description,readme",
+      "title": "RTSRT: Accelerating Monte Carlo Particle Transport with Ray Tracing Shared Cache Architecture",
+      "work_id": "survey_bib:Cui2024RTSRTAM"
+    },
+    {
+      "citation_key": "Geng2024RayJoinFA",
+      "general_web_query": "\"RayJoin: Fast and Precise Spatial Join\" \"source code\"",
+      "github_query": "\"RayJoin: Fast and Precise Spatial Join\" in:name,description,readme",
+      "title": "RayJoin: Fast and Precise Spatial Join",
+      "work_id": "survey_bib:Geng2024RayJoinFA"
+    },
+    {
+      "citation_key": "Geng2025LibRTSAS",
+      "general_web_query": "\"LibRTS: A Spatial Indexing Library by Ray Tracing\" \"source code\"",
+      "github_query": "\"LibRTS: A Spatial Indexing Library by Ray Tracing\" in:name,description,readme",
+      "title": "LibRTS: A Spatial Indexing Library by Ray Tracing",
+      "work_id": "survey_bib:Geng2025LibRTSAS"
+    },
+    {
+      "citation_key": "Hashinoki2023ImplementationOR",
+      "general_web_query": "\"Implementation of Radio Wave Propagation using RT Cores and Consideration of Programming Models\" \"source code\"",
+      "github_query": "\"Implementation of Radio Wave Propagation using RT Cores and Consideration of Programming Models\" in:name,description,readme",
+      "title": "Implementation of Radio Wave Propagation using RT Cores and Consideration of Programming Models",
+      "work_id": "survey_bib:Hashinoki2023ImplementationOR"
+    },
+    {
+      "citation_key": "Henneberg2023RTIndeXEH",
+      "general_web_query": "\"RTIndeX: Exploiting Hardware-Accelerated GPU Raytracing for Database Indexing\" \"source code\"",
+      "github_query": "\"RTIndeX: Exploiting Hardware-Accelerated GPU Raytracing for Database Indexing\" in:name,description,readme",
+      "title": "RTIndeX: Exploiting Hardware-Accelerated GPU Raytracing for Database Indexing",
+      "work_id": "survey_bib:Henneberg2023RTIndeXEH"
+    },
+    {
+      "citation_key": "Henneberg2024MoreBF",
+      "general_web_query": "\"More Bang for Your Buck(et): Fast and Space-Efficient Hardware-Accelerated Coarse-Granular Indexing on GPUs\" \"source code\"",
+      "github_query": "\"More Bang for Your Buck(et): Fast and Space-Efficient Hardware-Accelerated Coarse-Granular Indexing on GPUs\" in:name,description,readme",
+      "title": "More Bang for Your Buck(et): Fast and Space-Efficient Hardware-Accelerated Coarse-Granular Indexing on GPUs",
+      "work_id": "survey_bib:Henneberg2024MoreBF"
+    },
+    {
+      "citation_key": "Kim2025RTPDPD",
+      "general_web_query": "\"RTPD: penetration depth calculation using hardware-accelerated ray-tracing\" \"source code\"",
+      "github_query": "\"RTPD: penetration depth calculation using hardware-accelerated ray-tracing\" in:name,description,readme",
+      "title": "RTPD: penetration depth calculation using hardware-accelerated ray-tracing",
+      "work_id": "survey_bib:Kim2025RTPDPD"
+    },
+    {
+      "citation_key": "Liu2023JUNOOH",
+      "general_web_query": "\"JUNO: Optimizing High-Dimensional Approximate Nearest Neighbour Search with Sparsity-Aware Algorithm and Ray-Tracing Core Mapping\" \"source code\"",
+      "github_query": "\"JUNO: Optimizing High-Dimensional Approximate Nearest Neighbour Search with Sparsity-Aware Algorithm and Ray-Tracing Core Mapping\" in:name,description,readme",
+      "title": "JUNO: Optimizing High-Dimensional Approximate Nearest Neighbour Search with Sparsity-Aware Algorithm and Ray-Tracing Core Mapping",
+      "work_id": "survey_bib:Liu2023JUNOOH"
+    },
+    {
+      "citation_key": "Liu2025RayTC",
+      "general_web_query": "\"Ray tracing core accelerated high performance implementation for infrared radiation signature simulation using reverse Monte Carlo method\" \"source code\"",
+      "github_query": "\"Ray tracing core accelerated high performance implementation for infrared radiation signature simulation using reverse Monte Carlo method\" in:name,description,readme",
+      "title": "Ray tracing core accelerated high performance implementation for infrared radiation signature simulation using reverse Monte Carlo method",
+      "work_id": "survey_bib:Liu2025RayTC"
+    },
+    {
+      "citation_key": "Lv2024RTScanES",
+      "general_web_query": "\"RTScan: Efficient Scan with Ray Tracing Cores\" \"source code\"",
+      "github_query": "\"RTScan: Efficient Scan with Ray Tracing Cores\" in:name,description,readme",
+      "title": "RTScan: Efficient Scan with Ray Tracing Cores",
+      "work_id": "survey_bib:Lv2024RTScanES"
+    },
+    {
+      "citation_key": "Mandarapu2023ArkadeKN",
+      "general_web_query": "\"Arkade: k-Nearest Neighbor Search With Non-Euclidean Distances using GPU Ray Tracing\" \"source code\"",
+      "github_query": "\"Arkade: k-Nearest Neighbor Search With Non-Euclidean Distances using GPU Ray Tracing\" in:name,description,readme",
+      "title": "Arkade: k-Nearest Neighbor Search With Non-Euclidean Distances using GPU Ray Tracing",
+      "work_id": "survey_bib:Mandarapu2023ArkadeKN"
+    },
+    {
+      "citation_key": "Meneses2024RTXRMQ",
+      "general_web_query": "\"Accelerating range minimum queries with ray tracing cores\" \"source code\"",
+      "github_query": "\"Accelerating range minimum queries with ray tracing cores\" in:name,description,readme",
+      "title": "Accelerating range minimum queries with ray tracing cores",
+      "work_id": "survey_bib:Meneses2024RTXRMQ"
+    },
+    {
+      "citation_key": "Morrical2019EfficientSS",
+      "general_web_query": "\"Efficient Space Skipping and Adaptive Sampling of Unstructured Volumes Using Hardware Accelerated Ray Tracing\" \"source code\"",
+      "github_query": "\"Efficient Space Skipping and Adaptive Sampling of Unstructured Volumes Using Hardware Accelerated Ray Tracing\" in:name,description,readme",
+      "title": "Efficient Space Skipping and Adaptive Sampling of Unstructured Volumes Using Hardware Accelerated Ray Tracing",
+      "work_id": "survey_bib:Morrical2019EfficientSS"
+    },
+    {
+      "citation_key": "Morrical2022AcceleratingUM",
+      "general_web_query": "\"Accelerating Unstructured Mesh Point Location With RT Cores\" \"source code\"",
+      "github_query": "\"Accelerating Unstructured Mesh Point Location With RT Cores\" in:name,description,readme",
+      "title": "Accelerating Unstructured Mesh Point Location With RT Cores",
+      "work_id": "survey_bib:Morrical2022AcceleratingUM"
+    },
+    {
+      "citation_key": "Nagarajan2023RTDBSCANAD",
+      "general_web_query": "\"RT-DBSCAN: Accelerating DBSCAN using Ray Tracing Hardware\" \"source code\"",
+      "github_query": "\"RT-DBSCAN: Accelerating DBSCAN using Ray Tracing Hardware\" in:name,description,readme",
+      "title": "RT-DBSCAN: Accelerating DBSCAN using Ray Tracing Hardware",
+      "work_id": "survey_bib:Nagarajan2023RTDBSCANAD"
+    },
+    {
+      "citation_key": "Nagarajan2023RTkNNSUU",
+      "general_web_query": "\"RT-kNNS Unbound: Using RT Cores to Accelerate Unrestricted Neighbor Search\" \"source code\"",
+      "github_query": "\"RT-kNNS Unbound: Using RT Cores to Accelerate Unrestricted Neighbor Search\" in:name,description,readme",
+      "title": "RT-kNNS Unbound: Using RT Cores to Accelerate Unrestricted Neighbor Search",
+      "work_id": "survey_bib:Nagarajan2023RTkNNSUU"
+    },
+    {
+      "citation_key": "Nagarajan2025RTBarnesHutAB",
+      "general_web_query": "\"{RT-BarnesHut}: Accelerating Barnes-Hut Using Ray-Tracing Hardware\" \"source code\"",
+      "github_query": "\"{RT-BarnesHut}: Accelerating Barnes-Hut Using Ray-Tracing Hardware\" in:name,description,readme",
+      "title": "{RT-BarnesHut}: Accelerating Barnes-Hut Using Ray-Tracing Hardware",
+      "work_id": "survey_bib:Nagarajan2025RTBarnesHutAB"
+    },
+    {
+      "citation_key": "Petrescu2019GPUSR",
+      "general_web_query": "\"GPU Sparse Ray-Traced Segmentation\" \"source code\"",
+      "github_query": "\"GPU Sparse Ray-Traced Segmentation\" in:name,description,readme",
+      "title": "GPU Sparse Ray-Traced Segmentation",
+      "work_id": "survey_bib:Petrescu2019GPUSR"
+    },
+    {
+      "citation_key": "Salmon2019ExploitingHR",
+      "general_web_query": "\"Exploiting Hardware-Accelerated Ray Tracing for Monte Carlo Particle Transport with OpenMC\" \"source code\"",
+      "github_query": "\"Exploiting Hardware-Accelerated Ray Tracing for Monte Carlo Particle Transport with OpenMC\" in:name,description,readme",
+      "title": "Exploiting Hardware-Accelerated Ray Tracing for Monte Carlo Particle Transport with OpenMC",
+      "work_id": "survey_bib:Salmon2019ExploitingHR"
+    },
+    {
+      "citation_key": "Schwarz2010FastPS",
+      "general_web_query": "\"Fast parallel surface and solid voxelization on GPUs\" \"source code\"",
+      "github_query": "\"Fast parallel surface and solid voxelization on GPUs\" in:name,description,readme",
+      "title": "Fast parallel surface and solid voxelization on GPUs",
+      "work_id": "survey_bib:Schwarz2010FastPS"
+    },
+    {
+      "citation_key": "Sui2024HardwareAcceleratedRT",
+      "general_web_query": "\"Hardware-Accelerated Ray Tracing for Discrete and Continuous Collision Detection on GPUs\" \"source code\"",
+      "github_query": "\"Hardware-Accelerated Ray Tracing for Discrete and Continuous Collision Detection on GPUs\" in:name,description,readme",
+      "title": "Hardware-Accelerated Ray Tracing for Discrete and Continuous Collision Detection on GPUs",
+      "work_id": "survey_bib:Sui2024HardwareAcceleratedRT"
+    },
+    {
+      "citation_key": "Wang2022AnGP",
+      "general_web_query": "\"An {GPU}-accelerated particle tracking method for Eulerian-Lagrangian simulations using hardware ray tracing cores\" \"source code\"",
+      "github_query": "\"An {GPU}-accelerated particle tracking method for Eulerian-Lagrangian simulations using hardware ray tracing cores\" in:name,description,readme",
+      "title": "An {GPU}-accelerated particle tracking method for Eulerian-Lagrangian simulations using hardware ray tracing cores",
+      "work_id": "survey_bib:Wang2022AnGP"
+    },
+    {
+      "citation_key": "Wang2024RTODEO",
+      "general_web_query": "\"RTOD: Efficient Outlier Detection With Ray Tracing Cores\" \"source code\"",
+      "github_query": "\"RTOD: Efficient Outlier Detection With Ray Tracing Cores\" in:name,description,readme",
+      "title": "RTOD: Efficient Outlier Detection With Ray Tracing Cores",
+      "work_id": "survey_bib:Wang2024RTODEO"
+    },
+    {
+      "citation_key": "Xiao2025ACS",
+      "general_web_query": "\"A Case Study for Ray Tracing Cores: Performance Insights with Breadth-First Search and Triangle Counting in Graphs\" \"source code\"",
+      "github_query": "\"A Case Study for Ray Tracing Cores: Performance Insights with Breadth-First Search and Triangle Counting in Graphs\" in:name,description,readme",
+      "title": "A Case Study for Ray Tracing Cores: Performance Insights with Breadth-First Search and Triangle Counting in Graphs",
+      "work_id": "survey_bib:Xiao2025ACS"
+    },
+    {
+      "citation_key": "Zhang2025RTSpMSpMHR",
+      "general_web_query": "\"{RTSpMSpM}: Harnessing Ray Tracing for Efficient Sparse Matrix Computations\" \"source code\"",
+      "github_query": "\"{RTSpMSpM}: Harnessing Ray Tracing for Efficient Sparse Matrix Computations\" in:name,description,readme",
+      "title": "{RTSpMSpM}: Harnessing Ray Tracing for Efficient Sparse Matrix Computations",
+      "work_id": "survey_bib:Zhang2025RTSpMSpMHR"
+    },
+    {
+      "citation_key": "zellmann2020accelerating",
+      "general_web_query": "\"Accelerating Force-Directed Graph Drawing with {RT} Cores\" \"source code\"",
+      "github_query": "\"Accelerating Force-Directed Graph Drawing with {RT} Cores\" in:name,description,readme",
+      "title": "Accelerating Force-Directed Graph Drawing with {RT} Cores",
+      "work_id": "survey_bib:zellmann2020accelerating"
+    },
+    {
+      "citation_key": "zhao2023leveraging",
+      "general_web_query": "\"Leveraging ray tracing cores for particle-based simulations on {GPU}s\" \"source code\"",
+      "github_query": "\"Leveraging ray tracing cores for particle-based simulations on {GPU}s\" in:name,description,readme",
+      "title": "Leveraging ray tracing cores for particle-based simulations on {GPU}s",
+      "work_id": "survey_bib:zhao2023leveraging"
+    },
+    {
+      "citation_key": "zhu2022rtnn",
+      "general_web_query": "\"{RTNN}: accelerating neighbor search using hardware ray tracing\" \"source code\"",
+      "github_query": "\"{RTNN}: accelerating neighbor search using hardware ray tracing\" in:name,description,readme",
+      "title": "{RTNN}: accelerating neighbor search using hardware ray tracing",
+      "work_id": "survey_bib:zhu2022rtnn"
+    }
+  ],
+  "request_failure_and_retry_policy": {
+    "maximum_attempts_per_exact_request": 3,
+    "rate_limit_response_is_empty_result": false,
+    "retry_changes_query_or_provider": false,
+    "retry_schedule_seconds": [
+      0,
+      5,
+      30
+    ],
+    "successful_response_definition": "HTTP 200 with parseable provider response",
+    "terminal_request_failure": "record request failure; do not substitute a different query or provider and do not remove the work"
+  },
+  "schema": "rtdl.goal5839.discovery_execution_binding.v1",
+  "stage": "DISCOVERY_EXECUTION_BINDING_BEFORE_RESULT_REQUESTS",
+  "status": "FROZEN_DISCOVERY_PROVIDER_AND_QUERY_BINDING__NO_CANDIDATE_RESULT"
+}

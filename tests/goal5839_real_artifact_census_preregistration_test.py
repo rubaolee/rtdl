@@ -6,6 +6,7 @@ import unittest
 from pathlib import Path
 
 from scripts import goal5839_build_real_artifact_census_preregistration as prereg
+from scripts import goal5839_build_discovery_execution_binding as discovery_binding
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -117,6 +118,16 @@ class Goal5839RealArtifactCensusPreregistrationTest(unittest.TestCase):
                 {"requests", "urllib", "http", "socket", "subprocess", "git"}
             )
         )
+
+    def test_discovery_execution_binding_is_frozen_before_results(self) -> None:
+        binding = json.loads(discovery_binding.OUTPUT_PATH.read_text(encoding="ascii"))
+        discovery_binding.validate_binding(binding)
+        self.assertEqual(len(binding["query_rows"]), 29)
+        self.assertEqual(binding["github_repository_search"]["preserve_first_n_items"], 50)
+        self.assertEqual(binding["general_web_search"]["provider"], "DuckDuckGo HTML")
+        self.assertEqual(binding["general_web_search"]["preserve_first_n_items"], 20)
+        self.assertTrue(all(value == 0 for value in binding["execution_state"].values()))
+        self.assertFalse(binding["claim_boundary"]["artifact_discovered"])
 
 
 if __name__ == "__main__":
