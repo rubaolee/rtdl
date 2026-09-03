@@ -123,7 +123,18 @@ V10_PREREGISTRATION_SHA256 = (
 V10_PREREGISTRATION_FILE_SHA256 = (
     "8b7f2bd1f62a6997ba0dfe4fd6762c07668994b563c5059bd56f0639c5824cf4"
 )
-PREREGISTRATION_SCHEMA = "rtdl.goal5842.causal_admission_preregistration.v11"
+V11_PREREGISTRATION_SCHEMA = "rtdl.goal5842.causal_admission_preregistration.v11"
+V11_PREREGISTRATION_PATH = (
+    "history/internal_docs/goal5842_causal_admission_cost_20260903/"
+    "PREREGISTRATION_V11.json"
+)
+V11_PREREGISTRATION_SHA256 = (
+    "6f1012d4c7f06c279426debfdf80ec9f046311f581488621ca4507854e9e1ff1"
+)
+V11_PREREGISTRATION_FILE_SHA256 = (
+    "8290f51d7aabcb9022fd7d7e0582b2872f01b9dd7e93c705a03863f96543bccb"
+)
+PREREGISTRATION_SCHEMA = "rtdl.goal5842.causal_admission_preregistration.v12"
 EXECUTION_AUTHORITY_SCHEMA = "rtdl.goal5842.execution_authority.v1"
 WORKER_RECEIPT_SCHEMA = "rtdl.goal5842.causal_admission_worker.v1"
 CONTROLLER_RESULT_SCHEMA = "rtdl.goal5842.causal_admission_controller.v1"
@@ -132,7 +143,7 @@ BASELINE_CONTROLLER_SCHEMA = "rtdl.goal5842.baseline_controller.v2"
 GPU_IDENTITY_WITNESS_SCHEMA = "rtdl.goal5842.gpu_identity_witness.v5"
 PYOPTIX_IDENTITY_WITNESS_SCHEMA = "rtdl.goal5842.pyoptix_identity_witness.v3"
 DIRECT_IDENTITY_WITNESS_SCHEMA = "rtdl.goal5842.direct_identity_witness.v1"
-INDEPENDENT_RECOUNT_SCHEMA = "rtdl.goal5842.independent_recount.v6"
+INDEPENDENT_RECOUNT_SCHEMA = "rtdl.goal5842.independent_recount.v7"
 CROSS_GENERATION_AUTHORITY_SCHEMA = "rtdl.goal5842.cross_generation_authority.v1"
 
 CHECK_ON = "CHECK_ON_COLD_PUBLIC_ADMISSION"
@@ -361,6 +372,19 @@ REQUIRED_SOURCE_PATHS = (
     (
         "history/internal_docs/goal5842_causal_admission_cost_20260903/"
         "pod_artifacts/goal5842_v10_preworker_failure.tar.gz"
+    ),
+    V11_PREREGISTRATION_PATH,
+    (
+        "history/internal_docs/goal5842_causal_admission_cost_20260903/"
+        "FORMAL_V11_TERMINAL_RECOUNT_FAILURE_AND_V12_PLAN.md"
+    ),
+    (
+        "history/internal_docs/goal5842_causal_admission_cost_20260903/"
+        "PRE_EXECUTION_INTERNAL_HOSTILE_REVIEW_V12.md"
+    ),
+    (
+        "history/internal_docs/goal5842_causal_admission_cost_20260903/"
+        "pod_artifacts/goal5842_v11_ada_terminal_failure.tar.gz"
     ),
 )
 
@@ -899,6 +923,137 @@ def v11_preregistration_supersession() -> dict[str, object]:
     }
 
 
+def v12_preregistration_supersession() -> dict[str, object]:
+    """Bind V12 to the disclosed terminal V11 recount failure."""
+
+    return {
+        "predecessor_path": V11_PREREGISTRATION_PATH,
+        "predecessor_schema": V11_PREREGISTRATION_SCHEMA,
+        "predecessor_preregistration_sha256": V11_PREREGISTRATION_SHA256,
+        "predecessor_file_sha256": V11_PREREGISTRATION_FILE_SHA256,
+        "v11_source_commit": "478876b257c2b4bb46f2deedf54a7ef2a6d8abff",
+        "v11_terminal_artifact_path": (
+            "history/internal_docs/goal5842_causal_admission_cost_20260903/"
+            "pod_artifacts/goal5842_v11_ada_terminal_failure.tar.gz"
+        ),
+        "v11_terminal_artifact_bytes": 3_778_593,
+        "v11_terminal_artifact_member_count": 2_324,
+        "v11_terminal_artifact_sha256": (
+            "9385c90ec126745ae44859f7bd46b16be1f7b7565fe274782613af4b975b8a15"
+        ),
+        "failed_stage": "06_independent_recount",
+        "reason_code": "INDEPENDENT_RECOUNT_DIRECT_ONLY_FIELD_SET_DEFECT",
+        "execution_authority_sha256": (
+            "d955e8d48c91c6afb715e01118e6c0679a037bb7414cc537c329a279939fdbb3"
+        ),
+        "execution_authority_file_sha256": (
+            "281d08a87e88a6bdf1a6aa42e9a597768097c0639f5d4b92ce18e1dff7020c17"
+        ),
+        "failure_marker_sha256": (
+            "b47f288eb9fee428a2e01500549e04865fad9fd8c2ec02ecd4fe5377dc7e3b5f"
+        ),
+        "recount_command_sha256": (
+            "224331a413bc65170d1b31839ae0c146343135f3dd416f1f6f9c34c33333f9f1"
+        ),
+        "recount_stdout_sha256": (
+            "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        ),
+        "recount_stderr_sha256": (
+            "d3cb8983c909ec22c00bb18c46022ec22350a25fd4f20a41710f62a451f7762a"
+        ),
+        "causal_result_sha256": (
+            "3be63b9c97c33e42d98d03f464576028044ae6b8702d87882c8e39f288347698"
+        ),
+        "baseline_result_sha256": (
+            "0a79d83a592cd01f8cae4af6e87f4a6f8e82f14705462bd878a90f543b81fec3"
+        ),
+        "postmortem_diagnostic_recount_sha256": (
+            "e344facbfd4e87d66f1edcd22acb72855969f1affa0a440d9e38063eb5445d9b"
+        ),
+        "worker_zero_reached": True,
+        "new_transaction_after_repair_permitted": False,
+        "registered_causal_worker_timing_vector_count": 216,
+        "registered_baseline_subworker_timing_vector_count": 216,
+        "registered_baseline_execution_sample_count": 7_020,
+        "baseline_composite_count": 108,
+        "formal_gpu_complete_execution_call_count": 8_321,
+        "observed_results_available_before_v12_freeze": True,
+        "v12_prefreeze_unregistered_complete_execution_call_count": 0,
+        "v12_prefreeze_unregistered_optix_launch_count": 0,
+        "scientific_design_changed": False,
+        "causal_estimand_changed": False,
+        "schedule_changed": False,
+        "workload_values_changed": False,
+        "statistics_changed": False,
+        "hardware_design_changed": False,
+        "baseline_timing_boundary_changed": False,
+        "runtime_semantics_changed": False,
+        "independent_recount_validation_changed": True,
+        "repair_scope": (
+            "require the documented direct_close_phase_available=false field "
+            "only on Direct receipts and forbid it on Python-arm receipts"
+        ),
+        "changed_existing_non_self_referential_source_paths": [
+            {
+                "path": (
+                    "history/internal_docs/goal5842_causal_admission_cost_20260903/"
+                    "DESIGN.md"
+                ),
+                "v11_sha256": (
+                    "48b207634dc93d8f2234a1ad09d31ceedf3aabe2368a8b1116af7cd03c5616b9"
+                ),
+                "v12_sha256": (
+                    "4f34761de50488601304bcef367583a164bbe3d2f8bdc447a1276933c6a08d4d"
+                ),
+            },
+            {
+                "path": "scripts/goal5842_build_preregistration.py",
+                "v11_sha256": (
+                    "cd91e7795599739ef21e8bd66b4b12699158a81c57f7a2635d096fa7b46e4005"
+                ),
+                "v12_sha256": (
+                    "45b785ec05102994bac1781ccd6444d78f6b601da3786829e74496c57e842c0d"
+                ),
+            },
+            {
+                "path": "scripts/goal5842_independent_recount.py",
+                "v11_sha256": (
+                    "d5e6b24b87b4d68e419ec7fcfc140c41c443196cc26f2ea1bd7a1a1f82f28fce"
+                ),
+                "v12_sha256": (
+                    "c417b55c354705fc950aa2e8e8f40cbf9d95bfd6318f46529bcf3e2c025f5b89"
+                ),
+            },
+            {
+                "path": "tests/goal5842_causal_admission_cost_test.py",
+                "v11_sha256": (
+                    "5766750b080973ddacdd89ca83bf170bc488a50bb899ba4d5a7f4e3b80fc1ce9"
+                ),
+                "v12_sha256": (
+                    "1f156bbca035e322a0093f9d54c9a779d576734e5b79eb72a4276d87c95f6889"
+                ),
+            },
+        ],
+        "self_referential_contract_source_change": {
+            "path": "experiments/goal5842_causal_admission/contracts.py",
+            "v11_sha256": (
+                "e79c474741e802c591384d470ddee3b939bda7ac523f4ceb77b63ecd1784f83d"
+            ),
+            "v12_identity": (
+                "BOUND_BY_V12_SOURCE_MANIFEST_TO_AVOID_EMBEDDED_SELF_HASH"
+            ),
+            "reason": "the V12 contract cannot contain its own whole-file digest",
+        },
+        "successful_transaction_repeats_all_witnesses_before_worker_zero": True,
+        "v12_is_v11_retry": False,
+        "v12_is_append_only_full_replication": True,
+        "v12_is_result_blind": False,
+        "v11_failed_transaction_reclassified_as_success": False,
+        "v11_postmortem_diagnostic_called_formal_recount": False,
+        "v11_rows_pooled_into_v12_estimators": False,
+    }
+
+
 def canonical_bytes(value: object) -> bytes:
     return json.dumps(
         value,
@@ -1067,16 +1222,16 @@ def validate_preregistration(value: object, root: Path, *, verify_files: bool) -
         "preregistration schema mismatch",
     )
     _require(
-        prereg.get("supersession") == v11_preregistration_supersession(),
-        "V11 pre-execution supersession provenance mismatch",
+        prereg.get("supersession") == v12_preregistration_supersession(),
+        "V12 pre-execution supersession provenance mismatch",
     )
     _require(
         prereg.get("post_failure_replication") == post_failure_replication_provenance(),
         "post-failure replication provenance mismatch",
     )
     _require(
-        prereg.get("status") == "FROZEN_BEFORE_INDEPENDENT_V11_FAIR_BASELINE_TIMING",
-        "V11 fair-baseline preregistration is not frozen",
+        prereg.get("status") == "FROZEN_BEFORE_INDEPENDENT_V12_FAIR_BASELINE_TIMING",
+        "V12 fair-baseline preregistration is not frozen",
     )
     _require(
         prereg.get("registered_timing_observation_count") == 0,
@@ -1084,14 +1239,15 @@ def validate_preregistration(value: object, root: Path, *, verify_files: bool) -
     )
     _require(prereg.get("gpu_execution_count") == 0, "pre-freeze GPU execution exists")
     _require(
-        prereg.get("gpu_execution_count_scope") == "FORMAL_V11_TRANSACTION_ONLY",
+        prereg.get("gpu_execution_count_scope") == "FORMAL_V12_TRANSACTION_ONLY",
         "formal GPU execution counter scope mismatch",
     )
     _require(
         prereg.get("unregistered_engineering_preflight")
         == {
-            "complete_execution_call_count": 6,
-            "optix_launch_count": 8,
+            "scope": "V12_ONLY_BEFORE_PREREGISTRATION_FREEZE",
+            "complete_execution_call_count": 0,
+            "optix_launch_count": 0,
             "registered_timing_observation_count": 0,
             "timings_retained_or_used": False,
             "included_in_estimators": False,
@@ -1101,7 +1257,7 @@ def validate_preregistration(value: object, root: Path, *, verify_files: bool) -
     _require(
         prereg.get("preregistration_build_counter_scope")
         == {
-            "top_level_counters_cover_this_v11_fair_baseline_build_only": True,
+            "top_level_counters_cover_this_v12_fair_baseline_build_only": True,
             "prior_evidence_is_bound_in_provenance_fields": True,
             "pre_v4_untimed_gpu_complete_execution_call_count": 8,
             "v4_registered_causal_worker_timing_vector_count": 216,
@@ -1131,6 +1287,11 @@ def validate_preregistration(value: object, root: Path, *, verify_files: bool) -
             "v10_preworker_attempt_count": 1,
             "v10_registered_timing_observation_count": 0,
             "v10_untimed_rtdl_identity_complete_execution_call_count": 290,
+            "v11_registered_causal_worker_timing_vector_count": 216,
+            "v11_registered_baseline_subworker_timing_vector_count": 216,
+            "v11_registered_baseline_execution_sample_count": 7_020,
+            "v11_baseline_composite_count": 108,
+            "v11_formal_gpu_complete_execution_call_count": 8_321,
         },
         "replication counter scope or prior evidence disclosure differs",
     )
@@ -1339,6 +1500,11 @@ def validate_preregistration(value: object, root: Path, *, verify_files: bool) -
         "v10_untimed_calls_count_as_v11_witness",
         "v10_rows_pooled_into_v11_estimators",
         "v11_called_a_result_dependent_retry",
+        "v11_failed_transaction_reclassified_as_success",
+        "v11_postmortem_diagnostic_called_formal_recount",
+        "v11_rows_pooled_into_v12_estimators",
+        "v12_called_a_result_blind_replication",
+        "v12_called_a_v11_retry",
     ):
         _require(ceiling.get(key) is False, f"claim ceiling widened: {key}")
     _require(
@@ -1456,6 +1622,10 @@ __all__ = [
     "V10_PREREGISTRATION_PATH",
     "V10_PREREGISTRATION_SCHEMA",
     "V10_PREREGISTRATION_SHA256",
+    "V11_PREREGISTRATION_FILE_SHA256",
+    "V11_PREREGISTRATION_PATH",
+    "V11_PREREGISTRATION_SCHEMA",
+    "V11_PREREGISTRATION_SHA256",
     "WORKER_RECEIPT_SCHEMA",
     "Goal5842ContractError",
     "build_baseline_schedule",
@@ -1475,6 +1645,7 @@ __all__ = [
     "v9_preregistration_supersession",
     "v10_preregistration_supersession",
     "v11_preregistration_supersession",
+    "v12_preregistration_supersession",
     "validate_baseline_schedule",
     "validate_causal_schedule",
     "validate_preregistration",

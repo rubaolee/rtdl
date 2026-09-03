@@ -187,6 +187,7 @@ BASELINE_RECEIPT_FIELDS = {
     "identity",
     "receipt_sha256",
 }
+DIRECT_ONLY_BASELINE_RECEIPT_FIELDS = {"direct_close_phase_available"}
 
 
 def require(condition: bool, message: str) -> None:
@@ -505,10 +506,10 @@ def validate_baseline_receipt(
     verify_seal(
         receipt, "receipt_sha256", f"baseline receipt {scheduled['worker_id']}/{mode}"
     )
-    require(
-        set(receipt) == BASELINE_RECEIPT_FIELDS,
-        "baseline receipt field set mismatch",
-    )
+    expected_fields = BASELINE_RECEIPT_FIELDS
+    if scheduled["arm"] == DIRECT_ARM:
+        expected_fields = expected_fields | DIRECT_ONLY_BASELINE_RECEIPT_FIELDS
+    require(set(receipt) == expected_fields, "baseline receipt field set mismatch")
     require(
         receipt.get("schema") == BASELINE_SUBWORKER_SCHEMA,
         "baseline receipt schema mismatch",
@@ -598,6 +599,10 @@ def validate_baseline_receipt(
             "steady sample count mismatch",
         )
     if scheduled["arm"] == DIRECT_ARM:
+        require(
+            receipt.get("direct_close_phase_available") is False,
+            "Direct close availability marker mismatch",
+        )
         require(phases["close"] is None, "Direct unexpectedly claims a close phase")
     else:
         require(type(phases["close"]) is int, "Python arm close phase missing")

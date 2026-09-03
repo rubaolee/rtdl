@@ -163,3 +163,14 @@ unchecked arm is a supported optimization, that two provider tasks represent
 arbitrary RT programs, or that two GPUs establish hardware-independent
 performance.  External review and consensus remain deferred while the owner
 is traveling.
+
+V12 supersedes the terminal failed V11 transaction without modifying it. V11
+completed all registered workers, but its independent recount rejected the
+documented Direct-only `direct_close_phase_available=false` receipt field
+because the recount required one unconditional field set for all arms. V12
+changes only that independent validation and its synthetic regression model.
+V11 timings were observed before V12 was frozen, so V12 is not result-blind;
+its complete archive and diagnostics are bound, none of its rows are pooled,
+and the absence of a success threshold plus the unchanged schedules and
+estimators are retained. A successful V12 Ada transaction still supplies at
+most one of the two required GPU architecture generations.

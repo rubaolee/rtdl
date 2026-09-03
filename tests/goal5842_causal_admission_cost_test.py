@@ -81,6 +81,10 @@ from experiments.goal5842_causal_admission.contracts import (
     V10_PREREGISTRATION_PATH,
     V10_PREREGISTRATION_SCHEMA,
     V10_PREREGISTRATION_SHA256,
+    V11_PREREGISTRATION_FILE_SHA256,
+    V11_PREREGISTRATION_PATH,
+    V11_PREREGISTRATION_SCHEMA,
+    V11_PREREGISTRATION_SHA256,
     Goal5842ContractError,
     build_baseline_schedule,
     build_causal_schedule,
@@ -96,6 +100,7 @@ from experiments.goal5842_causal_admission.contracts import (
     v9_preregistration_supersession,
     v10_preregistration_supersession,
     v11_preregistration_supersession,
+    v12_preregistration_supersession,
     validate_preregistration,
 )
 from experiments.goal5842_causal_admission.controller import summarize
@@ -137,7 +142,7 @@ from scripts.goal5842_run_one_generation import validated_python_entrypoint
 ROOT = Path(__file__).resolve().parents[1]
 PREREGISTRATION = ROOT / (
     "history/internal_docs/goal5842_causal_admission_cost_20260903/"
-    "PREREGISTRATION_V11.json"
+    "PREREGISTRATION_V12.json"
 )
 V1_PREREGISTRATION = ROOT / V1_PREREGISTRATION_PATH
 V2_PREREGISTRATION = ROOT / V2_PREREGISTRATION_PATH
@@ -149,6 +154,7 @@ V7_PREREGISTRATION = ROOT / V7_PREREGISTRATION_PATH
 V8_PREREGISTRATION = ROOT / V8_PREREGISTRATION_PATH
 V9_PREREGISTRATION = ROOT / V9_PREREGISTRATION_PATH
 V10_PREREGISTRATION = ROOT / V10_PREREGISTRATION_PATH
+V11_PREREGISTRATION = ROOT / V11_PREREGISTRATION_PATH
 FROZEN_CORE = (
     "src/rtdsl/v4_family_schema.py",
     "src/rtdsl/v4_generic_family_lifecycle.py",
@@ -810,10 +816,9 @@ class Goal5842CausalAdmissionCostTest(unittest.TestCase):
 
     def test_v11_binds_v10_preworker_failure_without_changing_science(self) -> None:
         v10 = json.loads(V10_PREREGISTRATION.read_text(encoding="utf-8"))
-        self.assertEqual(
-            self.prereg["supersession"], v11_preregistration_supersession()
-        )
-        supersession = self.prereg["supersession"]
+        v11 = json.loads(V11_PREREGISTRATION.read_text(encoding="utf-8"))
+        self.assertEqual(v11["supersession"], v11_preregistration_supersession())
+        supersession = v11["supersession"]
         self.assertFalse(supersession["worker_zero_reached"])
         self.assertEqual(supersession["registered_timing_observation_count"], 0)
         self.assertEqual(supersession["gpu_complete_execution_call_count"], 290)
@@ -849,7 +854,7 @@ class Goal5842CausalAdmissionCostTest(unittest.TestCase):
             "hardware_design",
             "failure_policy",
         ):
-            self.assertEqual(self.prereg[key], v10[key], key)
+            self.assertEqual(v11[key], v10[key], key)
         artifact = ROOT / supersession["v10_preworker_artifact_path"]
         self.assertEqual(
             artifact.stat().st_size, supersession["v10_preworker_artifact_bytes"]
@@ -912,9 +917,183 @@ class Goal5842CausalAdmissionCostTest(unittest.TestCase):
         self.assertEqual(progress[-1]["task"], ADMISSION_TASKS[-1])
         self.assertEqual(progress[-1]["phase"], "EXECUTE_CHECK_ON")
         self.assertEqual(
-            self.prereg["gpu_execution_count_scope"],
+            v11["gpu_execution_count_scope"],
             "FORMAL_V11_TRANSACTION_ONLY",
         )
+
+    def test_v12_binds_v11_terminal_failure_and_recounts_frozen_rows(self) -> None:
+        v11 = json.loads(V11_PREREGISTRATION.read_text(encoding="utf-8"))
+        self.assertEqual(v11["schema"], V11_PREREGISTRATION_SCHEMA)
+        self.assertEqual(v11["preregistration_sha256"], V11_PREREGISTRATION_SHA256)
+        self.assertEqual(
+            sha256_file(V11_PREREGISTRATION), V11_PREREGISTRATION_FILE_SHA256
+        )
+        supersession = self.prereg["supersession"]
+        self.assertEqual(supersession, v12_preregistration_supersession())
+        self.assertTrue(supersession["worker_zero_reached"])
+        self.assertFalse(supersession["new_transaction_after_repair_permitted"])
+        self.assertTrue(supersession["observed_results_available_before_v12_freeze"])
+        self.assertFalse(supersession["scientific_design_changed"])
+        self.assertFalse(supersession["runtime_semantics_changed"])
+        self.assertTrue(supersession["independent_recount_validation_changed"])
+        self.assertFalse(supersession["v12_is_v11_retry"])
+        self.assertTrue(supersession["v12_is_append_only_full_replication"])
+        self.assertFalse(supersession["v12_is_result_blind"])
+        self.assertFalse(supersession["v11_failed_transaction_reclassified_as_success"])
+        self.assertFalse(supersession["v11_rows_pooled_into_v12_estimators"])
+        for key in (
+            "scientific_question",
+            "causal_estimand",
+            "admission_tasks",
+            "baseline_tasks",
+            "task_contracts",
+            "causal_arms",
+            "baseline_arms",
+            "cohort_boundary",
+            "causal_phase_boundaries",
+            "baseline_phase_boundaries",
+            "cold_counterfactual_design",
+            "post_estimand_reference_admission",
+            "execution_identity_requirements",
+            "pre_worker_zero_witness_design",
+            "baseline_worker_design",
+            "byte_identity_invariant",
+            "byte_identity_invariant_scope",
+            "causal_schedule",
+            "causal_schedule_sha256",
+            "baseline_schedule",
+            "baseline_schedule_sha256",
+            "statistics",
+            "hardware_design",
+            "failure_policy",
+        ):
+            self.assertEqual(self.prereg[key], v11[key], key)
+
+        changed = supersession["changed_existing_non_self_referential_source_paths"]
+        self.assertEqual(
+            {row["path"] for row in changed},
+            {
+                "history/internal_docs/goal5842_causal_admission_cost_20260903/DESIGN.md",
+                "scripts/goal5842_build_preregistration.py",
+                "scripts/goal5842_independent_recount.py",
+                "tests/goal5842_causal_admission_cost_test.py",
+            },
+        )
+        for row in changed:
+            self.assertEqual(sha256_file(ROOT / row["path"]), row["v12_sha256"])
+        contract_change = supersession["self_referential_contract_source_change"]
+        self.assertEqual(
+            contract_change["path"],
+            "experiments/goal5842_causal_admission/contracts.py",
+        )
+        self.assertEqual(
+            contract_change["v12_identity"],
+            "BOUND_BY_V12_SOURCE_MANIFEST_TO_AVOID_EMBEDDED_SELF_HASH",
+        )
+
+        artifact = ROOT / supersession["v11_terminal_artifact_path"]
+        self.assertEqual(
+            artifact.stat().st_size, supersession["v11_terminal_artifact_bytes"]
+        )
+        self.assertEqual(
+            sha256_file(artifact), supersession["v11_terminal_artifact_sha256"]
+        )
+
+        with tarfile.open(artifact, "r:gz") as archive:
+            self.assertEqual(
+                len(archive.getmembers()),
+                supersession["v11_terminal_artifact_member_count"],
+            )
+
+            def archived_bytes(suffix: str) -> bytes:
+                matches = [name for name in archive.getnames() if name.endswith(suffix)]
+                self.assertEqual(len(matches), 1, suffix)
+                extracted = archive.extractfile(matches[0])
+                self.assertIsNotNone(extracted)
+                return extracted.read()
+
+            for suffix, expected in (
+                (
+                    "/execution_authority.json",
+                    supersession["execution_authority_file_sha256"],
+                ),
+                (
+                    "/TRANSACTION_FAILED_NO_RETRY.json",
+                    supersession["failure_marker_sha256"],
+                ),
+                (
+                    "/stage_logs/06_independent_recount/command.json",
+                    supersession["recount_command_sha256"],
+                ),
+                (
+                    "/stage_logs/06_independent_recount/stdout.txt",
+                    supersession["recount_stdout_sha256"],
+                ),
+                (
+                    "/stage_logs/06_independent_recount/stderr.txt",
+                    supersession["recount_stderr_sha256"],
+                ),
+            ):
+                self.assertEqual(
+                    hashlib.sha256(archived_bytes(suffix)).hexdigest(), expected
+                )
+
+            marker = json.loads(archived_bytes("/TRANSACTION_FAILED_NO_RETRY.json"))
+            self.assertEqual(marker["failed_stage"], "06_independent_recount")
+            self.assertTrue(marker["worker_zero_reached"])
+            self.assertFalse(marker["new_transaction_after_repair_permitted"])
+            self.assertIn(
+                b"RuntimeError: baseline receipt field set mismatch",
+                archived_bytes("/stage_logs/06_independent_recount/stderr.txt"),
+            )
+
+            baseline_receipts = []
+            for name in archive.getnames():
+                if "/baseline/" not in name or not name.endswith("/receipt.json"):
+                    continue
+                extracted = archive.extractfile(name)
+                self.assertIsNotNone(extracted)
+                baseline_receipts.append(json.load(extracted))
+            self.assertEqual(len(baseline_receipts), 216)
+            direct_receipts = [
+                row for row in baseline_receipts if row["arm"] == "A_DIRECT_CUDA_OPTIX"
+            ]
+            python_receipts = [
+                row for row in baseline_receipts if row["arm"] != "A_DIRECT_CUDA_OPTIX"
+            ]
+            self.assertEqual(len(direct_receipts), 72)
+            self.assertEqual(len(python_receipts), 144)
+            self.assertTrue(
+                all(
+                    row.get("direct_close_phase_available") is False
+                    for row in direct_receipts
+                )
+            )
+            self.assertTrue(
+                all(
+                    "direct_close_phase_available" not in row for row in python_receipts
+                )
+            )
+
+        with tempfile.TemporaryDirectory() as temporary:
+            with tarfile.open(artifact, "r:gz") as archive:
+                archive.extractall(temporary, filter="data")
+            transaction = Path(temporary) / "goal5842-ada-478876b25-transaction11"
+            authority = json.loads(
+                (transaction / "execution_authority.json").read_text(encoding="utf-8")
+            )
+            causal, causal_rows = recount_causal(transaction / "causal", v11, authority)
+            baseline, composites = recount_baseline(
+                transaction / "baseline", v11, authority
+            )
+            self.assertEqual(len(causal_rows), 216)
+            self.assertEqual(len(composites), 108)
+            self.assertEqual(
+                causal["result_sha256"], supersession["causal_result_sha256"]
+            )
+            self.assertEqual(
+                baseline["result_sha256"], supersession["baseline_result_sha256"]
+            )
 
     def test_gpu_entrypoints_bind_legacy_loader_to_authorized_native(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -1726,6 +1905,7 @@ class Goal5842CausalAdmissionCostTest(unittest.TestCase):
                 V3_PREREGISTRATION_PATH,
                 V8_PREREGISTRATION_PATH,
                 V10_PREREGISTRATION_PATH,
+                V11_PREREGISTRATION_PATH,
                 (
                     "history/internal_docs/goal5842_causal_admission_cost_20260903/"
                     "PRE_WORKER_ZERO_REPAIR_03.md"
@@ -1733,6 +1913,18 @@ class Goal5842CausalAdmissionCostTest(unittest.TestCase):
                 (
                     "history/internal_docs/goal5842_causal_admission_cost_20260903/"
                     "PRE_EXECUTION_INTERNAL_HOSTILE_REVIEW_V6.md"
+                ),
+                (
+                    "history/internal_docs/goal5842_causal_admission_cost_20260903/"
+                    "FORMAL_V11_TERMINAL_RECOUNT_FAILURE_AND_V12_PLAN.md"
+                ),
+                (
+                    "history/internal_docs/goal5842_causal_admission_cost_20260903/"
+                    "PRE_EXECUTION_INTERNAL_HOSTILE_REVIEW_V12.md"
+                ),
+                (
+                    "history/internal_docs/goal5842_causal_admission_cost_20260903/"
+                    "pod_artifacts/goal5842_v11_ada_terminal_failure.tar.gz"
                 ),
             }
             <= paths
@@ -1929,6 +2121,8 @@ class Goal5842CausalAdmissionCostTest(unittest.TestCase):
                     "identity": identity,
                 }
                 direct = row["arm"] == "A_DIRECT_CUDA_OPTIX"
+                if direct:
+                    common["direct_close_phase_available"] = False
                 first_phases = {
                     "deterministic_input_materialization": 5,
                     "route_declaration_and_artifact_binding": None if direct else 10,
@@ -1988,6 +2182,48 @@ class Goal5842CausalAdmissionCostTest(unittest.TestCase):
             )
             self.assertEqual(recounted_causal["task_summaries"], summarize(rows))
             self.assertEqual(recounted_baseline["composite_rows"], rebuilt)
+
+            receipt_paths = list(baseline_root.glob("*/first/receipt.json"))
+            direct_path = next(
+                path
+                for path in receipt_paths
+                if json.loads(path.read_text(encoding="utf-8"))["arm"]
+                == "A_DIRECT_CUDA_OPTIX"
+            )
+            direct_original = direct_path.read_text(encoding="utf-8")
+            direct = json.loads(direct_original)
+            direct.pop("direct_close_phase_available")
+            direct.pop("receipt_sha256")
+            direct["receipt_sha256"] = digest(direct)
+            write(direct_path, direct)
+            with self.assertRaisesRegex(RuntimeError, "field set mismatch"):
+                recount_baseline(baseline_root, self.prereg, authority)
+            direct_path.write_text(direct_original, encoding="utf-8")
+
+            direct = json.loads(direct_original)
+            direct["direct_close_phase_available"] = True
+            direct.pop("receipt_sha256")
+            direct["receipt_sha256"] = digest(direct)
+            write(direct_path, direct)
+            with self.assertRaisesRegex(RuntimeError, "availability marker mismatch"):
+                recount_baseline(baseline_root, self.prereg, authority)
+            direct_path.write_text(direct_original, encoding="utf-8")
+
+            python_path = next(
+                path
+                for path in receipt_paths
+                if json.loads(path.read_text(encoding="utf-8"))["arm"]
+                != "A_DIRECT_CUDA_OPTIX"
+            )
+            python_original = python_path.read_text(encoding="utf-8")
+            python_receipt = json.loads(python_original)
+            python_receipt["direct_close_phase_available"] = False
+            python_receipt.pop("receipt_sha256")
+            python_receipt["receipt_sha256"] = digest(python_receipt)
+            write(python_path, python_receipt)
+            with self.assertRaisesRegex(RuntimeError, "field set mismatch"):
+                recount_baseline(baseline_root, self.prereg, authority)
+            python_path.write_text(python_original, encoding="utf-8")
 
             attacked_path = next(causal_root.glob("*/receipt.json"))
             attacked = json.loads(attacked_path.read_text(encoding="utf-8"))
