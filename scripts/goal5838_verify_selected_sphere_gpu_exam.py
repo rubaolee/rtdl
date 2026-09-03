@@ -1477,6 +1477,7 @@ def _verify_native_build(
         ),
         *(f"-L{path}" for path in build_input["library_dirs"]),
         "-lcuda",
+        "-Xlinker",
         str(build_input["nvrtc_library_path"]),
         *build_input["geos_libraries"],
         "-o",

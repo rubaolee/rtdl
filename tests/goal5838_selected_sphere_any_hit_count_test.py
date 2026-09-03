@@ -341,6 +341,8 @@ class Goal5838SelectedSphereAnyHitCountTest(unittest.TestCase):
         self.assertIn(str(ROOT / "src/native/rtdl_optix.cpp"), command)
         self.assertIn("-lcuda", command)
         self.assertIn("/cuda/lib64/libnvrtc.so.12", command)
+        nvrtc_index = command.index("/cuda/lib64/libnvrtc.so.12")
+        self.assertEqual(command[nvrtc_index - 1], "-Xlinker")
         self.assertNotIn("-lnvrtc", command)
         self.assertEqual(command[-2:], ["-o", "/tmp/goal5838.so"])
         with tempfile.TemporaryDirectory() as temporary:

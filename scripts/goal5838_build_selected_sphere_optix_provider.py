@@ -545,6 +545,7 @@ def _build_command(
         *(str(ROOT / relative) for relative in TRANSLATION_UNIT_PATHS),
         *(f"-L{path}" for path in library_dirs),
         "-lcuda",
+        "-Xlinker",
         str(nvrtc_library),
         *geos_libraries,
         "-o",

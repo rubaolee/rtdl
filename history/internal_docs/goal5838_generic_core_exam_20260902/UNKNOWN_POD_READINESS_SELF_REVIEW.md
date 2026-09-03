@@ -85,7 +85,20 @@ and stores a sealed compiler-environment identity. The RTDL-free verifier
 independently rederives the schema and binds the NVRTC row back to the native
 build manifest.
 
-### R5, P1: legal compute capabilities with minor zero were rejected
+### R5, P1: NVCC rejected the canonical versioned NVRTC pathname
+
+The first exact-identity builder passed
+`libnvrtc.so.12.8.93` directly as an `nvcc` input. CUDA 12.8 rejected the
+versioned shared-object suffix before compilation, even though the exact file
+was valid and loadable.
+
+Repair: an isolated Pod probe established that `-Xlinker <exact-file>` produces
+a valid shared object and preserves the expected dynamic dependency. The
+builder and RTDL-free command rederivation now require that exact argument
+pair; tests reject any regression to `-lnvrtc` or an unqualified soname. This
+was mutable build-driver repair and did not touch the frozen generic core.
+
+### R6, P1: legal compute capabilities with minor zero were rejected
 
 The first implementation of the internal compiler request required both
 compute-capability components to be positive. That incorrectly rejected legal
