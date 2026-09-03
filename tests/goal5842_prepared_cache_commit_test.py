@@ -17,6 +17,7 @@ class _NativeDigestState:
         self.pending = False
         self.reuse_flags: list[int] = []
         self.scalar_multiplier_flags: list[tuple[int, int]] = []
+        self.scalar_reuse_digests: list[bytes] = []
         self.commit_count = 0
 
     def begin_execution(self, reuse: int) -> int:
@@ -187,32 +188,49 @@ def _triangle_owner(state: _NativeDigestState):
         use_multipliers = int(args[6])
         reuse_multipliers = int(args[7])
         state.scalar_multiplier_flags.append((use_multipliers, reuse_multipliers))
+        if int(args[9]) != 32:
+            return 1
+        state.scalar_reuse_digests.append(bytes(args[8][:32]))
         if state.begin_execution(reuse):
             return 1
         count = int(args[4])
-        multiplier = int(args[8][0]) if use_multipliers else 1
-        ctypes.cast(args[9], ctypes.POINTER(ctypes.c_uint64))[0] = 3 * multiplier
-        summary = ctypes.cast(
-            args[10], ctypes.POINTER(triangle._ProductStatusSummary)
+        multiplier = int(args[10][0]) if use_multipliers else 1
+        ctypes.cast(args[11], ctypes.POINTER(ctypes.c_uint64))[0] = 3 * multiplier
+        ctypes.cast(args[12], ctypes.POINTER(ctypes.c_uint32))[0] = 0
+        receipt = ctypes.cast(
+            args[13], ctypes.POINTER(triangle._FastPathReceipt)
         )[0]
-        summary.schema_version = 2
-        summary.ok = 1
-        summary.first_error_claimed = 0
-        summary.error_code = 0
-        summary.validated_row_count = count
-        summary.required_invocation_mask = (1 << 1) | (1 << 6)
-        summary.terminal_invocation_mask = 1 << 5
-        summary.invalid_row_count = 0
-        summary.first_invalid_row = (1 << 64) - 1
-        for index in range(7):
-            args[11][index] = 0
-            summary.role_counters[index] = 0
-        for index, value in ((1, count), (3, 1), (5, count), (6, count)):
-            args[11][index] = value
-            summary.role_counters[index] = value
-        summary.success_status_d2h_bytes = ctypes.sizeof(
-            triangle._ProductStatusSummary
+        receipt.schema_version = 2
+        receipt.optix_launch_count = 1
+        receipt.host_blocking_boundary_count = 2
+        receipt.control_d2h_bytes = 4
+        receipt.output_d2h_bytes = 8
+        receipt.status_before_output = 1
+        receipt.output_d2h_after_status_failure = 0
+        receipt.role_counters_materialized = 0
+        receipt.prepared_input_reused = reuse
+        receipt.dynamic_device_upload_call_count = (
+            0 if reuse else 7 + use_multipliers
         )
+        receipt.dynamic_device_upload_bytes = (
+            0 if reuse else count * (7 * 4 + use_multipliers * 8)
+        )
+        receipt.dynamic_accel_build_count = 0
+        receipt.dynamic_explicit_sync_count = 0
+        receipt.dynamic_blocking_upload_call_count = 0
+        receipt.dynamic_input_generation = 1
+        receipt.semantic_compaction_launch_count = 0
+        receipt.semantic_compaction_key_capacity = 0
+        receipt.semantic_compaction_scratch_bytes = 0
+        receipt.callback_status_kernel_launch_count = 3
+        receipt.checked_product_kernel_launch_count = 2
+        receipt.compact_control_finalizer_kernel_launch_count = 1
+        receipt.total_auxiliary_cuda_kernel_launch_count = 6
+        receipt.execution_parameter_h2d_bytes = 200
+        receipt.execution_parameter_h2d_copy_call_count = 1
+        receipt.stream_ordered_memset_call_count = 4
+        receipt.status_d2h_copy_call_count = 1
+        receipt.output_d2h_copy_call_count = 1
         return 0
 
     owner._execute = execute
@@ -371,30 +389,35 @@ class Goal5842PreparedCacheCommitTest(unittest.TestCase):
         self.assertEqual(first.launch_status[0]["validated_row_count"], 1)
         self.assertEqual(state.reuse_flags, [0, 1])
         self.assertEqual(state.scalar_multiplier_flags, [(1, 0), (1, 1)])
+        self.assertEqual(len(state.scalar_reuse_digests), 2)
+        self.assertEqual(
+            state.scalar_reuse_digests,
+            [bytes.fromhex(owner._cached_query_digest)] * 2,
+        )
         self.assertEqual(state.commit_count, 1)
         boundary = owner._last_execution_receipt
         self.assertEqual(
-            boundary["execution_path"], "device_resident_checked_u64_scalar_v4"
+            boundary["execution_path"], "device_resident_checked_u64_scalar_v7"
         )
         self.assertTrue(boundary["prepared_query_input_reused"])
         self.assertFalse(boundary["per_ray_u64_materialized_on_host"])
         self.assertFalse(boundary["event_rows_materialized_on_host"])
         self.assertEqual(boundary["public_output_scalar_bytes"], 8)
 
-    def test_triangle_scalar_path_rejects_invalid_product_summary(self):
+    def test_triangle_scalar_path_rejects_invalid_fast_receipt(self):
         state = _NativeDigestState()
         owner = _triangle_owner(state)
         valid_scalar = owner._execute_scalar
 
-        def corrupt_summary(*args):
+        def corrupt_receipt(*args):
             status = valid_scalar(*args)
-            summary = ctypes.cast(
-                args[10], ctypes.POINTER(triangle._ProductStatusSummary)
+            receipt = ctypes.cast(
+                args[13], ctypes.POINTER(triangle._FastPathReceipt)
             )[0]
-            summary.ok = 0
+            receipt.status_before_output = 0
             return status
 
-        owner._execute_scalar = corrupt_summary
+        owner._execute_scalar = corrupt_receipt
         queries = (((0.0, 0.0, 0.0), (0.0, 0.0, 1.0), 2.0),)
         typed = ({"query.weight": (2,)}, None, None, None)
         with (
@@ -404,7 +427,7 @@ class Goal5842PreparedCacheCommitTest(unittest.TestCase):
                 side_effect=lambda **_kwargs: _Audit(),
             ),
             patch.object(triangle, "_typed_metadata", return_value=typed),
-            self.assertRaisesRegex(RuntimeError, "product status is invalid"),
+            self.assertRaisesRegex(RuntimeError, "fast-path receipt is invalid"),
         ):
             owner.execute(
                 queries,

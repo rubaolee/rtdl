@@ -34,34 +34,49 @@ from .v4_triangle_reduction_optix_runtime import (
 )
 
 
-class _ProductStatusSummary(ctypes.Structure):
+class _FastPathReceipt(ctypes.Structure):
     _fields_ = [
         ("schema_version", ctypes.c_uint32),
-        ("ok", ctypes.c_uint32),
-        ("first_error_claimed", ctypes.c_uint32),
-        ("error_code", ctypes.c_uint32),
-        ("validated_row_count", ctypes.c_uint64),
-        ("required_invocation_mask", ctypes.c_uint32),
-        ("terminal_invocation_mask", ctypes.c_uint32),
-        ("invalid_row_count", ctypes.c_uint32),
-        ("first_invalid_row", ctypes.c_uint64),
-        ("role_counters", ctypes.c_uint64 * 7),
-        ("success_status_d2h_bytes", ctypes.c_uint64),
+        ("optix_launch_count", ctypes.c_uint32),
+        ("host_blocking_boundary_count", ctypes.c_uint32),
+        ("control_d2h_bytes", ctypes.c_uint32),
+        ("output_d2h_bytes", ctypes.c_uint64),
+        ("status_before_output", ctypes.c_uint32),
+        ("output_d2h_after_status_failure", ctypes.c_uint32),
+        ("role_counters_materialized", ctypes.c_uint32),
+        ("prepared_input_reused", ctypes.c_uint32),
+        ("dynamic_device_upload_call_count", ctypes.c_uint32),
+        ("dynamic_accel_build_count", ctypes.c_uint32),
+        ("dynamic_explicit_sync_count", ctypes.c_uint32),
+        ("dynamic_blocking_upload_call_count", ctypes.c_uint32),
+        ("dynamic_device_upload_bytes", ctypes.c_uint64),
+        ("dynamic_input_generation", ctypes.c_uint64),
+        ("semantic_compaction_launch_count", ctypes.c_uint32),
+        ("semantic_compaction_key_capacity", ctypes.c_uint32),
+        ("semantic_compaction_scratch_bytes", ctypes.c_uint64),
+        ("callback_status_kernel_launch_count", ctypes.c_uint32),
+        ("checked_product_kernel_launch_count", ctypes.c_uint32),
+        ("compact_control_finalizer_kernel_launch_count", ctypes.c_uint32),
+        ("total_auxiliary_cuda_kernel_launch_count", ctypes.c_uint32),
+        ("execution_parameter_h2d_bytes", ctypes.c_uint64),
+        ("execution_parameter_h2d_copy_call_count", ctypes.c_uint32),
+        ("stream_ordered_memset_call_count", ctypes.c_uint32),
+        ("status_d2h_copy_call_count", ctypes.c_uint32),
+        ("output_d2h_copy_call_count", ctypes.c_uint32),
     ]
 
 
-class _ValidatedProductStatusRows(Sequence[Mapping[str, int]]):
-    """Constant-size status evidence for scalar-only product execution."""
+class _ValidatedFastStatusRows(Sequence[Mapping[str, int]]):
+    """Public status view after the native compact-status gate passes."""
 
     native_validated_all_ok = True
 
-    def __init__(self, summary: _ProductStatusSummary) -> None:
+    def __init__(self, query_count: int) -> None:
         self._row = {
-            "first_error_claimed": int(summary.first_error_claimed),
-            "error_code": int(summary.error_code),
-            "validated_row_count": int(summary.validated_row_count),
-            "required_invocation_mask": int(summary.required_invocation_mask),
-            "terminal_invocation_mask": int(summary.terminal_invocation_mask),
+            "first_error_claimed": 0,
+            "error_code": 0,
+            "validated_row_count": int(query_count),
+            "compact_status_d2h_bytes": ctypes.sizeof(ctypes.c_uint32),
         }
 
     def __len__(self) -> int:
@@ -78,34 +93,75 @@ class _ValidatedProductStatusRows(Sequence[Mapping[str, int]]):
         yield dict(self._row)
 
 
-def _validate_product_summary(
-    summary: _ProductStatusSummary,
-    counters: Sequence[int],
+def _validate_fast_receipt(
+    receipt: _FastPathReceipt,
     *,
     query_count: int,
-) -> tuple[_ValidatedProductStatusRows, tuple[int, ...]]:
-    counter_rows = tuple(int(item) for item in counters)
-    summary_counters = tuple(int(item) for item in summary.role_counters)
+    compact_status: int,
+    prepared_input_reused: bool,
+    use_multipliers: bool,
+) -> Mapping[str, int | bool]:
+    raw_status_before_output = int(receipt.status_before_output)
+    raw_role_counters_materialized = int(receipt.role_counters_materialized)
+    raw_prepared_input_reused = int(receipt.prepared_input_reused)
+    success = compact_status == 0
+    expected_upload_calls = 0 if prepared_input_reused else 7 + int(use_multipliers)
+    expected_upload_bytes = (
+        0
+        if prepared_input_reused
+        else query_count * (7 * ctypes.sizeof(ctypes.c_float))
+        + int(use_multipliers) * query_count * ctypes.sizeof(ctypes.c_uint64)
+    )
+    values: dict[str, int | bool] = {
+        name: int(getattr(receipt, name))
+        for name, _ctype in _FastPathReceipt._fields_
+    }
+    values["status_before_output"] = bool(raw_status_before_output)
+    values["role_counters_materialized"] = bool(
+        raw_role_counters_materialized
+    )
+    values["prepared_input_reused"] = bool(raw_prepared_input_reused)
     if (
-        int(summary.schema_version) != 2
-        or int(summary.ok) != 1
-        or int(summary.first_error_claimed) != 0
-        or int(summary.error_code) != 0
-        or int(summary.validated_row_count) != query_count
-        or int(summary.required_invocation_mask) != ((1 << 1) | (1 << 6))
-        or int(summary.terminal_invocation_mask) != (1 << 5)
-        or int(summary.invalid_row_count) != 0
-        or int(summary.first_invalid_row) != (1 << 64) - 1
-        or int(summary.success_status_d2h_bytes)
-        != ctypes.sizeof(_ProductStatusSummary)
-        or len(counter_rows) != 7
-        or counter_rows != summary_counters
-        or counter_rows[1] != query_count
-        or counter_rows[6] != query_count
-        or counter_rows[4] + counter_rows[5] != query_count
+        ctypes.sizeof(_FastPathReceipt) != 128
+        or int(receipt.schema_version) != 2
+        or int(receipt.optix_launch_count) != 1
+        or int(receipt.host_blocking_boundary_count) != (2 if success else 1)
+        or int(receipt.control_d2h_bytes) != ctypes.sizeof(ctypes.c_uint32)
+        or int(receipt.output_d2h_bytes)
+        != (ctypes.sizeof(ctypes.c_uint64) if success else 0)
+        or raw_status_before_output != 1
+        or int(receipt.output_d2h_after_status_failure) != 0
+        or raw_role_counters_materialized != 0
+        or raw_prepared_input_reused != int(prepared_input_reused)
+        or int(receipt.dynamic_device_upload_call_count)
+        != expected_upload_calls
+        or int(receipt.dynamic_device_upload_bytes) != expected_upload_bytes
+        or int(receipt.dynamic_accel_build_count) != 0
+        or int(receipt.dynamic_explicit_sync_count) != 0
+        or int(receipt.dynamic_blocking_upload_call_count) != 0
+        or int(receipt.dynamic_input_generation) <= 0
+        or int(receipt.semantic_compaction_launch_count) != 0
+        or int(receipt.semantic_compaction_key_capacity) != 0
+        or int(receipt.semantic_compaction_scratch_bytes) != 0
+        or int(receipt.callback_status_kernel_launch_count) != 3
+        or int(receipt.checked_product_kernel_launch_count) != 2
+        or int(receipt.compact_control_finalizer_kernel_launch_count) != 1
+        or int(receipt.total_auxiliary_cuda_kernel_launch_count) != 6
+        or int(receipt.execution_parameter_h2d_bytes) != 200
+        or int(receipt.execution_parameter_h2d_copy_call_count) != 1
+        or int(receipt.stream_ordered_memset_call_count) != 4
+        or int(receipt.status_d2h_copy_call_count) != 1
+        or int(receipt.output_d2h_copy_call_count) != int(success)
     ):
-        raise RuntimeError("prepared triangle product status is invalid")
-    return _ValidatedProductStatusRows(summary), counter_rows
+        raise RuntimeError(
+            f"prepared triangle fast-path receipt is invalid: {values!r}"
+        )
+    if not success:
+        raise RuntimeError(
+            f"prepared triangle compact device status rejected execution: "
+            f"{compact_status}"
+        )
+    return values
 
 
 def _configure(library):
@@ -116,7 +172,7 @@ def _configure(library):
         library, "rtdl_optix_v4_execute_prepared_triangle_reduction_callback_v2", None
     )
     execute_scalar = getattr(
-        library, "rtdl_optix_v4_execute_prepared_triangle_reduction_callback_v4", None
+        library, "rtdl_optix_v4_execute_prepared_triangle_reduction_callback_v7", None
     )
     commit = getattr(
         library, "rtdl_optix_v4_commit_prepared_triangle_reduction_cache_v1", None
@@ -183,10 +239,12 @@ def _configure(library):
         ctypes.c_uint32,
         ctypes.c_uint32,
         ctypes.c_uint32,
+        ctypes.POINTER(ctypes.c_uint8),
+        ctypes.c_size_t,
         ctypes.POINTER(ctypes.c_uint64),
         ctypes.POINTER(ctypes.c_uint64),
-        ctypes.POINTER(_ProductStatusSummary),
-        ctypes.POINTER(ctypes.c_uint64),
+        ctypes.POINTER(ctypes.c_uint32),
+        ctypes.POINTER(_FastPathReceipt),
         ctypes.POINTER(ctypes.c_char),
         ctypes.c_size_t,
     ]
@@ -508,8 +566,7 @@ class PreparedTriangleReductionOwner:
         self._execution_count = 0
         self._last_execution_receipt = None
         self._scalar_output = ctypes.c_uint64()
-        self._product_summary = _ProductStatusSummary()
-        self._product_counters = (ctypes.c_uint64 * 7)()
+        self._fast_compact_status = ctypes.c_uint32()
         self._call_error = ctypes.create_string_buffer(16384)
         self.prepare_seconds = time.perf_counter() - started
         self._session_identity = _digest(
@@ -626,9 +683,14 @@ class PreparedTriangleReductionOwner:
                 raise
             next_cached_query_inputs = None
             if cache_hit:
-                origins_f32, directions_f32, tmax_f32, normalized, multiplier_native = (
-                    self._cached_query_inputs
-                )
+                (
+                    origins_f32,
+                    directions_f32,
+                    tmax_f32,
+                    normalized,
+                    multiplier_native,
+                    query_digest_native,
+                ) = self._cached_query_inputs
                 query_digest = self._cached_query_digest
             else:
                 # Retire the old identity before native state can change.  A
@@ -698,6 +760,12 @@ class PreparedTriangleReductionOwner:
                     multiplier_native = (ctypes.c_uint64 * count)(
                         *normalized[multiplier_semantic]
                     )
+                query_digest = _packed_query_digest(
+                    origins_f32, directions_f32, tmax_f32
+                )
+                query_digest_native = (ctypes.c_uint8 * 32).from_buffer_copy(
+                    bytes.fromhex(query_digest)
+                )
                 if cacheable:
                     next_cached_query_inputs = (
                         origins_f32,
@@ -705,10 +773,8 @@ class PreparedTriangleReductionOwner:
                         tmax_f32,
                         normalized,
                         multiplier_native,
+                        query_digest_native,
                     )
-                query_digest = _packed_query_digest(
-                    origins_f32, directions_f32, tmax_f32
-                )
             assert query_digest is not None
             origin_native = origins_f32.ctypes.data_as(ctypes.POINTER(ctypes.c_float))
             direction_native = directions_f32.ctypes.data_as(
@@ -735,14 +801,11 @@ class PreparedTriangleReductionOwner:
                     if reduced_native is None:
                         reduced_native = ctypes.c_uint64()
                         self._scalar_output = reduced_native
-                    summary = getattr(self, "_product_summary", None)
-                    if summary is None:
-                        summary = _ProductStatusSummary()
-                        self._product_summary = summary
-                    counters = getattr(self, "_product_counters", None)
-                    if counters is None:
-                        counters = (ctypes.c_uint64 * 7)()
-                        self._product_counters = counters
+                    compact_status = getattr(self, "_fast_compact_status", None)
+                    if compact_status is None:
+                        compact_status = ctypes.c_uint32()
+                        self._fast_compact_status = compact_status
+                    fast_receipt = _FastPathReceipt()
                     use_multipliers = int(multiplier_native is not None)
                     _raise(
                         int(
@@ -755,10 +818,12 @@ class PreparedTriangleReductionOwner:
                                 int(cache_hit),
                                 use_multipliers,
                                 int(cache_hit and use_multipliers),
+                                query_digest_native,
+                                32,
                                 multiplier_native,
                                 ctypes.byref(reduced_native),
-                                ctypes.byref(summary),
-                                counters,
+                                ctypes.byref(compact_status),
+                                ctypes.byref(fast_receipt),
                                 error,
                                 len(error),
                             )
@@ -766,13 +831,20 @@ class PreparedTriangleReductionOwner:
                         error,
                         "prepared triangle scalar execute",
                     )
-                    status_rows, counter_rows = _validate_product_summary(
-                        summary, counters, query_count=count
+                    fast_operation_receipt = _validate_fast_receipt(
+                        fast_receipt,
+                        query_count=count,
+                        compact_status=int(compact_status.value),
+                        prepared_input_reused=bool(cache_hit),
+                        use_multipliers=bool(use_multipliers),
                     )
+                    status_rows = _ValidatedFastStatusRows(count)
+                    counter_rows: Sequence[int] = ()
                     reduced = int(reduced_native.value)
                     per_ray_values: Sequence[int] = ()
                     reducer_rows: Sequence[Mapping[str, int]] = ()
                 else:
+                    fast_operation_receipt = None
                     per_ray = (ctypes.c_uint64 * count)()
                     event_count = ctypes.c_uint64()
                     event_query = self._event_query_host
@@ -915,7 +987,7 @@ class PreparedTriangleReductionOwner:
             self._last_execution_receipt = {
                 "schema": "rtdl.v4.triangle_reduction_execution_boundary.v1",
                 "execution_path": (
-                    "device_resident_checked_u64_scalar_v4"
+                    "device_resident_checked_u64_scalar_v7"
                     if scalar_only
                     else "diagnostic_per_ray_v2"
                 ),
@@ -925,6 +997,7 @@ class PreparedTriangleReductionOwner:
                 "public_output_scalar_bytes": (
                     ctypes.sizeof(ctypes.c_uint64) if scalar_only else None
                 ),
+                "fast_operation_receipt": fast_operation_receipt,
             }
             self._execution_count += 1
             return V4TriangleReductionResult(

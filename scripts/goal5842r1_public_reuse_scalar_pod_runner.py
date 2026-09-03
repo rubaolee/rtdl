@@ -244,15 +244,28 @@ def main() -> None:
         scalar_prepared.close()
         diagnostic_prepared.close()
 
-    if scalar_boundary != {
+    expected_scalar_boundary = {
         "schema": "rtdl.v4.triangle_reduction_execution_boundary.v1",
-        "execution_path": "device_resident_checked_u64_scalar_v4",
+        "execution_path": "device_resident_checked_u64_scalar_v7",
         "prepared_query_input_reused": True,
         "per_ray_u64_materialized_on_host": False,
         "event_rows_materialized_on_host": False,
         "public_output_scalar_bytes": 8,
-    }:
+    }
+    if any(
+        scalar_boundary.get(key) != value
+        for key, value in expected_scalar_boundary.items()
+    ):
         raise RuntimeError(f"unexpected scalar execution boundary: {scalar_boundary!r}")
+    fast_receipt = scalar_boundary.get("fast_operation_receipt")
+    if (
+        not isinstance(fast_receipt, dict)
+        or fast_receipt.get("control_d2h_bytes") != 4
+        or fast_receipt.get("output_d2h_bytes") != 8
+        or fast_receipt.get("prepared_input_reused") is not True
+        or fast_receipt.get("role_counters_materialized") is not False
+    ):
+        raise RuntimeError(f"unexpected scalar fast receipt: {fast_receipt!r}")
     if (
         diagnostic_boundary["execution_path"] != "diagnostic_per_ray_v2"
         or diagnostic_boundary["prepared_query_input_reused"] is not True

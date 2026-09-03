@@ -1,0 +1,282 @@
+{
+  "cache": {
+    "after_fill": {
+      "disabled_count": 12,
+      "environment_variable": "RTDL_V4_FORMAL_LEAF_CACHE",
+      "hit_count": 0,
+      "manifest_environment_variable": "RTDL_V4_FORMAL_LEAF_CACHE_MANIFEST",
+      "miss_count": 4,
+      "schema": "rtdl.v4.formal_numba_leaf_cache.v1"
+    },
+    "after_warm": {
+      "disabled_count": 12,
+      "environment_variable": "RTDL_V4_FORMAL_LEAF_CACHE",
+      "hit_count": 16,
+      "manifest_environment_variable": "RTDL_V4_FORMAL_LEAF_CACHE_MANIFEST",
+      "miss_count": 4,
+      "schema": "rtdl.v4.formal_numba_leaf_cache.v1"
+    },
+    "before": {
+      "disabled_count": 12,
+      "environment_variable": "RTDL_V4_FORMAL_LEAF_CACHE",
+      "hit_count": 0,
+      "manifest_environment_variable": "RTDL_V4_FORMAL_LEAF_CACHE_MANIFEST",
+      "miss_count": 0,
+      "schema": "rtdl.v4.formal_numba_leaf_cache.v1"
+    },
+    "diagnostic_owner_warm_materialize": {
+      "maximum_ms": 130.658139,
+      "median_ms": 130.658139,
+      "minimum_ms": 130.658139,
+      "sample_count": 1,
+      "samples_ms": [
+        130.658139
+      ]
+    },
+    "fill_materialize": {
+      "maximum_ms": 3154.887569,
+      "median_ms": 3154.887569,
+      "minimum_ms": 3154.887569,
+      "sample_count": 1,
+      "samples_ms": [
+        3154.887569
+      ]
+    },
+    "policy": "explicit_content_addressed_unsealed_create_then_reuse",
+    "root": "/workspace/goal5842_ampere/goal5842r1-run-v1/formal-leaf-cache",
+    "uncached_materialize": {
+      "maximum_ms": 1286.352984,
+      "median_ms": 1260.877988,
+      "minimum_ms": 1216.372352,
+      "sample_count": 3,
+      "samples_ms": [
+        1286.352984,
+        1216.372352,
+        1260.877988
+      ]
+    },
+    "warm_materialize": {
+      "maximum_ms": 136.878569,
+      "median_ms": 130.700199,
+      "minimum_ms": 130.321493,
+      "sample_count": 3,
+      "samples_ms": [
+        136.878569,
+        130.321493,
+        130.700199
+      ]
+    }
+  },
+  "claim_boundary": {
+    "formal_performance_evidence": false,
+    "goal5842_v12_modified": false,
+    "paper_or_public_speedup_authorized": false,
+    "purpose": "implementation repair diagnosis before a fresh formal baseline"
+  },
+  "correctness": {
+    "diagnostic_per_ray_matches_exact_oracle": true,
+    "diagnostic_scalar_matches_exact_oracle": true,
+    "same_program_and_input_contract": true,
+    "scalar_matches_exact_oracle": true
+  },
+  "execute": {
+    "diagnostic_boundary": {
+      "event_rows_materialized_on_host": true,
+      "execution_path": "diagnostic_per_ray_v2",
+      "per_ray_u64_materialized_on_host": true,
+      "prepared_query_input_reused": true,
+      "public_output_scalar_bytes": null,
+      "schema": "rtdl.v4.triangle_reduction_execution_boundary.v1"
+    },
+    "diagnostic_first_ms": 44.70033,
+    "diagnostic_over_scalar_steady_median": 1.018259019108143,
+    "diagnostic_steady": {
+      "maximum_ms": 28.806446,
+      "median_ms": 23.673758499999998,
+      "minimum_ms": 23.489671,
+      "sample_count": 64,
+      "samples_ms": [
+        23.512261,
+        23.925318,
+        23.563182,
+        23.693214,
+        23.598082,
+        23.830856,
+        23.619083,
+        23.837807,
+        23.664923,
+        23.723735,
+        23.800305,
+        23.798136,
+        23.603713,
+        23.734214,
+        23.560572,
+        24.00718,
+        23.664094,
+        23.703484,
+        23.807126,
+        23.599842,
+        23.489671,
+        23.607032,
+        23.523911,
+        24.290725,
+        23.715005,
+        23.702214,
+        23.519661,
+        23.597353,
+        24.044991,
+        23.660223,
+        23.534451,
+        23.654674,
+        23.627642,
+        23.673163,
+        23.635373,
+        23.618433,
+        23.654493,
+        23.682274,
+        23.604813,
+        23.604532,
+        23.643583,
+        24.253424,
+        23.658203,
+        24.00386,
+        23.751535,
+        23.792945,
+        23.674354,
+        23.658643,
+        23.699625,
+        23.725434,
+        23.779306,
+        23.771046,
+        23.672674,
+        23.589482,
+        23.885457,
+        23.715525,
+        28.806446,
+        26.109267,
+        23.728154,
+        23.797057,
+        23.632113,
+        23.603882,
+        23.544821,
+        23.842327
+      ]
+    },
+    "scalar_boundary": {
+      "event_rows_materialized_on_host": false,
+      "execution_path": "device_resident_checked_u64_scalar_v4",
+      "per_ray_u64_materialized_on_host": false,
+      "prepared_query_input_reused": true,
+      "public_output_scalar_bytes": 8,
+      "schema": "rtdl.v4.triangle_reduction_execution_boundary.v1"
+    },
+    "scalar_first_ms": 48.038589,
+    "scalar_steady": {
+      "maximum_ms": 23.785545,
+      "median_ms": 23.24925,
+      "minimum_ms": 23.075624,
+      "sample_count": 64,
+      "samples_ms": [
+        23.200505,
+        23.105233,
+        23.49894,
+        23.165234,
+        23.293827,
+        23.193955,
+        23.309127,
+        23.155964,
+        23.45938,
+        23.171585,
+        23.785545,
+        23.562701,
+        23.273147,
+        23.174585,
+        23.262736,
+        23.249385,
+        23.44454,
+        23.183155,
+        23.185704,
+        23.108184,
+        23.205015,
+        23.101004,
+        23.264326,
+        23.275576,
+        23.253856,
+        23.194866,
+        23.271126,
+        23.269686,
+        23.186155,
+        23.075624,
+        23.183645,
+        23.170174,
+        23.307017,
+        23.302738,
+        23.249115,
+        23.107473,
+        23.265827,
+        23.193986,
+        23.276196,
+        23.215475,
+        23.306187,
+        23.152234,
+        23.384178,
+        23.216315,
+        23.456501,
+        23.367238,
+        23.287347,
+        23.166295,
+        23.369438,
+        23.323128,
+        23.254336,
+        23.200495,
+        23.201465,
+        23.312518,
+        23.190524,
+        23.305717,
+        23.216876,
+        23.43092,
+        23.290407,
+        23.102923,
+        23.348518,
+        23.090513,
+        23.224476,
+        23.128194
+      ]
+    }
+  },
+  "hardware": {
+    "compute_capability": "8.6",
+    "driver_version": "550.127.08",
+    "memory_total_mib": "49140",
+    "name": "NVIDIA RTX A6000",
+    "uuid": "GPU-6457d4af-a4bb-bff5-a9d2-02f251ceca27"
+  },
+  "native": {
+    "path": "/workspace/goal5842_ampere/native-v1/librtdl_optix_goal5838.so",
+    "sha256": "04f319f805eaf8e420227d20b5d30cbe8a220b928112fe8915e16de0ea912a3f"
+  },
+  "prepare": {
+    "diagnostic_owner_ms": 106.271483,
+    "scalar_owner_ms": 541.252967
+  },
+  "result_sha256": "5ca75fa3f0ca2b139265802dae0a42a57976d69bbb413e22517c0416f4b5b4e1",
+  "schema": "rtdl.goal5842r1.public_reuse_scalar_diagnostic.v1",
+  "source_commit": "888b953d4ce50d3602db822e904aa600e3c971eb",
+  "status": "PASS__NONFORMAL_ENGINEERING_DIAGNOSTIC",
+  "toolchain": {
+    "cuda_include": "/usr/local/cuda-12.8/targets/x86_64-linux/include",
+    "numba": "0.65.1",
+    "numpy": "2.4.4",
+    "optix_include": "/workspace/goal5842_ampere/optix-7.7.0/include",
+    "optix_sdk": "7.7.0",
+    "python": "3.12.3"
+  },
+  "workload": {
+    "expected_per_ray_sha256": "1c122906ae8e13897ce3f39274f405123f128fce69e4fefd9559b794a36c8fd3",
+    "expected_scalar": 65530,
+    "input_sha256": "d994f80418995342d0faa4bda84b42c2ef3604b2798de413a2813dd28dc039a7",
+    "query_count": 16384,
+    "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+    "triangle_count": 16384
+  }
+}
