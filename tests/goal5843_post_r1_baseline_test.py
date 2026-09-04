@@ -17,10 +17,12 @@ from experiments.goal5843_post_r1_baseline.contracts import (
     ARMS,
     BLOCKS,
     DIRECT_ARM,
+    FIRST_MODE,
     PHASE_KEYS,
     PYOPTIX_ARM,
     RELATION_TASK,
     RTDL_ARM,
+    SUBWORKER_SCHEMA,
     TASKS,
     TRIANGLE_TASK,
     Goal5843ContractError,
@@ -245,6 +247,157 @@ class Goal5843PostR1BaselineTest(unittest.TestCase):
         }))
         with self.assertRaisesRegex(RuntimeError, "provider lifecycle.*schema"):
             _provider_execution_boundary(bad)
+
+    def test_worker_uses_traversal_receipt_for_relation_control(self) -> None:
+        from experiments.goal5843_post_r1_baseline.worker import (
+            _rtdl_execution_boundary,
+        )
+
+        provider = MappingProxyType({
+            "schema": "rtdl.v4.public_protocol_lifecycle.v1",
+            "execution_count": 72,
+            "provider_execution": None,
+        })
+        prepared = SimpleNamespace(lifecycle_receipt=MappingProxyType({
+            "schema": "rtdl.generic_family_lifecycle.v1",
+            "provider_receipt": provider,
+        }))
+        traversal = MappingProxyType({
+            "schema": "rtdl.physical_execution.traversal_receipt.v1",
+            "physical_executor_classification": "optix_traversal_observed",
+            "route_identity": "v4_callback_ir:custom_aabb_bounded_relation_v1",
+        })
+        boundary = _rtdl_execution_boundary(
+            RELATION_TASK,
+            prepared,
+            SimpleNamespace(traversal_receipt=traversal),
+        )
+        self.assertEqual(boundary["provider_execution_count"], 72)
+        self.assertFalse(boundary["provider_execution_boundary_available"])
+        self.assertEqual(boundary["traversal_receipt"], dict(traversal))
+
+        provider_with_extension = MappingProxyType({
+            **dict(provider),
+            "provider_execution": {"unexpected": True},
+        })
+        bad = SimpleNamespace(lifecycle_receipt=MappingProxyType({
+            "schema": "rtdl.generic_family_lifecycle.v1",
+            "provider_receipt": provider_with_extension,
+        }))
+        with self.assertRaisesRegex(RuntimeError, "unexpectedly exposed"):
+            _rtdl_execution_boundary(
+                RELATION_TASK,
+                bad,
+                SimpleNamespace(traversal_receipt=traversal),
+            )
+
+    def test_controller_and_recount_validate_relation_traversal_evidence(self) -> None:
+        prereg = build_preregistration(ROOT)
+        row = next(
+            dict(item)
+            for item in prereg["schedule"]
+            if item["task"] == RELATION_TASK and item["arm"] == RTDL_ARM
+        )
+        contract = next(
+            item
+            for item in prereg["task_contracts"]
+            if item["task"] == RELATION_TASK
+        )
+        authority = {
+            "authority_sha256": "a" * 64,
+            "independent_oracle_witness": {"witness_sha256": "b" * 64},
+            "execution_paths": {"native_library_sha256": "c" * 64},
+        }
+        traversal = {
+            "schema": "rtdl.physical_execution.traversal_receipt.v1",
+            "physical_executor_classification": "optix_traversal_observed",
+            "route_identity": "v4_callback_ir:custom_aabb_bounded_relation_v1",
+            "provider_library_sha256": "c" * 64,
+            "output_digest": contract["public_output_sha256"],
+            "expected_program_observed_at_receipt_edge": True,
+            "native_snapshot": {
+                "attempted_launch_count": 2,
+                "successful_launch_count": 2,
+                "complete_context_launch_count": 2,
+                "failed_launch_count": 0,
+                "raygen_invocation_count": 8192,
+            },
+        }
+        traversal["receipt_sha256"] = digest(traversal)
+        boundary = {
+            "schema": "rtdl.goal5843.rtdl_relation_execution_boundary.v1",
+            "provider_execution_boundary_available": False,
+            "evidence_source": "generic_result.traversal_receipt",
+            "provider_lifecycle_schema": "rtdl.v4.public_protocol_lifecycle.v1",
+            "provider_execution_count": 1,
+            "physical_executor_classification": "optix_traversal_observed",
+            "traversal_receipt": traversal,
+        }
+        phases = {key: None for key in PHASE_KEYS}
+        phases["first_complete_execution"] = 1
+        phases["steady_complete_execution"] = []
+        receipt = {
+            "schema": SUBWORKER_SCHEMA,
+            "status": "PASS",
+            "schedule_worker_id": row["worker_id"],
+            "subworker_id": f"{row['worker_id']}__{FIRST_MODE}",
+            "task": row["task"],
+            "arm": row["arm"],
+            "block": row["block"],
+            "mode": FIRST_MODE,
+            "preregistration_sha256": prereg["preregistration_sha256"],
+            "execution_authority_sha256": authority["authority_sha256"],
+            "input_sha256": contract["input_sha256"],
+            "output_sha256": contract["public_output_sha256"],
+            "public_output_contract_id": contract["public_output_contract_id"],
+            "public_output_oracle_exact": True,
+            "oracle_validation_outside_registered_interval": True,
+            "independent_oracle_witness_sha256": "b" * 64,
+            "phases_ns": phases,
+            "identity": {"test": True},
+            "latest_execution_boundary": boundary,
+        }
+        receipt["receipt_sha256"] = digest(receipt)
+        controller.validate_receipt(
+            receipt,
+            row=row,
+            mode=FIRST_MODE,
+            authority=authority,
+            prereg=prereg,
+        )
+        recount.validate_receipt(
+            receipt,
+            scheduled=row,
+            mode=FIRST_MODE,
+            authority=authority,
+            prereg=prereg,
+        )
+
+        attacked = copy.deepcopy(receipt)
+        attacked["latest_execution_boundary"]["traversal_receipt"][
+            "route_identity"
+        ] = "wrong.route"
+        attacked["receipt_sha256"] = digest({
+            key: value
+            for key, value in attacked.items()
+            if key != "receipt_sha256"
+        })
+        with self.assertRaisesRegex(RuntimeError, "relation traversal evidence"):
+            controller.validate_receipt(
+                attacked,
+                row=row,
+                mode=FIRST_MODE,
+                authority=authority,
+                prereg=prereg,
+            )
+        with self.assertRaisesRegex(RuntimeError, "relation traversal evidence"):
+            recount.validate_receipt(
+                attacked,
+                scheduled=row,
+                mode=FIRST_MODE,
+                authority=authority,
+                prereg=prereg,
+            )
 
     def test_worker_validates_generic_public_result_shape(self) -> None:
         from experiments.goal5843_post_r1_baseline.worker import (

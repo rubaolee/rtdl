@@ -2,7 +2,7 @@
 
 ## Verdict
 
-`ACCEPT_FOR_REPREREGISTRATION_AFTER_PRE_WORKER_ZERO_REPAIR_01`
+`ACCEPT_FOR_REPREREGISTRATION_AFTER_PRE_WORKER_ZERO_REPAIR_02`
 
 ## Attacks Resolved Before Worker Zero
 
@@ -38,10 +38,17 @@
   after the required GPU work and public output transfer, not after enqueue.
 - **Result-dependent repair:** after worker zero, any defect terminates this
   transaction and requires a new preregistration.
-- **Preflight repair laundering:** the superseded v1 seal, source-manifest
-  seal, exact harness defect, and zero-worker/zero-sample status are bound into
-  the v2 preregistration. The repair does not alter task, arm, schedule,
-  estimand, failure policy, output, native engine, or frozen generic core.
+- **Preflight repair laundering:** both superseded seals, source-manifest
+  seals, exact harness defects, and zero-worker/zero-sample status are bound
+  into the v3 preregistration. Neither repair alters task, arm, schedule,
+  estimand, failure policy, output, native engine, runtime, or frozen generic
+  core.
+- **Invented relation provider receipt:** bounded relation does not expose the
+  triangle-only provider execution extension. Its Goal5843 boundary instead
+  identifies that absence and embeds the public generic result's self-digested
+  traversal receipt. Both controller and independent recount require the
+  expected route, OptiX classification, native hash, output digest, and exact
+  first/steady provider execution count.
 
 ## Residual Threats Accepted, Not Hidden
 

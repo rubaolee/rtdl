@@ -74,3 +74,12 @@ transaction root, worker-zero marker, or timing sample existed. Repair 01
 changes only the Goal5843 harness and tests, preserves the frozen Goal5838
 core byte-for-byte, records the superseded seals, and requires this new v2
 preregistration before formal execution.
+
+The v2 timer-free preflight then exposed a separate relation-control harness
+assumption: bounded relation has no triangle-style provider execution
+extension. Its generic result does carry a self-digested traversal receipt
+binding two successful OptiX launches, route, native DSO, and complete output.
+Repair 02 therefore keeps the runtime unchanged and makes the Goal5843
+relation boundary explicitly carry and validate that generic receipt. The v2
+seal is preserved in Repair 02, and formal execution requires this v3
+preregistration.

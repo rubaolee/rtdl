@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Any, Mapping
 
 
-PREREGISTRATION_SCHEMA = "rtdl.goal5843.post_r1_baseline_preregistration.v2"
+PREREGISTRATION_SCHEMA = "rtdl.goal5843.post_r1_baseline_preregistration.v3"
 EXECUTION_AUTHORITY_SCHEMA = "rtdl.goal5843.execution_authority.v1"
 CACHE_PREPARATION_SCHEMA = "rtdl.goal5843.formal_leaf_cache_preparation.v1"
 ORACLE_WITNESS_SCHEMA = "rtdl.goal5843.independent_oracle_witness.v1"
@@ -132,6 +132,7 @@ REQUIRED_SOURCE_PATHS = (
     f"{EVIDENCE_DIRECTORY}/DESIGN.md",
     f"{EVIDENCE_DIRECTORY}/PRE_EXECUTION_INTERNAL_HOSTILE_SELF_REVIEW.md",
     f"{EVIDENCE_DIRECTORY}/PRE_WORKER_ZERO_REPAIR_01.md",
+    f"{EVIDENCE_DIRECTORY}/PRE_WORKER_ZERO_REPAIR_02.md",
     "history/internal_docs/goal5842_causal_admission_cost_20260903/PREREGISTRATION_V12.json",
     "history/internal_docs/goal5842_causal_admission_cost_20260903/GOAL5842_FINAL_INTERNAL_AUTHORITY.json",
     "history/internal_docs/goal5842r1_public_reuse_scalar_fastpath_20260903/GOAL5842R1_INTERNAL_AUTHORITY.json",
@@ -283,7 +284,26 @@ def build_preregistration(root: Path) -> dict[str, object]:
                     "and generic public-result validation"
                 ),
                 "frozen_goal5838_core_changed": False,
-            }
+            },
+            {
+                "repair_id": "PRE_WORKER_ZERO_REPAIR_02",
+                "superseded_source_commit": (
+                    "d5d77b0ad0b1121da12d700af28cefc7535b63f3"
+                ),
+                "superseded_preregistration_sha256": (
+                    "a492b381904390c0fd05c607f33a0febfca04673a272f62fb782802b27dd2b1a"
+                ),
+                "superseded_source_manifest_sha256": (
+                    "a5d31edd63d6ff0e0fd90cf3bbf22eaa2e4f0ba879675da72efb864ed624dd08"
+                ),
+                "formal_worker_zero_reached": False,
+                "formal_timing_samples_recorded": 0,
+                "repair_scope": (
+                    "Goal5843 relation-control evidence selection from the "
+                    "generic traversal receipt when no provider extension exists"
+                ),
+                "frozen_goal5838_core_changed": False,
+            },
         ],
         "task_contracts": list(TASK_CONTRACTS),
         "arms": list(ARMS),
@@ -429,12 +449,13 @@ def validate_preregistration(
     repairs = prereg.get("pre_worker_zero_repairs")
     _require(
         isinstance(repairs, list)
-        and len(repairs) == 1
-        and isinstance(repairs[0], dict)
-        and repairs[0].get("repair_id") == "PRE_WORKER_ZERO_REPAIR_01"
-        and repairs[0].get("formal_worker_zero_reached") is False
-        and repairs[0].get("formal_timing_samples_recorded") == 0
-        and repairs[0].get("frozen_goal5838_core_changed") is False,
+        and len(repairs) == 2
+        and all(isinstance(row, dict) for row in repairs)
+        and [row.get("repair_id") for row in repairs]
+        == ["PRE_WORKER_ZERO_REPAIR_01", "PRE_WORKER_ZERO_REPAIR_02"]
+        and all(row.get("formal_worker_zero_reached") is False for row in repairs)
+        and all(row.get("formal_timing_samples_recorded") == 0 for row in repairs)
+        and all(row.get("frozen_goal5838_core_changed") is False for row in repairs),
         "pre-worker-zero repair history mismatch",
     )
     validate_schedule(prereg.get("schedule"))

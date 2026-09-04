@@ -112,6 +112,16 @@
       "superseded_preregistration_sha256": "30857d8f7fe16ab3408c45be0e20123bb5d377400bbf09829ab9a099de0f2b00",
       "superseded_source_commit": "bc03f357ff1331b6b3edeb58ba33fab19445d258",
       "superseded_source_manifest_sha256": "e7d08869792913cd9b9b7a42ea29e95020575de9a0bf9bbb6b533fd3acbfed81"
+    },
+    {
+      "formal_timing_samples_recorded": 0,
+      "formal_worker_zero_reached": false,
+      "frozen_goal5838_core_changed": false,
+      "repair_id": "PRE_WORKER_ZERO_REPAIR_02",
+      "repair_scope": "Goal5843 relation-control evidence selection from the generic traversal receipt when no provider extension exists",
+      "superseded_preregistration_sha256": "a492b381904390c0fd05c607f33a0febfca04673a272f62fb782802b27dd2b1a",
+      "superseded_source_commit": "d5d77b0ad0b1121da12d700af28cefc7535b63f3",
+      "superseded_source_manifest_sha256": "a5d31edd63d6ff0e0fd90cf3bbf22eaa2e4f0ba879675da72efb864ed624dd08"
     }
   ],
   "predecessors": {
@@ -119,7 +129,7 @@
     "goal5842r1_authority_sha256": "7897058f51dedc3b6b5c652b5c3d69418610919557f9ee9a9c70214a5f184248",
     "prior_timing_rows_pooled": false
   },
-  "preregistration_sha256": "a492b381904390c0fd05c607f33a0febfca04673a272f62fb782802b27dd2b1a",
+  "preregistration_sha256": "90c0e00f372df6fb9ba2985c80b43fe17b3ad00be60471f8f67d398ba1dc6b9a",
   "purpose": "fresh fair post-Goal5842R1 Direct CUDA/OptiX versus pinned PyOptiX-compatible versus ordinary public check-on RTDL baseline",
   "rtdl_triangle_receipt_gate": {
     "control_d2h_bytes": 12,
@@ -1335,7 +1345,7 @@
       "worker_id": "G5843_B107__K17__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__A_DIRECT_CUDA_OPTIX"
     }
   ],
-  "schema": "rtdl.goal5843.post_r1_baseline_preregistration.v2",
+  "schema": "rtdl.goal5843.post_r1_baseline_preregistration.v3",
   "source_manifest": [
     {
       "bytes": 23612,
@@ -1388,9 +1398,9 @@
       "sha256": "44a2c4fa1a414a276df13b84938dbba454634736ee57b3a3794bc1762cd1117f"
     },
     {
-      "bytes": 21783,
+      "bytes": 22873,
       "path": "experiments/goal5843_post_r1_baseline/contracts.py",
-      "sha256": "e5a249080c6cc1f7020c5d969115f2c60516e934352b45ee6048c37b32c897ee"
+      "sha256": "a1b34e22b0f693c6f2f344bf25716e2511f26fa76d773e167680a5374f44dac4"
     },
     {
       "bytes": 12017,
@@ -1398,14 +1408,14 @@
       "sha256": "e8350abb7daf12d9a640dd3651dabbf3c7932c5780b4ba96b56325a7377dbee0"
     },
     {
-      "bytes": 14718,
+      "bytes": 16478,
       "path": "experiments/goal5843_post_r1_baseline/worker.py",
-      "sha256": "3f8bb26ace3c573529f67a5fd10f23ef7acc180f0a7c1ef31e06c5ac03dce612"
+      "sha256": "47d648ed4a32e01269eac0232d69fe903c58b3ceb0eeef21b1445b3adf3697e5"
     },
     {
-      "bytes": 26434,
+      "bytes": 28863,
       "path": "experiments/goal5843_post_r1_baseline/controller.py",
-      "sha256": "46548a00917d42ea36ba4149de8f87c11788c0ecd7657fd957da7998e1b35dc1"
+      "sha256": "97f4e7bb0e54f1c359fe4414bbc49b532cc38eebd316ef100b5072418e6fcf0a"
     },
     {
       "bytes": 1842,
@@ -1438,9 +1448,9 @@
       "sha256": "045e5d04ddf864554bb91229c89c0d6b53b4757c2bef47474e283ef6018a96bd"
     },
     {
-      "bytes": 18410,
+      "bytes": 20929,
       "path": "scripts/goal5843_independent_recount.py",
-      "sha256": "8ee55b364c722de7fa14e9c824dd8ad9f46c78a9f2981e574a2a499a79d68287"
+      "sha256": "2b249ce821f1163fbe8e3239c86b4766971e23a1837ee19974491f939c2d1a2c"
     },
     {
       "bytes": 16594,
@@ -1513,24 +1523,29 @@
       "sha256": "d25c487823e966a8e9083092811c9a1a2b6aa0fef6ce8f3a0a5b8919c5b809e8"
     },
     {
-      "bytes": 14603,
+      "bytes": 20817,
       "path": "tests/goal5843_post_r1_baseline_test.py",
-      "sha256": "70d408734343ca144c3947930e90542da824518cfb3da43b89abb9b7957355ab"
+      "sha256": "05c0fb25208a134f88d83d590327f373916b8d978c8df9478db1e00dd4e9eafb"
     },
     {
-      "bytes": 4146,
+      "bytes": 4683,
       "path": "history/internal_docs/goal5843_post_r1_fair_baseline_20260904/DESIGN.md",
-      "sha256": "94072c85693c8b6310f27f8295592b093ff304c7f9543e2bd357db962be71434"
+      "sha256": "2f0304dea76be4b1518faa68940f24f6b09bc3ea34227db80090122620cecf8e"
     },
     {
-      "bytes": 3663,
+      "bytes": 4097,
       "path": "history/internal_docs/goal5843_post_r1_fair_baseline_20260904/PRE_EXECUTION_INTERNAL_HOSTILE_SELF_REVIEW.md",
-      "sha256": "7ec5c05b6d99ed861d071c10374e6162e66299320b9af9ccd0b508e198e711f0"
+      "sha256": "9aba75d9a597bdbff19210c1ccad709dfce43e51aa8f4884fe6660f4d7634f49"
     },
     {
       "bytes": 2726,
       "path": "history/internal_docs/goal5843_post_r1_fair_baseline_20260904/PRE_WORKER_ZERO_REPAIR_01.md",
       "sha256": "e80ee94970a9e5f7a87e82faa1811f133c168d285bbe0bcb7012a97c5c66aae8"
+    },
+    {
+      "bytes": 2118,
+      "path": "history/internal_docs/goal5843_post_r1_fair_baseline_20260904/PRE_WORKER_ZERO_REPAIR_02.md",
+      "sha256": "b56120686c02cbfe8ad7732e47f7a0871b78186d6d24b7214f152d55a6831076"
     },
     {
       "bytes": 144023,
@@ -1548,7 +1563,7 @@
       "sha256": "21d7de683f7587c376766cbb3c31710ca83a10abda3b22d6ee31873a8c17c51e"
     }
   ],
-  "source_manifest_sha256": "a5d31edd63d6ff0e0fd90cf3bbf22eaa2e4f0ba879675da72efb864ed624dd08",
+  "source_manifest_sha256": "f2fbb9c0dbbddac69f423defe1cd38cbbb80db85761732394e6deb9612df7e6c",
   "status": "FROZEN_BEFORE_GOAL5843_WORKER_ZERO",
   "task_contracts": [
     {

@@ -31,6 +31,7 @@ from .contracts import (
     RTDL_ARM,
     STEADY_MODE,
     STEADY_REPETITIONS,
+    STEADY_WARMUPS,
     SUBWORKER_SCHEMA,
     TASK_CONTRACTS,
     TASKS,
@@ -358,6 +359,49 @@ def validate_receipt(
         gate = prereg["rtdl_triangle_receipt_gate"]
         if boundary.get("execution_path") != gate["execution_path"]:
             raise RuntimeError("controller rejected RTDL scalar execution path")
+    elif row["arm"] == RTDL_ARM and row["task"] == RELATION_TASK:
+        boundary = receipt["latest_execution_boundary"]
+        traversal = boundary.get("traversal_receipt")
+        traversal_body = dict(traversal) if isinstance(traversal, dict) else {}
+        traversal_sha256 = traversal_body.pop("receipt_sha256", None)
+        native_snapshot = (
+            traversal.get("native_snapshot") if isinstance(traversal, dict) else None
+        )
+        expected_count = (
+            1 if mode == FIRST_MODE else STEADY_WARMUPS + STEADY_REPETITIONS
+        )
+        if (
+            boundary.get("schema")
+            != "rtdl.goal5843.rtdl_relation_execution_boundary.v1"
+            or boundary.get("provider_execution_boundary_available") is not False
+            or boundary.get("evidence_source")
+            != "generic_result.traversal_receipt"
+            or boundary.get("provider_lifecycle_schema")
+            != "rtdl.v4.public_protocol_lifecycle.v1"
+            or boundary.get("provider_execution_count") != expected_count
+            or boundary.get("physical_executor_classification")
+            != "optix_traversal_observed"
+            or not isinstance(traversal, dict)
+            or traversal.get("schema")
+            != "rtdl.physical_execution.traversal_receipt.v1"
+            or not isinstance(traversal_sha256, str)
+            or digest(traversal_body) != traversal_sha256
+            or traversal.get("physical_executor_classification")
+            != "optix_traversal_observed"
+            or traversal.get("route_identity")
+            != "v4_callback_ir:custom_aabb_bounded_relation_v1"
+            or traversal.get("provider_library_sha256")
+            != authority["execution_paths"]["native_library_sha256"]
+            or traversal.get("output_digest") != contract["public_output_sha256"]
+            or traversal.get("expected_program_observed_at_receipt_edge") is not True
+            or not isinstance(native_snapshot, dict)
+            or native_snapshot.get("attempted_launch_count") != 2
+            or native_snapshot.get("successful_launch_count") != 2
+            or native_snapshot.get("complete_context_launch_count") != 2
+            or native_snapshot.get("failed_launch_count") != 0
+            or native_snapshot.get("raygen_invocation_count") != 8192
+        ):
+            raise RuntimeError("controller rejected RTDL relation traversal evidence")
 
 
 def _run_subworker(

@@ -63,7 +63,7 @@ def _plain_json_mapping(value: object, *, label: str) -> dict[str, Any]:
     return result
 
 
-def _provider_execution_boundary(prepared: object) -> dict[str, Any]:
+def _provider_lifecycle_receipt(prepared: object) -> dict[str, Any]:
     receipt = getattr(prepared, "lifecycle_receipt", None)
     if not isinstance(receipt, Mapping):
         raise RuntimeError("RTDL generic lifecycle receipt missing")
@@ -74,10 +74,47 @@ def _provider_execution_boundary(prepared: object) -> dict[str, Any]:
         raise RuntimeError("RTDL provider lifecycle receipt missing")
     if provider.get("schema") != "rtdl.v4.public_protocol_lifecycle.v1":
         raise RuntimeError("RTDL provider lifecycle receipt schema mismatch")
+    return _plain_json_mapping(provider, label="RTDL provider lifecycle receipt")
+
+
+def _provider_execution_boundary(prepared: object) -> dict[str, Any]:
+    provider = _provider_lifecycle_receipt(prepared)
     boundary = provider.get("provider_execution")
     return _plain_json_mapping(
         boundary, label="RTDL provider execution boundary"
     )
+
+
+def _rtdl_execution_boundary(
+    task_id: str, prepared: object, result: object
+) -> dict[str, Any]:
+    if task_id == TRIANGLE_TASK:
+        return _provider_execution_boundary(prepared)
+    if task_id != RELATION_TASK:
+        raise RuntimeError(f"unsupported RTDL Goal5843 task: {task_id}")
+    provider = _provider_lifecycle_receipt(prepared)
+    if provider.get("provider_execution") is not None:
+        raise RuntimeError("RTDL relation unexpectedly exposed a provider boundary")
+    execution_count = provider.get("execution_count")
+    if type(execution_count) is not int or execution_count <= 0:
+        raise RuntimeError("RTDL relation provider execution count invalid")
+    traversal = _plain_json_mapping(
+        getattr(result, "traversal_receipt", None),
+        label="RTDL relation traversal receipt",
+    )
+    if traversal.get("physical_executor_classification") != "optix_traversal_observed":
+        raise RuntimeError("RTDL relation traversal receipt did not observe OptiX")
+    return {
+        "schema": "rtdl.goal5843.rtdl_relation_execution_boundary.v1",
+        "provider_execution_boundary_available": False,
+        "evidence_source": "generic_result.traversal_receipt",
+        "provider_lifecycle_schema": provider["schema"],
+        "provider_execution_count": execution_count,
+        "physical_executor_classification": traversal[
+            "physical_executor_classification"
+        ],
+        "traversal_receipt": traversal,
+    }
 
 
 def _rtdl_public_value(task_id: str, result: object) -> object:
@@ -222,7 +259,9 @@ def run_rtdl(
     if mode == FIRST_MODE:
         result, first_ns = measured(execute)
         output_sha = validate_result(result)
-        latest_boundary = _provider_execution_boundary(prepared)
+        latest_boundary = _rtdl_execution_boundary(
+            task.task_id, prepared, result
+        )
     else:
         for _ in range(STEADY_WARMUPS):
             output_sha = validate_result(execute())
@@ -230,7 +269,9 @@ def run_rtdl(
             result, elapsed = measured(execute)
             steady_ns.append(elapsed)
             output_sha = validate_result(result)
-        latest_boundary = _provider_execution_boundary(prepared)
+        latest_boundary = _rtdl_execution_boundary(
+            task.task_id, prepared, result
+        )
     if output_sha is None:
         raise RuntimeError("RTDL subworker produced no output")
     if task.task_id == TRIANGLE_TASK:

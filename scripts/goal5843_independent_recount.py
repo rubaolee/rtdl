@@ -23,9 +23,11 @@ from experiments.goal5843_post_r1_baseline.contracts import (
     PHASE_KEYS,
     PYOPTIX_ARM,
     RECOUNT_SCHEMA,
+    RELATION_TASK,
     RTDL_ARM,
     STEADY_MODE,
     STEADY_REPETITIONS,
+    STEADY_WARMUPS,
     SUBWORKER_SCHEMA,
     TASKS,
     TRIANGLE_TASK,
@@ -180,6 +182,54 @@ def validate_receipt(
         require(
             fast.get("prepared_input_reused") is (mode == STEADY_MODE),
             "RTDL native reuse mismatch",
+        )
+    elif scheduled["arm"] == RTDL_ARM and scheduled["task"] == RELATION_TASK:
+        traversal = boundary.get("traversal_receipt")
+        traversal_body = dict(traversal) if isinstance(traversal, dict) else {}
+        traversal_sha256 = traversal_body.pop("receipt_sha256", None)
+        native_snapshot = (
+            traversal.get("native_snapshot") if isinstance(traversal, dict) else None
+        )
+        expected_count = (
+            1 if mode == FIRST_MODE else STEADY_WARMUPS + STEADY_REPETITIONS
+        )
+        require(
+            boundary.get("schema")
+            == "rtdl.goal5843.rtdl_relation_execution_boundary.v1",
+            "RTDL relation boundary schema",
+        )
+        require(
+            boundary.get("provider_execution_boundary_available") is False
+            and boundary.get("evidence_source")
+            == "generic_result.traversal_receipt"
+            and boundary.get("provider_lifecycle_schema")
+            == "rtdl.v4.public_protocol_lifecycle.v1"
+            and boundary.get("provider_execution_count") == expected_count,
+            "RTDL relation provider lifecycle evidence",
+        )
+        require(
+            boundary.get("physical_executor_classification")
+            == "optix_traversal_observed"
+            and isinstance(traversal, dict)
+            and traversal.get("schema")
+            == "rtdl.physical_execution.traversal_receipt.v1"
+            and isinstance(traversal_sha256, str)
+            and digest(traversal_body) == traversal_sha256
+            and traversal.get("physical_executor_classification")
+            == "optix_traversal_observed"
+            and traversal.get("route_identity")
+            == "v4_callback_ir:custom_aabb_bounded_relation_v1"
+            and traversal.get("provider_library_sha256")
+            == authority["execution_paths"]["native_library_sha256"]
+            and traversal.get("output_digest") == contract["public_output_sha256"]
+            and traversal.get("expected_program_observed_at_receipt_edge") is True
+            and isinstance(native_snapshot, dict)
+            and native_snapshot.get("attempted_launch_count") == 2
+            and native_snapshot.get("successful_launch_count") == 2
+            and native_snapshot.get("complete_context_launch_count") == 2
+            and native_snapshot.get("failed_launch_count") == 0
+            and native_snapshot.get("raygen_invocation_count") == 8192,
+            "RTDL relation traversal evidence",
         )
 
 
