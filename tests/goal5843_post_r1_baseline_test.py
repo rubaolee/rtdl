@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from collections import Counter
 import copy
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -11,11 +12,13 @@ import sys
 import tempfile
 from types import MappingProxyType, SimpleNamespace
 import unittest
+from unittest import mock
 
 from experiments.goal5843_post_r1_baseline import controller
 from experiments.goal5843_post_r1_baseline.contracts import (
     ARMS,
     BLOCKS,
+    BOUND_ARTIFACTS_SCHEMA,
     DIRECT_ARM,
     FIRST_MODE,
     PHASE_KEYS,
@@ -108,6 +111,22 @@ class Goal5843PostR1BaselineTest(unittest.TestCase):
         })
         with self.assertRaisesRegex(Goal5843ContractError, "repair history"):
             validate_preregistration(repair_tamper, ROOT, verify_files=False)
+
+        transaction_tamper = copy.deepcopy(prereg)
+        transaction_tamper["superseded_formal_transactions"][0][
+            "rows_eligible_for_successor_pooling"
+        ] = True
+        transaction_tamper["preregistration_sha256"] = digest({
+            key: value
+            for key, value in transaction_tamper.items()
+            if key != "preregistration_sha256"
+        })
+        with self.assertRaisesRegex(
+            Goal5843ContractError, "superseded formal-transaction history"
+        ):
+            validate_preregistration(
+                transaction_tamper, ROOT, verify_files=False
+            )
 
     def test_controller_and_independent_summary_agree(self) -> None:
         prereg = build_preregistration(ROOT)
@@ -467,6 +486,80 @@ class Goal5843PostR1BaselineTest(unittest.TestCase):
             with self.subTest(invalid=invalid), self.assertRaises(RuntimeError):
                 archive_verifier.safe_member_path(invalid)
 
+    def test_archive_custody_checks_tar_mode_not_safely_filtered_mode(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            transaction_root = Path(temporary) / "goal5843-test"
+            artifact = transaction_root / "bound_artifacts/native/artifact.so"
+            artifact.parent.mkdir(parents=True)
+            artifact.write_bytes(b"exact-provider-bytes")
+            os.chmod(artifact, 0o755)
+            artifact_sha256 = hashlib.sha256(artifact.read_bytes()).hexdigest()
+            authority = {
+                "source_commit": "a" * 40,
+                "preregistration_sha256": "b" * 64,
+                "authority_sha256": "c" * 64,
+            }
+            binding = "execution_paths.native_library"
+            receipt = {
+                "schema": BOUND_ARTIFACTS_SCHEMA,
+                "status": "PASS__EXACT_BOUND_EXECUTABLE_AND_PROVIDER_BYTES_PRESERVED",
+                "source_commit": authority["source_commit"],
+                "preregistration_sha256": authority["preregistration_sha256"],
+                "execution_authority_sha256": authority["authority_sha256"],
+                "artifact_count": 1,
+                "artifacts": [
+                    {
+                        "authority_binding": binding,
+                        "archived_path": "native/artifact.so",
+                        "bytes": artifact.stat().st_size,
+                        "sha256": artifact_sha256,
+                        "source_mode": 0o777,
+                    }
+                ],
+                "gpu_complete_execution_count": 0,
+                "goal5843_registered_estimand_timing_observation_count": 0,
+            }
+            receipt["custody_sha256"] = digest(receipt)
+            (transaction_root / "BOUND_ARTIFACTS.json").write_text(
+                json.dumps(receipt), encoding="utf-8"
+            )
+            expected = {
+                binding: {
+                    "archived_path": "native/artifact.so",
+                    "bytes": artifact.stat().st_size,
+                    "sha256": artifact_sha256,
+                }
+            }
+            archive_member = (
+                "goal5843-test/bound_artifacts/native/artifact.so"
+            )
+            with mock.patch.object(
+                archive_verifier,
+                "expected_preserved_artifacts",
+                return_value=expected,
+            ):
+                self.assertEqual(
+                    archive_verifier.verify_preserved_artifacts(
+                        transaction_root,
+                        authority,
+                        archive_modes={archive_member: 0o777},
+                    ),
+                    1,
+                )
+                with self.assertRaisesRegex(RuntimeError, "archive mode differs"):
+                    archive_verifier.verify_preserved_artifacts(
+                        transaction_root,
+                        authority,
+                        archive_modes={archive_member: 0o755},
+                    )
+
+    def test_v3_terminal_evidence_custody_is_preserved(self) -> None:
+        from scripts.goal5843_build_preregistration import (
+            _verify_v3_terminal_evidence,
+        )
+
+        _verify_v3_terminal_evidence()
+
     def test_inherited_provider_timers_wait_for_gpu_completion(self) -> None:
         direct = (ROOT / "experiments/goal5796_matched/direct_optix.cpp").read_text(
             encoding="utf-8"
@@ -480,8 +573,6 @@ class Goal5843PostR1BaselineTest(unittest.TestCase):
     def test_frozen_goal5838_core_is_unchanged(self) -> None:
         prereg = build_preregistration(ROOT)
         for relative, expected in prereg["frozen_core_sha256"].items():
-            import hashlib
-
             self.assertEqual(hashlib.sha256((ROOT / relative).read_bytes()).hexdigest(), expected)
 
     def test_recount_module_is_stdlib_only_at_top_level(self) -> None:

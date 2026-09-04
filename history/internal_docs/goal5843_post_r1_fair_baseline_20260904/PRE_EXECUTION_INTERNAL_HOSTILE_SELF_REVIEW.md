@@ -2,9 +2,9 @@
 
 ## Verdict
 
-`ACCEPT_FOR_REPREREGISTRATION_AFTER_PRE_WORKER_ZERO_REPAIR_02`
+`ACCEPT_FOR_REPREREGISTRATION_AFTER_V3_TERMINAL_ARCHIVE_VERIFIER_REPAIR`
 
-## Attacks Resolved Before Worker Zero
+## Attacks Resolved Before V4 Worker Zero
 
 - **Cherry-picking:** all 18 blocks, all three arms, both tasks, and all adverse
   rows are mandatory. There is no performance threshold or outlier deletion.
@@ -28,6 +28,11 @@
   links, special files, duplicate normalized names, and multiple archive roots;
   it then recomputes the full result and requires byte-identical pod/local
   recounts.
+- **Safe-mode normalization misclassified as byte drift:** v3 terminated after
+  the downloaded verifier compared safely normalized extracted modes with pod
+  source modes. v4 keeps `filter="data"`, validates original modes against tar
+  headers, validates safely extracted bytes by size and SHA-256, and rejects a
+  tar-header mode substitution in a focused regression test.
 - **False RT evidence:** the RTDL triangle execution receipt must prove one
   OptiX launch and zero reused-input upload/GAS-build work.
 - **Oracle contamination:** expected-output comparison occurs after each timed
@@ -36,13 +41,15 @@
   pinned launch helper; PyOptiX synchronizes its launch stream; RTDL returns
   only after its required control/scalar download. Every timer therefore ends
   after the required GPU work and public output transfer, not after enqueue.
-- **Result-dependent repair:** after worker zero, any defect terminates this
-  transaction and requires a new preregistration.
-- **Preflight repair laundering:** both superseded seals, source-manifest
-  seals, exact harness defects, and zero-worker/zero-sample status are bound
-  into the v3 preregistration. Neither repair alters task, arm, schedule,
-  estimand, failure policy, output, native engine, runtime, or frozen generic
-  core.
+- **Result-dependent repair:** v3 was terminated after its post-worker archive
+  verification defect and is preserved in full. Its rows are not pooled. v4 is
+  a separately preregistered, completely new no-retry transaction.
+- **Repair laundering:** both pre-worker repairs and the terminal v3 formal
+  transaction are bound into v4 with exact preregistration, source-manifest,
+  execution-authority, controller-result, pod-recount, and archive identities.
+  v3's 7,020 timing samples are explicitly ineligible for pooling. None of the
+  three repairs alters task, arm, schedule, estimand, failure policy, output,
+  native engine, runtime, or frozen generic core.
 - **Invented relation provider receipt:** bounded relation does not expose the
   triangle-only provider execution extension. Its Goal5843 boundary instead
   identifies that absence and embeds the public generic result's self-digested

@@ -129,7 +129,7 @@
     "goal5842r1_authority_sha256": "7897058f51dedc3b6b5c652b5c3d69418610919557f9ee9a9c70214a5f184248",
     "prior_timing_rows_pooled": false
   },
-  "preregistration_sha256": "c0ad3a566e99f925341d98c987854714cfabc415254ccd7178efcd465e664b66",
+  "preregistration_sha256": "90c0e00f372df6fb9ba2985c80b43fe17b3ad00be60471f8f67d398ba1dc6b9a",
   "purpose": "fresh fair post-Goal5842R1 Direct CUDA/OptiX versus pinned PyOptiX-compatible versus ordinary public check-on RTDL baseline",
   "rtdl_triangle_receipt_gate": {
     "control_d2h_bytes": 12,
@@ -1345,7 +1345,7 @@
       "worker_id": "G5843_B107__K17__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__A_DIRECT_CUDA_OPTIX"
     }
   ],
-  "schema": "rtdl.goal5843.post_r1_baseline_preregistration.v4",
+  "schema": "rtdl.goal5843.post_r1_baseline_preregistration.v3",
   "source_manifest": [
     {
       "bytes": 23612,
@@ -1398,9 +1398,9 @@
       "sha256": "44a2c4fa1a414a276df13b84938dbba454634736ee57b3a3794bc1762cd1117f"
     },
     {
-      "bytes": 26137,
+      "bytes": 22873,
       "path": "experiments/goal5843_post_r1_baseline/contracts.py",
-      "sha256": "f8dd0d04d034c03e4ab45745ea1c97e296a46913bbb893210fc02cc699e4aceb"
+      "sha256": "a1b34e22b0f693c6f2f344bf25716e2511f26fa76d773e167680a5374f44dac4"
     },
     {
       "bytes": 12017,
@@ -1418,9 +1418,9 @@
       "sha256": "97f4e7bb0e54f1c359fe4414bbc49b532cc38eebd316ef100b5072418e6fcf0a"
     },
     {
-      "bytes": 2854,
+      "bytes": 1842,
       "path": "scripts/goal5843_build_preregistration.py",
-      "sha256": "97706efdec5daf27b81cccf6278226b1fe79e1db767672c11c62724b6b517016"
+      "sha256": "f9c73cc4f2c54e600fd80a69c0c44ea89868fdaa59aeb1480cb7c527a5203754"
     },
     {
       "bytes": 6684,
@@ -1453,9 +1453,9 @@
       "sha256": "2b249ce821f1163fbe8e3239c86b4766971e23a1837ee19974491f939c2d1a2c"
     },
     {
-      "bytes": 17301,
+      "bytes": 16594,
       "path": "scripts/goal5843_verify_downloaded_archive.py",
-      "sha256": "6810ef02d7b6ecc53217882e20b6642df07f0076d4a45584678e8d70f209029b"
+      "sha256": "e3e85186803c7b77ad568ea341f5df76bea6945155aacd0e4407602a78135eef"
     },
     {
       "bytes": 8969,
@@ -1523,19 +1523,19 @@
       "sha256": "d25c487823e966a8e9083092811c9a1a2b6aa0fef6ce8f3a0a5b8919c5b809e8"
     },
     {
-      "bytes": 24706,
+      "bytes": 20817,
       "path": "tests/goal5843_post_r1_baseline_test.py",
-      "sha256": "05faf97fa1d796598c992a270bce95c5e9b9a39a9b16b0286bff1ed294e27d95"
+      "sha256": "05c0fb25208a134f88d83d590327f373916b8d978c8df9478db1e00dd4e9eafb"
     },
     {
-      "bytes": 5910,
+      "bytes": 4683,
       "path": "history/internal_docs/goal5843_post_r1_fair_baseline_20260904/DESIGN.md",
-      "sha256": "92fd3a25cdd394b3450a51f1748556d5cb05abcb6c58851b0857228321dee628"
+      "sha256": "2f0304dea76be4b1518faa68940f24f6b09bc3ea34227db80090122620cecf8e"
     },
     {
-      "bytes": 4712,
+      "bytes": 4097,
       "path": "history/internal_docs/goal5843_post_r1_fair_baseline_20260904/PRE_EXECUTION_INTERNAL_HOSTILE_SELF_REVIEW.md",
-      "sha256": "bff9f10e9d1984a82638d948b142befb785ff59a2f7187af4a2841f59b261b6d"
+      "sha256": "9aba75d9a597bdbff19210c1ccad709dfce43e51aa8f4884fe6660f4d7634f49"
     },
     {
       "bytes": 2726,
@@ -1546,16 +1546,6 @@
       "bytes": 2118,
       "path": "history/internal_docs/goal5843_post_r1_fair_baseline_20260904/PRE_WORKER_ZERO_REPAIR_02.md",
       "sha256": "b56120686c02cbfe8ad7732e47f7a0871b78186d6d24b7214f152d55a6831076"
-    },
-    {
-      "bytes": 57132,
-      "path": "history/internal_docs/goal5843_post_r1_fair_baseline_20260904/PREREGISTRATION_V3.json",
-      "sha256": "af04ea3df90b00e2639d24d9d2ec9bee30aa21f98b7cbda9183050191c2182eb"
-    },
-    {
-      "bytes": 3452,
-      "path": "history/internal_docs/goal5843_post_r1_fair_baseline_20260904/POST_WORKER_ZERO_V3_TERMINAL_ARCHIVE_VERIFIER_FAILURE.md",
-      "sha256": "1cfca5037dc86cd00359b5096bdfe907c4cff07567ee540a7cf4382f27718bd9"
     },
     {
       "bytes": 144023,
@@ -1573,32 +1563,8 @@
       "sha256": "21d7de683f7587c376766cbb3c31710ca83a10abda3b22d6ee31873a8c17c51e"
     }
   ],
-  "source_manifest_sha256": "6193f42f39f31e4a47181f44979d3a9076ec07648cbbdfe04a08f2bd5c0d1103",
+  "source_manifest_sha256": "f2fbb9c0dbbddac69f423defe1cd38cbbb80db85761732394e6deb9612df7e6c",
   "status": "FROZEN_BEFORE_GOAL5843_WORKER_ZERO",
-  "superseded_formal_transactions": [
-    {
-      "all_pod_stages_returned_zero": true,
-      "archive_sha256": "bf24cc9954e9f6970ea58ff6584f79bf1de32b2e5118003a06723cb8ba61f118",
-      "controller_result_sha256": "be8c147a646f960cae257db344f45643879ee97d595818d7a22aa5dbd8eafc85",
-      "downloaded_archive_verification_complete": false,
-      "execution_authority_sha256": "3a7bbc3fb4729ea0825afec4b9f69d306e01894bcc6fd0293fc4ee4ba5c7c0f2",
-      "failure_scope": "pinned local verifier compared tarfile-data-filtered modes against original custody modes",
-      "formal_composite_count": 108,
-      "formal_subworker_receipt_count": 216,
-      "formal_timing_samples_recorded": 7020,
-      "formal_worker_zero_reached": true,
-      "frozen_goal5838_core_changed": false,
-      "pod_recount_sha256": "1dd53706d5058d1d5156926ff53a88405b445c0105fd80b43282c8be22ddec69",
-      "post_worker_zero_retry_used": false,
-      "preregistration_file_sha256": "af04ea3df90b00e2639d24d9d2ec9bee30aa21f98b7cbda9183050191c2182eb",
-      "preregistration_sha256": "90c0e00f372df6fb9ba2985c80b43fe17b3ad00be60471f8f67d398ba1dc6b9a",
-      "rows_eligible_for_successor_pooling": false,
-      "source_commit": "ec4c9375833957f82149d165039aa3202dd791c6",
-      "source_manifest_sha256": "f2fbb9c0dbbddac69f423defe1cd38cbbb80db85761732394e6deb9612df7e6c",
-      "terminal_status": "TERMINAL__V3_POST_DOWNLOAD_ARCHIVE_VERIFIER_MODE_NORMALIZATION_DEFECT__NO_RETRY",
-      "transaction_id": "GOAL5843_V3"
-    }
-  ],
   "task_contracts": [
     {
       "full_oracle_sha256": "2fb668490480cbb5d4d9bbf5a8d357435eff5fc6bb3532427ac2726cdaa88c77",

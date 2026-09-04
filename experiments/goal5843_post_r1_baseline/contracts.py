@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Any, Mapping
 
 
-PREREGISTRATION_SCHEMA = "rtdl.goal5843.post_r1_baseline_preregistration.v3"
+PREREGISTRATION_SCHEMA = "rtdl.goal5843.post_r1_baseline_preregistration.v4"
 EXECUTION_AUTHORITY_SCHEMA = "rtdl.goal5843.execution_authority.v1"
 CACHE_PREPARATION_SCHEMA = "rtdl.goal5843.formal_leaf_cache_preparation.v1"
 ORACLE_WITNESS_SCHEMA = "rtdl.goal5843.independent_oracle_witness.v1"
@@ -133,6 +133,11 @@ REQUIRED_SOURCE_PATHS = (
     f"{EVIDENCE_DIRECTORY}/PRE_EXECUTION_INTERNAL_HOSTILE_SELF_REVIEW.md",
     f"{EVIDENCE_DIRECTORY}/PRE_WORKER_ZERO_REPAIR_01.md",
     f"{EVIDENCE_DIRECTORY}/PRE_WORKER_ZERO_REPAIR_02.md",
+    f"{EVIDENCE_DIRECTORY}/PREREGISTRATION_V3.json",
+    (
+        f"{EVIDENCE_DIRECTORY}/"
+        "POST_WORKER_ZERO_V3_TERMINAL_ARCHIVE_VERIFIER_FAILURE.md"
+    ),
     "history/internal_docs/goal5842_causal_admission_cost_20260903/PREREGISTRATION_V12.json",
     "history/internal_docs/goal5842_causal_admission_cost_20260903/GOAL5842_FINAL_INTERNAL_AUTHORITY.json",
     "history/internal_docs/goal5842r1_public_reuse_scalar_fastpath_20260903/GOAL5842R1_INTERNAL_AUTHORITY.json",
@@ -305,6 +310,50 @@ def build_preregistration(root: Path) -> dict[str, object]:
                 "frozen_goal5838_core_changed": False,
             },
         ],
+        "superseded_formal_transactions": [
+            {
+                "transaction_id": "GOAL5843_V3",
+                "terminal_status": (
+                    "TERMINAL__V3_POST_DOWNLOAD_ARCHIVE_VERIFIER_MODE_"
+                    "NORMALIZATION_DEFECT__NO_RETRY"
+                ),
+                "source_commit": "ec4c9375833957f82149d165039aa3202dd791c6",
+                "preregistration_sha256": (
+                    "90c0e00f372df6fb9ba2985c80b43fe17b3ad00be60471f8f67d398ba1dc6b9a"
+                ),
+                "preregistration_file_sha256": (
+                    "af04ea3df90b00e2639d24d9d2ec9bee30aa21f98b7cbda9183050191c2182eb"
+                ),
+                "source_manifest_sha256": (
+                    "f2fbb9c0dbbddac69f423defe1cd38cbbb80db85761732394e6deb9612df7e6c"
+                ),
+                "execution_authority_sha256": (
+                    "3a7bbc3fb4729ea0825afec4b9f69d306e01894bcc6fd0293fc4ee4ba5c7c0f2"
+                ),
+                "controller_result_sha256": (
+                    "be8c147a646f960cae257db344f45643879ee97d595818d7a22aa5dbd8eafc85"
+                ),
+                "pod_recount_sha256": (
+                    "1dd53706d5058d1d5156926ff53a88405b445c0105fd80b43282c8be22ddec69"
+                ),
+                "archive_sha256": (
+                    "bf24cc9954e9f6970ea58ff6584f79bf1de32b2e5118003a06723cb8ba61f118"
+                ),
+                "formal_worker_zero_reached": True,
+                "formal_composite_count": 108,
+                "formal_subworker_receipt_count": 216,
+                "formal_timing_samples_recorded": 7_020,
+                "all_pod_stages_returned_zero": True,
+                "post_worker_zero_retry_used": False,
+                "rows_eligible_for_successor_pooling": False,
+                "downloaded_archive_verification_complete": False,
+                "failure_scope": (
+                    "pinned local verifier compared tarfile-data-filtered modes "
+                    "against original custody modes"
+                ),
+                "frozen_goal5838_core_changed": False,
+            }
+        ],
         "task_contracts": list(TASK_CONTRACTS),
         "arms": list(ARMS),
         "schedule": build_schedule(),
@@ -457,6 +506,23 @@ def validate_preregistration(
         and all(row.get("formal_timing_samples_recorded") == 0 for row in repairs)
         and all(row.get("frozen_goal5838_core_changed") is False for row in repairs),
         "pre-worker-zero repair history mismatch",
+    )
+    superseded = prereg.get("superseded_formal_transactions")
+    _require(
+        isinstance(superseded, list)
+        and len(superseded) == 1
+        and isinstance(superseded[0], dict)
+        and superseded[0].get("transaction_id") == "GOAL5843_V3"
+        and superseded[0].get("formal_worker_zero_reached") is True
+        and superseded[0].get("formal_composite_count") == 108
+        and superseded[0].get("formal_subworker_receipt_count") == 216
+        and superseded[0].get("formal_timing_samples_recorded") == 7_020
+        and superseded[0].get("all_pod_stages_returned_zero") is True
+        and superseded[0].get("post_worker_zero_retry_used") is False
+        and superseded[0].get("rows_eligible_for_successor_pooling") is False
+        and superseded[0].get("downloaded_archive_verification_complete") is False
+        and superseded[0].get("frozen_goal5838_core_changed") is False,
+        "superseded formal-transaction history mismatch",
     )
     validate_schedule(prereg.get("schedule"))
     sampling = prereg.get("sampling")

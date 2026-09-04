@@ -108,7 +108,12 @@ def expected_preserved_artifacts(authority: dict[str, Any]) -> dict[str, dict[st
     return expected
 
 
-def verify_preserved_artifacts(transaction_root: Path, authority: dict[str, Any]) -> int:
+def verify_preserved_artifacts(
+    transaction_root: Path,
+    authority: dict[str, Any],
+    *,
+    archive_modes: dict[str, int],
+) -> int:
     receipt = read_json(transaction_root / "BOUND_ARTIFACTS.json")
     verify_seal(receipt, "custody_sha256", "bound-artifact custody")
     if (
@@ -137,6 +142,17 @@ def verify_preserved_artifacts(transaction_root: Path, authority: dict[str, Any]
         path = root.joinpath(*relative.parts)
         if not path.is_file():
             raise RuntimeError(f"bound artifact missing: {binding}")
+        archived_member = (
+            f"{transaction_root.name}/bound_artifacts/{relative.as_posix()}"
+        )
+        source_mode = row.get("source_mode")
+        if (
+            type(source_mode) is not int
+            or source_mode < 0
+            or source_mode > 0o777
+            or archive_modes.get(archived_member) != source_mode
+        ):
+            raise RuntimeError(f"bound-artifact archive mode differs: {binding}")
         if (
             path.stat().st_size != row.get("bytes")
             or sha256_file(path) != row.get("sha256")
@@ -145,7 +161,6 @@ def verify_preserved_artifacts(transaction_root: Path, authority: dict[str, Any]
                 "bytes" in expected_row
                 and row.get("bytes") != expected_row["bytes"]
             )
-            or path.stat().st_mode & 0o777 != row.get("source_mode")
         ):
             raise RuntimeError(f"bound-artifact bytes differ: {binding}")
     return len(rows)
@@ -271,19 +286,27 @@ def validate_transaction_status(transaction_root: Path) -> None:
 def verify_archive(
     archive: Path,
     preregistration: Path,
-) -> tuple[Path, tempfile.TemporaryDirectory[str], list[dict[str, object]]]:
+) -> tuple[
+    Path,
+    tempfile.TemporaryDirectory[str],
+    list[dict[str, object]],
+    dict[str, int],
+]:
     load_preregistration(preregistration, ROOT, verify_files=True)
     temporary = tempfile.TemporaryDirectory(prefix="goal5843_archive_")
     extraction = Path(temporary.name)
     with tarfile.open(archive, "r:gz") as stream:
         members = stream.getmembers()
         normalized = []
+        archive_modes: dict[str, int] = {}
         roots = set()
         for member in members:
             path = safe_member_path(member.name)
             if not (member.isfile() or member.isdir()) or member.issym() or member.islnk():
                 raise RuntimeError(f"unsupported archive member type: {member.name}")
             normalized.append(path.as_posix())
+            if member.isfile():
+                archive_modes[path.as_posix()] = member.mode & 0o777
             roots.add(path.parts[0])
         if len(normalized) != len(set(normalized)) or len(roots) != 1:
             raise RuntimeError("archive requires unique members under one root")
@@ -305,7 +328,7 @@ def verify_archive(
             )
         else:
             manifest.append({"path": name, "type": "directory"})
-    return transaction_root, temporary, manifest
+    return transaction_root, temporary, manifest, archive_modes
 
 
 def main() -> None:
@@ -318,7 +341,7 @@ def main() -> None:
     args = parser.parse_args()
     archive = args.archive.resolve(strict=True)
     preregistration = args.preregistration.resolve(strict=True)
-    transaction_root, temporary, member_manifest = verify_archive(
+    transaction_root, temporary, member_manifest, archive_modes = verify_archive(
         archive, preregistration
     )
     try:
@@ -331,7 +354,11 @@ def main() -> None:
         verify_portable_preworker_authority(
             transaction_root, preregistration, prereg, authority
         )
-        artifact_count = verify_preserved_artifacts(transaction_root, authority)
+        artifact_count = verify_preserved_artifacts(
+            transaction_root,
+            authority,
+            archive_modes=archive_modes,
+        )
         local = build_recount(
             preregistration,
             transaction_root / "EXECUTION_AUTHORITY.json",

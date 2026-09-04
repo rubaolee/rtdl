@@ -63,7 +63,7 @@ internal technical evidence only. Public or manuscript performance wording,
 hardware-independent generalization, external review, and consensus remain
 explicitly unauthorized.
 
-## Pre-Worker-Zero Repair History
+## Repair And Superseded-Transaction History
 
 The first sealed preregistration at commit `bc03f357` was superseded before
 formal worker zero. A timer-free provider preflight produced the correct RTDL
@@ -83,3 +83,22 @@ Repair 02 therefore keeps the runtime unchanged and makes the Goal5843
 relation boundary explicitly carry and validate that generic receipt. The v2
 seal is preserved in Repair 02, and formal execution requires this v3
 preregistration.
+
+The v3 formal transaction reached worker zero, completed all 108 composites
+and 216 receipts, and passed the independent pod recount without retry. The
+required downloaded-archive verifier then exposed a custody-check defect: safe
+`tarfile` data filtering normalized pod modes `0777/0666` to `0755/0644`, but
+the verifier compared those deliberately normalized extracted modes with the
+original modes. All bound artifact sizes and SHA-256 values matched. Under the
+frozen failure policy, v3 is terminal rather than retroactively repaired or
+accepted. Its complete archive, preregistration, seals, result identities, and
+failure analysis are retained, and none of its timing rows may be pooled into
+the successor.
+
+The v4 repair retains safe extraction, verifies original custody modes from tar
+member headers, and verifies extracted bytes independently. A regression test
+requires both acceptance of expected safe mode normalization and rejection of
+a substituted tar-header mode. No task, arm, schedule, estimand, threshold,
+provider, runtime, native engine, or frozen Goal5838 core byte changes. Formal
+execution after this repair requires the separately sealed v4 preregistration
+and a new no-retry transaction.
