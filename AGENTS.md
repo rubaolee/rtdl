@@ -1,5 +1,36 @@
 # RTDL Codex Working Guide
 
+## Critical current override: Goal5842R1 implementation repair complete (2026-09-04)
+
+Goal5842R1 is internally complete at exactly
+`PASS__GOAL5842R1_INTERNAL_IMPLEMENTATION_REPAIR_COMPLETE__FRESH_FAIR_BASELINE_AND_EXTERNAL_REVIEW_PENDING`.
+The controlling authority is
+`history/internal_docs/goal5842r1_public_reuse_scalar_fastpath_20260903/GOAL5842R1_INTERNAL_AUTHORITY.json`;
+its internal seal is
+`7897058f51dedc3b6b5c652b5c3d69418610919557f9ee9a9c70214a5f184248`.
+Verify it with
+`PYTHONPATH=src:. python scripts/goal5842r1_build_internal_authority.py --verify-stored`.
+
+At implementation commit `207e7afc4afd44ddef537f74d97c47ae323743b2`,
+the public toolchain has an explicit validated formal-leaf cache, prepared
+triangle owners reuse exact successfully published immutable query objects,
+and the ordinary public triangle route performs generic device-resident
+checked-U64 reduction while returning only an 8-byte scalar. Three complete
+nonformal repeats on one RTX A6000 matched exact scalar and per-ray oracles,
+recorded one OptiX launch with zero reused-input upload bytes, and measured
+0.289--0.295 ms scalar steady medians. The before/after layer diagnostic
+isolates the removed approximately 23 ms to repeated Python immutable-input
+scanning; the native v7 median remained approximately 0.067 ms.
+
+These are internal implementation diagnostics on one GPU, not a fresh fair
+Direct/PyOptiX/RTDL baseline, a second-generation R1 replication, public or
+manuscript speedup evidence, external review, consensus, or human authoring
+evidence. Formal Goal5842 V12 and the Goal5838 frozen core remain unchanged.
+The next performance transaction must be separately preregistered and compare
+all providers at one frozen post-R1 source/output contract without discarding
+adverse rows. Do not optimize the row-returning bounded-relation route by
+pretending it has the triangle scalar contract.
+
 ## Critical current override: Goal5842 internally complete on Ada and Ampere (2026-09-03)
 
 Goal5842 is internally technically complete at exactly

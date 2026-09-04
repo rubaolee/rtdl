@@ -1,0 +1,264 @@
+{
+  "authority_sha256": "7897058f51dedc3b6b5c652b5c3d69418610919557f9ee9a9c70214a5f184248",
+  "claim_boundary": {
+    "arbitrary_application_performance_claimed": false,
+    "external_review_or_consensus": false,
+    "fresh_fair_direct_pyoptix_rtdl_baseline_complete": false,
+    "goal5842_v12_modified": false,
+    "goal5842r1_internal_implementation_repair_complete": true,
+    "hardware_independent_timing_claimed": false,
+    "human_authoring_evidence_complete": false,
+    "manuscript_performance_wording_authorized": false,
+    "private_audit_bypass_supported": false,
+    "public_performance_claim_authorized": false,
+    "second_hardware_generation_r1_replication_complete": false
+  },
+  "completion": {
+    "accepted_complete_repeat_count": 3,
+    "accepted_complete_repeat_names": [
+      "V8",
+      "V9",
+      "V10"
+    ],
+    "all_complete_repeats_exact_oracle": true,
+    "all_complete_repeats_one_true_optix_launch": true,
+    "all_complete_repeats_scalar_only_public_output": true,
+    "all_complete_repeats_zero_reused_input_upload_bytes": true,
+    "completion_depends_on_performance_threshold": false,
+    "device_resident_checked_u64_scalar_lowering_implemented": true,
+    "exact_immutable_prepared_input_reuse_implemented": true,
+    "failed_attempt_records_retained": true,
+    "formal_leaf_cache_public_policy_implemented": true,
+    "internal_hostile_review_complete": true
+  },
+  "descriptive_results": {
+    "bounded_relation_reused_execute_ms": {
+      "V10": 13.452081,
+      "V8": 13.259337,
+      "V9": 13.504432
+    },
+    "layer_native_v7_median_ms": {
+      "V6_before_scan_fix": 0.068856,
+      "V7_after_scan_fix": 0.0663465
+    },
+    "layer_public_api_median_ms": {
+      "V6_before_scan_fix": 23.019056499999998,
+      "V7_after_scan_fix": 0.276345
+    },
+    "post_scan_fix_diagnostic_steady_median_ms": {
+      "V10": 0.761959,
+      "V8": 0.744753,
+      "V9": 0.7568935
+    },
+    "post_scan_fix_scalar_median_max_ms": 0.2951355,
+    "post_scan_fix_scalar_median_min_ms": 0.28903,
+    "post_scan_fix_scalar_steady_median_ms": {
+      "V10": 0.2951355,
+      "V8": 0.28903,
+      "V9": 0.294275
+    },
+    "pre_scan_fix_scalar_steady_median_ms": {
+      "V1": 23.24925,
+      "V5": 23.110579
+    },
+    "triangle_all_hit_reused_execute_ms": {
+      "V10": 0.318265,
+      "V8": 0.352826,
+      "V9": 0.313936
+    }
+  },
+  "evidence_artifacts": [
+    {
+      "file_sha256": "33b4e43a3bbc2f65b2995005f6db43df18b1e32ff9ec00f73021d0c9cc5e3e1a",
+      "path": "history/internal_docs/goal5842r1_public_reuse_scalar_fastpath_20260903/PREMEASUREMENT_PLAN.md"
+    },
+    {
+      "file_sha256": "29754b15be9cbd79298f78ee1ccafd5c4fedc3d66c2769bdd62a30a77b681eb2",
+      "path": "history/internal_docs/goal5842r1_public_reuse_scalar_fastpath_20260903/POD_DIAGNOSTIC_V1.json",
+      "result_sha256": "5ca75fa3f0ca2b139265802dae0a42a57976d69bbb413e22517c0416f4b5b4e1",
+      "source_commit": "888b953d4ce50d3602db822e904aa600e3c971eb"
+    },
+    {
+      "file_sha256": "a1a28fc7d28a7f1c3d8f1b79be3356f3e0a4582fb7510c390cfd0153811cb0b2",
+      "path": "history/internal_docs/goal5842r1_public_reuse_scalar_fastpath_20260903/POD_DIAGNOSTIC_V2_PREOUTPUT_FAILURE.md"
+    },
+    {
+      "file_sha256": "9db32e3823137fec23838f83857e9e8e63be54551e3399ec34810381cdfb0038",
+      "path": "history/internal_docs/goal5842r1_public_reuse_scalar_fastpath_20260903/POD_DIAGNOSTIC_V3_V4_PREOUTPUT_FAILURES.md"
+    },
+    {
+      "file_sha256": "0dba648b742d5fceedcf1e102b27dad1ca729925dac90616f86926425727e40f",
+      "path": "history/internal_docs/goal5842r1_public_reuse_scalar_fastpath_20260903/POD_DIAGNOSTIC_V5.json",
+      "result_sha256": "e3e9656071ec1ba6c4f063b22a2f01c086330845c222b3ac633a4c036a281d17",
+      "source_commit": "66be2dcc9edbfb17d8e3e695b558399652d4c7c8"
+    },
+    {
+      "file_sha256": "8b02be8273ef69d46815740452eeba0b9af9fed838e5e56577ca5c68c44754cc",
+      "path": "history/internal_docs/goal5842r1_public_reuse_scalar_fastpath_20260903/LAYER_DIAGNOSTIC_V6.json",
+      "result_sha256": "55e72585284d82db256a5a57f7b3657b8a8bd6ca5655ec7c89f359ead97faf36",
+      "source_commit": "f518fa22ac208bac4904f76ffe2f0b387a7e0032"
+    },
+    {
+      "file_sha256": "ec165a8885ca057e8fe10c0338e7732c10d42a416ca9db1e3b09e8a91936a759",
+      "path": "history/internal_docs/goal5842r1_public_reuse_scalar_fastpath_20260903/LAYER_DIAGNOSTIC_V7.json",
+      "result_sha256": "bc0d66d04ede5140fa0dea2246f41535bd2f9f210d899931f7326e9d6ebb751e",
+      "source_commit": "207e7afc4afd44ddef537f74d97c47ae323743b2"
+    },
+    {
+      "file_sha256": "742c467507028aaf54f1f99451f825068cbc44ff1e1fc4607edd0a6437ee314e",
+      "path": "history/internal_docs/goal5842r1_public_reuse_scalar_fastpath_20260903/POD_DIAGNOSTIC_V8.json",
+      "result_sha256": "6bebef8f603fece9ab3af5e17b27cbf6a1ded0876ab99410a74b4090f33ca438",
+      "source_commit": "207e7afc4afd44ddef537f74d97c47ae323743b2"
+    },
+    {
+      "file_sha256": "4559a19a91d9c71da57f5055e440c74dddc172b8c1b4904491542e57dec86029",
+      "path": "history/internal_docs/goal5842r1_public_reuse_scalar_fastpath_20260903/POD_DIAGNOSTIC_V9.json",
+      "result_sha256": "3e0fd3552a38e3a7b1032746eea114c7a84ef13a76f400f11b6ea3b5d605b53a",
+      "source_commit": "207e7afc4afd44ddef537f74d97c47ae323743b2"
+    },
+    {
+      "file_sha256": "94044f5d37874c0cf9b6ac9a19ef5cb998a7be9814ed7fd39bd978d74197f4ec",
+      "path": "history/internal_docs/goal5842r1_public_reuse_scalar_fastpath_20260903/POD_DIAGNOSTIC_V10.json",
+      "result_sha256": "0f09e04be26784e77b5e55bb8ffd7a093dbb131b2fabf1345f8e2d84eb018052",
+      "source_commit": "207e7afc4afd44ddef537f74d97c47ae323743b2"
+    }
+  ],
+  "frozen_boundaries": {
+    "goal5838_frozen_core": [
+      {
+        "path": "src/rtdsl/v4_family_schema.py",
+        "sha256": "2d118697d10cb2bc2a8672700ae5a991eaf94e66834bb3e08fd898323720f224"
+      },
+      {
+        "path": "src/rtdsl/v4_generic_family_lifecycle.py",
+        "sha256": "7ac68832de9d1e04fdd6f0f11bfa0de7d6109d892ab22e42c9aeb2825d28228c"
+      },
+      {
+        "path": "src/rtdsl/v4_family.py",
+        "sha256": "d25c487823e966a8e9083092811c9a1a2b6aa0fef6ce8f3a0a5b8919c5b809e8"
+      }
+    ],
+    "goal5842_v12": {
+      "authority_sha256": "5c8044d9204df6b5d622142aecab8fcd25990e2ca1a19c7c5055ef4e16a31e43",
+      "file_sha256": "79d5c50d3a78443c22f5e9c490438f26cad64e3b0127f6862b4d29bd747860b0",
+      "optimization_result_included": false,
+      "path": "history/internal_docs/goal5842_causal_admission_cost_20260903/GOAL5842_FINAL_INTERNAL_AUTHORITY.json",
+      "source_commit": "04305fc820290cc183a599376f13d2fb48175233"
+    }
+  },
+  "hardware": {
+    "compute_capability": "8.6",
+    "driver_version": "550.127.08",
+    "memory_total_mib": "49140",
+    "name": "NVIDIA RTX A6000",
+    "uuid": "GPU-6457d4af-a4bb-bff5-a9d2-02f251ceca27"
+  },
+  "implementation_files": [
+    {
+      "path": "experiments/goal5798_premeasurement/rtdl_worker.py",
+      "sha256": "eadc3eb5bc8d076dd24fe282e99e128378ae93e28921134f8980b164c3d64876",
+      "size_bytes": 11615
+    },
+    {
+      "path": "scripts/goal5798_profile_public_triangle.py",
+      "sha256": "42436e35a111abf1a5481f7d41fe01fea0fb83c3c15ff60095c3e65cd7c205da",
+      "size_bytes": 6556
+    },
+    {
+      "path": "scripts/goal5798_validate_immutable_input_reuse.py",
+      "sha256": "46610071c5d9cb142eb8b7914968108d00025dde55048f316cfb73de5133a641",
+      "size_bytes": 17263
+    },
+    {
+      "path": "scripts/goal5842_gpu_identity_witness.py",
+      "sha256": "67a1ad7851bbe8b7a5d7106a89433927bc888776d1d9b9ec115d6a9659331c8e",
+      "size_bytes": 12899
+    },
+    {
+      "path": "scripts/goal5842r1_profile_triangle_execute_layers.py",
+      "sha256": "20c431412f317abae75d5131feb78ef9b91ec8f8c616fb546a80dea53c3f4767",
+      "size_bytes": 9724
+    },
+    {
+      "path": "scripts/goal5842r1_public_reuse_scalar_pod_runner.py",
+      "sha256": "20548a9847d062ef790d87dfb73eb27330c5b94c49d452d03b3310d37a9735ec",
+      "size_bytes": 18953
+    },
+    {
+      "path": "src/rtdsl/v4.py",
+      "sha256": "8c07b285e5980e6a00cd8986459f463304dfaf4160f5293e577770d5640fcb58",
+      "size_bytes": 5925
+    },
+    {
+      "path": "src/rtdsl/v4_bounded_relation_optix_compiler.py",
+      "sha256": "d67cbcd75b790a35d50ee75e70b9df94a3ddb804275c6cadb20bf6800cddec8e",
+      "size_bytes": 16034
+    },
+    {
+      "path": "src/rtdsl/v4_callback_lifecycle.py",
+      "sha256": "126b941d1309ce2ac7129dc2949f4cc1312cd49a6a57e64d1c8cf9635819347a",
+      "size_bytes": 55795
+    },
+    {
+      "path": "src/rtdsl/v4_callback_numba_codegen.py",
+      "sha256": "4c72a5886dc43b0f5a3ccb71fd84c5ccb9076110f13813800f188132b69fc29f",
+      "size_bytes": 75744
+    },
+    {
+      "path": "src/rtdsl/v4_triangle_reduction_optix_compiler.py",
+      "sha256": "5a212a80b0a0f22414eca972da0aeeb3e657feff1b3c248e8e68e26ce96354d5",
+      "size_bytes": 13273
+    },
+    {
+      "path": "src/rtdsl/v4_triangle_reduction_prepared_runtime.py",
+      "sha256": "432e5d6f614c5a96380db95eebe78f5b139803b7b27fbf85486424fd17139530",
+      "size_bytes": 42179
+    },
+    {
+      "path": "src/rtdsl/v4_triangle_standard_library.py",
+      "sha256": "98b819ff8fb2f1c99b726e0530539aca6b5731daf3e52b02671727db1043c500",
+      "size_bytes": 10316
+    },
+    {
+      "path": "tests/goal5775_v4_formal_leaf_cache_test.py",
+      "sha256": "02747e2368705118305b220b0eb86f2493c3e038920cd93e4c0d18f8fb0bd047",
+      "size_bytes": 13766
+    },
+    {
+      "path": "tests/goal5795_v4_public_lifecycle_test.py",
+      "sha256": "f677e26902fffa5633bb332ee2cca0d5b0eb969ea1ec1d090f0702df438efd73",
+      "size_bytes": 24168
+    },
+    {
+      "path": "tests/goal5842_causal_admission_cost_test.py",
+      "sha256": "a53de0b638518a585f87727d5dc7f11d8aeef6976b5f6af6511269c1db56b3b0",
+      "size_bytes": 102945
+    },
+    {
+      "path": "tests/goal5842_prepared_cache_commit_test.py",
+      "sha256": "713d6711425ceff4778cac52823380fe1c4b68cf2626a50b37559f2749294309",
+      "size_bytes": 26588
+    }
+  ],
+  "implementation_source_commit": "207e7afc4afd44ddef537f74d97c47ae323743b2",
+  "reports": [
+    {
+      "path": "history/internal_docs/goal5842r1_public_reuse_scalar_fastpath_20260903/FINAL_TECHNICAL_REPORT.md",
+      "sha256": "7c8f9fa31de2d4190ea48b28808044f215812fe5573bfe9be25e41db0783fe2d"
+    },
+    {
+      "path": "history/internal_docs/goal5842r1_public_reuse_scalar_fastpath_20260903/FINAL_INTERNAL_HOSTILE_SELF_REVIEW.md",
+      "sha256": "65e683fedc947277ef25b3369d2a09ed711ca9d9ef0b120c4310d385ae038311"
+    }
+  ],
+  "schema": "rtdl.goal5842r1.internal_authority.v1",
+  "status": "PASS__GOAL5842R1_INTERNAL_IMPLEMENTATION_REPAIR_COMPLETE__FRESH_FAIR_BASELINE_AND_EXTERNAL_REVIEW_PENDING",
+  "workload": {
+    "expected_per_ray_sha256": "1c122906ae8e13897ce3f39274f405123f128fce69e4fefd9559b794a36c8fd3",
+    "expected_scalar": 65530,
+    "input_sha256": "d994f80418995342d0faa4bda84b42c2ef3604b2798de413a2813dd28dc039a7",
+    "query_count": 16384,
+    "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+    "triangle_count": 16384
+  }
+}
