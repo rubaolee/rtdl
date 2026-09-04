@@ -193,7 +193,10 @@ def _additional_gpu_validation(*, target, toolchain) -> dict[str, object]:
     all_hit_prepared, all_hit_prepare_ns = _timed(
         lambda: all_hit_materialized.prepare(triangle_task.static_input)
     )
-    all_hit_batch = TriangleReductionBatch(queries=triangle_task.batch.queries)
+    all_hit_batch = TriangleReductionBatch(
+        queries=triangle_task.batch.queries,
+        query_metadata={},
+    )
     expected_all_hit = sum(
         int(value) for value in triangle_task.expected_output["per_ray"]
     )
