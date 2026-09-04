@@ -19102,3 +19102,7 @@ that is absent from Git; this is recorded rather than repaired by inventing old
 evidence. The current endpoint `194.68.245.56:22160` timed out, so native v8 has
 not yet been compiled or executed on NVIDIA hardware and no Goal5844 performance
 result exists.
+
+The source checkpoint is committed as `192309f95` and pushed to
+`origin/codex/cgo-goal5836-handoff`; a pod must fetch that exact commit rather
+than receive a dirty source copy.

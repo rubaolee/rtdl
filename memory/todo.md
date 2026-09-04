@@ -11999,7 +11999,7 @@ author-artifact parity work.
 - [x] Add fail-closed compact-receipt, replay, generation, status, ABI-fallback, public-envelope and timing-summary tests.
 - [x] Build an alternating fresh-process RTDL/PyOptiX engineering controller that retains every sample.
 - [x] Prepare a clean Goal5844 source checkpoint for commit and pod transfer.
-- [ ] Push the committed Goal5844 checkpoint before GPU execution.
+- [x] Push Goal5844 implementation commit `192309f95` before GPU execution.
 - [ ] On one reachable NVIDIA pod, build the exact commit and verify the exported v8 symbol plus focused GPU tests.
 - [ ] Run untimed worker-zero for both arms, then the eight-block comparison using the exact Goal5843 triangle task.
 - [ ] If median within-block RTDL/PyOptiX is above 1.25x, retain the adverse result and optimize only the largest measured public/provider/native layer.
