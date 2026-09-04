@@ -355,6 +355,77 @@ class Goal5842PreparedCacheCommitTest(unittest.TestCase):
         self.assertEqual(state.commit_count, 1)
         self.assertEqual(owner._native_query_cache_digest(), owner._cached_query_digest)
 
+    def test_triangle_exact_identity_cache_hit_skips_linear_immutability_scan(self):
+        state = _NativeDigestState()
+        owner = _triangle_owner(state)
+        queries = (((0.0, 0.0, 0.0), (0.0, 0.0, 1.0), 2.0),)
+        weights = (2,)
+        metadata = {"query.weight": weights}
+        typed = ({"query.weight": weights}, None, None, None)
+        with (
+            patch.object(
+                triangle.OptixTraversalAuditSession,
+                "open",
+                side_effect=lambda **_kwargs: _Audit(),
+            ),
+            patch.object(triangle, "_typed_metadata", return_value=typed),
+        ):
+            first = owner.execute(
+                queries,
+                query_metadata=metadata,
+                include_diagnostics=False,
+            )
+        with (
+            patch.object(
+                triangle.OptixTraversalAuditSession,
+                "open",
+                side_effect=lambda **_kwargs: _Audit(),
+            ),
+            patch.object(
+                triangle,
+                "_query_rows_are_immutable",
+                side_effect=AssertionError("linear immutable scan reached cache hit"),
+            ),
+        ):
+            second = owner.execute(
+                queries,
+                query_metadata={"query.weight": weights},
+                include_diagnostics=False,
+            )
+        self.assertEqual(first.reduced_output, 6)
+        self.assertEqual(second.reduced_output, 6)
+        self.assertEqual(state.reuse_flags, [0, 1])
+        self.assertEqual(state.commit_count, 1)
+
+    def test_triangle_equal_but_distinct_metadata_tuple_revalidates(self):
+        state = _NativeDigestState()
+        owner = _triangle_owner(state)
+        queries = (((0.0, 0.0, 0.0), (0.0, 0.0, 1.0), 2.0),)
+        first_weights = tuple([2])
+        second_weights = tuple([2])
+        self.assertIsNot(first_weights, second_weights)
+        typed = ({"query.weight": (2,)}, None, None, None)
+        with (
+            patch.object(
+                triangle.OptixTraversalAuditSession,
+                "open",
+                side_effect=lambda **_kwargs: _Audit(),
+            ),
+            patch.object(triangle, "_typed_metadata", return_value=typed),
+        ):
+            owner.execute(
+                queries,
+                query_metadata={"query.weight": first_weights},
+                include_diagnostics=False,
+            )
+            owner.execute(
+                queries,
+                query_metadata={"query.weight": second_weights},
+                include_diagnostics=False,
+            )
+        self.assertEqual(state.reuse_flags, [0, 0])
+        self.assertEqual(state.commit_count, 2)
+
     def test_triangle_scalar_path_keeps_per_ray_rows_device_resident(self):
         state = _NativeDigestState()
         owner = _triangle_owner(state)

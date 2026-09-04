@@ -629,9 +629,16 @@ class PreparedTriangleReductionOwner:
         return bytes(digest).hex() if present.value else None
 
     def _query_cache_reusable(self, queries, metadata_key) -> bool:
+        cached_metadata = self._cached_query_metadata
         local_match = (
             queries is self._cached_queries
-            and metadata_key == self._cached_query_metadata
+            and cached_metadata is not None
+            and len(metadata_key) == len(cached_metadata)
+            and all(
+                key == cached_key and values is cached_values
+                for (key, values), (cached_key, cached_values)
+                in zip(metadata_key, cached_metadata, strict=True)
+            )
             and self._cached_query_inputs is not None
             and self._cached_query_digest is not None
         )
@@ -676,15 +683,17 @@ class PreparedTriangleReductionOwner:
             }
             if set(query_metadata) != expected_query_names:
                 raise ValueError("query metadata must contain exact query channels")
-            cacheable = _query_rows_are_immutable(queries, query_metadata)
             metadata_key = tuple(sorted(query_metadata.items()))
             try:
-                cache_hit = cacheable and self._query_cache_reusable(
+                cache_hit = self._query_cache_reusable(
                     queries, metadata_key
                 )
             except BaseException:
                 self._clear_query_cache_identity()
                 raise
+            cacheable = cache_hit or _query_rows_are_immutable(
+                queries, query_metadata
+            )
             next_cached_query_inputs = None
             if cache_hit:
                 (
