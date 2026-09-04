@@ -203,7 +203,7 @@ def _triangle_owner(state: _NativeDigestState):
         receipt.schema_version = 2
         receipt.optix_launch_count = 1
         receipt.host_blocking_boundary_count = 2
-        receipt.control_d2h_bytes = 4
+        receipt.control_d2h_bytes = 12
         receipt.output_d2h_bytes = 8
         receipt.status_before_output = 1
         receipt.output_d2h_after_status_failure = 0
@@ -222,13 +222,13 @@ def _triangle_owner(state: _NativeDigestState):
         receipt.semantic_compaction_launch_count = 0
         receipt.semantic_compaction_key_capacity = 0
         receipt.semantic_compaction_scratch_bytes = 0
-        receipt.callback_status_kernel_launch_count = 3
-        receipt.checked_product_kernel_launch_count = 2
-        receipt.compact_control_finalizer_kernel_launch_count = 1
-        receipt.total_auxiliary_cuda_kernel_launch_count = 6
-        receipt.execution_parameter_h2d_bytes = 200
+        receipt.callback_status_kernel_launch_count = 0
+        receipt.checked_product_kernel_launch_count = 0
+        receipt.compact_control_finalizer_kernel_launch_count = 0
+        receipt.total_auxiliary_cuda_kernel_launch_count = 0
+        receipt.execution_parameter_h2d_bytes = 224
         receipt.execution_parameter_h2d_copy_call_count = 1
-        receipt.stream_ordered_memset_call_count = 4
+        receipt.stream_ordered_memset_call_count = 2
         receipt.status_d2h_copy_call_count = 1
         receipt.output_d2h_copy_call_count = 1
         return 0
@@ -428,6 +428,42 @@ class Goal5842PreparedCacheCommitTest(unittest.TestCase):
             ),
             patch.object(triangle, "_typed_metadata", return_value=typed),
             self.assertRaisesRegex(RuntimeError, "fast-path receipt is invalid"),
+        ):
+            owner.execute(
+                queries,
+                query_metadata={"query.weight": (2,)},
+                include_diagnostics=False,
+            )
+        self.assertEqual(state.commit_count, 0)
+        self.assertIsNone(owner._cached_queries)
+
+    def test_triangle_scalar_path_rejects_compact_device_failure(self):
+        state = _NativeDigestState()
+        owner = _triangle_owner(state)
+        valid_scalar = owner._execute_scalar
+
+        def device_failure(*args):
+            status = valid_scalar(*args)
+            ctypes.cast(args[12], ctypes.POINTER(ctypes.c_uint32))[0] = 19
+            receipt = ctypes.cast(
+                args[13], ctypes.POINTER(triangle._FastPathReceipt)
+            )[0]
+            receipt.host_blocking_boundary_count = 1
+            receipt.output_d2h_bytes = 0
+            receipt.output_d2h_copy_call_count = 0
+            return status
+
+        owner._execute_scalar = device_failure
+        queries = (((0.0, 0.0, 0.0), (0.0, 0.0, 1.0), 2.0),)
+        typed = ({"query.weight": (2,)}, None, None, None)
+        with (
+            patch.object(
+                triangle.OptixTraversalAuditSession,
+                "open",
+                side_effect=lambda **_kwargs: _Audit(),
+            ),
+            patch.object(triangle, "_typed_metadata", return_value=typed),
+            self.assertRaisesRegex(RuntimeError, "compact device status"),
         ):
             owner.execute(
                 queries,

@@ -76,7 +76,9 @@ class _ValidatedFastStatusRows(Sequence[Mapping[str, int]]):
             "first_error_claimed": 0,
             "error_code": 0,
             "validated_row_count": int(query_count),
-            "compact_status_d2h_bytes": ctypes.sizeof(ctypes.c_uint32),
+            "success_status_control_d2h_bytes": (
+                3 * ctypes.sizeof(ctypes.c_uint32)
+            ),
         }
 
     def __len__(self) -> int:
@@ -126,7 +128,7 @@ def _validate_fast_receipt(
         or int(receipt.schema_version) != 2
         or int(receipt.optix_launch_count) != 1
         or int(receipt.host_blocking_boundary_count) != (2 if success else 1)
-        or int(receipt.control_d2h_bytes) != ctypes.sizeof(ctypes.c_uint32)
+        or int(receipt.control_d2h_bytes) != 3 * ctypes.sizeof(ctypes.c_uint32)
         or int(receipt.output_d2h_bytes)
         != (ctypes.sizeof(ctypes.c_uint64) if success else 0)
         or raw_status_before_output != 1
@@ -143,13 +145,13 @@ def _validate_fast_receipt(
         or int(receipt.semantic_compaction_launch_count) != 0
         or int(receipt.semantic_compaction_key_capacity) != 0
         or int(receipt.semantic_compaction_scratch_bytes) != 0
-        or int(receipt.callback_status_kernel_launch_count) != 3
-        or int(receipt.checked_product_kernel_launch_count) != 2
-        or int(receipt.compact_control_finalizer_kernel_launch_count) != 1
-        or int(receipt.total_auxiliary_cuda_kernel_launch_count) != 6
-        or int(receipt.execution_parameter_h2d_bytes) != 200
+        or int(receipt.callback_status_kernel_launch_count) != 0
+        or int(receipt.checked_product_kernel_launch_count) != 0
+        or int(receipt.compact_control_finalizer_kernel_launch_count) != 0
+        or int(receipt.total_auxiliary_cuda_kernel_launch_count) != 0
+        or int(receipt.execution_parameter_h2d_bytes) != 224
         or int(receipt.execution_parameter_h2d_copy_call_count) != 1
-        or int(receipt.stream_ordered_memset_call_count) != 4
+        or int(receipt.stream_ordered_memset_call_count) != 2
         or int(receipt.status_d2h_copy_call_count) != 1
         or int(receipt.output_d2h_copy_call_count) != int(success)
     ):
@@ -196,7 +198,9 @@ def _configure(library):
             reduce_u64,
         )
     ):
-        raise RuntimeError("native library lacks two-phase prepared triangle cache ABI")
+        raise RuntimeError(
+            "native library lacks prepared triangle diagnostic-v2/scalar-v7 cache ABI"
+        )
     prepare.argtypes = [
         ctypes.c_char_p,
         ctypes.POINTER(ctypes.c_float),

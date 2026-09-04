@@ -14,12 +14,26 @@ import subprocess
 import sys
 import time
 
-from experiments.goal5842_causal_admission.contracts import TRIANGLE_TASK
+from experiments.goal5842_causal_admission.contracts import (
+    RELATION_TASK,
+    TRIANGLE_TASK,
+)
 from experiments.goal5842_causal_admission.tasks import (
+    PROOF_KIND,
     build_task,
     build_triangle_auxiliary_program,
 )
-from rtdsl.v4 import FormalNumbaLeafCachePolicy, V4Target, V4Toolchain
+from rtdsl.v4 import (
+    AnyHitProtocolProof,
+    FormalNumbaLeafCachePolicy,
+    TriangleReductionBatch,
+    TriangleReductionMode,
+    TriangleReductionProtocol,
+    V4Target,
+    V4Toolchain,
+    compile_protocol_program,
+    standard_protocol_physical_plan,
+)
 from rtdsl.v4_callback_numba_codegen import (
     FORMAL_NUMBA_CACHE_ENV,
     FORMAL_NUMBA_CACHE_MANIFEST_ENV,
@@ -122,6 +136,123 @@ def _gpu_row() -> dict[str, str]:
         "compute_capability": capability,
         "driver_version": driver,
         "memory_total_mib": memory_mib,
+    }
+
+
+def _all_hit_program():
+    protocol = TriangleReductionProtocol(TriangleReductionMode.ALL_HIT_COUNT)
+    plan = standard_protocol_physical_plan(protocol)
+    proof = AnyHitProtocolProof(
+        callback_ir_sha256=plan.callback_ir_sha256,
+        effect_digest=plan.effect_digest,
+        proof_sha256=hashlib.sha256(
+            b"rtdl.goal5842r1.proof::triangle_all_hit_count"
+        ).hexdigest(),
+        proof_kind=PROOF_KIND,
+    )
+    return compile_protocol_program(
+        protocol,
+        physical_plan=plan,
+        any_hit_proof=proof,
+    )
+
+
+def _additional_gpu_validation(*, target, toolchain) -> dict[str, object]:
+    relation_task = build_task(RELATION_TASK)
+    relation_program = relation_task.route_factory().compile()
+    _relation_materialized, relation_fill_ns = _timed(
+        lambda: relation_program.materialize(target=target, toolchain=toolchain)
+    )
+    relation_warm_materialized, relation_warm_ns = _timed(
+        lambda: relation_program.materialize(target=target, toolchain=toolchain)
+    )
+    relation_prepared, relation_prepare_ns = _timed(
+        lambda: relation_warm_materialized.prepare(relation_task.static_input)
+    )
+    try:
+        relation_first, relation_first_ns = _timed(
+            lambda: relation_prepared.execute(relation_task.batch)
+        )
+        relation_second, relation_second_ns = _timed(
+            lambda: relation_prepared.execute(relation_task.batch)
+        )
+        if (
+            relation_first.output != relation_task.expected_output
+            or relation_second.output != relation_task.expected_output
+        ):
+            raise RuntimeError("bounded-relation exact oracle mismatch")
+    finally:
+        relation_prepared.close()
+
+    triangle_task = build_task(TRIANGLE_TASK)
+    all_hit_materialized, all_hit_materialize_ns = _timed(
+        lambda: _all_hit_program().materialize(
+            target=target, toolchain=toolchain
+        )
+    )
+    all_hit_prepared, all_hit_prepare_ns = _timed(
+        lambda: all_hit_materialized.prepare(triangle_task.static_input)
+    )
+    all_hit_batch = TriangleReductionBatch(queries=triangle_task.batch.queries)
+    expected_all_hit = sum(
+        int(value) for value in triangle_task.expected_output["per_ray"]
+    )
+    try:
+        all_hit_first, all_hit_first_ns = _timed(
+            lambda: all_hit_prepared.execute(all_hit_batch)
+        )
+        all_hit_first_boundary = dict(
+            all_hit_prepared.lifecycle_receipt["provider_execution"]
+        )
+        all_hit_second, all_hit_second_ns = _timed(
+            lambda: all_hit_prepared.execute(all_hit_batch)
+        )
+        all_hit_second_boundary = dict(
+            all_hit_prepared.lifecycle_receipt["provider_execution"]
+        )
+        if (
+            all_hit_first.output != expected_all_hit
+            or all_hit_second.output != expected_all_hit
+            or all_hit_first.details
+            or all_hit_second.details
+        ):
+            raise RuntimeError("unweighted triangle scalar oracle mismatch")
+    finally:
+        all_hit_prepared.close()
+    first_fast = all_hit_first_boundary["fast_operation_receipt"]
+    second_fast = all_hit_second_boundary["fast_operation_receipt"]
+    if (
+        all_hit_first_boundary["prepared_query_input_reused"] is not False
+        or all_hit_second_boundary["prepared_query_input_reused"] is not True
+        or first_fast["dynamic_device_upload_call_count"] != 7
+        or first_fast["dynamic_device_upload_bytes"]
+        != len(all_hit_batch.queries) * 7 * 4
+        or second_fast["dynamic_device_upload_call_count"] != 0
+        or second_fast["dynamic_device_upload_bytes"] != 0
+    ):
+        raise RuntimeError("unweighted triangle reuse receipt mismatch")
+    return {
+        "bounded_relation": {
+            "cache_fill_materialize_ms": relation_fill_ns / 1_000_000.0,
+            "cache_hit_materialize_ms": relation_warm_ns / 1_000_000.0,
+            "prepare_ms": relation_prepare_ns / 1_000_000.0,
+            "first_execute_ms": relation_first_ns / 1_000_000.0,
+            "reused_execute_ms": relation_second_ns / 1_000_000.0,
+            "exact_oracle_match": True,
+        },
+        "triangle_all_hit_count": {
+            "cache_aware_materialize_ms": all_hit_materialize_ns / 1_000_000.0,
+            "prepare_ms": all_hit_prepare_ns / 1_000_000.0,
+            "first_execute_ms": all_hit_first_ns / 1_000_000.0,
+            "reused_execute_ms": all_hit_second_ns / 1_000_000.0,
+            "expected_scalar": expected_all_hit,
+            "exact_oracle_match": True,
+            "first_execution_boundary": all_hit_first_boundary,
+            "reused_execution_boundary": all_hit_second_boundary,
+        },
+        "cache_after_cross_family_validation": (
+            formal_numba_leaf_cache_lifecycle_metadata()
+        ),
     }
 
 
@@ -260,7 +391,7 @@ def main() -> None:
     fast_receipt = scalar_boundary.get("fast_operation_receipt")
     if (
         not isinstance(fast_receipt, dict)
-        or fast_receipt.get("control_d2h_bytes") != 4
+        or fast_receipt.get("control_d2h_bytes") != 12
         or fast_receipt.get("output_d2h_bytes") != 8
         or fast_receipt.get("prepared_input_reused") is not True
         or fast_receipt.get("role_counters_materialized") is not False
@@ -272,6 +403,11 @@ def main() -> None:
         or diagnostic_boundary["per_ray_u64_materialized_on_host"] is not True
     ):
         raise RuntimeError(f"unexpected diagnostic execution boundary: {diagnostic_boundary!r}")
+
+    additional_gpu_validation = _additional_gpu_validation(
+        target=target,
+        toolchain=cached_toolchain,
+    )
 
     scalar_steady = _summary(scalar_steady_ns)
     diagnostic_steady = _summary(diagnostic_steady_ns)
@@ -336,6 +472,7 @@ def main() -> None:
             "diagnostic_per_ray_matches_exact_oracle": True,
             "same_program_and_input_contract": True,
         },
+        "additional_gpu_validation": additional_gpu_validation,
         "claim_boundary": {
             "formal_performance_evidence": False,
             "paper_or_public_speedup_authorized": False,
