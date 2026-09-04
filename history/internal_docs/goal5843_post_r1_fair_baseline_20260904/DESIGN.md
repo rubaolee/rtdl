@@ -62,3 +62,15 @@ there is no retry, and a repair requires a new preregistration. Completion is
 internal technical evidence only. Public or manuscript performance wording,
 hardware-independent generalization, external review, and consensus remain
 explicitly unauthorized.
+
+## Pre-Worker-Zero Repair History
+
+The first sealed preregistration at commit `bc03f357` was superseded before
+formal worker zero. A timer-free provider preflight produced the correct RTDL
+triangle scalar and valid nested provider receipt, but the Goal5843 worker
+incorrectly read `provider_execution` from the outer generic lifecycle and
+assumed the generic result exposed a provider-only `details` field. No formal
+transaction root, worker-zero marker, or timing sample existed. Repair 01
+changes only the Goal5843 harness and tests, preserves the frozen Goal5838
+core byte-for-byte, records the superseded seals, and requires this new v2
+preregistration before formal execution.

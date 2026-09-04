@@ -9,6 +9,7 @@ import os
 from pathlib import Path
 import sys
 import tempfile
+from types import MappingProxyType, SimpleNamespace
 import unittest
 
 from experiments.goal5843_post_r1_baseline import controller
@@ -18,6 +19,7 @@ from experiments.goal5843_post_r1_baseline.contracts import (
     DIRECT_ARM,
     PHASE_KEYS,
     PYOPTIX_ARM,
+    RELATION_TASK,
     RTDL_ARM,
     TASKS,
     TRIANGLE_TASK,
@@ -92,6 +94,18 @@ class Goal5843PostR1BaselineTest(unittest.TestCase):
         )
         with self.assertRaisesRegex(Goal5843ContractError, "canonical builder"):
             validate_preregistration(fairness_tamper, ROOT, verify_files=False)
+
+        repair_tamper = copy.deepcopy(prereg)
+        repair_tamper["pre_worker_zero_repairs"][0][
+            "formal_timing_samples_recorded"
+        ] = 1
+        repair_tamper["preregistration_sha256"] = digest({
+            key: value
+            for key, value in repair_tamper.items()
+            if key != "preregistration_sha256"
+        })
+        with self.assertRaisesRegex(Goal5843ContractError, "repair history"):
+            validate_preregistration(repair_tamper, ROOT, verify_files=False)
 
     def test_controller_and_independent_summary_agree(self) -> None:
         prereg = build_preregistration(ROOT)
@@ -182,8 +196,16 @@ class Goal5843PostR1BaselineTest(unittest.TestCase):
             _validate_rtdl_triangle_boundary,
         )
 
+        readonly = MappingProxyType({
+            key: MappingProxyType(value) if key == "fast_operation_receipt" else value
+            for key, value in boundary.items()
+        })
         self.assertEqual(
-            _validate_rtdl_triangle_boundary(boundary, mode="STEADY_COMPLETE_EXECUTION", prereg=prereg),
+            _validate_rtdl_triangle_boundary(
+                readonly,
+                mode="STEADY_COMPLETE_EXECUTION",
+                prereg=prereg,
+            ),
             boundary,
         )
         boundary["per_ray_u64_materialized_on_host"] = True
@@ -191,6 +213,59 @@ class Goal5843PostR1BaselineTest(unittest.TestCase):
             _validate_rtdl_triangle_boundary(
                 boundary, mode="STEADY_COMPLETE_EXECUTION", prereg=prereg
             )
+
+    def test_worker_unwraps_readonly_generic_provider_receipt(self) -> None:
+        from experiments.goal5843_post_r1_baseline.worker import (
+            _provider_execution_boundary,
+        )
+
+        boundary = MappingProxyType({
+            "schema": "test.execution.v1",
+            "nested": MappingProxyType({"count": 7}),
+        })
+        receipt = MappingProxyType({
+            "schema": "rtdl.generic_family_lifecycle.v1",
+            "provider_receipt": MappingProxyType({
+                "schema": "rtdl.v4.public_protocol_lifecycle.v1",
+                "provider_execution": boundary,
+            }),
+        })
+        prepared = SimpleNamespace(lifecycle_receipt=receipt)
+        self.assertEqual(
+            _provider_execution_boundary(prepared),
+            {"schema": "test.execution.v1", "nested": {"count": 7}},
+        )
+
+        bad = SimpleNamespace(lifecycle_receipt=MappingProxyType({
+            "schema": "rtdl.generic_family_lifecycle.v1",
+            "provider_receipt": MappingProxyType({
+                "schema": "wrong.provider.schema",
+                "provider_execution": boundary,
+            }),
+        }))
+        with self.assertRaisesRegex(RuntimeError, "provider lifecycle.*schema"):
+            _provider_execution_boundary(bad)
+
+    def test_worker_validates_generic_public_result_shape(self) -> None:
+        from experiments.goal5843_post_r1_baseline.worker import (
+            _rtdl_public_value,
+        )
+
+        scalar = SimpleNamespace(output=65530)
+        self.assertEqual(_rtdl_public_value(TRIANGLE_TASK, scalar), 65530)
+        with self.assertRaisesRegex(RuntimeError, "diagnostic details"):
+            _rtdl_public_value(
+                TRIANGLE_TASK, SimpleNamespace(output=65530, details={})
+            )
+        with self.assertRaisesRegex(RuntimeError, "exact integer scalar"):
+            _rtdl_public_value(TRIANGLE_TASK, SimpleNamespace(output="65530"))
+        self.assertEqual(
+            _rtdl_public_value(
+                RELATION_TASK,
+                SimpleNamespace(output=((0, 0), (1, 1))),
+            ),
+            {"output": ((0, 0), (1, 1))},
+        )
 
     def test_formal_cache_replay_allows_cross_program_leaf_sharing(self) -> None:
         before = {"hit_count": 0, "miss_count": 0}

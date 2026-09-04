@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import json
 import time
+from collections.abc import Mapping
 from pathlib import Path
 from typing import Any
 
@@ -41,11 +42,67 @@ from .runtime import (
 ROOT = Path(__file__).resolve().parents[2]
 
 
+def _plain_json_mapping(value: object, *, label: str) -> dict[str, Any]:
+    def thaw(item: object, path: str) -> object:
+        if isinstance(item, Mapping):
+            result: dict[str, object] = {}
+            for key, nested in item.items():
+                if not isinstance(key, str):
+                    raise RuntimeError(f"{label} has a non-string key at {path}")
+                result[key] = thaw(nested, f"{path}.{key}")
+            return result
+        if isinstance(item, (list, tuple)):
+            return [thaw(nested, f"{path}[]") for nested in item]
+        if item is None or isinstance(item, (str, int, float, bool)):
+            return item
+        raise RuntimeError(f"{label} has a non-JSON value at {path}")
+
+    result = thaw(value, label)
+    if not isinstance(result, dict):
+        raise RuntimeError(f"{label} must be a mapping")
+    return result
+
+
+def _provider_execution_boundary(prepared: object) -> dict[str, Any]:
+    receipt = getattr(prepared, "lifecycle_receipt", None)
+    if not isinstance(receipt, Mapping):
+        raise RuntimeError("RTDL generic lifecycle receipt missing")
+    if receipt.get("schema") != "rtdl.generic_family_lifecycle.v1":
+        raise RuntimeError("RTDL generic lifecycle receipt schema mismatch")
+    provider = receipt.get("provider_receipt")
+    if not isinstance(provider, Mapping):
+        raise RuntimeError("RTDL provider lifecycle receipt missing")
+    if provider.get("schema") != "rtdl.v4.public_protocol_lifecycle.v1":
+        raise RuntimeError("RTDL provider lifecycle receipt schema mismatch")
+    boundary = provider.get("provider_execution")
+    return _plain_json_mapping(
+        boundary, label="RTDL provider execution boundary"
+    )
+
+
+def _rtdl_public_value(task_id: str, result: object) -> object:
+    output = getattr(result, "output", None)
+    if task_id == RELATION_TASK:
+        try:
+            rows = tuple(tuple(int(item) for item in row) for row in output)
+        except (TypeError, ValueError) as exc:
+            raise RuntimeError("RTDL relation public output is not canonical rows") from exc
+        return {"output": rows}
+    if task_id == TRIANGLE_TASK:
+        if hasattr(result, "details"):
+            raise RuntimeError("generic RTDL result exposed provider diagnostic details")
+        if type(output) is not int:
+            raise RuntimeError("RTDL triangle public output is not an exact integer scalar")
+        return output
+    raise RuntimeError(f"unsupported RTDL Goal5843 task: {task_id}")
+
+
 def _validate_rtdl_triangle_boundary(
     boundary: object, *, mode: str, prereg: dict[str, Any]
 ) -> dict[str, Any]:
-    if not isinstance(boundary, dict):
-        raise RuntimeError("RTDL triangle execution boundary missing")
+    boundary = _plain_json_mapping(
+        boundary, label="RTDL triangle execution boundary"
+    )
     gate = prereg["rtdl_triangle_receipt_gate"]
     exact = {
         "schema": "rtdl.v4.triangle_reduction_execution_boundary.v1",
@@ -149,13 +206,7 @@ def run_rtdl(
         return prepared.execute(task.batch)
 
     def validate_result(result: object) -> str:
-        if task.task_id == RELATION_TASK:
-            output = tuple(tuple(int(item) for item in row) for row in result.output)
-            public_value: object = {"output": output}
-        else:
-            if result.details:
-                raise RuntimeError("public triangle scalar path exposed diagnostic details")
-            public_value = int(result.output)
+        public_value = _rtdl_public_value(task.task_id, result)
         output_sha = verify_public_output(task.task_id, public_value, task.expected_output)
         if result.output_sha256 != output_sha:
             raise RuntimeError("RTDL public output digest mismatch")
@@ -171,7 +222,7 @@ def run_rtdl(
     if mode == FIRST_MODE:
         result, first_ns = measured(execute)
         output_sha = validate_result(result)
-        latest_boundary = prepared.lifecycle_receipt["provider_execution"]
+        latest_boundary = _provider_execution_boundary(prepared)
     else:
         for _ in range(STEADY_WARMUPS):
             output_sha = validate_result(execute())
@@ -179,7 +230,7 @@ def run_rtdl(
             result, elapsed = measured(execute)
             steady_ns.append(elapsed)
             output_sha = validate_result(result)
-        latest_boundary = prepared.lifecycle_receipt["provider_execution"]
+        latest_boundary = _provider_execution_boundary(prepared)
     if output_sha is None:
         raise RuntimeError("RTDL subworker produced no output")
     if task.task_id == TRIANGLE_TASK:

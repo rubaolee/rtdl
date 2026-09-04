@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Any, Mapping
 
 
-PREREGISTRATION_SCHEMA = "rtdl.goal5843.post_r1_baseline_preregistration.v1"
+PREREGISTRATION_SCHEMA = "rtdl.goal5843.post_r1_baseline_preregistration.v2"
 EXECUTION_AUTHORITY_SCHEMA = "rtdl.goal5843.execution_authority.v1"
 CACHE_PREPARATION_SCHEMA = "rtdl.goal5843.formal_leaf_cache_preparation.v1"
 ORACLE_WITNESS_SCHEMA = "rtdl.goal5843.independent_oracle_witness.v1"
@@ -131,6 +131,7 @@ REQUIRED_SOURCE_PATHS = (
     "tests/goal5843_post_r1_baseline_test.py",
     f"{EVIDENCE_DIRECTORY}/DESIGN.md",
     f"{EVIDENCE_DIRECTORY}/PRE_EXECUTION_INTERNAL_HOSTILE_SELF_REVIEW.md",
+    f"{EVIDENCE_DIRECTORY}/PRE_WORKER_ZERO_REPAIR_01.md",
     "history/internal_docs/goal5842_causal_admission_cost_20260903/PREREGISTRATION_V12.json",
     "history/internal_docs/goal5842_causal_admission_cost_20260903/GOAL5842_FINAL_INTERNAL_AUTHORITY.json",
     "history/internal_docs/goal5842r1_public_reuse_scalar_fastpath_20260903/GOAL5842R1_INTERNAL_AUTHORITY.json",
@@ -263,6 +264,27 @@ def build_preregistration(root: Path) -> dict[str, object]:
             ),
             "prior_timing_rows_pooled": False,
         },
+        "pre_worker_zero_repairs": [
+            {
+                "repair_id": "PRE_WORKER_ZERO_REPAIR_01",
+                "superseded_source_commit": (
+                    "bc03f357ff1331b6b3edeb58ba33fab19445d258"
+                ),
+                "superseded_preregistration_sha256": (
+                    "30857d8f7fe16ab3408c45be0e20123bb5d377400bbf09829ab9a099de0f2b00"
+                ),
+                "superseded_source_manifest_sha256": (
+                    "e7d08869792913cd9b9b7a42ea29e95020575de9a0bf9bbb6b533fd3acbfed81"
+                ),
+                "formal_worker_zero_reached": False,
+                "formal_timing_samples_recorded": 0,
+                "repair_scope": (
+                    "Goal5843 worker-only generic lifecycle receipt unwrapping "
+                    "and generic public-result validation"
+                ),
+                "frozen_goal5838_core_changed": False,
+            }
+        ],
         "task_contracts": list(TASK_CONTRACTS),
         "arms": list(ARMS),
         "schedule": build_schedule(),
@@ -404,6 +426,17 @@ def validate_preregistration(
     )
     _require(prereg.get("arms") == list(ARMS), "arm set mismatch")
     _require(prereg.get("task_contracts") == list(TASK_CONTRACTS), "task contracts")
+    repairs = prereg.get("pre_worker_zero_repairs")
+    _require(
+        isinstance(repairs, list)
+        and len(repairs) == 1
+        and isinstance(repairs[0], dict)
+        and repairs[0].get("repair_id") == "PRE_WORKER_ZERO_REPAIR_01"
+        and repairs[0].get("formal_worker_zero_reached") is False
+        and repairs[0].get("formal_timing_samples_recorded") == 0
+        and repairs[0].get("frozen_goal5838_core_changed") is False,
+        "pre-worker-zero repair history mismatch",
+    )
     validate_schedule(prereg.get("schedule"))
     sampling = prereg.get("sampling")
     _require(

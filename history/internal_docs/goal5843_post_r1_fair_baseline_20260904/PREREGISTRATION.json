@@ -102,12 +102,24 @@
       "native_prepare"
     ]
   },
+  "pre_worker_zero_repairs": [
+    {
+      "formal_timing_samples_recorded": 0,
+      "formal_worker_zero_reached": false,
+      "frozen_goal5838_core_changed": false,
+      "repair_id": "PRE_WORKER_ZERO_REPAIR_01",
+      "repair_scope": "Goal5843 worker-only generic lifecycle receipt unwrapping and generic public-result validation",
+      "superseded_preregistration_sha256": "30857d8f7fe16ab3408c45be0e20123bb5d377400bbf09829ab9a099de0f2b00",
+      "superseded_source_commit": "bc03f357ff1331b6b3edeb58ba33fab19445d258",
+      "superseded_source_manifest_sha256": "e7d08869792913cd9b9b7a42ea29e95020575de9a0bf9bbb6b533fd3acbfed81"
+    }
+  ],
   "predecessors": {
     "goal5842_v12_authority_sha256": "5c8044d9204df6b5d622142aecab8fcd25990e2ca1a19c7c5055ef4e16a31e43",
     "goal5842r1_authority_sha256": "7897058f51dedc3b6b5c652b5c3d69418610919557f9ee9a9c70214a5f184248",
     "prior_timing_rows_pooled": false
   },
-  "preregistration_sha256": "30857d8f7fe16ab3408c45be0e20123bb5d377400bbf09829ab9a099de0f2b00",
+  "preregistration_sha256": "a492b381904390c0fd05c607f33a0febfca04673a272f62fb782802b27dd2b1a",
   "purpose": "fresh fair post-Goal5842R1 Direct CUDA/OptiX versus pinned PyOptiX-compatible versus ordinary public check-on RTDL baseline",
   "rtdl_triangle_receipt_gate": {
     "control_d2h_bytes": 12,
@@ -1323,7 +1335,7 @@
       "worker_id": "G5843_B107__K17__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__A_DIRECT_CUDA_OPTIX"
     }
   ],
-  "schema": "rtdl.goal5843.post_r1_baseline_preregistration.v1",
+  "schema": "rtdl.goal5843.post_r1_baseline_preregistration.v2",
   "source_manifest": [
     {
       "bytes": 23612,
@@ -1376,9 +1388,9 @@
       "sha256": "44a2c4fa1a414a276df13b84938dbba454634736ee57b3a3794bc1762cd1117f"
     },
     {
-      "bytes": 20287,
+      "bytes": 21783,
       "path": "experiments/goal5843_post_r1_baseline/contracts.py",
-      "sha256": "c28d142812606075a5c31d855f6da106790611553f0690eef2f28cde18bb3e5b"
+      "sha256": "e5a249080c6cc1f7020c5d969115f2c60516e934352b45ee6048c37b32c897ee"
     },
     {
       "bytes": 12017,
@@ -1386,9 +1398,9 @@
       "sha256": "e8350abb7daf12d9a640dd3651dabbf3c7932c5780b4ba96b56325a7377dbee0"
     },
     {
-      "bytes": 12500,
+      "bytes": 14718,
       "path": "experiments/goal5843_post_r1_baseline/worker.py",
-      "sha256": "d663cf63a75f8cea9d313b8a9f0c73a7de1b1050472a904b0428de2e25ad7b0a"
+      "sha256": "3f8bb26ace3c573529f67a5fd10f23ef7acc180f0a7c1ef31e06c5ac03dce612"
     },
     {
       "bytes": 26434,
@@ -1501,19 +1513,24 @@
       "sha256": "d25c487823e966a8e9083092811c9a1a2b6aa0fef6ce8f3a0a5b8919c5b809e8"
     },
     {
-      "bytes": 11632,
+      "bytes": 14603,
       "path": "tests/goal5843_post_r1_baseline_test.py",
-      "sha256": "5992391bdd3684ba11e655c7dac1fe732afeffe4cc5100efd8c5ab9d322d63a3"
+      "sha256": "70d408734343ca144c3947930e90542da824518cfb3da43b89abb9b7957355ab"
     },
     {
-      "bytes": 3463,
+      "bytes": 4146,
       "path": "history/internal_docs/goal5843_post_r1_fair_baseline_20260904/DESIGN.md",
-      "sha256": "f498e2fc82f3d8457f82a7222ec2de95ff670efd291398f182c3a29d54b3f9c8"
+      "sha256": "94072c85693c8b6310f27f8295592b093ff304c7f9543e2bd357db962be71434"
     },
     {
-      "bytes": 3352,
+      "bytes": 3663,
       "path": "history/internal_docs/goal5843_post_r1_fair_baseline_20260904/PRE_EXECUTION_INTERNAL_HOSTILE_SELF_REVIEW.md",
-      "sha256": "4f997fedaa3caabab71008cd1a9214f8bf724d0a94997761b02c39f8d49d391b"
+      "sha256": "7ec5c05b6d99ed861d071c10374e6162e66299320b9af9ccd0b508e198e711f0"
+    },
+    {
+      "bytes": 2726,
+      "path": "history/internal_docs/goal5843_post_r1_fair_baseline_20260904/PRE_WORKER_ZERO_REPAIR_01.md",
+      "sha256": "e80ee94970a9e5f7a87e82faa1811f133c168d285bbe0bcb7012a97c5c66aae8"
     },
     {
       "bytes": 144023,
@@ -1531,7 +1548,7 @@
       "sha256": "21d7de683f7587c376766cbb3c31710ca83a10abda3b22d6ee31873a8c17c51e"
     }
   ],
-  "source_manifest_sha256": "e7d08869792913cd9b9b7a42ea29e95020575de9a0bf9bbb6b533fd3acbfed81",
+  "source_manifest_sha256": "a5d31edd63d6ff0e0fd90cf3bbf22eaa2e4f0ba879675da72efb864ed624dd08",
   "status": "FROZEN_BEFORE_GOAL5843_WORKER_ZERO",
   "task_contracts": [
     {
