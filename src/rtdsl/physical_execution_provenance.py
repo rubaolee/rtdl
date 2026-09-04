@@ -25,6 +25,28 @@ from typing import Any, Iterable, Mapping
 
 _ERROR_CAPACITY = 2048
 _RECEIPT_SCHEMA = "rtdl.physical_execution.traversal_receipt.v1"
+_COMPACT_RECEIPT_SCHEMA = "rtdl.physical_execution.compact_traversal_receipt.v1"
+_COMPACT_STAMP_FIELDS = (
+    "nonce_hi",
+    "nonce_lo",
+    "execution_sequence",
+    "attempted_launch_count",
+    "successful_launch_count",
+    "failed_launch_count",
+    "complete_context_launch_count",
+    "incomplete_context_launch_count",
+    "context_bind_count",
+    "raygen_invocation_count",
+    "first_program_bundle_id",
+    "last_program_bundle_id",
+    "first_traversable",
+    "last_traversable",
+    "pending_context_at_finish",
+    "session_error",
+    "incomplete_callsite_record_count",
+    "program_bundle_mix",
+    "traversable_mix",
+)
 _LOADED_PROVIDER_IDENTITIES: dict[int, tuple[object, Path, str]] = {}
 _LOADED_PROVIDER_IDENTITIES_LOCK = threading.Lock()
 _AUDIT_ABI_REGISTERED: dict[int, object] = {}
@@ -57,6 +79,11 @@ class _NativeTraversalAuditSnapshot(ctypes.Structure):
         ("incomplete_callsite_record_count", ctypes.c_uint32),
         ("incomplete_callsite_lines", ctypes.c_uint32 * 32),
     ]
+
+
+NativeTraversalAuditSnapshot = _NativeTraversalAuditSnapshot
+COMPACT_TRAVERSAL_RECEIPT_SCHEMA = _COMPACT_RECEIPT_SCHEMA
+COMPACT_TRAVERSAL_STAMP_FIELDS = _COMPACT_STAMP_FIELDS
 
 
 def _sha256(path: Path) -> str:
@@ -317,6 +344,277 @@ def _captured_snapshot_dict(
     return result
 
 
+def _classify_snapshot(
+    snapshot: _NativeTraversalAuditSnapshot,
+    expected_program_bundle_ids: tuple[int, ...],
+) -> tuple[str, bool | None]:
+    observed_edge_ids = {
+        int(snapshot.first_program_bundle_id),
+        int(snapshot.last_program_bundle_id),
+    } - {0}
+    expected_program_observed = (
+        bool(observed_edge_ids.intersection(expected_program_bundle_ids))
+        if expected_program_bundle_ids
+        else None
+    )
+    if snapshot.session_error or snapshot.pending_context_at_finish:
+        classification = "invalid_traversal_audit_session"
+    elif snapshot.successful_launch_count == 0:
+        classification = "no_optix_launch_observed"
+    elif snapshot.complete_context_launch_count == 0:
+        classification = "optix_launch_observed_without_bound_traversable_context"
+    elif snapshot.incomplete_context_launch_count != 0:
+        classification = "optix_traversal_observed_with_unbound_launches"
+    elif expected_program_observed is False:
+        classification = "optix_traversal_observed_but_expected_program_not_bound"
+    else:
+        classification = "optix_traversal_observed"
+    return classification, expected_program_observed
+
+
+def captured_traversal_observation_from_snapshot(
+    snapshot: _NativeTraversalAuditSnapshot,
+    *,
+    provider_library_path: str | Path,
+    provider_library_sha256: str,
+    nonce: tuple[int, int],
+    expected_program_bundles: Iterable[str] = (),
+) -> "CapturedTraversalObservation":
+    """Freeze an audit snapshot already returned by an integrated native call."""
+
+    if not isinstance(snapshot, _NativeTraversalAuditSnapshot):
+        raise TypeError("native traversal audit snapshot required")
+    nonce_hi, nonce_lo = nonce
+    if (
+        int(snapshot.nonce_hi) != nonce_hi
+        or int(snapshot.nonce_lo) != nonce_lo
+    ):
+        raise RuntimeError("native traversal audit returned the wrong nonce")
+    expected_names = tuple(expected_program_bundles)
+    expected_ids = tuple(
+        physical_program_bundle_id(name) for name in expected_names
+    )
+    classification, expected_program_observed = _classify_snapshot(
+        snapshot, expected_ids
+    )
+    return CapturedTraversalObservation(
+        provider_library_path=Path(provider_library_path).resolve(),
+        provider_library_sha256=_require_sha256(
+            provider_library_sha256, label="loaded native provider"
+        ),
+        nonce_hi=nonce_hi,
+        nonce_lo=nonce_lo,
+        physical_executor_classification=classification,
+        expected_program_bundles=expected_names,
+        expected_program_bundle_ids=expected_ids,
+        expected_program_observed_at_receipt_edge=expected_program_observed,
+        native_snapshot_items=_captured_snapshot_items(snapshot),
+    )
+
+
+def _compact_stamp_values(
+    snapshot: _NativeTraversalAuditSnapshot,
+    execution_sequence: int,
+) -> list[int]:
+    return [
+        int(snapshot.nonce_hi),
+        int(snapshot.nonce_lo),
+        execution_sequence,
+        int(snapshot.attempted_launch_count),
+        int(snapshot.successful_launch_count),
+        int(snapshot.failed_launch_count),
+        int(snapshot.complete_context_launch_count),
+        int(snapshot.incomplete_context_launch_count),
+        int(snapshot.context_bind_count),
+        int(snapshot.raygen_invocation_count),
+        int(snapshot.first_program_bundle_id),
+        int(snapshot.last_program_bundle_id),
+        int(snapshot.first_traversable),
+        int(snapshot.last_traversable),
+        int(snapshot.pending_context_at_finish),
+        int(snapshot.session_error),
+        int(snapshot.incomplete_callsite_record_count),
+        int(snapshot.program_bundle_mix),
+        int(snapshot.traversable_mix),
+    ]
+
+
+def _validate_compact_stamp(
+    values: object,
+    *,
+    expected_program_bundle_id: int,
+    expected_successful_launch_count: int,
+    expected_raygen_invocation_count: int,
+) -> None:
+    if (
+        not isinstance(values, (list, tuple))
+        or len(values) != len(_COMPACT_STAMP_FIELDS)
+        or any(type(value) is not int or not 0 <= value < 1 << 64 for value in values)
+    ):
+        raise RuntimeError("compact traversal native stamp differs")
+    (
+        nonce_hi,
+        nonce_lo,
+        execution_sequence,
+        attempted_launch_count,
+        successful_launch_count,
+        failed_launch_count,
+        complete_context_launch_count,
+        incomplete_context_launch_count,
+        context_bind_count,
+        raygen_invocation_count,
+        first_program_bundle_id,
+        last_program_bundle_id,
+        first_traversable,
+        last_traversable,
+        pending_context_at_finish,
+        session_error,
+        incomplete_callsite_record_count,
+        program_bundle_mix,
+        traversable_mix,
+    ) = values
+    if (
+        nonce_hi == 0
+        or nonce_lo == 0
+        or execution_sequence == 0
+        or nonce_lo != execution_sequence
+        or attempted_launch_count != expected_successful_launch_count
+        or successful_launch_count != expected_successful_launch_count
+        or failed_launch_count != 0
+        or complete_context_launch_count != expected_successful_launch_count
+        or incomplete_context_launch_count != 0
+        or context_bind_count != expected_successful_launch_count
+        or raygen_invocation_count != expected_raygen_invocation_count
+        or first_program_bundle_id != expected_program_bundle_id
+        or last_program_bundle_id != expected_program_bundle_id
+        or first_traversable == 0
+        or last_traversable != first_traversable
+        or pending_context_at_finish != 0
+        or session_error != 0
+        or incomplete_callsite_record_count != 0
+        or program_bundle_mix
+            != _native_audit_mix_u64(0, expected_program_bundle_id)
+        or traversable_mix != _native_audit_mix_u64(0, first_traversable)
+    ):
+        raise RuntimeError("compact traversal native stamp differs")
+
+
+def build_compact_traversal_receipt(
+    snapshot: _NativeTraversalAuditSnapshot,
+    *,
+    provider_library_sha256: str,
+    route_identity: str,
+    semantic_digest: str,
+    output_digest: str,
+    expected_program_bundle: str,
+    expected_raygen_invocation_count: int,
+    execution_sequence: int,
+) -> dict[str, object]:
+    """Validate one integrated audit snapshot and emit its compact proof."""
+
+    if not isinstance(snapshot, _NativeTraversalAuditSnapshot):
+        raise TypeError("native traversal audit snapshot required")
+    if type(route_identity) is not str or not route_identity:
+        raise ValueError("route_identity must be a nonempty string")
+    if type(expected_program_bundle) is not str or not expected_program_bundle:
+        raise ValueError("expected_program_bundle must be a nonempty string")
+    if type(execution_sequence) is not int or not 0 < execution_sequence < 1 << 64:
+        raise ValueError("execution_sequence must be a positive uint64")
+    if (
+        type(expected_raygen_invocation_count) is not int
+        or not 0 < expected_raygen_invocation_count < 1 << 64
+    ):
+        raise ValueError("expected raygen invocation count must be a positive uint64")
+    provider_digest = _require_sha256(
+        provider_library_sha256, label="loaded native provider"
+    )
+    semantic = _require_sha256(semantic_digest, label="receipt semantic")
+    output = _require_sha256(output_digest, label="receipt output")
+    bundle_id = physical_program_bundle_id(expected_program_bundle)
+    native_stamp = _compact_stamp_values(snapshot, execution_sequence)
+    _validate_compact_stamp(
+        native_stamp,
+        expected_program_bundle_id=bundle_id,
+        expected_successful_launch_count=1,
+        expected_raygen_invocation_count=expected_raygen_invocation_count,
+    )
+    receipt: dict[str, object] = {
+        "schema": _COMPACT_RECEIPT_SCHEMA,
+        "provider_library_sha256": provider_digest,
+        "route_identity": route_identity,
+        "semantic_digest": semantic,
+        "output_digest": output,
+        "physical_executor_classification": "optix_traversal_observed",
+        "expected_program_bundle": expected_program_bundle,
+        "expected_program_bundle_id": bundle_id,
+        "expected_program_observed_at_receipt_edge": True,
+        "native_stamp": native_stamp,
+    }
+    receipt["receipt_sha256"] = _stable_digest(receipt)
+    return receipt
+
+
+def validate_compact_traversal_receipt(
+    receipt: Mapping[str, object],
+    *,
+    provider_library_sha256: str,
+    route_identity: str,
+    output_digest: str,
+    expected_program_bundles: tuple[str, ...],
+    expected_successful_launch_count: int,
+    expected_raygen_invocation_count: int,
+) -> None:
+    """Independently revalidate a compact integrated traversal proof."""
+
+    if (
+        type(expected_successful_launch_count) is not int
+        or expected_successful_launch_count != 1
+        or type(expected_raygen_invocation_count) is not int
+        or not 0 < expected_raygen_invocation_count < 1 << 64
+    ):
+        raise RuntimeError("compact traversal expected counts are invalid")
+    expected_fields = {
+        "schema", "provider_library_sha256", "route_identity",
+        "semantic_digest", "output_digest", "physical_executor_classification",
+        "expected_program_bundle", "expected_program_bundle_id",
+        "expected_program_observed_at_receipt_edge", "native_stamp",
+        "receipt_sha256",
+    }
+    if set(receipt) != expected_fields or len(expected_program_bundles) != 1:
+        raise RuntimeError("compact traversal receipt field set differs")
+    body = dict(receipt)
+    observed_seal = body.pop("receipt_sha256", None)
+    bundle = expected_program_bundles[0]
+    bundle_id = physical_program_bundle_id(bundle)
+    if (
+        receipt.get("schema") != _COMPACT_RECEIPT_SCHEMA
+        or receipt.get("provider_library_sha256")
+            != _require_sha256(
+                provider_library_sha256, label="expected native provider"
+            )
+        or receipt.get("route_identity") != route_identity
+        or _require_sha256(
+            receipt.get("semantic_digest"), label="receipt semantic"
+        ) != receipt.get("semantic_digest")
+        or receipt.get("output_digest")
+            != _require_sha256(output_digest, label="expected output")
+        or receipt.get("physical_executor_classification")
+            != "optix_traversal_observed"
+        or receipt.get("expected_program_bundle") != bundle
+        or receipt.get("expected_program_bundle_id") != bundle_id
+        or receipt.get("expected_program_observed_at_receipt_edge") is not True
+        or type(observed_seal) is not str
+        or observed_seal != _stable_digest(body)
+    ):
+        raise RuntimeError("compact traversal receipt envelope differs")
+    _validate_compact_stamp(
+        receipt.get("native_stamp"),
+        expected_program_bundle_id=bundle_id,
+        expected_successful_launch_count=expected_successful_launch_count,
+        expected_raygen_invocation_count=expected_raygen_invocation_count,
+    )
+
+
 def validate_traversal_receipt(
     receipt: Mapping[str, object],
     *,
@@ -333,6 +631,18 @@ def validate_traversal_receipt(
     It rejects self-sealed partial receipts that omit the native launch and
     context counters from which that classification is derived.
     """
+
+    if receipt.get("schema") == _COMPACT_RECEIPT_SCHEMA:
+        validate_compact_traversal_receipt(
+            receipt,
+            provider_library_sha256=provider_library_sha256,
+            route_identity=route_identity,
+            output_digest=output_digest,
+            expected_program_bundles=expected_program_bundles,
+            expected_successful_launch_count=expected_successful_launch_count,
+            expected_raygen_invocation_count=expected_raygen_invocation_count,
+        )
+        return
 
     expected_top_level = {
         "schema", "provider_library", "provider_library_path",
@@ -631,54 +941,12 @@ class OptixTraversalAuditSession:
             )
         finally:
             self._active = False
-        if (
-            int(snapshot.nonce_hi) != self.nonce_hi
-            or int(snapshot.nonce_lo) != self.nonce_lo
-        ):
-            raise RuntimeError("native traversal audit returned the wrong nonce")
-
-        expected_names = tuple(expected_program_bundles)
-        expected_ids = tuple(
-            physical_program_bundle_id(name) for name in expected_names
-        )
-        observed_edge_ids = {
-            int(snapshot.first_program_bundle_id),
-            int(snapshot.last_program_bundle_id),
-        } - {0}
-        expected_program_observed = (
-            bool(observed_edge_ids.intersection(expected_ids))
-            if expected_ids
-            else None
-        )
-
-        if snapshot.session_error or snapshot.pending_context_at_finish:
-            classification = "invalid_traversal_audit_session"
-        elif snapshot.successful_launch_count == 0:
-            classification = "no_optix_launch_observed"
-        elif snapshot.complete_context_launch_count == 0:
-            classification = (
-                "optix_launch_observed_without_bound_traversable_context"
-            )
-        elif snapshot.incomplete_context_launch_count != 0:
-            classification = "optix_traversal_observed_with_unbound_launches"
-        elif expected_program_observed is False:
-            classification = (
-                "optix_traversal_observed_but_expected_program_not_bound"
-            )
-        else:
-            classification = "optix_traversal_observed"
-
-        items = _captured_snapshot_items(snapshot)
-        return CapturedTraversalObservation(
+        return captured_traversal_observation_from_snapshot(
+            snapshot,
             provider_library_path=self.library_path,
             provider_library_sha256=self.provider_library_sha256,
-            nonce_hi=self.nonce_hi,
-            nonce_lo=self.nonce_lo,
-            physical_executor_classification=classification,
-            expected_program_bundles=expected_names,
-            expected_program_bundle_ids=expected_ids,
-            expected_program_observed_at_receipt_edge=expected_program_observed,
-            native_snapshot_items=items,
+            nonce=(self.nonce_hi, self.nonce_lo),
+            expected_program_bundles=expected_program_bundles,
         )
 
     def finish(
@@ -707,8 +975,14 @@ class OptixTraversalAuditSession:
 
 
 __all__ = [
+    "COMPACT_TRAVERSAL_RECEIPT_SCHEMA",
+    "COMPACT_TRAVERSAL_STAMP_FIELDS",
     "CapturedTraversalObservation",
+    "NativeTraversalAuditSnapshot",
     "OptixTraversalAuditSession",
+    "build_compact_traversal_receipt",
+    "captured_traversal_observation_from_snapshot",
     "physical_program_bundle_id",
+    "validate_compact_traversal_receipt",
     "validate_traversal_receipt",
 ]

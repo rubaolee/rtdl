@@ -436,3 +436,14 @@ duplicate leaf identities, referenced or multiple NumbaEnv state and new
 external dependencies. It strips leaf `.file`/`.loc` information, so composed
 leaf source-line debugging is unavailable. Never pass original user callable
 state or user PTX through this boundary.
+
+## Missing Goal5789 generated freeze in current Git tree
+
+Three `tests.goal5790_triangle_runtime_integration_test` cases currently stop
+before execution because they read
+`history/internal_docs/goal5789_contract_evidence_20260816/GOAL5789_GOAL5790_SHARED_CONTRACT_FREEZE.json`,
+which is not present in the current Git tree. The generator still exists, but
+regenerating and presenting the output as historical authority would be
+incorrect without its original transaction. Keep this separate from Goal5844
+functional results; do not fabricate the file merely to turn the old tests
+green.

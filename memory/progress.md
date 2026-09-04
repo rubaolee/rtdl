@@ -19075,3 +19075,30 @@ and 9.950x Direct. The prior v3 archive-verifier failure is preserved in full;
 its 7,020 timing samples are not pooled. The exact successor suite passes
 91/91. External review count is zero, so no public or manuscript performance
 claim is authorized.
+
+## Goal5844 compact execution stamp local checkpoint (2026-09-04)
+
+The source-level successor to Goal5843 is implemented. Native v8 wraps the
+existing generic v7 prepared triangle operation with traversal-audit begin and
+finish in one ABI call. The prepared owner validates a fresh compact traversal
+stamp, checked device status, output, input digest and generation, reuses exact
+immutable query columns/pointers, and exposes full forensic receipt expansion
+only on explicit request. Old v7 DSOs keep their prior behavior. No frozen
+Goal5838 file or `rtdl_optix_core.cpp` byte changed.
+
+The engineering worker compares the ordinary public RTDL arm against pinned
+PyOptiX source commit `3144f224c0fd18733925faf3d8fb82c7376b8dcf` in fresh,
+alternating processes. It retains raw samples and separately reports public,
+provider-owner, direct-native-v8, and forensic-expansion timings. The controller
+recomputes seals and sample summaries and revalidates compact/full receipts.
+
+Local validation is 12/12 focused Goal5844 tests, 51/52 directly related tests
+with one expected no-GPU skip, 40/40 Goal5842 causal tests, a passing frozen-core
+seal, clean compile checks and clean diff checks. The adjacent Goal5840--5844
+run executes 159 tests with exactly five known historical/current-tree identity
+refusals and no new functional failure. Three additional old Goal5790
+integration tests stop on a missing generated historical Goal5789 freeze file
+that is absent from Git; this is recorded rather than repaired by inventing old
+evidence. The current endpoint `194.68.245.56:22160` timed out, so native v8 has
+not yet been compiled or executed on NVIDIA hardware and no Goal5844 performance
+result exists.

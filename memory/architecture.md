@@ -418,3 +418,29 @@ single-module composer is selected only for the frozen Goal5749 PoC because it
 has Home and modern-RTX evidence. A legal two-module ordinary-call route is
 known to work on Home but remains diagnostic. Goal5750 must explicitly choose
 the durable production mechanism; neither route may be silently promoted.
+
+## Goal5844 compact proof architecture (2026-09-04)
+
+The ordinary prepared triangle-scalar route uses a three-stage proof boundary:
+
+```text
+prepare-time static certificate
+-> one execute-time native v8 call that performs v7 work plus traversal audit
+-> Python validation of a fresh compact stamp before scalar publication
+-> optional full forensic receipt expansion after execution
+```
+
+The 19-word dynamic stamp binds nonce/sequence, launch and complete-context
+counts, raygen count, expected app-neutral program-bundle edges and mix, one
+nonzero traversable and mix, and all incomplete/error state. The operation also
+retains checked device status, output-before-publication, exact native/provider
+identity, expected packed-input digest, and prepared-input generation checks.
+Static route and semantic digests are computed during prepare. Exact immutable
+query columns and their ctypes pointers are reused only under the existing
+process/thread/nonreentrant prepared-owner boundary.
+
+This is an additive provider/runtime optimization, not a new language family
+or app primitive. The Goal5838 generic core remains frozen. A DSO lacking v8
+uses the old v7 plus separate audit path. Full forensic expansion is not part
+of ordinary steady timing, but the compact stamp is always validated before a
+public scalar is constructed.

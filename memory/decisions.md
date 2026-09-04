@@ -8420,3 +8420,21 @@ Do not authorize public/manuscript wording, hardware-independent claims,
 general language performance claims, or consensus until external review is
 available. The next optimization must preserve the ordinary public check-on
 front door and app-neutral engine boundary rather than use a private fast path.
+
+## D243: compact dynamic proof instead of disabling public checks (2026-09-04)
+
+Reduce the Goal5843 triangle steady-path overhead by moving traversal-audit
+begin/finish into an additive native v8 execution ABI and returning a compact
+dynamic stamp. Do not solve the PyOptiX gap by selecting a private checker-off
+path, removing status-before-output, trusting a provider label, weakening exact
+prepared-input reuse, changing the frozen Goal5838 core, or embedding app
+semantics in the native engine.
+
+Validate every fresh stamp before scalar publication and retain an explicit
+full-forensic expansion API. Cache only exact immutable query-object identities,
+keep native digest and generation validation inside the v8 call, consume a
+sequence on every attempted integrated execution, and clear local reuse state
+after any native/status/proof failure. Treat the balanced RTDL/PyOptiX result as
+internal engineering evidence regardless of whether the 1.25x target passes.
+Goal5843 remains immutable and no public/manuscript claim follows without a
+separate reviewed transaction.

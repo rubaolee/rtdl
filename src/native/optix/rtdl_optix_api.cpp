@@ -51,6 +51,54 @@ extern "C" int rtdl_optix_v4_rtdlexe_producer_descriptor_v1(
     }, error_out, error_size);
 }
 
+static void rtdl_optix_traversal_audit_begin_checked(
+        uint64_t nonce_hi,
+        uint64_t nonce_lo) {
+    auto& audit = g_optix_traversal_audit;
+    if (audit.active)
+        throw std::runtime_error("OptiX traversal audit session is already active");
+    if (nonce_hi == 0 && nonce_lo == 0)
+        throw std::runtime_error("OptiX traversal audit nonce must be nonzero");
+    audit = OptixTraversalAuditState{};
+    audit.active = true;
+    audit.nonce_hi = nonce_hi;
+    audit.nonce_lo = nonce_lo;
+    audit.snapshot.nonce_hi = nonce_hi;
+    audit.snapshot.nonce_lo = nonce_lo;
+}
+
+static void rtdl_optix_traversal_audit_finish_checked(
+        uint64_t nonce_hi,
+        uint64_t nonce_lo,
+        RtdlOptixTraversalAuditSnapshot* snapshot_out) {
+    auto& audit = g_optix_traversal_audit;
+    if (!snapshot_out)
+        throw std::runtime_error(
+            "OptiX traversal audit snapshot output must not be null");
+    if (!audit.active)
+        throw std::runtime_error("OptiX traversal audit session is not active");
+    if (audit.nonce_hi != nonce_hi || audit.nonce_lo != nonce_lo)
+        throw std::runtime_error(
+            "OptiX traversal audit nonce does not match active session");
+    audit.snapshot.pending_context_at_finish = audit.context_pending ? 1u : 0u;
+    audit.snapshot.session_error =
+        (audit.session_error || audit.context_pending) ? 1u : 0u;
+    *snapshot_out = audit.snapshot;
+    audit = OptixTraversalAuditState{};
+}
+
+static void rtdl_optix_traversal_audit_abort_checked(
+        uint64_t nonce_hi,
+        uint64_t nonce_lo) {
+    auto& audit = g_optix_traversal_audit;
+    if (!audit.active)
+        throw std::runtime_error("OptiX traversal audit session is not active");
+    if (audit.nonce_hi != nonce_hi || audit.nonce_lo != nonce_lo)
+        throw std::runtime_error(
+            "OptiX traversal audit nonce does not match active session");
+    audit = OptixTraversalAuditState{};
+}
+
 extern "C" int rtdl_optix_traversal_audit_begin(
         uint64_t nonce_hi,
         uint64_t nonce_lo,
@@ -58,17 +106,7 @@ extern "C" int rtdl_optix_traversal_audit_begin(
         size_t error_size)
 {
     return handle_native_call([&]() {
-        auto& audit = g_optix_traversal_audit;
-        if (audit.active)
-            throw std::runtime_error("OptiX traversal audit session is already active");
-        if (nonce_hi == 0 && nonce_lo == 0)
-            throw std::runtime_error("OptiX traversal audit nonce must be nonzero");
-        audit = OptixTraversalAuditState{};
-        audit.active = true;
-        audit.nonce_hi = nonce_hi;
-        audit.nonce_lo = nonce_lo;
-        audit.snapshot.nonce_hi = nonce_hi;
-        audit.snapshot.nonce_lo = nonce_lo;
+        rtdl_optix_traversal_audit_begin_checked(nonce_hi, nonce_lo);
     }, error_out, error_size);
 }
 
@@ -80,19 +118,8 @@ extern "C" int rtdl_optix_traversal_audit_finish(
         size_t error_size)
 {
     return handle_native_call([&]() {
-        auto& audit = g_optix_traversal_audit;
-        if (!snapshot_out)
-            throw std::runtime_error("OptiX traversal audit snapshot output must not be null");
-        if (!audit.active)
-            throw std::runtime_error("OptiX traversal audit session is not active");
-        if (audit.nonce_hi != nonce_hi || audit.nonce_lo != nonce_lo)
-            throw std::runtime_error("OptiX traversal audit nonce does not match active session");
-        audit.snapshot.pending_context_at_finish =
-            audit.context_pending ? 1u : 0u;
-        audit.snapshot.session_error =
-            (audit.session_error || audit.context_pending) ? 1u : 0u;
-        *snapshot_out = audit.snapshot;
-        audit = OptixTraversalAuditState{};
+        rtdl_optix_traversal_audit_finish_checked(
+            nonce_hi, nonce_lo, snapshot_out);
     }, error_out, error_size);
 }
 
@@ -103,12 +130,7 @@ extern "C" int rtdl_optix_traversal_audit_abort(
         size_t error_size)
 {
     return handle_native_call([&]() {
-        auto& audit = g_optix_traversal_audit;
-        if (!audit.active)
-            throw std::runtime_error("OptiX traversal audit session is not active");
-        if (audit.nonce_hi != nonce_hi || audit.nonce_lo != nonce_lo)
-            throw std::runtime_error("OptiX traversal audit nonce does not match active session");
-        audit = OptixTraversalAuditState{};
+        rtdl_optix_traversal_audit_abort_checked(nonce_hi, nonce_lo);
     }, error_out, error_size);
 }
 
@@ -1023,6 +1045,55 @@ extern "C" int rtdl_optix_v4_execute_prepared_triangle_reduction_callback_v6(
         error_out, error_size);
 }
 
+static void execute_prepared_triangle_reduction_callback_v7_checked(
+        uint64_t prepared_token,
+        const float* query_origins_xyz,
+        const float* query_directions_xyz,
+        const float* query_tmax, size_t query_count,
+        uint32_t reuse_uploaded_query_inputs,
+        uint32_t use_product_multipliers,
+        uint32_t reuse_uploaded_product_multipliers,
+        const uint8_t* expected_reuse_digest,
+        size_t expected_reuse_digest_size,
+        const uint64_t* product_multipliers,
+        uint64_t* output_product_scalar,
+        uint32_t* output_fast_status,
+        RtdlV4FastPathReceipt* output_fast_receipt) {
+    if (reuse_uploaded_query_inputs > 1u)
+        throw std::runtime_error(
+            "V4 triangle v7 reuse-query flag is invalid");
+    if (use_product_multipliers > 1u ||
+            reuse_uploaded_product_multipliers > 1u ||
+            (use_product_multipliers == 0u &&
+             reuse_uploaded_product_multipliers != 0u))
+        throw std::runtime_error(
+            "V4 triangle v7 product-multiplier flags are invalid");
+    if (!expected_reuse_digest)
+        throw std::runtime_error(
+            "V4 triangle v7 expected reuse digest is null");
+    if (expected_reuse_digest_size != 32u)
+        throw std::runtime_error(
+            "V4 triangle v7 expected reuse digest size is invalid: " +
+            std::to_string(expected_reuse_digest_size));
+    if (!output_product_scalar)
+        throw std::runtime_error(
+            "V4 triangle v7 product output is null");
+    if (!output_fast_status)
+        throw std::runtime_error(
+            "V4 triangle v7 status output is null");
+    if (!output_fast_receipt)
+        throw std::runtime_error(
+            "V4 triangle v7 receipt output is null");
+    execute_v4_prepared_triangle_reduction_product_fast(
+        prepared_token, query_origins_xyz, query_directions_xyz,
+        query_tmax, query_count, product_multipliers,
+        output_product_scalar, output_fast_status, output_fast_receipt,
+        reuse_uploaded_query_inputs != 0u,
+        use_product_multipliers != 0u,
+        reuse_uploaded_product_multipliers != 0u,
+        expected_reuse_digest, expected_reuse_digest_size);
+}
+
 extern "C" int rtdl_optix_v4_execute_prepared_triangle_reduction_callback_v7(
         uint64_t prepared_token,
         const float* query_origins_xyz,
@@ -1039,39 +1110,59 @@ extern "C" int rtdl_optix_v4_execute_prepared_triangle_reduction_callback_v7(
         RtdlV4FastPathReceipt* output_fast_receipt,
         char* error_out, size_t error_size) {
     return handle_native_call([&]() {
-        if (reuse_uploaded_query_inputs > 1u)
-            throw std::runtime_error(
-                "V4 triangle v7 reuse-query flag is invalid");
-        if (use_product_multipliers > 1u ||
-                reuse_uploaded_product_multipliers > 1u ||
-                (use_product_multipliers == 0u &&
-                 reuse_uploaded_product_multipliers != 0u))
-            throw std::runtime_error(
-                "V4 triangle v7 product-multiplier flags are invalid");
-        if (!expected_reuse_digest)
-            throw std::runtime_error(
-                "V4 triangle v7 expected reuse digest is null");
-        if (expected_reuse_digest_size != 32u)
-            throw std::runtime_error(
-                "V4 triangle v7 expected reuse digest size is invalid: " +
-                std::to_string(expected_reuse_digest_size));
-        if (!output_product_scalar)
-            throw std::runtime_error(
-                "V4 triangle v7 product output is null");
-        if (!output_fast_status)
-            throw std::runtime_error(
-                "V4 triangle v7 status output is null");
-        if (!output_fast_receipt)
-            throw std::runtime_error(
-                "V4 triangle v7 receipt output is null");
-        execute_v4_prepared_triangle_reduction_product_fast(
+        execute_prepared_triangle_reduction_callback_v7_checked(
             prepared_token, query_origins_xyz, query_directions_xyz,
-            query_tmax, query_count, product_multipliers,
-            output_product_scalar, output_fast_status, output_fast_receipt,
-            reuse_uploaded_query_inputs != 0u,
-            use_product_multipliers != 0u,
-            reuse_uploaded_product_multipliers != 0u,
-            expected_reuse_digest, expected_reuse_digest_size);
+            query_tmax, query_count, reuse_uploaded_query_inputs,
+            use_product_multipliers, reuse_uploaded_product_multipliers,
+            expected_reuse_digest, expected_reuse_digest_size,
+            product_multipliers, output_product_scalar, output_fast_status,
+            output_fast_receipt);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_v4_execute_prepared_triangle_reduction_callback_v8(
+        uint64_t prepared_token,
+        const float* query_origins_xyz,
+        const float* query_directions_xyz,
+        const float* query_tmax, size_t query_count,
+        uint32_t reuse_uploaded_query_inputs,
+        uint32_t use_product_multipliers,
+        uint32_t reuse_uploaded_product_multipliers,
+        const uint8_t* expected_reuse_digest,
+        size_t expected_reuse_digest_size,
+        const uint64_t* product_multipliers,
+        uint64_t* output_product_scalar,
+        uint32_t* output_fast_status,
+        RtdlV4FastPathReceipt* output_fast_receipt,
+        uint64_t audit_nonce_hi,
+        uint64_t audit_nonce_lo,
+        RtdlOptixTraversalAuditSnapshot* output_audit_snapshot,
+        char* error_out, size_t error_size) {
+    return handle_native_call([&]() {
+        if (!output_audit_snapshot)
+            throw std::runtime_error(
+                "V4 triangle v8 audit snapshot output is null");
+        rtdl_optix_traversal_audit_begin_checked(
+            audit_nonce_hi, audit_nonce_lo);
+        try {
+            execute_prepared_triangle_reduction_callback_v7_checked(
+                prepared_token, query_origins_xyz, query_directions_xyz,
+                query_tmax, query_count, reuse_uploaded_query_inputs,
+                use_product_multipliers, reuse_uploaded_product_multipliers,
+                expected_reuse_digest, expected_reuse_digest_size,
+                product_multipliers, output_product_scalar, output_fast_status,
+                output_fast_receipt);
+            rtdl_optix_traversal_audit_finish_checked(
+                audit_nonce_hi, audit_nonce_lo, output_audit_snapshot);
+        } catch (...) {
+            auto& audit = g_optix_traversal_audit;
+            if (audit.active && audit.nonce_hi == audit_nonce_hi &&
+                    audit.nonce_lo == audit_nonce_lo) {
+                rtdl_optix_traversal_audit_abort_checked(
+                    audit_nonce_hi, audit_nonce_lo);
+            }
+            throw;
+        }
     }, error_out, error_size);
 }
 

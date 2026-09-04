@@ -1,5 +1,36 @@
 # RTDL Codex Working Guide
 
+## Critical current override: Goal5844 compact execution stamp ready for GPU (2026-09-04)
+
+Goal5844 is source-complete and locally validated, but not performance-complete.
+The ordinary public triangle-scalar route now has an additive native v8 ABI
+that executes the existing app-neutral v7 operation and captures one fresh
+OptiX traversal audit in the same native call. Python validates a 19-word
+compact stamp, exact prepared-input generation, checked device status, output,
+provider, route and semantic identities before publishing the scalar. Full
+forensic receipt expansion remains an explicit post-execution operation. Old
+DSOs without v8 retain the v7 plus separate-audit fallback.
+
+The implementation and engineering protocol are under
+`history/internal_docs/goal5844_compact_execution_stamp_20260904/`. Focused
+Goal5844 tests pass 12/12; the directly related cache/public/provenance set
+passes 51/52 with one expected no-GPU skip; Goal5842 causal tests pass 40/40;
+the Goal5838 frozen core and `src/native/optix/rtdl_optix_core.cpp` are
+byte-identical. The adjacent Goal5840--Goal5844 run executes 159 tests with
+exactly five known historical/current-tree identity refusals and no new
+functional failure. Three old Goal5790 integration tests currently fail before
+execution because their generated historical Goal5789 freeze file is absent
+from Git; do not fabricate that historical authority or count those errors as
+Goal5844 functional failures.
+
+No Goal5844 GPU build or timing exists yet. The next action is to build the
+exact committed source and pinned `otk-pyoptix` commit `3144f224...` on any
+reachable single-NVIDIA-GPU pod, run worker-zero for both arms, then execute
+the balanced eight-block engineering comparison. The internal target is
+RTDL/PyOptiX at most 1.25x, but every outcome remains engineering-only. Goal5843
+is immutable; do not pool or rewrite its rows. No public/manuscript performance
+claim, hardware-independent claim, external review or consensus is authorized.
+
 ## Critical current override: Goal5843 fair post-R1 baseline internally complete (2026-09-04)
 
 Goal5843 is internally technically complete at exactly

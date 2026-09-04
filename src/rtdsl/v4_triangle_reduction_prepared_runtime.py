@@ -6,13 +6,19 @@ import ctypes
 import hashlib
 import math
 import os
+import secrets
 import threading
 import time
 from collections.abc import Iterator, Mapping, Sequence
 
 import numpy as np
 
-from .physical_execution_provenance import OptixTraversalAuditSession
+from .physical_execution_provenance import (
+    NativeTraversalAuditSnapshot,
+    OptixTraversalAuditSession,
+    build_compact_traversal_receipt,
+    captured_traversal_observation_from_snapshot,
+)
 from .v4_triangle_reduction import (
     MetadataDomain,
     ReducerAlgebra,
@@ -66,6 +72,32 @@ class _FastPathReceipt(ctypes.Structure):
     ]
 
 
+class _ValidatedFastOperationReceipt(Mapping[str, int | bool]):
+    """Lazy immutable view over one validated native fast-path receipt."""
+
+    _names = tuple(name for name, _ctype in _FastPathReceipt._fields_)
+    _boolean_names = {
+        "status_before_output",
+        "role_counters_materialized",
+        "prepared_input_reused",
+    }
+
+    def __init__(self, receipt: _FastPathReceipt) -> None:
+        self._receipt = receipt
+
+    def __getitem__(self, key: str) -> int | bool:
+        if key not in self._names:
+            raise KeyError(key)
+        value = int(getattr(self._receipt, key))
+        return bool(value) if key in self._boolean_names else value
+
+    def __iter__(self) -> Iterator[str]:
+        return iter(self._names)
+
+    def __len__(self) -> int:
+        return len(self._names)
+
+
 class _ValidatedFastStatusRows(Sequence[Mapping[str, int]]):
     """Public status view after the native compact-status gate passes."""
 
@@ -102,6 +134,7 @@ def _validate_fast_receipt(
     compact_status: int,
     prepared_input_reused: bool,
     use_multipliers: bool,
+    expected_input_generation: int | None = None,
 ) -> Mapping[str, int | bool]:
     raw_status_before_output = int(receipt.status_before_output)
     raw_role_counters_materialized = int(receipt.role_counters_materialized)
@@ -114,15 +147,6 @@ def _validate_fast_receipt(
         else query_count * (7 * ctypes.sizeof(ctypes.c_float))
         + int(use_multipliers) * query_count * ctypes.sizeof(ctypes.c_uint64)
     )
-    values: dict[str, int | bool] = {
-        name: int(getattr(receipt, name))
-        for name, _ctype in _FastPathReceipt._fields_
-    }
-    values["status_before_output"] = bool(raw_status_before_output)
-    values["role_counters_materialized"] = bool(
-        raw_role_counters_materialized
-    )
-    values["prepared_input_reused"] = bool(raw_prepared_input_reused)
     if (
         ctypes.sizeof(_FastPathReceipt) != 128
         or int(receipt.schema_version) != 2
@@ -142,6 +166,11 @@ def _validate_fast_receipt(
         or int(receipt.dynamic_explicit_sync_count) != 0
         or int(receipt.dynamic_blocking_upload_call_count) != 0
         or int(receipt.dynamic_input_generation) <= 0
+        or (
+            expected_input_generation is not None
+            and int(receipt.dynamic_input_generation)
+                != expected_input_generation
+        )
         or int(receipt.semantic_compaction_launch_count) != 0
         or int(receipt.semantic_compaction_key_capacity) != 0
         or int(receipt.semantic_compaction_scratch_bytes) != 0
@@ -155,6 +184,7 @@ def _validate_fast_receipt(
         or int(receipt.status_d2h_copy_call_count) != 1
         or int(receipt.output_d2h_copy_call_count) != int(success)
     ):
+        values = dict(_ValidatedFastOperationReceipt(receipt))
         raise RuntimeError(
             f"prepared triangle fast-path receipt is invalid: {values!r}"
         )
@@ -163,7 +193,7 @@ def _validate_fast_receipt(
             f"prepared triangle compact device status rejected execution: "
             f"{compact_status}"
         )
-    return values
+    return _ValidatedFastOperationReceipt(receipt)
 
 
 def _configure(library):
@@ -175,6 +205,9 @@ def _configure(library):
     )
     execute_scalar = getattr(
         library, "rtdl_optix_v4_execute_prepared_triangle_reduction_callback_v7", None
+    )
+    execute_scalar_integrated = getattr(
+        library, "rtdl_optix_v4_execute_prepared_triangle_reduction_callback_v8", None
     )
     commit = getattr(
         library, "rtdl_optix_v4_commit_prepared_triangle_reduction_cache_v1", None
@@ -252,6 +285,15 @@ def _configure(library):
         ctypes.POINTER(ctypes.c_char),
         ctypes.c_size_t,
     ]
+    if execute_scalar_integrated is not None:
+        execute_scalar_integrated.argtypes = [
+            *execute_scalar.argtypes[:-2],
+            ctypes.c_uint64,
+            ctypes.c_uint64,
+            ctypes.POINTER(NativeTraversalAuditSnapshot),
+            ctypes.POINTER(ctypes.c_char),
+            ctypes.c_size_t,
+        ]
     commit.argtypes = [
         ctypes.c_uint64,
         ctypes.POINTER(ctypes.c_uint8),
@@ -286,10 +328,13 @@ def _configure(library):
         reduce_u64,
     ):
         symbol.restype = ctypes.c_int
+    if execute_scalar_integrated is not None:
+        execute_scalar_integrated.restype = ctypes.c_int
     return (
         prepare,
         execute,
         execute_scalar,
+        execute_scalar_integrated,
         commit,
         cache_digest,
         destroy,
@@ -507,6 +552,7 @@ class PreparedTriangleReductionOwner:
             prepare,
             execute,
             execute_scalar,
+            execute_scalar_integrated,
             commit,
             cache_digest,
             destroy,
@@ -542,6 +588,7 @@ class PreparedTriangleReductionOwner:
         self._library = library
         self._execute = execute
         self._execute_scalar = execute_scalar
+        self._execute_scalar_integrated = execute_scalar_integrated
         self._commit = commit
         self._cache_digest = cache_digest
         self._destroy = destroy
@@ -561,6 +608,8 @@ class PreparedTriangleReductionOwner:
         self._cached_query_metadata = None
         self._cached_query_inputs = None
         self._cached_query_digest = None
+        self._cached_query_generation = None
+        self._cached_query_pointers = None
         self._native_sha = native_sha
         self._composed_ptx_sha = hashlib.sha256(composed_ptx.encode()).hexdigest()
         self._pid = os.getpid()
@@ -571,7 +620,27 @@ class PreparedTriangleReductionOwner:
         self._last_execution_receipt = None
         self._scalar_output = ctypes.c_uint64()
         self._fast_compact_status = ctypes.c_uint32()
+        self._fast_receipt = _FastPathReceipt()
         self._call_error = ctypes.create_string_buffer(16384)
+        self._integrated_audit_snapshot = NativeTraversalAuditSnapshot()
+        self._integrated_audit_sequence = 0
+        self._integrated_audit_nonce_hi = secrets.randbits(64) or 1
+        self._integrated_audit_output_sha = None
+        self._integrated_status_rows = None
+        self._route_identity = (
+            "v4_builtin_triangle_callback_ir:checked_reduction_v1"
+        )
+        self._program_bundle = "v4_builtin_triangle_checked_reduction_composed"
+        self._semantic_digest = _digest(
+            {
+                "authority": self._fresh.authority_nonce,
+                "contract": self._contract.contract_sha256,
+                "abi": self._abi.abi_sha256,
+                "composed_ptx": self._composed_ptx_sha,
+                "native": self._native_sha,
+            }
+        )
+        self._native_path = native_path
         self.prepare_seconds = time.perf_counter() - started
         self._session_identity = _digest(
             {
@@ -603,6 +672,8 @@ class PreparedTriangleReductionOwner:
         self._cached_query_metadata = None
         self._cached_query_inputs = None
         self._cached_query_digest = None
+        self._cached_query_generation = None
+        self._cached_query_pointers = None
 
     def _commit_query_cache(self, digest_hex: str) -> None:
         digest = (ctypes.c_uint8 * 32).from_buffer_copy(bytes.fromhex(digest_hex))
@@ -628,7 +699,13 @@ class PreparedTriangleReductionOwner:
         )
         return bytes(digest).hex() if present.value else None
 
-    def _query_cache_reusable(self, queries, metadata_key) -> bool:
+    def _query_cache_reusable(
+        self,
+        queries,
+        metadata_key,
+        *,
+        in_call_reuse_validation: bool = False,
+    ) -> bool:
         cached_metadata = self._cached_query_metadata
         local_match = (
             queries is self._cached_queries
@@ -641,15 +718,51 @@ class PreparedTriangleReductionOwner:
             )
             and self._cached_query_inputs is not None
             and self._cached_query_digest is not None
+            and (
+                not in_call_reuse_validation
+                or self._cached_query_generation is not None
+            )
         )
-        return (
-            local_match
-            and self._native_query_cache_digest() == self._cached_query_digest
+        if not local_match:
+            return False
+        if in_call_reuse_validation:
+            return True
+        return self._native_query_cache_digest() == self._cached_query_digest
+
+    def last_forensic_traversal_receipt(self) -> Mapping[str, object]:
+        """Expand the latest integrated compact stamp outside ordinary execute."""
+
+        self._check()
+        if (
+            self._integrated_audit_sequence == 0
+            or self._integrated_audit_output_sha is None
+        ):
+            raise RuntimeError("no integrated traversal observation is available")
+        observation = captured_traversal_observation_from_snapshot(
+            self._integrated_audit_snapshot,
+            provider_library_path=self._native_path,
+            provider_library_sha256=self._native_sha,
+            nonce=(
+                self._integrated_audit_nonce_hi,
+                self._integrated_audit_sequence,
+            ),
+            expected_program_bundles=(self._program_bundle,),
+        )
+        return observation.build_receipt(
+            semantic_digest=self._semantic_digest,
+            output_digest=self._integrated_audit_output_sha,
+            route_identity=self._route_identity,
         )
 
     @property
     def lifecycle_receipt(self):
         self._check()
+        last_execution = self._last_execution_receipt
+        if last_execution is not None:
+            last_execution = dict(last_execution)
+            fast = last_execution.get("fast_operation_receipt")
+            if isinstance(fast, Mapping):
+                last_execution["fast_operation_receipt"] = dict(fast)
         return {
             "schema": "rtdl.v4.prepared_application_lifecycle.v1",
             "session_identity": self._session_identity,
@@ -660,7 +773,7 @@ class PreparedTriangleReductionOwner:
             "prepare_seconds_reported_separately": True,
             "cold_result_replaced": False,
             "execution_count": self._execution_count,
-            "last_execution": self._last_execution_receipt,
+            "last_execution": last_execution,
             "native_library_sha256": self._native_sha,
             "composed_ptx_sha256": self._composed_ptx_sha,
         }
@@ -684,9 +797,24 @@ class PreparedTriangleReductionOwner:
             if set(query_metadata) != expected_query_names:
                 raise ValueError("query metadata must contain exact query channels")
             metadata_key = tuple(sorted(query_metadata.items()))
+            reducer = self._fresh.schema.reducer
+            scalar_only = (
+                not include_diagnostics
+                and reducer.algebra
+                in {
+                    ReducerAlgebra.CHECKED_U64_SUM,
+                    ReducerAlgebra.CHECKED_U64_PRODUCT_SUM,
+                }
+            )
+            integrated_scalar = (
+                scalar_only
+                and getattr(self, "_execute_scalar_integrated", None) is not None
+            )
             try:
                 cache_hit = self._query_cache_reusable(
-                    queries, metadata_key
+                    queries,
+                    metadata_key,
+                    in_call_reuse_validation=integrated_scalar,
                 )
             except BaseException:
                 self._clear_query_cache_identity()
@@ -695,6 +823,7 @@ class PreparedTriangleReductionOwner:
                 queries, query_metadata
             )
             next_cached_query_inputs = None
+            next_cached_query_pointers = None
             if cache_hit:
                 (
                     origins_f32,
@@ -705,6 +834,9 @@ class PreparedTriangleReductionOwner:
                     query_digest_native,
                 ) = self._cached_query_inputs
                 query_digest = self._cached_query_digest
+                cached_pointers = getattr(self, "_cached_query_pointers", None)
+                if cached_pointers is not None:
+                    origin_native, direction_native, tmax_native = cached_pointers
             else:
                 # Retire the old identity before native state can change.  A
                 # failed A->B transition must never make a later A look like
@@ -789,25 +921,39 @@ class PreparedTriangleReductionOwner:
                         query_digest_native,
                     )
             assert query_digest is not None
-            origin_native = origins_f32.ctypes.data_as(ctypes.POINTER(ctypes.c_float))
-            direction_native = directions_f32.ctypes.data_as(
-                ctypes.POINTER(ctypes.c_float)
-            )
-            tmax_native = tmax_f32.ctypes.data_as(ctypes.POINTER(ctypes.c_float))
-            reducer = self._fresh.schema.reducer
-            scalar_only = (
-                not include_diagnostics
-                and reducer.algebra
-                in {
-                    ReducerAlgebra.CHECKED_U64_SUM,
-                    ReducerAlgebra.CHECKED_U64_PRODUCT_SUM,
-                }
-            )
+            if not cache_hit or getattr(self, "_cached_query_pointers", None) is None:
+                origin_native = origins_f32.ctypes.data_as(
+                    ctypes.POINTER(ctypes.c_float)
+                )
+                direction_native = directions_f32.ctypes.data_as(
+                    ctypes.POINTER(ctypes.c_float)
+                )
+                tmax_native = tmax_f32.ctypes.data_as(
+                    ctypes.POINTER(ctypes.c_float)
+                )
+                if cacheable:
+                    next_cached_query_pointers = (
+                        origin_native,
+                        direction_native,
+                        tmax_native,
+                    )
             error = getattr(self, "_call_error", None)
             if error is None:
                 error = ctypes.create_string_buffer(16384)
                 self._call_error = error
-            audit = OptixTraversalAuditSession.open(library=self._library)
+            audit = None
+            integrated_sequence = None
+            if integrated_scalar:
+                integrated_sequence = self._integrated_audit_sequence + 1
+                if integrated_sequence >= 1 << 64:
+                    raise RuntimeError(
+                        "prepared triangle integrated audit sequence exhausted"
+                    )
+                self._integrated_audit_sequence = integrated_sequence
+            else:
+                audit = OptixTraversalAuditSession.open(library=self._library)
+            self._integrated_audit_output_sha = None
+            observed_input_generation = None
             try:
                 if scalar_only:
                     reduced_native = getattr(self, "_scalar_output", None)
@@ -818,31 +964,49 @@ class PreparedTriangleReductionOwner:
                     if compact_status is None:
                         compact_status = ctypes.c_uint32()
                         self._fast_compact_status = compact_status
-                    fast_receipt = _FastPathReceipt()
+                    fast_receipt = getattr(self, "_fast_receipt", None)
+                    if fast_receipt is None:
+                        fast_receipt = _FastPathReceipt()
+                        self._fast_receipt = fast_receipt
                     use_multipliers = int(multiplier_native is not None)
-                    _raise(
-                        int(
-                            self._execute_scalar(
-                                self._token,
-                                origin_native,
-                                direction_native,
-                                tmax_native,
-                                count,
-                                int(cache_hit),
-                                use_multipliers,
-                                int(cache_hit and use_multipliers),
-                                query_digest_native,
-                                32,
-                                multiplier_native,
-                                ctypes.byref(reduced_native),
-                                ctypes.byref(compact_status),
-                                ctypes.byref(fast_receipt),
-                                error,
-                                len(error),
+                    scalar_symbol = (
+                        self._execute_scalar_integrated
+                        if integrated_scalar
+                        else self._execute_scalar
+                    )
+                    scalar_args = [
+                        self._token,
+                        origin_native,
+                        direction_native,
+                        tmax_native,
+                        count,
+                        int(cache_hit),
+                        use_multipliers,
+                        int(cache_hit and use_multipliers),
+                        query_digest_native,
+                        32,
+                        multiplier_native,
+                        ctypes.byref(reduced_native),
+                        ctypes.byref(compact_status),
+                        ctypes.byref(fast_receipt),
+                    ]
+                    if integrated_scalar:
+                        scalar_args.extend(
+                            (
+                                self._integrated_audit_nonce_hi,
+                                integrated_sequence,
+                                ctypes.byref(self._integrated_audit_snapshot),
                             )
-                        ),
+                        )
+                    scalar_args.extend((error, len(error)))
+                    _raise(
+                        int(scalar_symbol(*scalar_args)),
                         error,
-                        "prepared triangle scalar execute",
+                        (
+                            "prepared triangle integrated scalar execute"
+                            if integrated_scalar
+                            else "prepared triangle scalar execute"
+                        ),
                     )
                     fast_operation_receipt = _validate_fast_receipt(
                         fast_receipt,
@@ -850,8 +1014,22 @@ class PreparedTriangleReductionOwner:
                         compact_status=int(compact_status.value),
                         prepared_input_reused=bool(cache_hit),
                         use_multipliers=bool(use_multipliers),
+                        expected_input_generation=(
+                            self._cached_query_generation
+                            if integrated_scalar and cache_hit
+                            else None
+                        ),
                     )
-                    status_rows = _ValidatedFastStatusRows(count)
+                    observed_input_generation = int(
+                        fast_receipt.dynamic_input_generation
+                    )
+                    status_rows = getattr(self, "_integrated_status_rows", None)
+                    if status_rows is None or status_rows[0][
+                        "validated_row_count"
+                    ] != count:
+                        status_rows = _ValidatedFastStatusRows(count)
+                        if integrated_scalar:
+                            self._integrated_status_rows = status_rows
                     counter_rows: Sequence[int] = ()
                     reduced = int(reduced_native.value)
                     per_ray_values: Sequence[int] = ()
@@ -956,24 +1134,40 @@ class PreparedTriangleReductionOwner:
                             multipliers=multipliers,
                         )
                 output_sha = _digest(reduced)
-                receipt = audit.finish(
-                    semantic_digest=_digest(
-                        {
-                            "authority": self._fresh.authority_nonce,
-                            "contract": self._contract.contract_sha256,
-                            "abi": self._abi.abi_sha256,
-                            "composed_ptx": self._composed_ptx_sha,
-                            "native": self._native_sha,
-                        }
-                    ),
-                    output_digest=output_sha,
-                    route_identity=(
-                        "v4_builtin_triangle_callback_ir:checked_reduction_v1"
-                    ),
-                    expected_program_bundles=(
-                        "v4_builtin_triangle_checked_reduction_composed",
-                    ),
-                )
+                if integrated_scalar:
+                    receipt = build_compact_traversal_receipt(
+                        self._integrated_audit_snapshot,
+                        provider_library_sha256=self._native_sha,
+                        route_identity=self._route_identity,
+                        semantic_digest=self._semantic_digest,
+                        output_digest=output_sha,
+                        expected_program_bundle=self._program_bundle,
+                        expected_raygen_invocation_count=count,
+                        execution_sequence=integrated_sequence,
+                    )
+                else:
+                    assert audit is not None
+                    semantic_digest = getattr(self, "_semantic_digest", None)
+                    if semantic_digest is None:
+                        semantic_digest = _digest(
+                            {
+                                "authority": self._fresh.authority_nonce,
+                                "contract": self._contract.contract_sha256,
+                                "abi": self._abi.abi_sha256,
+                                "composed_ptx": self._composed_ptx_sha,
+                                "native": self._native_sha,
+                            }
+                        )
+                    receipt = audit.finish(
+                        semantic_digest=semantic_digest,
+                        output_digest=output_sha,
+                        route_identity=(
+                            "v4_builtin_triangle_callback_ir:checked_reduction_v1"
+                        ),
+                        expected_program_bundles=(
+                            "v4_builtin_triangle_checked_reduction_composed",
+                        ),
+                    )
                 if (
                     receipt["physical_executor_classification"]
                     != "optix_traversal_observed"
@@ -986,7 +1180,8 @@ class PreparedTriangleReductionOwner:
                             "prepared triangle query-cache commit mismatch"
                         )
             except BaseException:
-                audit.abort()
+                if audit is not None:
+                    audit.abort()
                 self._clear_query_cache_identity()
                 raise
             if not cache_hit:
@@ -995,12 +1190,20 @@ class PreparedTriangleReductionOwner:
                     self._cached_query_metadata = metadata_key
                     self._cached_query_inputs = next_cached_query_inputs
                     self._cached_query_digest = query_digest
+                    self._cached_query_generation = observed_input_generation
+                    self._cached_query_pointers = next_cached_query_pointers
                 else:
                     self._clear_query_cache_identity()
+            elif next_cached_query_pointers is not None:
+                self._cached_query_pointers = next_cached_query_pointers
+            if integrated_scalar:
+                self._integrated_audit_output_sha = output_sha
             self._last_execution_receipt = {
                 "schema": "rtdl.v4.triangle_reduction_execution_boundary.v1",
                 "execution_path": (
-                    "device_resident_checked_u64_scalar_v7"
+                    "device_resident_checked_u64_scalar_v8_integrated_audit"
+                    if integrated_scalar
+                    else "device_resident_checked_u64_scalar_v7"
                     if scalar_only
                     else "diagnostic_per_ray_v2"
                 ),

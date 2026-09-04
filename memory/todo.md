@@ -11989,3 +11989,19 @@ author-artifact parity work.
 - [ ] Instrument the remaining public RTDL steady path before choosing the next repair; do not infer exact attribution from aggregate ratios.
 - [ ] Reduce generic dispatch/receipt overhead only through the ordinary public path and without weakening checks, receipts, or app-neutral boundaries.
 - [ ] Rerun a separately preregistered fair baseline after any successor repair; never rewrite or pool Goal5843 rows.
+
+## Goal5844 compact execution stamp checkpoint (2026-09-04)
+
+- [x] Define the prepare-certificate / execute-stamp / forensic-expansion proof split.
+- [x] Add native v8 integrated traversal audit without changing the v7 operation or frozen generic core.
+- [x] Remove the redundant steady cache-digest crossing while retaining in-call digest and generation validation.
+- [x] Reuse immutable query pointers and fixed ctypes scratch under the prepared-owner lock.
+- [x] Add fail-closed compact-receipt, replay, generation, status, ABI-fallback, public-envelope and timing-summary tests.
+- [x] Build an alternating fresh-process RTDL/PyOptiX engineering controller that retains every sample.
+- [x] Prepare a clean Goal5844 source checkpoint for commit and pod transfer.
+- [ ] Push the committed Goal5844 checkpoint before GPU execution.
+- [ ] On one reachable NVIDIA pod, build the exact commit and verify the exported v8 symbol plus focused GPU tests.
+- [ ] Run untimed worker-zero for both arms, then the eight-block comparison using the exact Goal5843 triangle task.
+- [ ] If median within-block RTDL/PyOptiX is above 1.25x, retain the adverse result and optimize only the largest measured public/provider/native layer.
+- [ ] Copy all raw evidence back and independently revalidate it on the Mac.
+- [ ] Obtain deferred external review before any public or manuscript performance wording.
