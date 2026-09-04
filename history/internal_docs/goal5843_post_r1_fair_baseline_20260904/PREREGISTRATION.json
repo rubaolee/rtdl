@@ -1,0 +1,1560 @@
+{
+  "arms": [
+    "A_DIRECT_CUDA_OPTIX",
+    "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+    "D_RTDL_PUBLIC_CHECK_ON_POST_R1"
+  ],
+  "claim_ceiling": {
+    "direct_pyoptix_rtdl_hidden_work_is_identical": false,
+    "external_review_or_consensus_complete": false,
+    "general_language_performance_claim_authorized": false,
+    "hardware_independent_claim_authorized": false,
+    "internal_technical_evidence_only": true,
+    "manuscript_performance_claim_authorized": false,
+    "public_performance_claim_authorized": false,
+    "relation_is_scalar_fast_path": false
+  },
+  "estimands": {
+    "bootstrap": {
+      "draws": 10000,
+      "lower_order_index": 249,
+      "seed_base": 58430000,
+      "upper_order_index": 9749
+    },
+    "primary": {
+      "aggregation": "median_of_18_within_block_ratios",
+      "metric": "steady_complete_execution_median_ns",
+      "ratios": [
+        "RTDL/DIRECT",
+        "RTDL/PYOPTIX"
+      ],
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1"
+    },
+    "registered_performance_success_threshold": null,
+    "secondary": [
+      "triangle first complete execution and descriptive setup phases",
+      "relation first/steady complete execution and descriptive setup phases"
+    ]
+  },
+  "failure_policy": {
+    "adverse_performance_is_not_technical_failure": true,
+    "any_worker_failure_terminates_transaction": true,
+    "failed_or_partial_transaction_not_reclassified_as_success": true,
+    "post_worker_zero_repair_requires_new_preregistration": true
+  },
+  "fairness": {
+    "all_provider_execute_durations_wait_for_required_output": true,
+    "direct_transport_schema_inherited_from_goal5842_only": true,
+    "hidden_implementation_work_not_claimed_identical": true,
+    "prepared_query_and_static_target_reuse_for_steady": true,
+    "relation_provider_launch_counts_may_differ_and_are_reported": true,
+    "rtdl_formal_leaf_cache_created_before_worker_zero_and_read_only_during_workers": true,
+    "rtdl_private_checker_off_forbidden": true,
+    "rtdl_uses_public_check_on_front_door": true,
+    "same_deterministic_input_digest_per_task": true,
+    "same_gpu_and_fresh_process_subworker_policy": true,
+    "same_public_output_digest_per_task": true,
+    "triangle_all_arms_use_one_optix_launch_per_complete_execution": true
+  },
+  "frozen_core_sha256": {
+    "src/rtdsl/v4_family.py": "d25c487823e966a8e9083092811c9a1a2b6aa0fef6ce8f3a0a5b8919c5b809e8",
+    "src/rtdsl/v4_family_schema.py": "2d118697d10cb2bc2a8672700ae5a991eaf94e66834bb3e08fd898323720f224",
+    "src/rtdsl/v4_generic_family_lifecycle.py": "7ac68832de9d1e04fdd6f0f11bfa0de7d6109d892ab22e42c9aeb2825d28228c"
+  },
+  "oracle_contract": {
+    "implementation_imports_forbidden": true,
+    "relation_method": "prove_disjoint_unit_boxes_and_rederive_all_self_rows",
+    "route_independent_structural_rederivation_before_worker_zero": true,
+    "triangle_method": "prove x-axis separation and rederive one hit plus checked-u64 scalar",
+    "witness_bound_into_execution_authority_and_every_subworker": true
+  },
+  "phase_contract": {
+    "complete_execution_includes": [
+      "output_reset",
+      "launch_parameter_update",
+      "provider_required_optix_launches",
+      "required_public_output_transfer",
+      "public_status_check",
+      "gpu_completion_before_timer_stop"
+    ],
+    "first_execution_query_upload_phase_differs_by_provider_and_is_descriptive_only": true,
+    "oracle_comparison_outside_timed_interval": true,
+    "phases": [
+      "deterministic_input_materialization",
+      "route_declaration_and_artifact_binding",
+      "provider_projection_and_generic_family_admission",
+      "runtime_target_and_toolchain_binding",
+      "device_compile",
+      "module_program_pipeline_sbt",
+      "target_materialization",
+      "native_prepare",
+      "first_complete_execution",
+      "steady_complete_execution",
+      "close"
+    ],
+    "process_startup_excluded_from_all_provider_phase_estimands": true,
+    "provider_specific_setup_reported_descriptively_not_as_equivalent_work": true,
+    "setup_total_components": [
+      "route_declaration_and_artifact_binding",
+      "provider_projection_and_generic_family_admission",
+      "runtime_target_and_toolchain_binding",
+      "target_materialization",
+      "native_prepare"
+    ]
+  },
+  "predecessors": {
+    "goal5842_v12_authority_sha256": "5c8044d9204df6b5d622142aecab8fcd25990e2ca1a19c7c5055ef4e16a31e43",
+    "goal5842r1_authority_sha256": "7897058f51dedc3b6b5c652b5c3d69418610919557f9ee9a9c70214a5f184248",
+    "prior_timing_rows_pooled": false
+  },
+  "preregistration_sha256": "30857d8f7fe16ab3408c45be0e20123bb5d377400bbf09829ab9a099de0f2b00",
+  "purpose": "fresh fair post-Goal5842R1 Direct CUDA/OptiX versus pinned PyOptiX-compatible versus ordinary public check-on RTDL baseline",
+  "rtdl_triangle_receipt_gate": {
+    "control_d2h_bytes": 12,
+    "dynamic_accel_build_count": 0,
+    "event_rows_materialized_on_host": false,
+    "execution_path": "device_resident_checked_u64_scalar_v7",
+    "first_dynamic_device_upload_required": true,
+    "optix_launch_count": 1,
+    "output_d2h_bytes": 8,
+    "per_ray_u64_materialized_on_host": false,
+    "public_output_scalar_bytes": 8,
+    "role_counters_materialized": false,
+    "steady_dynamic_device_upload_bytes": 0,
+    "steady_dynamic_device_upload_call_count": 0,
+    "steady_prepared_query_input_reused": true,
+    "total_auxiliary_cuda_kernel_launch_count": 0
+  },
+  "sampling": {
+    "all_adverse_rows_retained": true,
+    "blocks": 18,
+    "first_fresh_subworker_repetitions": 1,
+    "steady_fresh_subworker_repetitions": 64,
+    "steady_fresh_subworker_warmups": 8,
+    "subworker_retry_permitted": false
+  },
+  "schedule": [
+    {
+      "arm": "A_DIRECT_CUDA_OPTIX",
+      "arm_position": 0,
+      "arm_sample_index": 0,
+      "block": 0,
+      "permutation_index": 0,
+      "sequence_index": 0,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 0,
+      "worker_id": "G5843_B000__K00__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__A_DIRECT_CUDA_OPTIX"
+    },
+    {
+      "arm": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+      "arm_position": 1,
+      "arm_sample_index": 0,
+      "block": 0,
+      "permutation_index": 0,
+      "sequence_index": 1,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 0,
+      "worker_id": "G5843_B001__K00__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API"
+    },
+    {
+      "arm": "D_RTDL_PUBLIC_CHECK_ON_POST_R1",
+      "arm_position": 2,
+      "arm_sample_index": 0,
+      "block": 0,
+      "permutation_index": 0,
+      "sequence_index": 2,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 0,
+      "worker_id": "G5843_B002__K00__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__D_RTDL_PUBLIC_CHECK_ON_POST_R1"
+    },
+    {
+      "arm": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+      "arm_position": 0,
+      "arm_sample_index": 0,
+      "block": 0,
+      "permutation_index": 2,
+      "sequence_index": 3,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 1,
+      "worker_id": "G5843_B003__K00__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API"
+    },
+    {
+      "arm": "A_DIRECT_CUDA_OPTIX",
+      "arm_position": 1,
+      "arm_sample_index": 0,
+      "block": 0,
+      "permutation_index": 2,
+      "sequence_index": 4,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 1,
+      "worker_id": "G5843_B004__K00__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__A_DIRECT_CUDA_OPTIX"
+    },
+    {
+      "arm": "D_RTDL_PUBLIC_CHECK_ON_POST_R1",
+      "arm_position": 2,
+      "arm_sample_index": 0,
+      "block": 0,
+      "permutation_index": 2,
+      "sequence_index": 5,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 1,
+      "worker_id": "G5843_B005__K00__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__D_RTDL_PUBLIC_CHECK_ON_POST_R1"
+    },
+    {
+      "arm": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+      "arm_position": 0,
+      "arm_sample_index": 1,
+      "block": 1,
+      "permutation_index": 3,
+      "sequence_index": 6,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 0,
+      "worker_id": "G5843_B006__K01__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API"
+    },
+    {
+      "arm": "D_RTDL_PUBLIC_CHECK_ON_POST_R1",
+      "arm_position": 1,
+      "arm_sample_index": 1,
+      "block": 1,
+      "permutation_index": 3,
+      "sequence_index": 7,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 0,
+      "worker_id": "G5843_B007__K01__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__D_RTDL_PUBLIC_CHECK_ON_POST_R1"
+    },
+    {
+      "arm": "A_DIRECT_CUDA_OPTIX",
+      "arm_position": 2,
+      "arm_sample_index": 1,
+      "block": 1,
+      "permutation_index": 3,
+      "sequence_index": 8,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 0,
+      "worker_id": "G5843_B008__K01__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__A_DIRECT_CUDA_OPTIX"
+    },
+    {
+      "arm": "A_DIRECT_CUDA_OPTIX",
+      "arm_position": 0,
+      "arm_sample_index": 1,
+      "block": 1,
+      "permutation_index": 1,
+      "sequence_index": 9,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 1,
+      "worker_id": "G5843_B009__K01__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__A_DIRECT_CUDA_OPTIX"
+    },
+    {
+      "arm": "D_RTDL_PUBLIC_CHECK_ON_POST_R1",
+      "arm_position": 1,
+      "arm_sample_index": 1,
+      "block": 1,
+      "permutation_index": 1,
+      "sequence_index": 10,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 1,
+      "worker_id": "G5843_B010__K01__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__D_RTDL_PUBLIC_CHECK_ON_POST_R1"
+    },
+    {
+      "arm": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+      "arm_position": 2,
+      "arm_sample_index": 1,
+      "block": 1,
+      "permutation_index": 1,
+      "sequence_index": 11,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 1,
+      "worker_id": "G5843_B011__K01__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API"
+    },
+    {
+      "arm": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+      "arm_position": 0,
+      "arm_sample_index": 2,
+      "block": 2,
+      "permutation_index": 2,
+      "sequence_index": 12,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 0,
+      "worker_id": "G5843_B012__K02__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API"
+    },
+    {
+      "arm": "A_DIRECT_CUDA_OPTIX",
+      "arm_position": 1,
+      "arm_sample_index": 2,
+      "block": 2,
+      "permutation_index": 2,
+      "sequence_index": 13,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 0,
+      "worker_id": "G5843_B013__K02__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__A_DIRECT_CUDA_OPTIX"
+    },
+    {
+      "arm": "D_RTDL_PUBLIC_CHECK_ON_POST_R1",
+      "arm_position": 2,
+      "arm_sample_index": 2,
+      "block": 2,
+      "permutation_index": 2,
+      "sequence_index": 14,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 0,
+      "worker_id": "G5843_B014__K02__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__D_RTDL_PUBLIC_CHECK_ON_POST_R1"
+    },
+    {
+      "arm": "D_RTDL_PUBLIC_CHECK_ON_POST_R1",
+      "arm_position": 0,
+      "arm_sample_index": 2,
+      "block": 2,
+      "permutation_index": 4,
+      "sequence_index": 15,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 1,
+      "worker_id": "G5843_B015__K02__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__D_RTDL_PUBLIC_CHECK_ON_POST_R1"
+    },
+    {
+      "arm": "A_DIRECT_CUDA_OPTIX",
+      "arm_position": 1,
+      "arm_sample_index": 2,
+      "block": 2,
+      "permutation_index": 4,
+      "sequence_index": 16,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 1,
+      "worker_id": "G5843_B016__K02__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__A_DIRECT_CUDA_OPTIX"
+    },
+    {
+      "arm": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+      "arm_position": 2,
+      "arm_sample_index": 2,
+      "block": 2,
+      "permutation_index": 4,
+      "sequence_index": 17,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 1,
+      "worker_id": "G5843_B017__K02__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API"
+    },
+    {
+      "arm": "D_RTDL_PUBLIC_CHECK_ON_POST_R1",
+      "arm_position": 0,
+      "arm_sample_index": 3,
+      "block": 3,
+      "permutation_index": 5,
+      "sequence_index": 18,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 0,
+      "worker_id": "G5843_B018__K03__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__D_RTDL_PUBLIC_CHECK_ON_POST_R1"
+    },
+    {
+      "arm": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+      "arm_position": 1,
+      "arm_sample_index": 3,
+      "block": 3,
+      "permutation_index": 5,
+      "sequence_index": 19,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 0,
+      "worker_id": "G5843_B019__K03__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API"
+    },
+    {
+      "arm": "A_DIRECT_CUDA_OPTIX",
+      "arm_position": 2,
+      "arm_sample_index": 3,
+      "block": 3,
+      "permutation_index": 5,
+      "sequence_index": 20,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 0,
+      "worker_id": "G5843_B020__K03__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__A_DIRECT_CUDA_OPTIX"
+    },
+    {
+      "arm": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+      "arm_position": 0,
+      "arm_sample_index": 3,
+      "block": 3,
+      "permutation_index": 3,
+      "sequence_index": 21,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 1,
+      "worker_id": "G5843_B021__K03__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API"
+    },
+    {
+      "arm": "D_RTDL_PUBLIC_CHECK_ON_POST_R1",
+      "arm_position": 1,
+      "arm_sample_index": 3,
+      "block": 3,
+      "permutation_index": 3,
+      "sequence_index": 22,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 1,
+      "worker_id": "G5843_B022__K03__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__D_RTDL_PUBLIC_CHECK_ON_POST_R1"
+    },
+    {
+      "arm": "A_DIRECT_CUDA_OPTIX",
+      "arm_position": 2,
+      "arm_sample_index": 3,
+      "block": 3,
+      "permutation_index": 3,
+      "sequence_index": 23,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 1,
+      "worker_id": "G5843_B023__K03__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__A_DIRECT_CUDA_OPTIX"
+    },
+    {
+      "arm": "D_RTDL_PUBLIC_CHECK_ON_POST_R1",
+      "arm_position": 0,
+      "arm_sample_index": 4,
+      "block": 4,
+      "permutation_index": 4,
+      "sequence_index": 24,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 0,
+      "worker_id": "G5843_B024__K04__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__D_RTDL_PUBLIC_CHECK_ON_POST_R1"
+    },
+    {
+      "arm": "A_DIRECT_CUDA_OPTIX",
+      "arm_position": 1,
+      "arm_sample_index": 4,
+      "block": 4,
+      "permutation_index": 4,
+      "sequence_index": 25,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 0,
+      "worker_id": "G5843_B025__K04__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__A_DIRECT_CUDA_OPTIX"
+    },
+    {
+      "arm": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+      "arm_position": 2,
+      "arm_sample_index": 4,
+      "block": 4,
+      "permutation_index": 4,
+      "sequence_index": 26,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 0,
+      "worker_id": "G5843_B026__K04__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API"
+    },
+    {
+      "arm": "A_DIRECT_CUDA_OPTIX",
+      "arm_position": 0,
+      "arm_sample_index": 4,
+      "block": 4,
+      "permutation_index": 0,
+      "sequence_index": 27,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 1,
+      "worker_id": "G5843_B027__K04__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__A_DIRECT_CUDA_OPTIX"
+    },
+    {
+      "arm": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+      "arm_position": 1,
+      "arm_sample_index": 4,
+      "block": 4,
+      "permutation_index": 0,
+      "sequence_index": 28,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 1,
+      "worker_id": "G5843_B028__K04__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API"
+    },
+    {
+      "arm": "D_RTDL_PUBLIC_CHECK_ON_POST_R1",
+      "arm_position": 2,
+      "arm_sample_index": 4,
+      "block": 4,
+      "permutation_index": 0,
+      "sequence_index": 29,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 1,
+      "worker_id": "G5843_B029__K04__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__D_RTDL_PUBLIC_CHECK_ON_POST_R1"
+    },
+    {
+      "arm": "A_DIRECT_CUDA_OPTIX",
+      "arm_position": 0,
+      "arm_sample_index": 5,
+      "block": 5,
+      "permutation_index": 1,
+      "sequence_index": 30,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 0,
+      "worker_id": "G5843_B030__K05__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__A_DIRECT_CUDA_OPTIX"
+    },
+    {
+      "arm": "D_RTDL_PUBLIC_CHECK_ON_POST_R1",
+      "arm_position": 1,
+      "arm_sample_index": 5,
+      "block": 5,
+      "permutation_index": 1,
+      "sequence_index": 31,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 0,
+      "worker_id": "G5843_B031__K05__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__D_RTDL_PUBLIC_CHECK_ON_POST_R1"
+    },
+    {
+      "arm": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+      "arm_position": 2,
+      "arm_sample_index": 5,
+      "block": 5,
+      "permutation_index": 1,
+      "sequence_index": 32,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 0,
+      "worker_id": "G5843_B032__K05__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API"
+    },
+    {
+      "arm": "D_RTDL_PUBLIC_CHECK_ON_POST_R1",
+      "arm_position": 0,
+      "arm_sample_index": 5,
+      "block": 5,
+      "permutation_index": 5,
+      "sequence_index": 33,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 1,
+      "worker_id": "G5843_B033__K05__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__D_RTDL_PUBLIC_CHECK_ON_POST_R1"
+    },
+    {
+      "arm": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+      "arm_position": 1,
+      "arm_sample_index": 5,
+      "block": 5,
+      "permutation_index": 5,
+      "sequence_index": 34,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 1,
+      "worker_id": "G5843_B034__K05__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API"
+    },
+    {
+      "arm": "A_DIRECT_CUDA_OPTIX",
+      "arm_position": 2,
+      "arm_sample_index": 5,
+      "block": 5,
+      "permutation_index": 5,
+      "sequence_index": 35,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 1,
+      "worker_id": "G5843_B035__K05__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__A_DIRECT_CUDA_OPTIX"
+    },
+    {
+      "arm": "A_DIRECT_CUDA_OPTIX",
+      "arm_position": 0,
+      "arm_sample_index": 6,
+      "block": 6,
+      "permutation_index": 0,
+      "sequence_index": 36,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 0,
+      "worker_id": "G5843_B036__K06__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__A_DIRECT_CUDA_OPTIX"
+    },
+    {
+      "arm": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+      "arm_position": 1,
+      "arm_sample_index": 6,
+      "block": 6,
+      "permutation_index": 0,
+      "sequence_index": 37,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 0,
+      "worker_id": "G5843_B037__K06__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API"
+    },
+    {
+      "arm": "D_RTDL_PUBLIC_CHECK_ON_POST_R1",
+      "arm_position": 2,
+      "arm_sample_index": 6,
+      "block": 6,
+      "permutation_index": 0,
+      "sequence_index": 38,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 0,
+      "worker_id": "G5843_B038__K06__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__D_RTDL_PUBLIC_CHECK_ON_POST_R1"
+    },
+    {
+      "arm": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+      "arm_position": 0,
+      "arm_sample_index": 6,
+      "block": 6,
+      "permutation_index": 2,
+      "sequence_index": 39,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 1,
+      "worker_id": "G5843_B039__K06__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API"
+    },
+    {
+      "arm": "A_DIRECT_CUDA_OPTIX",
+      "arm_position": 1,
+      "arm_sample_index": 6,
+      "block": 6,
+      "permutation_index": 2,
+      "sequence_index": 40,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 1,
+      "worker_id": "G5843_B040__K06__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__A_DIRECT_CUDA_OPTIX"
+    },
+    {
+      "arm": "D_RTDL_PUBLIC_CHECK_ON_POST_R1",
+      "arm_position": 2,
+      "arm_sample_index": 6,
+      "block": 6,
+      "permutation_index": 2,
+      "sequence_index": 41,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 1,
+      "worker_id": "G5843_B041__K06__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__D_RTDL_PUBLIC_CHECK_ON_POST_R1"
+    },
+    {
+      "arm": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+      "arm_position": 0,
+      "arm_sample_index": 7,
+      "block": 7,
+      "permutation_index": 3,
+      "sequence_index": 42,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 0,
+      "worker_id": "G5843_B042__K07__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API"
+    },
+    {
+      "arm": "D_RTDL_PUBLIC_CHECK_ON_POST_R1",
+      "arm_position": 1,
+      "arm_sample_index": 7,
+      "block": 7,
+      "permutation_index": 3,
+      "sequence_index": 43,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 0,
+      "worker_id": "G5843_B043__K07__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__D_RTDL_PUBLIC_CHECK_ON_POST_R1"
+    },
+    {
+      "arm": "A_DIRECT_CUDA_OPTIX",
+      "arm_position": 2,
+      "arm_sample_index": 7,
+      "block": 7,
+      "permutation_index": 3,
+      "sequence_index": 44,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 0,
+      "worker_id": "G5843_B044__K07__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__A_DIRECT_CUDA_OPTIX"
+    },
+    {
+      "arm": "A_DIRECT_CUDA_OPTIX",
+      "arm_position": 0,
+      "arm_sample_index": 7,
+      "block": 7,
+      "permutation_index": 1,
+      "sequence_index": 45,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 1,
+      "worker_id": "G5843_B045__K07__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__A_DIRECT_CUDA_OPTIX"
+    },
+    {
+      "arm": "D_RTDL_PUBLIC_CHECK_ON_POST_R1",
+      "arm_position": 1,
+      "arm_sample_index": 7,
+      "block": 7,
+      "permutation_index": 1,
+      "sequence_index": 46,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 1,
+      "worker_id": "G5843_B046__K07__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__D_RTDL_PUBLIC_CHECK_ON_POST_R1"
+    },
+    {
+      "arm": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+      "arm_position": 2,
+      "arm_sample_index": 7,
+      "block": 7,
+      "permutation_index": 1,
+      "sequence_index": 47,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 1,
+      "worker_id": "G5843_B047__K07__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API"
+    },
+    {
+      "arm": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+      "arm_position": 0,
+      "arm_sample_index": 8,
+      "block": 8,
+      "permutation_index": 2,
+      "sequence_index": 48,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 0,
+      "worker_id": "G5843_B048__K08__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API"
+    },
+    {
+      "arm": "A_DIRECT_CUDA_OPTIX",
+      "arm_position": 1,
+      "arm_sample_index": 8,
+      "block": 8,
+      "permutation_index": 2,
+      "sequence_index": 49,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 0,
+      "worker_id": "G5843_B049__K08__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__A_DIRECT_CUDA_OPTIX"
+    },
+    {
+      "arm": "D_RTDL_PUBLIC_CHECK_ON_POST_R1",
+      "arm_position": 2,
+      "arm_sample_index": 8,
+      "block": 8,
+      "permutation_index": 2,
+      "sequence_index": 50,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 0,
+      "worker_id": "G5843_B050__K08__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__D_RTDL_PUBLIC_CHECK_ON_POST_R1"
+    },
+    {
+      "arm": "D_RTDL_PUBLIC_CHECK_ON_POST_R1",
+      "arm_position": 0,
+      "arm_sample_index": 8,
+      "block": 8,
+      "permutation_index": 4,
+      "sequence_index": 51,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 1,
+      "worker_id": "G5843_B051__K08__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__D_RTDL_PUBLIC_CHECK_ON_POST_R1"
+    },
+    {
+      "arm": "A_DIRECT_CUDA_OPTIX",
+      "arm_position": 1,
+      "arm_sample_index": 8,
+      "block": 8,
+      "permutation_index": 4,
+      "sequence_index": 52,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 1,
+      "worker_id": "G5843_B052__K08__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__A_DIRECT_CUDA_OPTIX"
+    },
+    {
+      "arm": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+      "arm_position": 2,
+      "arm_sample_index": 8,
+      "block": 8,
+      "permutation_index": 4,
+      "sequence_index": 53,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 1,
+      "worker_id": "G5843_B053__K08__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API"
+    },
+    {
+      "arm": "D_RTDL_PUBLIC_CHECK_ON_POST_R1",
+      "arm_position": 0,
+      "arm_sample_index": 9,
+      "block": 9,
+      "permutation_index": 5,
+      "sequence_index": 54,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 0,
+      "worker_id": "G5843_B054__K09__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__D_RTDL_PUBLIC_CHECK_ON_POST_R1"
+    },
+    {
+      "arm": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+      "arm_position": 1,
+      "arm_sample_index": 9,
+      "block": 9,
+      "permutation_index": 5,
+      "sequence_index": 55,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 0,
+      "worker_id": "G5843_B055__K09__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API"
+    },
+    {
+      "arm": "A_DIRECT_CUDA_OPTIX",
+      "arm_position": 2,
+      "arm_sample_index": 9,
+      "block": 9,
+      "permutation_index": 5,
+      "sequence_index": 56,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 0,
+      "worker_id": "G5843_B056__K09__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__A_DIRECT_CUDA_OPTIX"
+    },
+    {
+      "arm": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+      "arm_position": 0,
+      "arm_sample_index": 9,
+      "block": 9,
+      "permutation_index": 3,
+      "sequence_index": 57,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 1,
+      "worker_id": "G5843_B057__K09__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API"
+    },
+    {
+      "arm": "D_RTDL_PUBLIC_CHECK_ON_POST_R1",
+      "arm_position": 1,
+      "arm_sample_index": 9,
+      "block": 9,
+      "permutation_index": 3,
+      "sequence_index": 58,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 1,
+      "worker_id": "G5843_B058__K09__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__D_RTDL_PUBLIC_CHECK_ON_POST_R1"
+    },
+    {
+      "arm": "A_DIRECT_CUDA_OPTIX",
+      "arm_position": 2,
+      "arm_sample_index": 9,
+      "block": 9,
+      "permutation_index": 3,
+      "sequence_index": 59,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 1,
+      "worker_id": "G5843_B059__K09__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__A_DIRECT_CUDA_OPTIX"
+    },
+    {
+      "arm": "D_RTDL_PUBLIC_CHECK_ON_POST_R1",
+      "arm_position": 0,
+      "arm_sample_index": 10,
+      "block": 10,
+      "permutation_index": 4,
+      "sequence_index": 60,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 0,
+      "worker_id": "G5843_B060__K10__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__D_RTDL_PUBLIC_CHECK_ON_POST_R1"
+    },
+    {
+      "arm": "A_DIRECT_CUDA_OPTIX",
+      "arm_position": 1,
+      "arm_sample_index": 10,
+      "block": 10,
+      "permutation_index": 4,
+      "sequence_index": 61,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 0,
+      "worker_id": "G5843_B061__K10__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__A_DIRECT_CUDA_OPTIX"
+    },
+    {
+      "arm": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+      "arm_position": 2,
+      "arm_sample_index": 10,
+      "block": 10,
+      "permutation_index": 4,
+      "sequence_index": 62,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 0,
+      "worker_id": "G5843_B062__K10__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API"
+    },
+    {
+      "arm": "A_DIRECT_CUDA_OPTIX",
+      "arm_position": 0,
+      "arm_sample_index": 10,
+      "block": 10,
+      "permutation_index": 0,
+      "sequence_index": 63,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 1,
+      "worker_id": "G5843_B063__K10__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__A_DIRECT_CUDA_OPTIX"
+    },
+    {
+      "arm": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+      "arm_position": 1,
+      "arm_sample_index": 10,
+      "block": 10,
+      "permutation_index": 0,
+      "sequence_index": 64,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 1,
+      "worker_id": "G5843_B064__K10__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API"
+    },
+    {
+      "arm": "D_RTDL_PUBLIC_CHECK_ON_POST_R1",
+      "arm_position": 2,
+      "arm_sample_index": 10,
+      "block": 10,
+      "permutation_index": 0,
+      "sequence_index": 65,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 1,
+      "worker_id": "G5843_B065__K10__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__D_RTDL_PUBLIC_CHECK_ON_POST_R1"
+    },
+    {
+      "arm": "A_DIRECT_CUDA_OPTIX",
+      "arm_position": 0,
+      "arm_sample_index": 11,
+      "block": 11,
+      "permutation_index": 1,
+      "sequence_index": 66,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 0,
+      "worker_id": "G5843_B066__K11__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__A_DIRECT_CUDA_OPTIX"
+    },
+    {
+      "arm": "D_RTDL_PUBLIC_CHECK_ON_POST_R1",
+      "arm_position": 1,
+      "arm_sample_index": 11,
+      "block": 11,
+      "permutation_index": 1,
+      "sequence_index": 67,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 0,
+      "worker_id": "G5843_B067__K11__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__D_RTDL_PUBLIC_CHECK_ON_POST_R1"
+    },
+    {
+      "arm": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+      "arm_position": 2,
+      "arm_sample_index": 11,
+      "block": 11,
+      "permutation_index": 1,
+      "sequence_index": 68,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 0,
+      "worker_id": "G5843_B068__K11__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API"
+    },
+    {
+      "arm": "D_RTDL_PUBLIC_CHECK_ON_POST_R1",
+      "arm_position": 0,
+      "arm_sample_index": 11,
+      "block": 11,
+      "permutation_index": 5,
+      "sequence_index": 69,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 1,
+      "worker_id": "G5843_B069__K11__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__D_RTDL_PUBLIC_CHECK_ON_POST_R1"
+    },
+    {
+      "arm": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+      "arm_position": 1,
+      "arm_sample_index": 11,
+      "block": 11,
+      "permutation_index": 5,
+      "sequence_index": 70,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 1,
+      "worker_id": "G5843_B070__K11__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API"
+    },
+    {
+      "arm": "A_DIRECT_CUDA_OPTIX",
+      "arm_position": 2,
+      "arm_sample_index": 11,
+      "block": 11,
+      "permutation_index": 5,
+      "sequence_index": 71,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 1,
+      "worker_id": "G5843_B071__K11__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__A_DIRECT_CUDA_OPTIX"
+    },
+    {
+      "arm": "A_DIRECT_CUDA_OPTIX",
+      "arm_position": 0,
+      "arm_sample_index": 12,
+      "block": 12,
+      "permutation_index": 0,
+      "sequence_index": 72,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 0,
+      "worker_id": "G5843_B072__K12__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__A_DIRECT_CUDA_OPTIX"
+    },
+    {
+      "arm": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+      "arm_position": 1,
+      "arm_sample_index": 12,
+      "block": 12,
+      "permutation_index": 0,
+      "sequence_index": 73,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 0,
+      "worker_id": "G5843_B073__K12__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API"
+    },
+    {
+      "arm": "D_RTDL_PUBLIC_CHECK_ON_POST_R1",
+      "arm_position": 2,
+      "arm_sample_index": 12,
+      "block": 12,
+      "permutation_index": 0,
+      "sequence_index": 74,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 0,
+      "worker_id": "G5843_B074__K12__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__D_RTDL_PUBLIC_CHECK_ON_POST_R1"
+    },
+    {
+      "arm": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+      "arm_position": 0,
+      "arm_sample_index": 12,
+      "block": 12,
+      "permutation_index": 2,
+      "sequence_index": 75,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 1,
+      "worker_id": "G5843_B075__K12__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API"
+    },
+    {
+      "arm": "A_DIRECT_CUDA_OPTIX",
+      "arm_position": 1,
+      "arm_sample_index": 12,
+      "block": 12,
+      "permutation_index": 2,
+      "sequence_index": 76,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 1,
+      "worker_id": "G5843_B076__K12__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__A_DIRECT_CUDA_OPTIX"
+    },
+    {
+      "arm": "D_RTDL_PUBLIC_CHECK_ON_POST_R1",
+      "arm_position": 2,
+      "arm_sample_index": 12,
+      "block": 12,
+      "permutation_index": 2,
+      "sequence_index": 77,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 1,
+      "worker_id": "G5843_B077__K12__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__D_RTDL_PUBLIC_CHECK_ON_POST_R1"
+    },
+    {
+      "arm": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+      "arm_position": 0,
+      "arm_sample_index": 13,
+      "block": 13,
+      "permutation_index": 3,
+      "sequence_index": 78,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 0,
+      "worker_id": "G5843_B078__K13__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API"
+    },
+    {
+      "arm": "D_RTDL_PUBLIC_CHECK_ON_POST_R1",
+      "arm_position": 1,
+      "arm_sample_index": 13,
+      "block": 13,
+      "permutation_index": 3,
+      "sequence_index": 79,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 0,
+      "worker_id": "G5843_B079__K13__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__D_RTDL_PUBLIC_CHECK_ON_POST_R1"
+    },
+    {
+      "arm": "A_DIRECT_CUDA_OPTIX",
+      "arm_position": 2,
+      "arm_sample_index": 13,
+      "block": 13,
+      "permutation_index": 3,
+      "sequence_index": 80,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 0,
+      "worker_id": "G5843_B080__K13__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__A_DIRECT_CUDA_OPTIX"
+    },
+    {
+      "arm": "A_DIRECT_CUDA_OPTIX",
+      "arm_position": 0,
+      "arm_sample_index": 13,
+      "block": 13,
+      "permutation_index": 1,
+      "sequence_index": 81,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 1,
+      "worker_id": "G5843_B081__K13__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__A_DIRECT_CUDA_OPTIX"
+    },
+    {
+      "arm": "D_RTDL_PUBLIC_CHECK_ON_POST_R1",
+      "arm_position": 1,
+      "arm_sample_index": 13,
+      "block": 13,
+      "permutation_index": 1,
+      "sequence_index": 82,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 1,
+      "worker_id": "G5843_B082__K13__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__D_RTDL_PUBLIC_CHECK_ON_POST_R1"
+    },
+    {
+      "arm": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+      "arm_position": 2,
+      "arm_sample_index": 13,
+      "block": 13,
+      "permutation_index": 1,
+      "sequence_index": 83,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 1,
+      "worker_id": "G5843_B083__K13__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API"
+    },
+    {
+      "arm": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+      "arm_position": 0,
+      "arm_sample_index": 14,
+      "block": 14,
+      "permutation_index": 2,
+      "sequence_index": 84,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 0,
+      "worker_id": "G5843_B084__K14__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API"
+    },
+    {
+      "arm": "A_DIRECT_CUDA_OPTIX",
+      "arm_position": 1,
+      "arm_sample_index": 14,
+      "block": 14,
+      "permutation_index": 2,
+      "sequence_index": 85,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 0,
+      "worker_id": "G5843_B085__K14__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__A_DIRECT_CUDA_OPTIX"
+    },
+    {
+      "arm": "D_RTDL_PUBLIC_CHECK_ON_POST_R1",
+      "arm_position": 2,
+      "arm_sample_index": 14,
+      "block": 14,
+      "permutation_index": 2,
+      "sequence_index": 86,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 0,
+      "worker_id": "G5843_B086__K14__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__D_RTDL_PUBLIC_CHECK_ON_POST_R1"
+    },
+    {
+      "arm": "D_RTDL_PUBLIC_CHECK_ON_POST_R1",
+      "arm_position": 0,
+      "arm_sample_index": 14,
+      "block": 14,
+      "permutation_index": 4,
+      "sequence_index": 87,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 1,
+      "worker_id": "G5843_B087__K14__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__D_RTDL_PUBLIC_CHECK_ON_POST_R1"
+    },
+    {
+      "arm": "A_DIRECT_CUDA_OPTIX",
+      "arm_position": 1,
+      "arm_sample_index": 14,
+      "block": 14,
+      "permutation_index": 4,
+      "sequence_index": 88,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 1,
+      "worker_id": "G5843_B088__K14__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__A_DIRECT_CUDA_OPTIX"
+    },
+    {
+      "arm": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+      "arm_position": 2,
+      "arm_sample_index": 14,
+      "block": 14,
+      "permutation_index": 4,
+      "sequence_index": 89,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 1,
+      "worker_id": "G5843_B089__K14__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API"
+    },
+    {
+      "arm": "D_RTDL_PUBLIC_CHECK_ON_POST_R1",
+      "arm_position": 0,
+      "arm_sample_index": 15,
+      "block": 15,
+      "permutation_index": 5,
+      "sequence_index": 90,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 0,
+      "worker_id": "G5843_B090__K15__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__D_RTDL_PUBLIC_CHECK_ON_POST_R1"
+    },
+    {
+      "arm": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+      "arm_position": 1,
+      "arm_sample_index": 15,
+      "block": 15,
+      "permutation_index": 5,
+      "sequence_index": 91,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 0,
+      "worker_id": "G5843_B091__K15__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API"
+    },
+    {
+      "arm": "A_DIRECT_CUDA_OPTIX",
+      "arm_position": 2,
+      "arm_sample_index": 15,
+      "block": 15,
+      "permutation_index": 5,
+      "sequence_index": 92,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 0,
+      "worker_id": "G5843_B092__K15__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__A_DIRECT_CUDA_OPTIX"
+    },
+    {
+      "arm": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+      "arm_position": 0,
+      "arm_sample_index": 15,
+      "block": 15,
+      "permutation_index": 3,
+      "sequence_index": 93,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 1,
+      "worker_id": "G5843_B093__K15__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API"
+    },
+    {
+      "arm": "D_RTDL_PUBLIC_CHECK_ON_POST_R1",
+      "arm_position": 1,
+      "arm_sample_index": 15,
+      "block": 15,
+      "permutation_index": 3,
+      "sequence_index": 94,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 1,
+      "worker_id": "G5843_B094__K15__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__D_RTDL_PUBLIC_CHECK_ON_POST_R1"
+    },
+    {
+      "arm": "A_DIRECT_CUDA_OPTIX",
+      "arm_position": 2,
+      "arm_sample_index": 15,
+      "block": 15,
+      "permutation_index": 3,
+      "sequence_index": 95,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 1,
+      "worker_id": "G5843_B095__K15__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__A_DIRECT_CUDA_OPTIX"
+    },
+    {
+      "arm": "D_RTDL_PUBLIC_CHECK_ON_POST_R1",
+      "arm_position": 0,
+      "arm_sample_index": 16,
+      "block": 16,
+      "permutation_index": 4,
+      "sequence_index": 96,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 0,
+      "worker_id": "G5843_B096__K16__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__D_RTDL_PUBLIC_CHECK_ON_POST_R1"
+    },
+    {
+      "arm": "A_DIRECT_CUDA_OPTIX",
+      "arm_position": 1,
+      "arm_sample_index": 16,
+      "block": 16,
+      "permutation_index": 4,
+      "sequence_index": 97,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 0,
+      "worker_id": "G5843_B097__K16__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__A_DIRECT_CUDA_OPTIX"
+    },
+    {
+      "arm": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+      "arm_position": 2,
+      "arm_sample_index": 16,
+      "block": 16,
+      "permutation_index": 4,
+      "sequence_index": 98,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 0,
+      "worker_id": "G5843_B098__K16__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API"
+    },
+    {
+      "arm": "A_DIRECT_CUDA_OPTIX",
+      "arm_position": 0,
+      "arm_sample_index": 16,
+      "block": 16,
+      "permutation_index": 0,
+      "sequence_index": 99,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 1,
+      "worker_id": "G5843_B099__K16__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__A_DIRECT_CUDA_OPTIX"
+    },
+    {
+      "arm": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+      "arm_position": 1,
+      "arm_sample_index": 16,
+      "block": 16,
+      "permutation_index": 0,
+      "sequence_index": 100,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 1,
+      "worker_id": "G5843_B100__K16__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API"
+    },
+    {
+      "arm": "D_RTDL_PUBLIC_CHECK_ON_POST_R1",
+      "arm_position": 2,
+      "arm_sample_index": 16,
+      "block": 16,
+      "permutation_index": 0,
+      "sequence_index": 101,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 1,
+      "worker_id": "G5843_B101__K16__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__D_RTDL_PUBLIC_CHECK_ON_POST_R1"
+    },
+    {
+      "arm": "A_DIRECT_CUDA_OPTIX",
+      "arm_position": 0,
+      "arm_sample_index": 17,
+      "block": 17,
+      "permutation_index": 1,
+      "sequence_index": 102,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 0,
+      "worker_id": "G5843_B102__K17__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__A_DIRECT_CUDA_OPTIX"
+    },
+    {
+      "arm": "D_RTDL_PUBLIC_CHECK_ON_POST_R1",
+      "arm_position": 1,
+      "arm_sample_index": 17,
+      "block": 17,
+      "permutation_index": 1,
+      "sequence_index": 103,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 0,
+      "worker_id": "G5843_B103__K17__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__D_RTDL_PUBLIC_CHECK_ON_POST_R1"
+    },
+    {
+      "arm": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+      "arm_position": 2,
+      "arm_sample_index": 17,
+      "block": 17,
+      "permutation_index": 1,
+      "sequence_index": 104,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 0,
+      "worker_id": "G5843_B104__K17__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API"
+    },
+    {
+      "arm": "D_RTDL_PUBLIC_CHECK_ON_POST_R1",
+      "arm_position": 0,
+      "arm_sample_index": 17,
+      "block": 17,
+      "permutation_index": 5,
+      "sequence_index": 105,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 1,
+      "worker_id": "G5843_B105__K17__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__D_RTDL_PUBLIC_CHECK_ON_POST_R1"
+    },
+    {
+      "arm": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+      "arm_position": 1,
+      "arm_sample_index": 17,
+      "block": 17,
+      "permutation_index": 5,
+      "sequence_index": 106,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 1,
+      "worker_id": "G5843_B106__K17__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API"
+    },
+    {
+      "arm": "A_DIRECT_CUDA_OPTIX",
+      "arm_position": 2,
+      "arm_sample_index": 17,
+      "block": 17,
+      "permutation_index": 5,
+      "sequence_index": 107,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 1,
+      "worker_id": "G5843_B107__K17__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__A_DIRECT_CUDA_OPTIX"
+    }
+  ],
+  "schema": "rtdl.goal5843.post_r1_baseline_preregistration.v1",
+  "source_manifest": [
+    {
+      "bytes": 23612,
+      "path": "experiments/goal5798_premeasurement/direct_measurement.cpp",
+      "sha256": "356ff34554d3446a322a24fb108826f20b304aa185921151fab0b35146c5c21b"
+    },
+    {
+      "bytes": 440,
+      "path": "experiments/goal5798_premeasurement/build_direct_measurement.sh",
+      "sha256": "dde3222d0cd0807afc9c39c37df1e424523472f68df4b6ab6abf1a7c6451d0f5"
+    },
+    {
+      "bytes": 15386,
+      "path": "experiments/goal5798_premeasurement/pyoptix_worker.py",
+      "sha256": "b97d299a5a9021ddc49fba969c31f692dfe4416be727b4173d47a639b002c4c7"
+    },
+    {
+      "bytes": 4985,
+      "path": "experiments/goal5798_premeasurement/workload.py",
+      "sha256": "5e3ebd4362856f11e69aa43fd628463aed0e06742f97dbd93604c297353cf03b"
+    },
+    {
+      "bytes": 5513,
+      "path": "experiments/goal5796_matched/matched_device.cu",
+      "sha256": "dcfb335a2a63ab609d21ce0361d0d530f148d157bd98b122989df0dab51f17a8"
+    },
+    {
+      "bytes": 33366,
+      "path": "experiments/goal5796_matched/pyoptix_baseline.py",
+      "sha256": "76ea1e5334e584611153f9276a5eb5ea041f42abafcf0bc65d73f79e56eeec6b"
+    },
+    {
+      "bytes": 6195,
+      "path": "experiments/goal5796_matched/independent_oracle.py",
+      "sha256": "e098b935e882a542172271b856080fd6e5cc704b2b877a3a31f0a5af69c2b2a2"
+    },
+    {
+      "bytes": 13889,
+      "path": "experiments/goal5842_causal_admission/baseline_worker.py",
+      "sha256": "2e722d411e2187a7a471941eaffa946096fbd66646a3f7063a6419e58bf5270b"
+    },
+    {
+      "bytes": 8308,
+      "path": "experiments/goal5842_causal_admission/tasks.py",
+      "sha256": "3327e7e1e77712fff7285428cddd0626ce45eaff506bf69eba95b9994f0e99bb"
+    },
+    {
+      "bytes": 59,
+      "path": "experiments/goal5843_post_r1_baseline/__init__.py",
+      "sha256": "44a2c4fa1a414a276df13b84938dbba454634736ee57b3a3794bc1762cd1117f"
+    },
+    {
+      "bytes": 20287,
+      "path": "experiments/goal5843_post_r1_baseline/contracts.py",
+      "sha256": "c28d142812606075a5c31d855f6da106790611553f0690eef2f28cde18bb3e5b"
+    },
+    {
+      "bytes": 12017,
+      "path": "experiments/goal5843_post_r1_baseline/runtime.py",
+      "sha256": "e8350abb7daf12d9a640dd3651dabbf3c7932c5780b4ba96b56325a7377dbee0"
+    },
+    {
+      "bytes": 12500,
+      "path": "experiments/goal5843_post_r1_baseline/worker.py",
+      "sha256": "d663cf63a75f8cea9d313b8a9f0c73a7de1b1050472a904b0428de2e25ad7b0a"
+    },
+    {
+      "bytes": 26434,
+      "path": "experiments/goal5843_post_r1_baseline/controller.py",
+      "sha256": "46548a00917d42ea36ba4149de8f87c11788c0ecd7657fd957da7998e1b35dc1"
+    },
+    {
+      "bytes": 1842,
+      "path": "scripts/goal5843_build_preregistration.py",
+      "sha256": "f9c73cc4f2c54e600fd80a69c0c44ea89868fdaa59aeb1480cb7c527a5203754"
+    },
+    {
+      "bytes": 6684,
+      "path": "scripts/goal5843_prepare_formal_leaf_cache.py",
+      "sha256": "25ae3b12e3587ce848ff4e5d00767896de89afde2ccbefa4ec1361fa6a88e56e"
+    },
+    {
+      "bytes": 5722,
+      "path": "scripts/goal5843_build_independent_oracle_witness.py",
+      "sha256": "c2dcac439a2d238df3960b65ba53d0b4e72415c484a5e3b2d00a85ee6e874f12"
+    },
+    {
+      "bytes": 11149,
+      "path": "scripts/goal5843_bind_execution_authority.py",
+      "sha256": "c28a667a8142f5cda1b48fa612b67633d5ea62fbe3edb5a6ba2eeba92d38caad"
+    },
+    {
+      "bytes": 5212,
+      "path": "scripts/goal5843_preserve_bound_artifacts.py",
+      "sha256": "353af853b376e8fa661b7f6bf736d2674eb5d5275938d7a9cb547ae08ce5f36b"
+    },
+    {
+      "bytes": 9731,
+      "path": "scripts/goal5843_run_transaction.py",
+      "sha256": "045e5d04ddf864554bb91229c89c0d6b53b4757c2bef47474e283ef6018a96bd"
+    },
+    {
+      "bytes": 18410,
+      "path": "scripts/goal5843_independent_recount.py",
+      "sha256": "8ee55b364c722de7fa14e9c824dd8ad9f46c78a9f2981e574a2a499a79d68287"
+    },
+    {
+      "bytes": 16594,
+      "path": "scripts/goal5843_verify_downloaded_archive.py",
+      "sha256": "e3e85186803c7b77ad568ea341f5df76bea6945155aacd0e4407602a78135eef"
+    },
+    {
+      "bytes": 8969,
+      "path": "scripts/goal5843_build_final_authority.py",
+      "sha256": "038c99f7452c98e94efddddfa158df2d47f10524887c11af9adb23fd0c3e67eb"
+    },
+    {
+      "bytes": 5925,
+      "path": "src/rtdsl/v4.py",
+      "sha256": "8c07b285e5980e6a00cd8986459f463304dfaf4160f5293e577770d5640fcb58"
+    },
+    {
+      "bytes": 55795,
+      "path": "src/rtdsl/v4_callback_lifecycle.py",
+      "sha256": "126b941d1309ce2ac7129dc2949f4cc1312cd49a6a57e64d1c8cf9635819347a"
+    },
+    {
+      "bytes": 75744,
+      "path": "src/rtdsl/v4_callback_numba_codegen.py",
+      "sha256": "4c72a5886dc43b0f5a3ccb71fd84c5ccb9076110f13813800f188132b69fc29f"
+    },
+    {
+      "bytes": 16034,
+      "path": "src/rtdsl/v4_bounded_relation_optix_compiler.py",
+      "sha256": "d67cbcd75b790a35d50ee75e70b9df94a3ddb804275c6cadb20bf6800cddec8e"
+    },
+    {
+      "bytes": 20013,
+      "path": "src/rtdsl/v4_bounded_relation_prepared_runtime.py",
+      "sha256": "842188a64117c86012872195ef6f8f7e8146f30d53dbf9a11e6fef728b5c1678"
+    },
+    {
+      "bytes": 35946,
+      "path": "src/rtdsl/v4_family_route_adapters.py",
+      "sha256": "ff576b65d0161b3593a1509614edbf5cdea3aa63a68c63eebd49908f0815e1b8"
+    },
+    {
+      "bytes": 13273,
+      "path": "src/rtdsl/v4_triangle_reduction_optix_compiler.py",
+      "sha256": "5a212a80b0a0f22414eca972da0aeeb3e657feff1b3c248e8e68e26ce96354d5"
+    },
+    {
+      "bytes": 42179,
+      "path": "src/rtdsl/v4_triangle_reduction_prepared_runtime.py",
+      "sha256": "432e5d6f614c5a96380db95eebe78f5b139803b7b27fbf85486424fd17139530"
+    },
+    {
+      "bytes": 10316,
+      "path": "src/rtdsl/v4_triangle_standard_library.py",
+      "sha256": "98b819ff8fb2f1c99b726e0530539aca6b5731daf3e52b02671727db1043c500"
+    },
+    {
+      "bytes": 58007,
+      "path": "src/rtdsl/v4_family_schema.py",
+      "sha256": "2d118697d10cb2bc2a8672700ae5a991eaf94e66834bb3e08fd898323720f224"
+    },
+    {
+      "bytes": 41675,
+      "path": "src/rtdsl/v4_generic_family_lifecycle.py",
+      "sha256": "7ac68832de9d1e04fdd6f0f11bfa0de7d6109d892ab22e42c9aeb2825d28228c"
+    },
+    {
+      "bytes": 2792,
+      "path": "src/rtdsl/v4_family.py",
+      "sha256": "d25c487823e966a8e9083092811c9a1a2b6aa0fef6ce8f3a0a5b8919c5b809e8"
+    },
+    {
+      "bytes": 11632,
+      "path": "tests/goal5843_post_r1_baseline_test.py",
+      "sha256": "5992391bdd3684ba11e655c7dac1fe732afeffe4cc5100efd8c5ab9d322d63a3"
+    },
+    {
+      "bytes": 3463,
+      "path": "history/internal_docs/goal5843_post_r1_fair_baseline_20260904/DESIGN.md",
+      "sha256": "f498e2fc82f3d8457f82a7222ec2de95ff670efd291398f182c3a29d54b3f9c8"
+    },
+    {
+      "bytes": 3352,
+      "path": "history/internal_docs/goal5843_post_r1_fair_baseline_20260904/PRE_EXECUTION_INTERNAL_HOSTILE_SELF_REVIEW.md",
+      "sha256": "4f997fedaa3caabab71008cd1a9214f8bf724d0a94997761b02c39f8d49d391b"
+    },
+    {
+      "bytes": 144023,
+      "path": "history/internal_docs/goal5842_causal_admission_cost_20260903/PREREGISTRATION_V12.json",
+      "sha256": "f90d49a1663338c729f86dd08cf3ce2b51a3845326fe349ec5b80759fd06e509"
+    },
+    {
+      "bytes": 3748,
+      "path": "history/internal_docs/goal5842_causal_admission_cost_20260903/GOAL5842_FINAL_INTERNAL_AUTHORITY.json",
+      "sha256": "79d5c50d3a78443c22f5e9c490438f26cad64e3b0127f6862b4d29bd747860b0"
+    },
+    {
+      "bytes": 11044,
+      "path": "history/internal_docs/goal5842r1_public_reuse_scalar_fastpath_20260903/GOAL5842R1_INTERNAL_AUTHORITY.json",
+      "sha256": "21d7de683f7587c376766cbb3c31710ca83a10abda3b22d6ee31873a8c17c51e"
+    }
+  ],
+  "source_manifest_sha256": "e7d08869792913cd9b9b7a42ea29e95020575de9a0bf9bbb6b533fd3acbfed81",
+  "status": "FROZEN_BEFORE_GOAL5843_WORKER_ZERO",
+  "task_contracts": [
+    {
+      "full_oracle_sha256": "2fb668490480cbb5d4d9bbf5a8d357435eff5fc6bb3532427ac2726cdaa88c77",
+      "input_sha256": "8606dd3c22d424a7ee2d64b61918f6185d39d8090d1a0a64001de65054d25e0e",
+      "primitive_count": 4096,
+      "public_output_contract_id": "canonical_relation_rows.v1",
+      "public_output_scope": "FULL_CANONICAL_RELATION_ROWS",
+      "public_output_sha256": "2fb668490480cbb5d4d9bbf5a8d357435eff5fc6bb3532427ac2726cdaa88c77",
+      "query_count": 4096,
+      "role": "ADVERSE_ROW_RETURNING_NEGATIVE_CONTROL",
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1"
+    },
+    {
+      "full_oracle_sha256": "24f4651b65f2abc93ffae0a8a9603c6eff9e9c6acdc24b65fb20937d6f416d93",
+      "input_sha256": "d994f80418995342d0faa4bda84b42c2ef3604b2798de413a2813dd28dc039a7",
+      "primitive_count": 16384,
+      "public_output_contract_id": "checked_u64_weighted_scalar.v1",
+      "public_output_scope": "CHECKED_U64_WEIGHTED_SCALAR_ONLY",
+      "public_output_sha256": "2df49102543561c678ce39e05cc6c79ce92c0ea919ad45134d53d19bb67174ef",
+      "query_count": 16384,
+      "role": "PRIMARY_POST_R1_SCALAR_ESTIMAND",
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1"
+    }
+  ]
+}
