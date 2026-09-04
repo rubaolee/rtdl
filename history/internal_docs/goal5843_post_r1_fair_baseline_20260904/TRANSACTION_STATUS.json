@@ -1,0 +1,42 @@
+{
+  "all_adverse_rows_retained": true,
+  "failure_stage": null,
+  "post_worker_zero_retry_permitted": false,
+  "post_worker_zero_retry_used": false,
+  "schema": "rtdl.goal5843.transaction_status.v1",
+  "stage_count": 6,
+  "stages": [
+    {
+      "retry_permitted": false,
+      "returncode": 0,
+      "stage": "00_prepare_formal_leaf_cache"
+    },
+    {
+      "retry_permitted": false,
+      "returncode": 0,
+      "stage": "01_build_independent_oracle_witness"
+    },
+    {
+      "retry_permitted": false,
+      "returncode": 0,
+      "stage": "02_bind_execution_authority"
+    },
+    {
+      "retry_permitted": false,
+      "returncode": 0,
+      "stage": "03_preserve_bound_artifacts"
+    },
+    {
+      "retry_permitted": false,
+      "returncode": 0,
+      "stage": "04_formal_worker_zero_and_baseline"
+    },
+    {
+      "retry_permitted": false,
+      "returncode": 0,
+      "stage": "05_independent_pod_recount"
+    }
+  ],
+  "status": "PASS__FORMAL_TRANSACTION_AND_POD_RECOUNT_COMPLETE",
+  "worker_zero_reached": true
+}

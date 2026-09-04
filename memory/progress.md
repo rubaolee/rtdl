@@ -19057,3 +19057,21 @@ attr0-ownership projection is rejected solely as
 `CP002_ATTRIBUTE_ABI_OWNERSHIP_MISMATCH`. Independent raw-byte verification is
 PASS at `272fbe9b...4f8b4`. No external review was requested and no manuscript
 edit is implied by this result.
+
+## Goal5843 fresh fair post-R1 baseline (2026-09-04)
+
+Goal5843 is internally technically complete on one RTX A6000 Ampere GPU. A
+fresh preregistered v4 transaction retained 108 composites, 216 subworker
+receipts and every adverse row across Direct CUDA/OptiX, pinned PyOptiX-
+compatible, and ordinary public check-on RTDL arms. The downloaded 4.30 MB
+archive passes safe custody verification, and independent pod and Mac recounts
+are byte-identical. The final authority is
+`history/internal_docs/goal5843_post_r1_fair_baseline_20260904/GOAL5843_FINAL_INTERNAL_AUTHORITY.json`.
+
+For the primary triangle scalar, RTDL steady is 0.436590 ms, 2.910x PyOptiX
+and 4.689x Direct. This closes the earlier two-order implementation gap but not
+parity. The relation row path remains adverse at 12.774231 ms, 3.333x PyOptiX
+and 9.950x Direct. The prior v3 archive-verifier failure is preserved in full;
+its 7,020 timing samples are not pooled. The exact successor suite passes
+91/91. External review count is zero, so no public or manuscript performance
+claim is authorized.

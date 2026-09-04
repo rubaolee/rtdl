@@ -11978,3 +11978,14 @@ author-artifact parity work.
 - [x] Bind the same CP002 leaf to the RTDL contract rejection and independently verify all preserved evidence.
 - [ ] Do not add the sorting result to the manuscript or send it for external review until the owner separately authorizes that action.
 - [ ] If later used in the paper, state that it is an existing-family illustrative instance, not a new sorting algorithm, new family, performance result, RT-core result, usability result or unseen-app generalization result.
+
+## Goal5843 post-R1 baseline checkpoint (2026-09-04)
+
+- [x] Preserve the terminal v3 transaction and prohibit pooling its 7,020 timing samples.
+- [x] Preregister and execute a fresh v4 Direct/PyOptiX/RTDL transaction with no performance threshold and all adverse rows retained.
+- [x] Verify the downloaded archive safely and reproduce the pod recount byte-for-byte on the Mac.
+- [x] Seal the final internal authority and pass the exact 91-test successor suite.
+- [ ] Obtain independent external review of the protocol, v3-to-v4 repair, archive verifier, interpretation, and claim ceiling.
+- [ ] Instrument the remaining public RTDL steady path before choosing the next repair; do not infer exact attribution from aggregate ratios.
+- [ ] Reduce generic dispatch/receipt overhead only through the ordinary public path and without weakening checks, receipts, or app-neutral boundaries.
+- [ ] Rerun a separately preregistered fair baseline after any successor repair; never rewrite or pool Goal5843 rows.

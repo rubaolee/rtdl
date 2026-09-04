@@ -1,0 +1,612 @@
+{
+  "authority_sha256": "c40b9fe5d3ace2f58fe29a1a39363ce25373332f774f3c36ffa839ce650bdba8",
+  "claim_boundary": {
+    "external_review_or_consensus": false,
+    "general_language_performance_claim": false,
+    "hardware_independent_claim": false,
+    "hidden_implementation_work_claimed_identical": false,
+    "internal_technical_evidence_only": true,
+    "manuscript_performance_claim_authorized": false,
+    "public_performance_claim_authorized": false,
+    "relation_relabelled_as_scalar_fast_path": false
+  },
+  "completion": {
+    "all_preregistered_adverse_rows_retained": true,
+    "completion_depends_on_performance_threshold": false,
+    "exact_bound_executable_and_provider_bytes_preserved": true,
+    "fresh_post_r1_three_arm_transaction_complete": true,
+    "independent_local_recount_byte_identical": true,
+    "independent_pod_recount_complete": true,
+    "internal_hostile_self_review_complete": true,
+    "rtdl_triangle_scalar_receipt_gate_complete": true,
+    "safe_downloaded_archive_verification_complete": true,
+    "same_input_and_public_output_exact": true
+  },
+  "controller_result_sha256": "498526cdc9a7e3dbcc76d7cf9af99833bce152cd10b22033709954307d9c5b35",
+  "counts": {
+    "bound_artifacts": 6,
+    "composites": 108,
+    "external_reviews": 0,
+    "rtdl_triangle_receipt_gate_passes": 36,
+    "subworker_receipts": 216
+  },
+  "evidence": [
+    {
+      "bytes": 59101,
+      "path": "history/internal_docs/goal5843_post_r1_fair_baseline_20260904/PREREGISTRATION.json",
+      "sha256": "179276f7a9c3731f102acc89887291c687cc9565d088acb9884bb10163fac5be"
+    },
+    {
+      "bytes": 5910,
+      "path": "history/internal_docs/goal5843_post_r1_fair_baseline_20260904/DESIGN.md",
+      "sha256": "92fd3a25cdd394b3450a51f1748556d5cb05abcb6c58851b0857228321dee628"
+    },
+    {
+      "bytes": 4712,
+      "path": "history/internal_docs/goal5843_post_r1_fair_baseline_20260904/PRE_EXECUTION_INTERNAL_HOSTILE_SELF_REVIEW.md",
+      "sha256": "bff9f10e9d1984a82638d948b142befb785ff59a2f7187af4a2841f59b261b6d"
+    },
+    {
+      "bytes": 4297725,
+      "path": "history/internal_docs/goal5843_post_r1_fair_baseline_20260904/FORMAL_TRANSACTION.tar.gz",
+      "sha256": "0b8374a70c2fc06f538f45a1911099d4ae5b87bc8ab93f239af2c900fbbf014a"
+    },
+    {
+      "bytes": 2882,
+      "path": "history/internal_docs/goal5843_post_r1_fair_baseline_20260904/CACHE_PREPARATION.json",
+      "sha256": "03b7c15761559540a39b7bc4e34b6f0698b857f3b36cc32f677f4a47d68e203b"
+    },
+    {
+      "bytes": 1421,
+      "path": "history/internal_docs/goal5843_post_r1_fair_baseline_20260904/INDEPENDENT_ORACLE_WITNESS.json",
+      "sha256": "e3e5e6a5557a8bdc615c9cb647695801849ff192e2fc0d46126975f5d44e471a"
+    },
+    {
+      "bytes": 5919,
+      "path": "history/internal_docs/goal5843_post_r1_fair_baseline_20260904/EXECUTION_AUTHORITY.json",
+      "sha256": "eb6266b0539777c7fa864d858fbaf2b2f9403e12da7bcfdf65979a8d2c9a1012"
+    },
+    {
+      "bytes": 2825,
+      "path": "history/internal_docs/goal5843_post_r1_fair_baseline_20260904/BOUND_ARTIFACTS.json",
+      "sha256": "a4dfaca850e068fb0ceb55ce9b737c4c64986ea9f25b9ab941e621105e77479f"
+    },
+    {
+      "bytes": 1028,
+      "path": "history/internal_docs/goal5843_post_r1_fair_baseline_20260904/TRANSACTION_STATUS.json",
+      "sha256": "07c9c444b188253255bd5581b24725cd330133ec0e946b45c19f35a405439ad1"
+    },
+    {
+      "bytes": 16545,
+      "path": "history/internal_docs/goal5843_post_r1_fair_baseline_20260904/POD_RECOUNT.json",
+      "sha256": "7651c1e6d4365fe7054b6e3d05f73257a60dd689242b24855b37997223cf17d4"
+    },
+    {
+      "bytes": 16545,
+      "path": "history/internal_docs/goal5843_post_r1_fair_baseline_20260904/LOCAL_RECOUNT.json",
+      "sha256": "7651c1e6d4365fe7054b6e3d05f73257a60dd689242b24855b37997223cf17d4"
+    },
+    {
+      "bytes": 1167,
+      "path": "history/internal_docs/goal5843_post_r1_fair_baseline_20260904/ARCHIVE_VERIFICATION.json",
+      "sha256": "c91b8a3224e92a305c17834b1afcf491650dade882bc9c1d42cdeb21059e4cf1"
+    },
+    {
+      "bytes": 10885,
+      "path": "history/internal_docs/goal5843_post_r1_fair_baseline_20260904/FINAL_TECHNICAL_REPORT.md",
+      "sha256": "fcc731455c6e3c938af0833f92bad77d79b6baeff50fdf6423fcc595ced173cd"
+    },
+    {
+      "bytes": 8618,
+      "path": "history/internal_docs/goal5843_post_r1_fair_baseline_20260904/FINAL_INTERNAL_HOSTILE_SELF_REVIEW.md",
+      "sha256": "389979ea8e678bb96ac28185d0442e8815e605400e29c795a276b0f0146d7cd2"
+    }
+  ],
+  "evidence_manifest_sha256": "5f3795c29b445d53da026723de7201485b5d08388f06979d5bebf45c1c1ea065",
+  "execution_authority_sha256": "41510173122a06c48d0c137f05f9183bc2ac3dad256a0a6bdb435fa59f0e0101",
+  "formal_source_commit": "c2662603c4d24902361fbd70325832ee7d98a0a4",
+  "hardware": {
+    "architecture_generation": "AMPERE",
+    "compute_capability": "8.6",
+    "driver_version": "580.159.03",
+    "gpu_model": "NVIDIA RTX A6000",
+    "gpu_uuid": "GPU-f50facdf-7752-c71d-2c4a-c4df8c0155cc",
+    "vram_bytes": "48305799168"
+  },
+  "preregistration_sha256": "c0ad3a566e99f925341d98c987854714cfabc415254ccd7178efcd465e664b66",
+  "recount_sha256": "6dd6a575e4278fad9b3add4b6599b49df95dc9c7cafe0db62872a30a5916dac5",
+  "results": [
+    {
+      "arm_medians_ns": {
+        "A_DIRECT_CUDA_OPTIX": {
+          "first_complete_execution_ns": 1408452,
+          "first_worker_phase_medians_ns": {
+            "close": null,
+            "deterministic_input_materialization": 103278,
+            "device_compile": 139972684,
+            "module_program_pipeline_sbt": 392514923,
+            "native_prepare": 38322946,
+            "provider_projection_and_generic_family_admission": null,
+            "route_declaration_and_artifact_binding": null,
+            "runtime_target_and_toolchain_binding": null,
+            "target_materialization": 547209120
+          },
+          "setup_total_ns": 592903675,
+          "steady_complete_execution_median_ns": 1297765,
+          "worker_count": 18
+        },
+        "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API": {
+          "first_complete_execution_ns": 5581692,
+          "first_worker_phase_medians_ns": {
+            "close": 16002196,
+            "deterministic_input_materialization": 52400711,
+            "device_compile": 251492855,
+            "module_program_pipeline_sbt": 139843387,
+            "native_prepare": 28959083,
+            "provider_projection_and_generic_family_admission": null,
+            "route_declaration_and_artifact_binding": null,
+            "runtime_target_and_toolchain_binding": null,
+            "target_materialization": 395510986
+          },
+          "setup_total_ns": 425417417,
+          "steady_complete_execution_median_ns": 3853760,
+          "worker_count": 18
+        },
+        "D_RTDL_PUBLIC_CHECK_ON_POST_R1": {
+          "first_complete_execution_ns": 26423480,
+          "first_worker_phase_medians_ns": {
+            "close": 1026562,
+            "deterministic_input_materialization": 50241642,
+            "device_compile": null,
+            "module_program_pipeline_sbt": null,
+            "native_prepare": 1025918215,
+            "provider_projection_and_generic_family_admission": 96591195,
+            "route_declaration_and_artifact_binding": 109900244,
+            "runtime_target_and_toolchain_binding": 72366140,
+            "target_materialization": 662062452
+          },
+          "setup_total_ns": 1946247301,
+          "steady_complete_execution_median_ns": 12774231,
+          "worker_count": 18
+        }
+      },
+      "comparisons": [
+        {
+          "bootstrap_95_percent_ratio": [
+            3.07352629,
+            3.979651486
+          ],
+          "denominator": "A_DIRECT_CUDA_OPTIX",
+          "median_ratio": 3.314417681,
+          "metric": "setup_total_ns",
+          "numerator": "D_RTDL_PUBLIC_CHECK_ON_POST_R1",
+          "registered_gate": null,
+          "within_block_scaled_ratios_1e9": [
+            2843893431,
+            3326974783,
+            5442064083,
+            3522776251,
+            2907017430,
+            3083500191,
+            4169687077,
+            3063552390,
+            3091778399,
+            3301860579,
+            3808137832,
+            3971806421,
+            4149578554,
+            2794530315,
+            4506520113,
+            3163198568,
+            3987496551,
+            3014904074
+          ]
+        },
+        {
+          "bootstrap_95_percent_ratio": [
+            17.992686416,
+            20.759673453
+          ],
+          "denominator": "A_DIRECT_CUDA_OPTIX",
+          "median_ratio": 18.949891143,
+          "metric": "first_complete_execution_ns",
+          "numerator": "D_RTDL_PUBLIC_CHECK_ON_POST_R1",
+          "registered_gate": null,
+          "within_block_scaled_ratios_1e9": [
+            17995219651,
+            17932083235,
+            24286581494,
+            15818608028,
+            17596863195,
+            17990153182,
+            21122459086,
+            16055534100,
+            20872248526,
+            21844066514,
+            18668071618,
+            20997785173,
+            20647098380,
+            18553211799,
+            19355718098,
+            20055975934,
+            19231710669,
+            18104239363
+          ]
+        },
+        {
+          "bootstrap_95_percent_ratio": [
+            9.809212717,
+            10.16738792
+          ],
+          "denominator": "A_DIRECT_CUDA_OPTIX",
+          "median_ratio": 9.949761156,
+          "metric": "steady_complete_execution_median_ns",
+          "numerator": "D_RTDL_PUBLIC_CHECK_ON_POST_R1",
+          "registered_gate": null,
+          "within_block_scaled_ratios_1e9": [
+            9773252375,
+            10798936174,
+            11309258061,
+            10118957173,
+            10436496329,
+            9637296681,
+            9481254040,
+            9937884719,
+            9920488782,
+            10112735498,
+            10024133698,
+            9959725118,
+            9737803066,
+            9722365870,
+            10444875317,
+            9939797194,
+            9845173059,
+            10215818668
+          ]
+        },
+        {
+          "bootstrap_95_percent_ratio": [
+            3.979836564,
+            5.506716561
+          ],
+          "denominator": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+          "median_ratio": 4.582960806,
+          "metric": "setup_total_ns",
+          "numerator": "D_RTDL_PUBLIC_CHECK_ON_POST_R1",
+          "registered_gate": null,
+          "within_block_scaled_ratios_1e9": [
+            2356843095,
+            3651373851,
+            7037530633,
+            4693714899,
+            3554139432,
+            4308299277,
+            7176486982,
+            3899850758,
+            6487431459,
+            4711428704,
+            5638187619,
+            4702338249,
+            5562642087,
+            4472206713,
+            5506716561,
+            4383362773,
+            3983775450,
+            3321922052
+          ]
+        },
+        {
+          "bootstrap_95_percent_ratio": [
+            4.152628661,
+            5.211050245
+          ],
+          "denominator": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+          "median_ratio": 4.773907716,
+          "metric": "first_complete_execution_ns",
+          "numerator": "D_RTDL_PUBLIC_CHECK_ON_POST_R1",
+          "registered_gate": null,
+          "within_block_scaled_ratios_1e9": [
+            3470791866,
+            4730146588,
+            6089476615,
+            5369261086,
+            3707004004,
+            4828408347,
+            5515362830,
+            3496043320,
+            5741090855,
+            4234991136,
+            4520316207,
+            5230658296,
+            4070266187,
+            4374724553,
+            4936848016,
+            5211050245,
+            4817668844,
+            4007474023
+          ]
+        },
+        {
+          "bootstrap_95_percent_ratio": [
+            2.957557791,
+            3.39983721
+          ],
+          "denominator": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+          "median_ratio": 3.332871582,
+          "metric": "steady_complete_execution_median_ns",
+          "numerator": "D_RTDL_PUBLIC_CHECK_ON_POST_R1",
+          "registered_gate": null,
+          "within_block_scaled_ratios_1e9": [
+            2765217770,
+            2904683922,
+            2369635348,
+            3539765228,
+            3062017897,
+            2739148207,
+            3364353030,
+            2576359591,
+            3010431660,
+            3477123839,
+            3435321391,
+            3434947081,
+            3335623718,
+            3399505825,
+            3533699987,
+            3350252157,
+            3330119447,
+            3070643116
+          ]
+        }
+      ],
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_role": "ADVERSE_ROW_RETURNING_NEGATIVE_CONTROL"
+    },
+    {
+      "arm_medians_ns": {
+        "A_DIRECT_CUDA_OPTIX": {
+          "first_complete_execution_ns": 182752,
+          "first_worker_phase_medians_ns": {
+            "close": null,
+            "deterministic_input_materialization": 1195581,
+            "device_compile": 128438905,
+            "module_program_pipeline_sbt": 371146376,
+            "native_prepare": 33701042,
+            "provider_projection_and_generic_family_admission": null,
+            "route_declaration_and_artifact_binding": null,
+            "runtime_target_and_toolchain_binding": null,
+            "target_materialization": 514765485
+          },
+          "setup_total_ns": 552126428,
+          "steady_complete_execution_median_ns": 92452,
+          "worker_count": 18
+        },
+        "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API": {
+          "first_complete_execution_ns": 314354,
+          "first_worker_phase_medians_ns": {
+            "close": 33336490,
+            "deterministic_input_materialization": 260907444,
+            "device_compile": 220716240,
+            "module_program_pipeline_sbt": 152844258,
+            "native_prepare": 87416811,
+            "provider_projection_and_generic_family_admission": null,
+            "route_declaration_and_artifact_binding": null,
+            "runtime_target_and_toolchain_binding": null,
+            "target_materialization": 375454973
+          },
+          "setup_total_ns": 455316206,
+          "steady_complete_execution_median_ns": 148260,
+          "worker_count": 18
+        },
+        "D_RTDL_PUBLIC_CHECK_ON_POST_R1": {
+          "first_complete_execution_ns": 44873120,
+          "first_worker_phase_medians_ns": {
+            "close": 1097543,
+            "deterministic_input_materialization": 258552237,
+            "device_compile": null,
+            "module_program_pipeline_sbt": null,
+            "native_prepare": 1027516175,
+            "provider_projection_and_generic_family_admission": 86463350,
+            "route_declaration_and_artifact_binding": 68437183,
+            "runtime_target_and_toolchain_binding": 53652721,
+            "target_materialization": 543750176
+          },
+          "setup_total_ns": 1759391122,
+          "steady_complete_execution_median_ns": 436590,
+          "worker_count": 18
+        }
+      },
+      "comparisons": [
+        {
+          "bootstrap_95_percent_ratio": [
+            2.989131722,
+            3.740437421
+          ],
+          "denominator": "A_DIRECT_CUDA_OPTIX",
+          "median_ratio": 3.227748865,
+          "metric": "setup_total_ns",
+          "numerator": "D_RTDL_PUBLIC_CHECK_ON_POST_R1",
+          "registered_gate": null,
+          "within_block_scaled_ratios_1e9": [
+            4192563187,
+            3740437421,
+            4485213967,
+            2030072363,
+            3147801248,
+            2989131722,
+            4296537454,
+            3863500713,
+            3087359565,
+            3307696483,
+            3581074598,
+            2344548792,
+            3127888552,
+            1164835537,
+            2714943879,
+            3766913145,
+            2958211948,
+            3377775701
+          ]
+        },
+        {
+          "bootstrap_95_percent_ratio": [
+            214.548207231,
+            263.935266984
+          ],
+          "denominator": "A_DIRECT_CUDA_OPTIX",
+          "median_ratio": 232.337862447,
+          "metric": "first_complete_execution_ns",
+          "numerator": "D_RTDL_PUBLIC_CHECK_ON_POST_R1",
+          "registered_gate": null,
+          "within_block_scaled_ratios_1e9": [
+            262925384167,
+            278356851593,
+            329128109423,
+            184564963665,
+            161790961659,
+            191078342230,
+            306000373455,
+            216623970224,
+            239061326218,
+            293788092204,
+            249349354367,
+            234082441765,
+            323809309022,
+            202388061661,
+            217949405103,
+            229512580437,
+            212472444238,
+            230593283129
+          ]
+        },
+        {
+          "bootstrap_95_percent_ratio": [
+            4.384608484,
+            4.870805361
+          ],
+          "denominator": "A_DIRECT_CUDA_OPTIX",
+          "median_ratio": 4.688692282,
+          "metric": "steady_complete_execution_median_ns",
+          "numerator": "D_RTDL_PUBLIC_CHECK_ON_POST_R1",
+          "registered_gate": null,
+          "within_block_scaled_ratios_1e9": [
+            5837271341,
+            4880323402,
+            4985144610,
+            4861287320,
+            3912713073,
+            4958259585,
+            4631467204,
+            4137749765,
+            3891610327,
+            4665811072,
+            4644689000,
+            4695700134,
+            4681684431,
+            4014870059,
+            4005882203,
+            4701257862,
+            4712705025,
+            5100522832
+          ]
+        },
+        {
+          "bootstrap_95_percent_ratio": [
+            3.159747517,
+            4.130133345
+          ],
+          "denominator": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+          "median_ratio": 3.688532704,
+          "metric": "setup_total_ns",
+          "numerator": "D_RTDL_PUBLIC_CHECK_ON_POST_R1",
+          "registered_gate": null,
+          "within_block_scaled_ratios_1e9": [
+            3085104126,
+            3722428010,
+            4627076382,
+            2820668203,
+            3017855732,
+            3837481387,
+            4554956006,
+            3115091712,
+            4341053000,
+            3190988993,
+            4295480544,
+            3128506042,
+            3654637399,
+            4041289513,
+            3618900178,
+            4151743559,
+            4108523132,
+            3586849139
+          ]
+        },
+        {
+          "bootstrap_95_percent_ratio": [
+            111.869044363,
+            151.990489019
+          ],
+          "denominator": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+          "median_ratio": 134.604469416,
+          "metric": "first_complete_execution_ns",
+          "numerator": "D_RTDL_PUBLIC_CHECK_ON_POST_R1",
+          "registered_gate": null,
+          "within_block_scaled_ratios_1e9": [
+            97137898649,
+            163446908117,
+            175241035572,
+            84512068226,
+            92735029210,
+            131788636378,
+            125072949300,
+            105546027260,
+            156541048677,
+            111869044363,
+            141222916087,
+            136709049146,
+            167161223523,
+            147439929362,
+            89098312295,
+            132499889687,
+            140194584900,
+            159986397399
+          ]
+        },
+        {
+          "bootstrap_95_percent_ratio": [
+            2.828931534,
+            3.142972879
+          ],
+          "denominator": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+          "median_ratio": 2.910317586,
+          "metric": "steady_complete_execution_median_ns",
+          "numerator": "D_RTDL_PUBLIC_CHECK_ON_POST_R1",
+          "registered_gate": null,
+          "within_block_scaled_ratios_1e9": [
+            3903414883,
+            3157111846,
+            2833591219,
+            2897794952,
+            3196729028,
+            2726030423,
+            3293189929,
+            2213566601,
+            2621807844,
+            2901187626,
+            3095223715,
+            2916845319,
+            3081406776,
+            2613381859,
+            2824271850,
+            3128833913,
+            2903789854,
+            3383297042
+          ]
+        }
+      ],
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_role": "PRIMARY_POST_R1_SCALAR_ESTIMAND"
+    }
+  ],
+  "schema": "rtdl.goal5843.final_internal_authority.v1",
+  "status": "PASS__GOAL5843_INTERNAL_TECHNICAL_COMPLETE__EXTERNAL_REVIEW_PENDING"
+}

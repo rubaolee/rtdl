@@ -1,0 +1,61 @@
+{
+  "artifact_count": 6,
+  "artifacts": [
+    {
+      "archived_path": "native/librtdl_optix.so",
+      "authority_binding": "execution_paths.native_library",
+      "bytes": 7181936,
+      "sha256": "91ae01bb6944eb03b729ec12313bdbc07f4ca474fa63229fd68eb5681b1d784a",
+      "source_mode": 511,
+      "source_path": "/workspace/goal5843_c2662603/native-v1/librtdl_optix_goal5838.so"
+    },
+    {
+      "archived_path": "native/NATIVE_BUILD_MANIFEST.json",
+      "authority_binding": "execution_paths.native_build_manifest",
+      "bytes": 14101,
+      "sha256": "0d1e57f5aa8dc1f27f9471419d70dbbcbbc27e84e3c3cb4b9b7f054cb17ce5e0",
+      "source_mode": 438,
+      "source_path": "/workspace/goal5843_c2662603/native-v1/goal5838_native_build.json"
+    },
+    {
+      "archived_path": "direct/goal5843_direct_measurement",
+      "authority_binding": "execution_paths.direct_binary",
+      "bytes": 119984,
+      "sha256": "5f6d4d6a5dd7b5545d5283803c4ee1db51158828e84151a74004fd801eebd28c",
+      "source_mode": 511,
+      "source_path": "/workspace/goal5843_c2662603/direct-v1/goal5843-direct"
+    },
+    {
+      "archived_path": "pyoptix_module/__init__.py",
+      "authority_binding": "pyoptix.module_tree:__init__.py",
+      "bytes": 895,
+      "sha256": "5b0579af1004eba5dd41b9598f40ced6bb418a59af1de1179d996524c5f458b1",
+      "source_mode": 438,
+      "source_path": "/workspace/goal5843_bc03/venv/lib/python3.12/site-packages/optix/__init__.py"
+    },
+    {
+      "archived_path": "pyoptix_module/_optix.cpython-312-x86_64-linux-gnu.so",
+      "authority_binding": "pyoptix.module_tree:_optix.cpython-312-x86_64-linux-gnu.so",
+      "bytes": 2630616,
+      "sha256": "7a7c555635062180e8f5d6246e41e8c7033e287218e963668eb34365f3e1b927",
+      "source_mode": 438,
+      "source_path": "/workspace/goal5843_bc03/venv/lib/python3.12/site-packages/optix/_optix.cpython-312-x86_64-linux-gnu.so"
+    },
+    {
+      "archived_path": "cupy_module/__init__.py",
+      "authority_binding": "pyoptix.cupy_module_file",
+      "bytes": 41666,
+      "sha256": "f0eed749a9c4948d141f117843d04b7959c751048e4ddbc2230fc254064fdd65",
+      "source_mode": 438,
+      "source_path": "/workspace/goal5843_bc03/venv/lib/python3.12/site-packages/cupy/__init__.py"
+    }
+  ],
+  "custody_sha256": "6876d7307e7464a27475f4282c98ce05f03cde9a94edfe5a0626eb14ea80c04c",
+  "execution_authority_sha256": "41510173122a06c48d0c137f05f9183bc2ac3dad256a0a6bdb435fa59f0e0101",
+  "goal5843_registered_estimand_timing_observation_count": 0,
+  "gpu_complete_execution_count": 0,
+  "preregistration_sha256": "c0ad3a566e99f925341d98c987854714cfabc415254ccd7178efcd465e664b66",
+  "schema": "rtdl.goal5843.bound_artifacts_custody.v1",
+  "source_commit": "c2662603c4d24902361fbd70325832ee7d98a0a4",
+  "status": "PASS__EXACT_BOUND_EXECUTABLE_AND_PROVIDER_BYTES_PRESERVED"
+}

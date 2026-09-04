@@ -1,5 +1,41 @@
 # RTDL Codex Working Guide
 
+## Critical current override: Goal5843 fair post-R1 baseline internally complete (2026-09-04)
+
+Goal5843 is internally technically complete at exactly
+`PASS__GOAL5843_INTERNAL_TECHNICAL_COMPLETE__EXTERNAL_REVIEW_PENDING`. The
+controlling authority is
+`history/internal_docs/goal5843_post_r1_fair_baseline_20260904/GOAL5843_FINAL_INTERNAL_AUTHORITY.json`.
+Its internal authority seal is
+`c40b9fe5d3ace2f58fe29a1a39363ce25373332f774f3c36ffa839ce650bdba8`.
+Verify it with
+`PYTHONPATH=src:. python scripts/goal5843_build_final_authority.py --verify-stored`.
+
+The accepted v4 transaction uses formal source commit
+`c2662603c4d24902361fbd70325832ee7d98a0a4` and one RTX A6000 Ampere GPU. It
+retains all 108 composites and 216 subworker receipts; the Mac recount is
+byte-identical to the pod recount. The primary triangle scalar steady median
+is 0.436590 ms, 2.910x pinned PyOptiX and 4.689x Direct. The adverse relation
+row path remains 12.774231 ms, 3.333x PyOptiX and 9.950x Direct. These are
+current-path internal measurements, not parity, a hardware-independent result,
+or an intrinsic language-overhead bound.
+
+The prior v3 transaction remains terminal because its preregistered local
+archive verifier compared safely normalized extraction modes to original
+custody modes. Preserve its full archive, 7,020 timing samples, and explicit
+no-pooling rule. v4 is a separately preregistered transaction with unchanged
+experimental contracts and a repaired custody verifier; it is not a retry of
+v3. The Goal5838 frozen core remains byte-identical.
+
+The exact successor regression is 91/91. A broader adjacent-history run is
+245/247 because two old Goal5840 repair-freezer tests try to rebuild an early
+source manifest from later legitimate Goal5840 files; do not hide these two
+historical current-tree replay errors or rewrite old evidence to make them
+green. External review count is zero, so public/manuscript performance wording
+and consensus remain forbidden. The next performance target is to instrument
+and reduce remaining public steady dispatch/receipt overhead without weakening
+public checks or app-neutral boundaries.
+
 ## Critical current override: Goal5842R1 implementation repair complete (2026-09-04)
 
 Goal5842R1 is internally complete at exactly

@@ -8404,3 +8404,19 @@ taxonomy. Four-of-four is kind presence only, not full category, topology,
 Callback-IR, application, user, or performance coverage. RT-CCD remains a
 paper-derived core until Goal5836's author/same-input/oracle/hardware gates all
 pass. No external review or performance measurement is authorized here.
+
+## D242: accept Goal5843 internally without converting an adverse baseline into a success claim (2026-09-04)
+
+Accept the separately preregistered Goal5843 v4 transaction as internally
+technically complete because its completion contract is correctness, custody,
+receipt, recount, and adverse-row retention, not a performance threshold. Keep
+the measured result literal: the post-R1 public triangle path is much closer
+to low-level baselines but remains 2.910x PyOptiX and 4.689x Direct; the
+relation path remains 3.333x and 9.950x slower.
+
+Treat v3 as terminal and never pool its 7,020 samples. The v4 archive-mode
+repair changes custody verification only and does not retroactively rescue v3.
+Do not authorize public/manuscript wording, hardware-independent claims,
+general language performance claims, or consensus until external review is
+available. The next optimization must preserve the ordinary public check-on
+front door and app-neutral engine boundary rather than use a private fast path.

@@ -1,0 +1,28 @@
+{
+  "implementation_route_import_count": 0,
+  "preregistration_sha256": "c0ad3a566e99f925341d98c987854714cfabc415254ccd7178efcd465e664b66",
+  "registered_timing_observation_count": 0,
+  "schema": "rtdl.goal5843.independent_oracle_witness.v1",
+  "source_commit": "c2662603c4d24902361fbd70325832ee7d98a0a4",
+  "status": "PASS__ROUTE_INDEPENDENT_STRUCTURAL_ORACLE_REDERIVED",
+  "tasks": [
+    {
+      "full_oracle_sha256": "2fb668490480cbb5d4d9bbf5a8d357435eff5fc6bb3532427ac2726cdaa88c77",
+      "input_sha256": "8606dd3c22d424a7ee2d64b61918f6185d39d8090d1a0a64001de65054d25e0e",
+      "public_output_sha256": "2fb668490480cbb5d4d9bbf5a8d357435eff5fc6bb3532427ac2726cdaa88c77",
+      "row_count": 4096,
+      "structural_proof": "strictly_separated_unit_boxes_self_overlap_only",
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1"
+    },
+    {
+      "full_oracle_sha256": "24f4651b65f2abc93ffae0a8a9603c6eff9e9c6acdc24b65fb20937d6f416d93",
+      "input_sha256": "d994f80418995342d0faa4bda84b42c2ef3604b2798de413a2813dd28dc039a7",
+      "per_ray_count": 16384,
+      "public_output_sha256": "2df49102543561c678ce39e05cc6c79ce92c0ea919ad45134d53d19bb67174ef",
+      "structural_proof": "disjoint_x_support_and_strict_own_triangle_interior",
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "weighted_sum": 65530
+    }
+  ],
+  "witness_sha256": "fe210416572ba97e0074468ab64bfcd965803955c804aa21970db5e072398960"
+}

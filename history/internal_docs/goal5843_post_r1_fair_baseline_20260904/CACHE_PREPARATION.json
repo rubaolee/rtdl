@@ -1,0 +1,43 @@
+{
+  "cache_root": "/workspace/goal5843-formal-v4/formal_leaf_cache",
+  "compute_capability": "8.6",
+  "create_only_miss_count": 11,
+  "entries_sha256": "84957bae10d3cc0d17d319c264abcb6d63e9e63324c36897273065d0f3b446b6",
+  "entry_count": 11,
+  "executable_identities": {
+    "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1": {
+      "executable_sha256": "d3f08a280b445a7d9582942437bc7d163bed423d689e4d67b914b3ca9562ef5e",
+      "generated_artifact_sha256": "de258dcfcf1fa6953116eb53d8f5e5282a6781f15b7bcd03327eb51be8ec6fb7",
+      "identity_sha256": "9ca8cd5516be94479dcb9a581ebf5dcb8a21d7003d6f6eb61cc638ca6d3a53ca",
+      "plan_sha256": "f42e84dbc44bdae382269da91a4f4fffed355e3898b1190e3d56bba3ebe8017f",
+      "provider_artifact_sha256": "91ae01bb6944eb03b729ec12313bdbc07f4ca474fa63229fd68eb5681b1d784a",
+      "provider_descriptor_sha256": "5c051272e67c0e2f5d7b95b9e57efa0bfef5fa312daf65872da026761065f08b",
+      "provider_projection_sha256": "57b5416bddc37c7fa2a36c2b124955dbc8958235392fc91ce37393a399775b6f",
+      "schema": "rtdl.family_executable_identity.v1",
+      "target_sha256": "085852f0b3b7830928fcca54b487f1e82fef40bfa6d3d52c579de4d5da9ba553"
+    },
+    "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1": {
+      "executable_sha256": "5cbb9595fa143a176266fe40d27556bd41ff361138d75708a40d771ed4050fd3",
+      "generated_artifact_sha256": "a14e3b621b725cf95cdc5ceace3f8c6023a74055ebba870ba32f353a0d415921",
+      "identity_sha256": "d41ec4f25725b4ff48dbb7e2170cf902800b339d54be1163748428ad222983ba",
+      "plan_sha256": "fa9f40b9c96410190e5135513e7f6788b242ffd6e11e609d0a0b4d5bdc0051b8",
+      "provider_artifact_sha256": "91ae01bb6944eb03b729ec12313bdbc07f4ca474fa63229fd68eb5681b1d784a",
+      "provider_descriptor_sha256": "89d8336c4ea0bf96f1e37af66791f7d0b0bfb7dee231bdc35da2d0bc7cb3be64",
+      "provider_projection_sha256": "5aa227f058b94a9ef36d1c573ee02d64e46a7890c08ba8240fac58ac6159a1c7",
+      "schema": "rtdl.family_executable_identity.v1",
+      "target_sha256": "085852f0b3b7830928fcca54b487f1e82fef40bfa6d3d52c579de4d5da9ba553"
+    }
+  },
+  "goal5843_registered_estimand_timing_observation_count": 0,
+  "gpu_complete_execution_count": 0,
+  "manifest": "/workspace/goal5843-formal-v4/FORMAL_LEAF_CACHE_MANIFEST.json",
+  "manifest_file_sha256": "e72676fbbe42547b3c2cce4d2e0595a2f3b5155856dad1b67145d4002961eb0f",
+  "native_library_sha256": "91ae01bb6944eb03b729ec12313bdbc07f4ca474fa63229fd68eb5681b1d784a",
+  "preparation_sha256": "fcef08dfc14c0e39f72395d9612ced941a7d18e965a90ca5047a46a4b3e8ab38",
+  "preregistration_sha256": "c0ad3a566e99f925341d98c987854714cfabc415254ccd7178efcd465e664b66",
+  "schema": "rtdl.goal5843.formal_leaf_cache_preparation.v1",
+  "sealed_verification_hit_count": 11,
+  "sealed_verification_miss_count": 0,
+  "source_commit": "c2662603c4d24902361fbd70325832ee7d98a0a4",
+  "status": "PASS__CREATE_ONLY_CACHE_SEALED_READ_ONLY_BEFORE_WORKER_ZERO"
+}
