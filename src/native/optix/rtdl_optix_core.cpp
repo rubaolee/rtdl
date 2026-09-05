@@ -46,12 +46,116 @@ inline std::string cuda_driver_error_message(CUresult result) {
                                      optixGetErrorString(_r));                  \
     } while (0)
 
+#if defined(RTDL_OPTIX_LAZY_NVRTC)
+#ifndef RTDL_NVRTC_LIBRARY_PATH
+#define RTDL_NVRTC_LIBRARY_PATH ""
+#endif
+
+struct RtdlLazyNvrtcApi {
+    void* library = nullptr;
+    decltype(&nvrtcCreateProgram) CreateProgram = nullptr;
+    decltype(&nvrtcCompileProgram) CompileProgram = nullptr;
+    decltype(&nvrtcGetProgramLogSize) GetProgramLogSize = nullptr;
+    decltype(&nvrtcGetProgramLog) GetProgramLog = nullptr;
+    decltype(&nvrtcGetPTXSize) GetPTXSize = nullptr;
+    decltype(&nvrtcGetPTX) GetPTX = nullptr;
+    decltype(&nvrtcDestroyProgram) DestroyProgram = nullptr;
+    decltype(&nvrtcGetErrorString) GetErrorString = nullptr;
+};
+
+template <typename Function>
+static Function rtdl_lazy_nvrtc_symbol(void* library, const char* name) {
+    dlerror();
+    void* symbol = dlsym(library, name);
+    const char* error = dlerror();
+    if (error || !symbol) {
+        throw std::runtime_error(
+            std::string("NVRTC symbol unavailable: ") + name + ": " +
+            (error ? error : "null symbol"));
+    }
+    return reinterpret_cast<Function>(symbol);
+}
+
+static RtdlLazyNvrtcApi& rtdl_lazy_nvrtc_api() {
+    static RtdlLazyNvrtcApi api = [] {
+        const char* configured = std::getenv("RTDL_NVRTC_LIBRARY");
+        const char* pinned = RTDL_NVRTC_LIBRARY_PATH;
+        const char* candidates[] = {
+            configured && configured[0] != '\0' ? configured : nullptr,
+            pinned && pinned[0] != '\0' ? pinned : nullptr,
+            "libnvrtc.so.13",
+            "libnvrtc.so.12",
+            "libnvrtc.so.11",
+            "libnvrtc.so",
+        };
+        void* library = nullptr;
+        std::string failures;
+        for (const char* candidate : candidates) {
+            if (!candidate) continue;
+            dlerror();
+            library = dlopen(candidate, RTLD_NOW | RTLD_LOCAL);
+            if (library) break;
+            const char* error = dlerror();
+            if (!failures.empty()) failures += "; ";
+            failures += std::string(candidate) + ": " +
+                (error ? error : "unknown loader error");
+        }
+        if (!library) {
+            throw std::runtime_error(
+                "NVRTC is unavailable for runtime source compilation: " +
+                failures);
+        }
+        RtdlLazyNvrtcApi result;
+        result.library = library;
+        try {
+            result.CreateProgram = rtdl_lazy_nvrtc_symbol<
+                decltype(result.CreateProgram)>(library, "nvrtcCreateProgram");
+            result.CompileProgram = rtdl_lazy_nvrtc_symbol<
+                decltype(result.CompileProgram)>(library, "nvrtcCompileProgram");
+            result.GetProgramLogSize = rtdl_lazy_nvrtc_symbol<
+                decltype(result.GetProgramLogSize)>(
+                    library, "nvrtcGetProgramLogSize");
+            result.GetProgramLog = rtdl_lazy_nvrtc_symbol<
+                decltype(result.GetProgramLog)>(library, "nvrtcGetProgramLog");
+            result.GetPTXSize = rtdl_lazy_nvrtc_symbol<
+                decltype(result.GetPTXSize)>(library, "nvrtcGetPTXSize");
+            result.GetPTX = rtdl_lazy_nvrtc_symbol<
+                decltype(result.GetPTX)>(library, "nvrtcGetPTX");
+            result.DestroyProgram = rtdl_lazy_nvrtc_symbol<
+                decltype(result.DestroyProgram)>(library, "nvrtcDestroyProgram");
+            result.GetErrorString = rtdl_lazy_nvrtc_symbol<
+                decltype(result.GetErrorString)>(library, "nvrtcGetErrorString");
+        } catch (...) {
+            dlclose(library);
+            throw;
+        }
+        // NVRTC owns process-global compiler state.  Keep the image loaded for
+        // process lifetime, matching the native provider's own lifetime.
+        return result;
+    }();
+    return api;
+}
+
+static const char* rtdl_nvrtc_error_string(nvrtcResult result) {
+    return rtdl_lazy_nvrtc_api().GetErrorString(result);
+}
+
+#define RTDL_NVRTC_CALL(name, arguments) \
+    (rtdl_lazy_nvrtc_api().name arguments)
+#else
+static const char* rtdl_nvrtc_error_string(nvrtcResult result) {
+    return nvrtcGetErrorString(result);
+}
+
+#define RTDL_NVRTC_CALL(name, arguments) nvrtc##name arguments
+#endif
+
 #define NVRTC_CHECK(call)                                                       \
     do {                                                                        \
         nvrtcResult _r = (call);                                                \
         if (_r != NVRTC_SUCCESS)                                                \
             throw std::runtime_error(std::string("NVRTC error: ") +            \
-                                     nvrtcGetErrorString(_r));                  \
+                                     rtdl_nvrtc_error_string(_r));              \
     } while (0)
 
 // Goal5807 post-result performance diagnosis.  This is an environment-gated
@@ -1022,18 +1126,36 @@ std::string compile_to_ptx(const char* cuda_src,
 #endif
     for (const char* o : extra_opts) opts.push_back(o);
 
-    nvrtcProgram prog;
-    NVRTC_CHECK(nvrtcCreateProgram(&prog, cuda_src, name, 0, nullptr, nullptr));
+#if defined(RTDL_OPTIX_LAZY_NVRTC)
+    try {
+        (void)rtdl_lazy_nvrtc_api();
+    } catch (const std::exception& lazy_load_error) {
+        try {
+            return compile_to_ptx_with_nvcc(
+                cuda_src, name, nvcc_include_opts, extra_opts);
+        } catch (const std::exception& fallback_error) {
+            throw std::runtime_error(
+                "lazy NVRTC load failed for " + std::string(name) + ":\n" +
+                lazy_load_error.what() +
+                "\nFallback nvcc compile also failed:\n" +
+                fallback_error.what());
+        }
+    }
+#endif
 
-    nvrtcResult compile_result = nvrtcCompileProgram(prog,
-                                                     static_cast<int>(opts.size()),
-                                                     opts.data());
+    nvrtcProgram prog;
+    NVRTC_CHECK(RTDL_NVRTC_CALL(
+        CreateProgram, (&prog, cuda_src, name, 0, nullptr, nullptr)));
+
+    nvrtcResult compile_result = RTDL_NVRTC_CALL(
+        CompileProgram,
+        (prog, static_cast<int>(opts.size()), opts.data()));
     if (compile_result != NVRTC_SUCCESS) {
         size_t log_size = 0;
-        nvrtcGetProgramLogSize(prog, &log_size);
+        RTDL_NVRTC_CALL(GetProgramLogSize, (prog, &log_size));
         std::string log(log_size, '\0');
-        nvrtcGetProgramLog(prog, log.data());
-        nvrtcDestroyProgram(&prog);
+        RTDL_NVRTC_CALL(GetProgramLog, (prog, log.data()));
+        RTDL_NVRTC_CALL(DestroyProgram, (&prog));
         try {
             return compile_to_ptx_with_nvcc(cuda_src, name, nvcc_include_opts, extra_opts);
         } catch (const std::exception& fallback_error) {
@@ -1045,10 +1167,10 @@ std::string compile_to_ptx(const char* cuda_src,
     }
 
     size_t ptx_size = 0;
-    NVRTC_CHECK(nvrtcGetPTXSize(prog, &ptx_size));
+    NVRTC_CHECK(RTDL_NVRTC_CALL(GetPTXSize, (prog, &ptx_size)));
     std::string ptx(ptx_size, '\0');
-    NVRTC_CHECK(nvrtcGetPTX(prog, ptx.data()));
-    nvrtcDestroyProgram(&prog);
+    NVRTC_CHECK(RTDL_NVRTC_CALL(GetPTX, (prog, ptx.data())));
+    RTDL_NVRTC_CALL(DestroyProgram, (&prog));
 
     if (const char* dump_dir = std::getenv("RTDL_DUMP_PTX_DIR")) {
         std::string path = std::string(dump_dir) + "/" + name + ".ptx";

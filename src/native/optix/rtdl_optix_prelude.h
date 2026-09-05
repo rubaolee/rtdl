@@ -32,6 +32,10 @@
 //        -DRTDL_OPTIX_BUILD_ID='"<cache-relevant-build-input-id>"' \
 //        -lcuda -lnvrtc \
 //        rtdl_optix.cpp -o librtdl_optix.so
+// Deployable AOT providers may instead define RTDL_OPTIX_LAZY_NVRTC and link
+// -ldl.  Those providers load the build-pinned NVRTC image only if a legacy
+// source-compilation entry point is actually called; precompiled V4 execution
+// has no eager compiler-runtime dependency.
 // Persistent CUBIN caching is disabled when RTDL_OPTIX_BUILD_ID is omitted or
 // empty. Reproducible packagers should derive it from all cache-relevant native
 // build inputs; the project Makefile injects a fresh ID for each actual build.
@@ -78,6 +82,10 @@
 #include <sys/wait.h>
 #include <unistd.h>
 #include <vector>
+
+#if defined(RTDL_OPTIX_LAZY_NVRTC)
+#include <dlfcn.h>
+#endif
 
 // OptiX 7.7 renamed the PTX module entry point and added the pipeline
 // argument to the stack-size accumulator.  Keep one source compatible with

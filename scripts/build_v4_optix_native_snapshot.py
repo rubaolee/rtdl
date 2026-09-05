@@ -191,6 +191,24 @@ def _build_input_id(identity: dict[str, object]) -> str:
         allow_nan=False).encode("utf-8")).hexdigest()
 
 
+def _resolve_nvrtc_library(library_dirs: list[Path]) -> Path:
+    candidates = [
+        directory / name
+        for directory in library_dirs
+        for name in ("libnvrtc.so.13", "libnvrtc.so.12", "libnvrtc.so")
+    ]
+    candidates.extend(
+        path
+        for directory in library_dirs
+        for path in sorted(directory.glob("libnvrtc.so*"))
+    )
+    for candidate in candidates:
+        if candidate.is_file():
+            return candidate.resolve(strict=True)
+    raise FileNotFoundError(
+        "lazy NVRTC provider requested but no libnvrtc.so image was found")
+
+
 def build(args) -> dict[str, object]:
     cuda = args.cuda_prefix.resolve(strict=True)
     optix = args.optix_prefix.resolve(strict=True)
@@ -264,6 +282,9 @@ def build(args) -> dict[str, object]:
     ):
         if candidate.is_dir() and candidate not in library_dirs:
             library_dirs.append(candidate)
+    lazy_nvrtc = bool(getattr(args, "lazy_nvrtc", False))
+    nvrtc_library = (
+        _resolve_nvrtc_library(library_dirs) if lazy_nvrtc else None)
     identity = {
         "schema": "rtdl.v4.optix_native_build_input.v1",
         "git_commit": git_commit,
@@ -296,12 +317,30 @@ def build(args) -> dict[str, object]:
         "geos_libraries": geos_libraries,
         "library_dirs": [str(path) for path in library_dirs],
     }
+    if lazy_nvrtc:
+        assert nvrtc_library is not None
+        identity.update({
+            "schema": "rtdl.v4.optix_native_build_input.v2",
+            "runtime_compiler_linkage": "lazy_dlopen_build_pinned",
+            "nvrtc_library_path": str(nvrtc_library),
+            "nvrtc_library_bytes": nvrtc_library.stat().st_size,
+            "nvrtc_library_sha256": _sha(nvrtc_library),
+        })
     build_id = _build_input_id(identity)
     descriptor, temporary_name = tempfile.mkstemp(
         prefix=f".{output.name}.", suffix=".partial", dir=output.parent)
     os.close(descriptor)
     temporary_output = Path(temporary_name)
     temporary_output.unlink()
+    runtime_compiler_defines = []
+    runtime_compiler_libraries = ["-lnvrtc"]
+    if lazy_nvrtc:
+        assert nvrtc_library is not None
+        runtime_compiler_defines = [
+            "-DRTDL_OPTIX_LAZY_NVRTC=1",
+            f'-DRTDL_NVRTC_LIBRARY_PATH="{nvrtc_library}"',
+        ]
+        runtime_compiler_libraries = ["-ldl"]
     command = [
         str(nvcc), "-ccbin", str(host_compiler),
         "-std=c++17", "-O3", "-shared",
@@ -310,11 +349,12 @@ def build(args) -> dict[str, object]:
         f'-DRTDL_CUDA_INCLUDE_DIR="{cuda_include}"',
         f'-DRTDL_CUDA_SYSTEM_INCLUDE_DIR="{cuda_system_include}"',
         f'-DRTDL_OPTIX_BUILD_ID="{build_id}"',
+        *runtime_compiler_defines,
         f"-arch=sm_{capability[0]}{capability[1]}",
         "-Xcompiler", "-fPIC",
         *(str(path) for path in TRANSLATION_UNITS),
         *(f"-L{path}" for path in library_dirs),
-        "-lcuda", "-lnvrtc", *geos_libraries,
+        "-lcuda", *runtime_compiler_libraries, *geos_libraries,
         "-o", str(temporary_output),
     ]
     try:
@@ -346,6 +386,17 @@ def build(args) -> dict[str, object]:
                 f"native owner-grouped symbols are missing: {missing}")
         native_bytes = temporary_output.stat().st_size
         native_sha256 = _sha(temporary_output)
+        dynamic_dependencies = None
+        has_eager_nvrtc_dependency = None
+        if lazy_nvrtc:
+            dynamic_dependencies = _capture(["ldd", str(temporary_output)])
+            has_eager_nvrtc_dependency = any(
+                re.match(r"^\s*libnvrtc\.so(?:\.|\s)", line)
+                for line in dynamic_dependencies.splitlines()
+            )
+            if has_eager_nvrtc_dependency:
+                raise RuntimeError(
+                    "lazy NVRTC provider still has an eager libnvrtc dependency")
         _publish_exclusive(temporary_output, output)
     finally:
         temporary_output.unlink(missing_ok=True)
@@ -401,6 +452,14 @@ def build(args) -> dict[str, object]:
         "exported_symbol_match_mode": "exact_nm_dynamic_defined_name",
         "all_required_symbols_exported": True,
     }
+    if lazy_nvrtc:
+        result.update({
+            "schema": "rtdl.v4.optix_native_snapshot_build.v2",
+            "status": "PASS__FRESH_AOT_NATIVE_WITH_LAZY_RUNTIME_COMPILER",
+            "runtime_compiler_linkage": identity["runtime_compiler_linkage"],
+            "dynamic_dependencies": dynamic_dependencies,
+            "eager_nvrtc_dependency": has_eager_nvrtc_dependency,
+        })
     try:
         _write_json(manifest, result)
     except Exception:
@@ -420,6 +479,11 @@ def main() -> None:
     parser.add_argument("--manifest", required=True, type=Path)
     parser.add_argument("--log", required=True, type=Path)
     parser.add_argument("--allow-dirty", action="store_true")
+    parser.add_argument(
+        "--lazy-nvrtc", action="store_true",
+        help=("omit eager NVRTC linkage and load the build-pinned compiler "
+              "image only if runtime source compilation is requested"),
+    )
     args = parser.parse_args()
     result = build(args)
     print(json.dumps({
