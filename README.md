@@ -78,12 +78,13 @@ native output.
 
 RTDL V4 is currently a **research release candidate**.  Its nine-app / thirteen-
 lane implementation is exact and behaviorally true-OptiX on Home and modern
-RTX.  Its current **cold** application lifecycle is not performance-viable:
-the frozen RTX 4000 Ada cohort is 1 pass / 25 fail across 26 independent
-V2/V4 and V3/V4 rows.  V4 recompiles callback artifacts inside each cold
-frontdoor; an explicit prepared application lifecycle remains the primary
-product gap.  This evidence does not establish universal expressiveness,
-production security, author superiority or hardware RT-core utilization.
+RTX.  The frozen default **cold** application frontdoors are not performance-
+viable: the RTX 4000 Ada cohort is 1 pass / 25 fail across 26 independent
+V2/V4 and V3/V4 rows.  A later internal precompiled-AOT path closes this debt
+for one exact bounded-relation contract, but it is not yet portfolio-wide or
+externally reviewed.  This evidence does not establish universal
+expressiveness, production security, author superiority or hardware RT-core
+utilization.
 
 ## Documentation
 

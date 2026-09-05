@@ -2642,7 +2642,38 @@ canonical IDs, overflow, lifecycle, exact output and behavioral true-OptiX.
 No POD, formal matrix, predicted saving, RT-BarnesHut repair or performance/
 no-slower/author/silicon/public/production claim is authorized by Goal5777.
 
-# Critical current override: Goal5846 exact warm-cache startup target met; AOT deployment is next (2026-09-05)
+# Critical current override: Goal5847 deployable AOT target met (2026-09-05)
+
+Goal5847 is internally technically complete only at
+`PASS__GOAL5847_INTERNAL_TECHNICAL_COMPLETE__EXTERNAL_REVIEW_PENDING`.
+Its controlling authority is
+`history/internal_docs/goal5847_aot_startup_20260905/GOAL5847_INTERNAL_AUTHORITY.json`;
+verify it with
+`python3 scripts/goal5847_build_aot_startup_authority.py --verify-stored`.
+
+At clean implementation commit
+`f5e337feef6829e063c6aff06f4e8bd6d5466b3b` on one RTX 2000 Ada GPU, the
+exact precompiled 4,096-by-4,096 bounded-relation transaction retained 1,024
+steady samples per arm and all eight paired complete-process rows. Median
+within-block complete-process RTDL/precompiled-PyOptix is `0.229370x`, worst
+block `0.258728x`. Pooled steady medians are 299,403 ns and 3,496,252 ns,
+ratio `0.085635x`. RTDL maps no NVRTC/compiler module and records zero runtime-
+compiler attempts while preserving signed family/provider identity and true
+OptiX evidence.
+
+Do not generalize Goal5847. PyOptix's 5.206 s median dependency import
+dominates the complete-process result and maps NVRTC even though the harness
+does not compile source. After implementation import, RTDL remains `2.504x`
+slower by the paired median. First-ever RTDL materialize/build/sign is 94.171 s
+and excluded. The steady arms satisfy the same output contract but RTDL uses
+generic device semantic compaction while PyOptix returns duplicate raw events
+for host canonicalization. Storage page cache is uncontrolled; signing is
+test-only; only one relation shape and one GPU generation are measured.
+External review, consensus, public/manuscript wording, intrinsic-language,
+arbitrary-workload, cross-hardware and production-security claims remain
+unauthorized.
+
+# Critical current override: Goal5846 exact warm-cache startup target met; superseded by Goal5847 AOT evidence (2026-09-05)
 
 Goal5846 is internally complete only at
 `PASS__GOAL5846_EXACT_WARM_CACHE_FRESH_PROCESS_STARTUP_TARGET_MET__EXTERNAL_REVIEW_PENDING`.

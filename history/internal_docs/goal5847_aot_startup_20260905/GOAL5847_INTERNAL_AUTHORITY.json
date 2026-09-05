@@ -1,0 +1,186 @@
+{
+  "aot_runtime": {
+    "deployment_profile": "rtdlexe_aot_runtime_v1",
+    "eager_nvrtc_dependency": false,
+    "installed_trust": {
+      "relation": {
+        "head_sha256": "9865a9ec423ab6b7589d7d058674c140508b3652190f3b816e3e90f913ae0431",
+        "key_id": "TEST_ONLY_goal5847_relation",
+        "package_sha256": "b2e7b7d39d0e236b27bb61bfe25fbf9be43b07328dc40a79c3cbe97a5f7762de",
+        "rsa_signature_chain_verified": true,
+        "test_only_signing": true,
+        "trust_root_sha256": "25cb74fbd6426e7903ded2a8c788ed32111ab2e24f5f5b428e31ad9ad592a179"
+      },
+      "triangle": {
+        "head_sha256": "a74ef249ae824bfa3d41090a806d3324c81942a29ae8b7d2b5039a42ff6ea0df",
+        "key_id": "TEST_ONLY_goal5847_triangle",
+        "package_sha256": "b8ae9134e601caf2ae4cdff06d360f59ade3d8d754f36d44def51513f05b2435",
+        "rsa_signature_chain_verified": true,
+        "test_only_signing": true,
+        "trust_root_sha256": "011e87e2cb1a2f497c774155816bc9c93c6451d86e20601b3be74ae8611f6d10"
+      }
+    },
+    "native_build_id": "9c82245d8b994c364e0e726c608ee072b2471bd7d3636fdb8d85e4cc9e29e24e",
+    "native_build_manifest_sha256": "a394fe81fc61eedcb63e72c78f63f8284ba8f47fead4653cb37ac2a571d5f8bb",
+    "native_bytes": 1262360,
+    "native_sha256": "6f695bc006114087aa85303f1faeb3f8d1dd2ffb8fab2256206ce6b3e42ec6a4",
+    "production_key_custody_attested": false,
+    "relation_artifact_sha256": "7ee22c3baeb3f253e47b0fc58323c259b38ba11d1d79e031101e27eddb05ef47",
+    "required_export_count": 23,
+    "runtime_compiler_linkage": "lazy_dlopen_build_pinned",
+    "test_only_signing": true,
+    "triangle_artifact_sha256": "e945c9d65c1ff4ecf95e3a189af7170c287aa6b07d4919ab1435b6a7abe54e4f",
+    "unexpected_export_count": 0
+  },
+  "authority_sha256": "3501c83ab4c13a3ef63890b446dd949baade2443ed578e9cd75a71d3fa88a301",
+  "claim_boundary": {
+    "cross_hardware_generalization_authorized": false,
+    "external_consensus_complete": false,
+    "external_review_complete": false,
+    "internal_engineering_evidence_only": true,
+    "production_signing_claim_authorized": false,
+    "public_or_manuscript_claim_authorized": false
+  },
+  "correctness_and_security": {
+    "mutation_rejections": {
+      "artifact_byte_append": "RX023_ARTIFACT_INVALID",
+      "authority_byte_append": "RX018_AUTHORITY_INVALID",
+      "cross_family_bind": "RX050_DEPLOYMENT_INTENT_MISMATCH",
+      "native_byte_append": "RX032_NATIVE_IDENTITY_MISMATCH",
+      "unknown_deployment_slot": "RX049_DEPLOYMENT_SLOT_NOT_FROZEN"
+    },
+    "relation_canonical_row_count": 4096,
+    "relation_launches_per_execution": 2,
+    "relation_output_sha256": "2fb668490480cbb5d4d9bbf5a8d357435eff5fc6bb3532427ac2726cdaa88c77",
+    "rsa_trust_chains_verified": 2,
+    "rtdl_nvrtc_mappings": [],
+    "rtdl_runtime_compiler_modules": [],
+    "runtime_compiler_attempt_count": 0,
+    "triangle_checked_u64_output": 65530,
+    "triangle_output_sha256": "2df49102543561c678ce39e05cc6c79ce92c0ea919ad45134d53d19bb67174ef",
+    "triangle_validation_launches": 1,
+    "true_optix_receipts_recounted": 10
+  },
+  "custody": {
+    "capture_file_count": 80,
+    "capture_files_sha256": "74cc18b2835c67146885243bb810bd41b4be1778bf27d423d3bee665a5a501b7",
+    "capture_manifest_file_sha256": "9ef688b64a3b8913ae2cf428e766706f152bb88b102bf1d85947ed25a6c25923",
+    "capture_manifest_sha256": "70cca6e698e76b1efe80da058c324d952ec39f91912ca8963e75563824404d52",
+    "controller_file_sha256": "3512eeee67dbb21d8926a6bee7514c377941c79a488372b618c6daca90653e7f",
+    "controller_sha256": "9c06a160c5ec9fbc97dda15581627f6d1c03bcc80ccc3c8e13882ff24f9a855b",
+    "evidence_archive": "history/internal_docs/goal5847_aot_startup_20260905/FORMAL_V2_EVIDENCE.tar.gz",
+    "evidence_archive_sha256": "65ee646c36e801fbf957de6eeb0c8b03106a48fa01bb2008d3aed0761fd037e8",
+    "pod_endpoint": "root@213.173.108.40:37784"
+  },
+  "frozen_experiment": {
+    "all_preregistered_gates_pass": true,
+    "arms": [
+      "RTDL_FAMILY_RTDLEXE_AOT",
+      "PYOPTIX_PRECOMPILED_PTX_VALIDATION_OFF"
+    ],
+    "design": {
+      "balanced_alternating_order": true,
+      "blocks": 8,
+      "fresh_process_per_arm_per_block": true,
+      "primary_estimand": "parent_pre_spawn_to_first_correct_result_ns",
+      "sample_discard_count": 0,
+      "samples_per_arm": 1024,
+      "samples_per_worker": 128,
+      "secondary_estimand": "implementation_import_end_to_first_correct_result_ns",
+      "steady_estimand": "complete_same_contract_execution_ns",
+      "warmups_per_worker": 16
+    },
+    "discarded_samples": 0,
+    "preregistration_file_sha256": "d72f38459bcfa283373a43258a000498c574cb37a428334485b86cf36ae93975",
+    "preregistration_sha256": "34b977a163a21090d0820b1f6b2dafc6e9723ff9d7635d75bd0afa85bdd8d433",
+    "task": {
+      "canonical_row_count": 4096,
+      "id": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "indexed_count": 4096,
+      "input_sha256": "8606dd3c22d424a7ee2d64b61918f6185d39d8090d1a0a64001de65054d25e0e",
+      "output_contract": "canonical_u32_relation_rows",
+      "output_sha256": "2fb668490480cbb5d4d9bbf5a8d357435eff5fc6bb3532427ac2726cdaa88c77",
+      "query_count": 4096
+    }
+  },
+  "performance": {
+    "block_count": 8,
+    "complete_process_primary_reciprocal": 4.35975906952868,
+    "median_phase_ns": {
+      "PYOPTIX_PRECOMPILED_PTX_VALIDATION_OFF": {
+        "cuda_optix_context": 167910610,
+        "deterministic_input_materialization": 15207563,
+        "first_complete_execution": 4367546,
+        "implementation_import": 5205902301,
+        "module_program_pipeline_sbt": 18030457,
+        "native_prepare": 30195025,
+        "precompiled_ptx_load": 6136820
+      },
+      "RTDL_FAMILY_RTDLEXE_AOT": {
+        "artifact_authority_load": 72565926,
+        "deploy_dynamic_input": 42792541,
+        "deploy_static_input": 58659778,
+        "deterministic_input_materialization": 15519387,
+        "first_complete_execution": 2945617,
+        "implementation_import": 136717851,
+        "native_prepare": 53814814,
+        "provider_bind_and_initialization_join": 269734024,
+        "provider_initialization_start": 4262184,
+        "signed_deployment_install": 47240270
+      }
+    },
+    "median_post_import_ns": {
+      "PYOPTIX_PRECOMPILED_PTX_VALIDATION_OFF": 263348967,
+      "RTDL_FAMILY_RTDLEXE_AOT": 637845529
+    },
+    "median_process_ns": {
+      "PYOPTIX_PRECOMPILED_PTX_VALIDATION_OFF": 6163250546,
+      "RTDL_FAMILY_RTDLEXE_AOT": 1413775618
+    },
+    "median_within_block_post_import_ratio": 2.50424177977926,
+    "median_within_block_primary_ratio": 0.229370473012883,
+    "pooled_steady_median_ns": {
+      "PYOPTIX_PRECOMPILED_PTX_VALIDATION_OFF": 3496252,
+      "RTDL_FAMILY_RTDLEXE_AOT": 299403
+    },
+    "pooled_steady_reciprocal": 11.67741138198348,
+    "pooled_steady_rtdl_to_pyoptix_ratio": 0.085635417584316,
+    "retained_samples_per_arm": {
+      "PYOPTIX_PRECOMPILED_PTX_VALIDATION_OFF": 1024,
+      "RTDL_FAMILY_RTDLEXE_AOT": 1024
+    },
+    "rtdl_steady_vs_goal5845_reference_ratio": 0.8172817601135557,
+    "worker_count": 16,
+    "worst_block_post_import_ratio": 3.211852628078743,
+    "worst_block_primary_ratio": 0.2587280703779318
+  },
+  "schema": "rtdl.goal5847.aot_startup.internal_authority.v1",
+  "scientific_boundary": {
+    "arbitrary_workload_claim_authorized": false,
+    "exact_task_precompiled_aot_only": true,
+    "external_review_complete": false,
+    "first_ever_aot_build_in_performance_endpoint": false,
+    "intrinsic_language_speedup_claim_authorized": false,
+    "primary_includes_interpreter_and_dependency_import": true,
+    "public_or_manuscript_claim_authorized": false,
+    "pyoptix_dependency_stack_mapped_nvrtc": true,
+    "pyoptix_harness_source_compilation_performed": false,
+    "secondary_excludes_implementation_import": true,
+    "single_gpu_generation_only": true,
+    "storage_page_cache_controlled": false
+  },
+  "source": {
+    "implementation_commit": "f5e337feef6829e063c6aff06f4e8bd6d5466b3b",
+    "implementation_tree": "c276d64342bf17fee77b7ab0cf66ef5060c73341",
+    "preregistration_commit": "7eaad7e52656c7521e7763fba132a72186583d6d",
+    "source_file_bindings": {
+      "experiments/goal5847_aot_startup/worker.py": "834bca5e31c005a9e5c3da34d2146f6787efa0b9de1a7c5ef0e45e608874a969",
+      "scripts/build_v4_optix_native_snapshot.py": "e86c06a76f7c74e6471f32d39778d6ae9a853bfba3b430f25029d5aa4a5ffe7e",
+      "scripts/goal5847_build_aot_candidates.py": "44d7d399174448b6574adde23c166a62334cac62a2c7a5b0f25231325b7229c5",
+      "scripts/goal5847_run_aot_startup_comparison.py": "4f8847a1984c0e8649e373b455a4028902d4479f1bf250da0af56da56825caec",
+      "scripts/goal5847_validate_aot_gpu.py": "2093595ed19768b8b533d51aad7e62fcab9596fc18512554719a8909acf6e486",
+      "src/rtdsl/v4_rtdlexe.py": "2dd6b4981a0da66a01006e33d44c8a4c4f9777052c98a0b6f2f622b52026343e"
+    }
+  },
+  "status": "PASS__GOAL5847_INTERNAL_TECHNICAL_COMPLETE__EXTERNAL_REVIEW_PENDING"
+}

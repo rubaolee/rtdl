@@ -60,3 +60,47 @@ Formal attempt 01 status: `TERMINAL__CONTROLLER_RECEIPT_LAYOUT_DEFECT`.
   Attempt 01 or exploratory sample may be pooled into V2.
 
 Formal successor V2 status: `NOT_STARTED`.
+
+## 2026-09-05T14:46:13Z: Formal Successor V2 Complete
+
+- Ran all 16 frozen workers in eight balanced alternating-order blocks on the
+  same RTX 2000 Ada GPU; retained 1,024 steady samples per arm and discarded
+  zero.
+- All exact oracles, candidate bindings, source identities and preregistered
+  gates passed. Median within-block complete-process RTDL/PyOptix ratio is
+  `0.229370473012883`; worst block is `0.2587280703779318`.
+- Median within-block post-import ratio is `2.50424177977926`; worst block is
+  `3.211852628078743`. This adverse decomposition is retained.
+- Pooled steady medians are 299,403 ns for RTDL and 3,496,252 ns for PyOptix,
+  ratio `0.085635417584316`. RTDL is `0.8172817601135557x` the Goal5845
+  steady reference.
+- The RTDL arm recorded zero runtime-compiler attempts, no compiler modules and
+  no NVRTC mappings. The PyOptix harness consumed precompiled PTX and did not
+  call a source compiler, but its CuPy dependency stack mapped NVRTC.
+- Captured the complete formal transaction, candidates, native image/build,
+  GPU validator, preregistration, PyOptix source/extension/receipt/PTX and
+  environment records in `FORMAL_V2_EVIDENCE.tar.gz`, SHA-256
+  `65ee646c36e801fbf957de6eeb0c8b03106a48fa01bb2008d3aed0761fd037e8`.
+
+Formal successor V2 status:
+`PASS__GOAL5847_PREREGISTERED_AOT_PERFORMANCE_GATES`.
+
+## 2026-09-05: Internal Closure Audit
+
+- Added a standard-library-only authority builder that checks safe tar
+  membership, every retained byte, frozen Git blobs, native exports and
+  dependencies, AOT artifact chains, two RSA installed-trust chains, ten full
+  OptiX receipts, all worker transports, all 2,048 timing samples and all
+  preregistered gates.
+- Stored authority seal:
+  `3501c83ab4c13a3ef63890b446dd949baade2443ed578e9cd75a71d3fa88a301`.
+- Authority hostile tests pass 7/7; Goal5847 current-path tests pass 29/29;
+  lint and byte-identical `--verify-stored` recount pass.
+- A broader 198-test adjacent run has 193 passes, one environment skip and four
+  old Goal5803 errors caused by absent Git-excluded historical snapshots. They
+  fail before behavior assertions and remain disclosed rather than fabricated.
+- Internal hostile review accepts only the exact engineering scope. External
+  review and all public/manuscript claims remain pending.
+
+Goal5847 internal status:
+`PASS__GOAL5847_INTERNAL_TECHNICAL_COMPLETE__EXTERNAL_REVIEW_PENDING`.
