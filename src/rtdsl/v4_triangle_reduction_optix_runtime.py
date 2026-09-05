@@ -3,13 +3,14 @@
 from __future__ import annotations
 
 import ctypes
-from dataclasses import dataclass
 import hashlib
 import json
 import math
 import os
+from collections.abc import Mapping, Sequence
+from dataclasses import dataclass
+from functools import lru_cache
 from pathlib import Path
-from typing import Mapping, Sequence
 
 from .physical_execution_provenance import OptixTraversalAuditSession
 from .v4_callback_abi import CompiledCallbackAbi
@@ -51,13 +52,20 @@ class V4TriangleReductionResult:
     raw_reducer_rows: Sequence[Mapping[str, int]]
     role_counters: tuple[int, ...]
     launch_status: Sequence[Mapping[str, int]]
-    traversal_receipt: dict[str, object]
+    traversal_receipt: Mapping[str, object]
     output_sha256: str
     composed_ptx_sha256: str
     native_library_sha256: str
 
 
+@lru_cache(maxsize=4096)
+def _int_digest(value: int) -> str:
+    return hashlib.sha256(str(value).encode("ascii")).hexdigest()
+
+
 def _digest(value: object) -> str:
+    if type(value) is int:
+        return _int_digest(value)
     return hashlib.sha256(json.dumps(
         value, sort_keys=True, separators=(",", ":"), allow_nan=False,
     ).encode("utf-8")).hexdigest()

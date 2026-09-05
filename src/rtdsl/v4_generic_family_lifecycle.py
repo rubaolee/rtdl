@@ -11,6 +11,7 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
+from functools import lru_cache
 import hashlib
 import json
 import os
@@ -548,6 +549,7 @@ class FamilyProviderProjectionV1:
         _identifier(self.canonical_template_id, "projection.canonical_template_id")
 
     @property
+    @lru_cache(maxsize=4096)
     def projection_sha256(self) -> str:
         return _digest(self.to_dict(include_digest=False))
 
@@ -635,6 +637,7 @@ class FamilyExecutableIdentityV1:
             _sha(getattr(self, name), f"executable_identity.{name}")
 
     @property
+    @lru_cache(maxsize=4096)
     def identity_sha256(self) -> str:
         return _digest(self.to_dict(include_digest=False))
 

@@ -5,14 +5,15 @@ import ctypes
 import hashlib
 import json
 import os
-from pathlib import Path
 import threading
 import unittest
+from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
 
 from rtdsl import physical_execution_provenance as provenance
 from rtdsl import v4_callback_lifecycle as callback_lifecycle
+from rtdsl import v4_family_route_adapters as family_adapters
 from rtdsl import v4_generic_family_lifecycle as generic_lifecycle
 from rtdsl import v4_triangle_reduction_prepared_runtime as runtime
 from scripts import goal5844_run_gpu_engineering_comparison as gpu_runner
@@ -273,6 +274,32 @@ def _owner(state: _IntegratedState) -> runtime.PreparedTriangleReductionOwner:
 
 
 class Goal5844CompactExecutionStampTest(unittest.TestCase):
+    def test_cached_invariants_preserve_values_and_fail_closed_checks(self) -> None:
+        for value in (-7, 0, 6, (1 << 64) - 1):
+            expected = _seal(value)
+            self.assertEqual(runtime._digest(value), expected)
+            self.assertEqual(callback_lifecycle._digest(value), expected)
+            self.assertEqual(runtime._digest(value), expected)
+            self.assertEqual(callback_lifecycle._digest(value), expected)
+
+        bundle_id = provenance.physical_program_bundle_id(PROGRAM_BUNDLE)
+        self.assertEqual(
+            provenance.physical_program_bundle_id(PROGRAM_BUNDLE), bundle_id
+        )
+        with self.assertRaisesRegex(ValueError, "nonempty string"):
+            provenance.physical_program_bundle_id(())
+
+        self.assertEqual(
+            provenance._require_sha256("a" * 64, label="test"), "a" * 64
+        )
+        self.assertEqual(
+            provenance._require_sha256("a" * 64, label="test"), "a" * 64
+        )
+        with self.assertRaisesRegex(RuntimeError, "malformed"):
+            provenance._require_sha256("A" * 64, label="test")
+        with self.assertRaises(callback_lifecycle.ProtocolLifecycleError):
+            callback_lifecycle._require_sha256("g" * 64, "test")
+
     def test_v8_ctypes_abi_is_additive_and_v7_remains_compatible(self) -> None:
         names = (
             "rtdl_optix_v4_prepare_triangle_reduction_callback_v1",
@@ -349,6 +376,45 @@ class Goal5844CompactExecutionStampTest(unittest.TestCase):
             expected_raygen_invocation_count=4,
         )
 
+    def test_validated_compact_receipt_defers_only_transport_document(self) -> None:
+        receipt = provenance.build_validated_compact_traversal_receipt(
+            _snapshot(sequence=9, ray_count=4),
+            provider_library_sha256="c" * 64,
+            route_identity=ROUTE_IDENTITY,
+            semantic_digest="d" * 64,
+            output_digest="e" * 64,
+            expected_program_bundle=PROGRAM_BUNDLE,
+            expected_raygen_invocation_count=4,
+            execution_sequence=9,
+        )
+        self.assertFalse(receipt.materialized)
+        self.assertIs(
+            provenance.validate_bound_compact_traversal_receipt(
+                receipt,
+                provider_library_sha256="c" * 64,
+                route_identity=ROUTE_IDENTITY,
+                output_digest="e" * 64,
+                expected_program_bundle=PROGRAM_BUNDLE,
+                expected_raygen_invocation_count=4,
+            ),
+            receipt,
+        )
+        self.assertFalse(receipt.materialized)
+        with self.assertRaises(AttributeError):
+            receipt._output_digest = "f" * 64
+        document = dict(receipt)
+        self.assertTrue(receipt.materialized)
+        self.assertIsInstance(document["native_stamp"], tuple)
+        provenance.validate_traversal_receipt(
+            receipt,
+            provider_library_sha256="c" * 64,
+            route_identity=ROUTE_IDENTITY,
+            output_digest="e" * 64,
+            expected_program_bundles=(PROGRAM_BUNDLE,),
+            expected_successful_launch_count=1,
+            expected_raygen_invocation_count=4,
+        )
+
     def test_self_resealed_invalid_dynamic_fields_are_rejected(self) -> None:
         mutations = {
             "nonce_hi": (0, 0),
@@ -415,10 +481,16 @@ class Goal5844CompactExecutionStampTest(unittest.TestCase):
         self.assertEqual(state.sequences, [1, 2])
         self.assertEqual(state.cache_digest_queries, 1)
         self.assertEqual(state.commit_count, 1)
+        self.assertIsInstance(
+            second.traversal_receipt,
+            provenance.ValidatedCompactTraversalReceipt,
+        )
+        self.assertFalse(second.traversal_receipt.materialized)
         self.assertEqual(
             second.traversal_receipt["schema"],
             provenance.COMPACT_TRAVERSAL_RECEIPT_SCHEMA,
         )
+        self.assertTrue(second.traversal_receipt.materialized)
         self.assertEqual(
             owner._last_execution_receipt["execution_path"],
             "device_resident_checked_u64_scalar_v8_integrated_audit",
@@ -485,6 +557,25 @@ class Goal5844CompactExecutionStampTest(unittest.TestCase):
         )
         result = prepared.execute(batch, include_diagnostics=False)
         self.assertEqual(result.output, 6)
+        self.assertIsInstance(
+            result.traversal_receipt,
+            provenance.ValidatedCompactTraversalReceipt,
+        )
+        self.assertFalse(result.traversal_receipt.materialized)
+        bridge_identity = generic_lifecycle.FamilyExecutableIdentityV1(
+            *(str(index) * 64 for index in range(1, 8))
+        )
+        bridge = family_adapters._PreparedBridge(
+            prepared,
+            bridge_identity,
+            "1" * 64,
+            family_adapters._stable_output,
+        )
+        bridged = bridge.execute(batch)
+        self.assertIs(
+            type(bridged), family_adapters._ValidatedScalarProviderExecution
+        )
+        self.assertFalse(bridged.traversal_receipt.materialized)
         self.assertEqual(
             result.traversal_receipt["schema"],
             provenance.COMPACT_TRAVERSAL_RECEIPT_SCHEMA,

@@ -16,7 +16,8 @@ import numpy as np
 from .physical_execution_provenance import (
     NativeTraversalAuditSnapshot,
     OptixTraversalAuditSession,
-    build_compact_traversal_receipt,
+    ValidatedCompactTraversalReceipt,
+    build_validated_compact_traversal_receipt,
     captured_traversal_observation_from_snapshot,
 )
 from .v4_triangle_reduction import (
@@ -1135,7 +1136,7 @@ class PreparedTriangleReductionOwner:
                         )
                 output_sha = _digest(reduced)
                 if integrated_scalar:
-                    receipt = build_compact_traversal_receipt(
+                    receipt = build_validated_compact_traversal_receipt(
                         self._integrated_audit_snapshot,
                         provider_library_sha256=self._native_sha,
                         route_identity=self._route_identity,
@@ -1169,8 +1170,9 @@ class PreparedTriangleReductionOwner:
                         ),
                     )
                 if (
-                    receipt["physical_executor_classification"]
-                    != "optix_traversal_observed"
+                    type(receipt) is not ValidatedCompactTraversalReceipt
+                    and receipt["physical_executor_classification"]
+                        != "optix_traversal_observed"
                 ):
                     raise RuntimeError("prepared triangle lacked bound traversal")
                 if not cache_hit:

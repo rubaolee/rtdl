@@ -1,38 +1,39 @@
 # RTDL Codex Working Guide
 
-## Critical current override: Goal5844 compact execution stamp ready for GPU (2026-09-04)
+## Critical current override: Goal5844 parity repair awaits clean rerun (2026-09-04)
 
-Goal5844 is source-complete and locally validated, but not performance-complete.
-The ordinary public triangle-scalar route now has an additive native v8 ABI
-that executes the existing app-neutral v7 operation and captures one fresh
-OptiX traversal audit in the same native call. Python validates a 19-word
-compact stamp, exact prepared-input generation, checked device status, output,
-provider, route and semantic identities before publishing the scalar. Full
-forensic receipt expansion remains an explicit post-execution operation. Old
-DSOs without v8 retain the v7 plus separate-audit fallback.
+Goal5844's first complete GPU transaction is immutable adverse evidence. At
+source commit `5e1518afe24230be677484f8e437e0a0da6bb30d`, one RTX 2000 Ada run
+retained 1,024 samples per arm and produced a median within-block
+RTDL/PyOptiX ratio of `2.1713906352x`; the public-arm medians were 273,457 ns
+and 129,368 ns. The summary SHA-256 is
+`4d6548238849c49e7aa89dcb663f08febb2815d83da924dd3a083db5549a94d3`
+and the downloaded archive SHA-256 is
+`d4d57100f77c74b1f43187d7c82e290fa6071524aa8478b8369f0925a6e93814`.
+Do not discard, pool with, or relabel this failed target transaction.
 
-The implementation and engineering protocol are under
-`history/internal_docs/goal5844_compact_execution_stamp_20260904/`. Goal5844
-compact-stamp tests pass 12/12 and pod-readiness/provenance/transfer tests pass
-16/16, for 28/28 combined. Goal5842 compatibility tests pass 64/64 and the
-Goal5838 core/selection set passes 9/9. The Goal5838 frozen core and
-`src/native/optix/rtdl_optix_core.cpp` are byte-identical. The adjacent
-Goal5840--Goal5844 run executes 175 tests with
-exactly five known historical/current-tree identity refusals and no new
-functional failure. Three old Goal5790 integration tests currently fail before
-execution because their generated historical Goal5789 freeze file is absent
-from Git; do not fabricate that historical authority or count those errors as
-Goal5844 functional failures.
+The measured cause is repeated public-envelope proof serialization and static
+identity hashing, not the native v8 OptiX operation. The current successor
+defers only JSON transport expansion for an eagerly validated immutable compact
+receipt, retains per-execution validation of all 19 native stamp words, caches
+only immutable bundle/digest identities, and preserves the old strict path for
+external providers, ordinary mappings, and non-scalar outputs. Dirty-checkout
+diagnostics on the same pod reduced the public median to 131,824 ns, but this is
+not formal evidence. The next action is a new exact-commit, clean-checkout,
+balanced eight-block transaction using the same pinned PyOptiX commit
+`3144f224...`; pass still requires median within-block RTDL/PyOptiX at most
+1.25x.
 
-No Goal5844 GPU build or timing exists yet. The next action is the single host
-entry point `scripts/goal5844_launch_pod_transaction.py`, which fetches the
-exact pushed tip, repairs ordinary user-space/toolkit gaps, runs both worker-
-zero arms, executes the balanced eight-block comparison, streams either success
-or failure evidence without SCP, and re-verifies it locally. The pinned
-`otk-pyoptix` commit is `3144f224...`. The internal target is
-RTDL/PyOptiX at most 1.25x, but every outcome remains engineering-only. Goal5843
-is immutable; do not pool or rewrite its rows. No public/manuscript performance
-claim, hardware-independent claim, external review or consensus is authorized.
+This successor intentionally adds memoization to
+`src/rtdsl/v4_generic_family_lifecycle.py` after the completed Goal5838
+prospective exam. Goal5838's preselection seal and exact evidence commit remain
+immutable historical authority, but current-tree byte-identity and its old
+current-file replay test are no longer valid successor claims. This is a
+generic lifecycle optimization, not a repair made during the prospective
+exam and not application dispatch. Goal5843 also remains immutable. All
+Goal5844 results are internal engineering evidence; no public/manuscript
+performance claim, hardware-independent claim, external review, or consensus
+is authorized.
 
 ## Critical current override: Goal5843 fair post-R1 baseline internally complete (2026-09-04)
 

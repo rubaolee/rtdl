@@ -14,13 +14,16 @@ traversable in Python.
 from __future__ import annotations
 
 import ctypes
-from dataclasses import dataclass
 import hashlib
 import json
-from pathlib import Path
 import secrets
 import threading
-from typing import Any, Iterable, Mapping
+from collections.abc import Iterable, Mapping
+from dataclasses import dataclass
+from functools import lru_cache
+from pathlib import Path
+from types import MappingProxyType
+from typing import Any
 
 
 _ERROR_CAPACITY = 2048
@@ -94,12 +97,15 @@ def _sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
+@lru_cache(maxsize=4096)
+def _is_canonical_sha256(value: str) -> bool:
+    return len(value) == 64 and all(
+        char in "0123456789abcdef" for char in value
+    )
+
+
 def _require_sha256(value: object, *, label: str) -> str:
-    if (
-        type(value) is not str
-        or len(value) != 64
-        or any(char not in "0123456789abcdef" for char in value)
-    ):
+    if type(value) is not str or not _is_canonical_sha256(value):
         raise RuntimeError(f"{label} SHA-256 is malformed")
     return value
 
@@ -222,16 +228,21 @@ def _stable_digest(value: object) -> str:
     return hashlib.sha256(encoded).hexdigest()
 
 
-def physical_program_bundle_id(name: str) -> int:
-    """Return the stable FNV-1a id used by the native audit layer."""
-
-    if type(name) is not str or not name:
-        raise ValueError("physical program bundle name must be a nonempty string")
+@lru_cache(maxsize=256)
+def _cached_physical_program_bundle_id(name: str) -> int:
     value = 1469598103934665603
     for byte in name.encode("utf-8"):
         value ^= byte
         value = (value * 1099511628211) & ((1 << 64) - 1)
     return value
+
+
+def physical_program_bundle_id(name: str) -> int:
+    """Return the stable FNV-1a id used by the native audit layer."""
+
+    if type(name) is not str or not name:
+        raise ValueError("physical program bundle name must be a nonempty string")
+    return _cached_physical_program_bundle_id(name)
 
 
 def _native_audit_mix_u64(state: int, value: int) -> int:
@@ -497,6 +508,181 @@ def _validate_compact_stamp(
         or traversable_mix != _native_audit_mix_u64(0, first_traversable)
     ):
         raise RuntimeError("compact traversal native stamp differs")
+
+
+_VALIDATED_COMPACT_RECEIPT_TOKEN = object()
+
+
+class ValidatedCompactTraversalReceipt(Mapping[str, object]):
+    """Immutable proof whose JSON envelope is expanded only when inspected.
+
+    Native launch facts are copied and validated eagerly.  Deferring the
+    canonical mapping and its transport seal therefore changes representation
+    cost, not the fail-closed execution decision.
+    """
+
+    __slots__ = (
+        "_document",
+        "_expected_program_bundle",
+        "_expected_program_bundle_id",
+        "_expected_raygen_invocation_count",
+        "_native_stamp",
+        "_output_digest",
+        "_provider_library_sha256",
+        "_route_identity",
+        "_semantic_digest",
+    )
+
+    def __init__(
+        self,
+        *,
+        provider_library_sha256: str,
+        route_identity: str,
+        semantic_digest: str,
+        output_digest: str,
+        expected_program_bundle: str,
+        expected_program_bundle_id: int,
+        expected_raygen_invocation_count: int,
+        native_stamp: tuple[int, ...],
+        _token: object,
+    ) -> None:
+        if _token is not _VALIDATED_COMPACT_RECEIPT_TOKEN:
+            raise RuntimeError("validated compact receipt requires its factory")
+        object.__setattr__(self, "_provider_library_sha256", provider_library_sha256)
+        object.__setattr__(self, "_route_identity", route_identity)
+        object.__setattr__(self, "_semantic_digest", semantic_digest)
+        object.__setattr__(self, "_output_digest", output_digest)
+        object.__setattr__(
+            self, "_expected_program_bundle", expected_program_bundle
+        )
+        object.__setattr__(
+            self, "_expected_program_bundle_id", expected_program_bundle_id
+        )
+        object.__setattr__(
+            self,
+            "_expected_raygen_invocation_count",
+            expected_raygen_invocation_count,
+        )
+        object.__setattr__(self, "_native_stamp", native_stamp)
+        object.__setattr__(self, "_document", None)
+
+    def __setattr__(self, name: str, value: object) -> None:
+        raise AttributeError("validated compact traversal receipt is immutable")
+
+    @property
+    def materialized(self) -> bool:
+        """Report whether an observer requested the transport document."""
+
+        return self._document is not None
+
+    def _materialize(self) -> Mapping[str, object]:
+        current = self._document
+        if current is not None:
+            return current
+        body: dict[str, object] = {
+            "schema": _COMPACT_RECEIPT_SCHEMA,
+            "provider_library_sha256": self._provider_library_sha256,
+            "route_identity": self._route_identity,
+            "semantic_digest": self._semantic_digest,
+            "output_digest": self._output_digest,
+            "physical_executor_classification": "optix_traversal_observed",
+            "expected_program_bundle": self._expected_program_bundle,
+            "expected_program_bundle_id": self._expected_program_bundle_id,
+            "expected_program_observed_at_receipt_edge": True,
+            "native_stamp": self._native_stamp,
+        }
+        body["receipt_sha256"] = _stable_digest(body)
+        current = MappingProxyType(body)
+        object.__setattr__(self, "_document", current)
+        return current
+
+    def __getitem__(self, key: str) -> object:
+        return self._materialize()[key]
+
+    def __iter__(self):
+        return iter(self._materialize())
+
+    def __len__(self) -> int:
+        return 11
+
+
+def build_validated_compact_traversal_receipt(
+    snapshot: _NativeTraversalAuditSnapshot,
+    *,
+    provider_library_sha256: str,
+    route_identity: str,
+    semantic_digest: str,
+    output_digest: str,
+    expected_program_bundle: str,
+    expected_raygen_invocation_count: int,
+    execution_sequence: int,
+) -> ValidatedCompactTraversalReceipt:
+    """Validate native facts now and defer only the export representation."""
+
+    if not isinstance(snapshot, _NativeTraversalAuditSnapshot):
+        raise TypeError("native traversal audit snapshot required")
+    if type(route_identity) is not str or not route_identity:
+        raise ValueError("route_identity must be a nonempty string")
+    if type(expected_program_bundle) is not str or not expected_program_bundle:
+        raise ValueError("expected_program_bundle must be a nonempty string")
+    if type(execution_sequence) is not int or not 0 < execution_sequence < 1 << 64:
+        raise ValueError("execution_sequence must be a positive uint64")
+    if (
+        type(expected_raygen_invocation_count) is not int
+        or not 0 < expected_raygen_invocation_count < 1 << 64
+    ):
+        raise ValueError("expected raygen invocation count must be a positive uint64")
+    provider_digest = _require_sha256(
+        provider_library_sha256, label="loaded native provider"
+    )
+    semantic = _require_sha256(semantic_digest, label="receipt semantic")
+    output = _require_sha256(output_digest, label="receipt output")
+    bundle_id = physical_program_bundle_id(expected_program_bundle)
+    native_stamp = tuple(_compact_stamp_values(snapshot, execution_sequence))
+    _validate_compact_stamp(
+        native_stamp,
+        expected_program_bundle_id=bundle_id,
+        expected_successful_launch_count=1,
+        expected_raygen_invocation_count=expected_raygen_invocation_count,
+    )
+    return ValidatedCompactTraversalReceipt(
+        provider_library_sha256=provider_digest,
+        route_identity=route_identity,
+        semantic_digest=semantic,
+        output_digest=output,
+        expected_program_bundle=expected_program_bundle,
+        expected_program_bundle_id=bundle_id,
+        expected_raygen_invocation_count=expected_raygen_invocation_count,
+        native_stamp=native_stamp,
+        _token=_VALIDATED_COMPACT_RECEIPT_TOKEN,
+    )
+
+
+def validate_bound_compact_traversal_receipt(
+    receipt: object,
+    *,
+    provider_library_sha256: str,
+    route_identity: str,
+    output_digest: str,
+    expected_program_bundle: str,
+    expected_raygen_invocation_count: int,
+) -> ValidatedCompactTraversalReceipt:
+    """Check an unexpanded receipt against its immediate public boundary."""
+
+    if type(receipt) is not ValidatedCompactTraversalReceipt:
+        raise TypeError("validated compact traversal receipt required")
+    expected_bundle_id = physical_program_bundle_id(expected_program_bundle)
+    if (
+        receipt._provider_library_sha256 != provider_library_sha256
+        or receipt._route_identity != route_identity
+        or receipt._output_digest != output_digest
+        or receipt._expected_program_bundle != expected_program_bundle
+        or receipt._expected_program_bundle_id != expected_bundle_id
+        or receipt._expected_raygen_invocation_count
+            != expected_raygen_invocation_count
+    ):
+        raise RuntimeError("validated compact traversal receipt binding differs")
+    return receipt
 
 
 def build_compact_traversal_receipt(
@@ -980,9 +1166,12 @@ __all__ = [
     "CapturedTraversalObservation",
     "NativeTraversalAuditSnapshot",
     "OptixTraversalAuditSession",
+    "ValidatedCompactTraversalReceipt",
     "build_compact_traversal_receipt",
+    "build_validated_compact_traversal_receipt",
     "captured_traversal_observation_from_snapshot",
     "physical_program_bundle_id",
+    "validate_bound_compact_traversal_receipt",
     "validate_compact_traversal_receipt",
     "validate_traversal_receipt",
 ]

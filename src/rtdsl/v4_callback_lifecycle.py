@@ -17,34 +17,39 @@ public result, and makes ``close()`` genuinely idempotent.
 from __future__ import annotations
 
 import ctypes
-from dataclasses import dataclass
-from enum import Enum
 import hashlib
 import importlib.metadata
 import json
 import os
-from pathlib import Path
 import re
 import sys
 import threading
 import time
-from typing import Mapping, Sequence
+from collections.abc import Mapping, Sequence
+from dataclasses import dataclass
+from enum import Enum
+from functools import lru_cache
+from pathlib import Path
 
+from .physical_execution_provenance import (
+    ValidatedCompactTraversalReceipt,
+    validate_bound_compact_traversal_receipt,
+)
 from .v4_callback_abi import AnyHitProofAuthority
 from .v4_callback_interpreter import execute_callback_role
-from .v4_callback_numba_codegen import FormalNumbaLeafCachePolicy
 from .v4_callback_ir import (
     AnyHitDeliveryContract,
     CallbackRole,
     VerifiedCallbackProgram,
 )
-from .v4_typed_physical_schema import ReferenceTargetProfile
+from .v4_callback_numba_codegen import FormalNumbaLeafCachePolicy
 from .v4_protocol_contract import (
     CompilerProtocolProjection,
     ProtocolContractDecision,
     ProtocolContractDeclaration,
     verify_protocol_contract,
 )
+from .v4_typed_physical_schema import ReferenceTargetProfile
 
 
 _SHA256 = re.compile(r"[0-9a-f]{64}")
@@ -72,7 +77,14 @@ def _canonical(value: object) -> bytes:
     ).encode("utf-8")
 
 
+@lru_cache(maxsize=4096)
+def _int_digest(value: int) -> str:
+    return hashlib.sha256(str(value).encode("ascii")).hexdigest()
+
+
 def _digest(value: object) -> str:
+    if type(value) is int:
+        return _int_digest(value)
     return hashlib.sha256(_canonical(value)).hexdigest()
 
 
@@ -84,8 +96,13 @@ def _file_sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
+@lru_cache(maxsize=4096)
+def _is_sha256(value: str) -> bool:
+    return _SHA256.fullmatch(value) is not None
+
+
 def _require_sha256(value: object, path: str) -> str:
-    if not isinstance(value, str) or _SHA256.fullmatch(value) is None:
+    if not isinstance(value, str) or not _is_sha256(value):
         _fail("PL001_DIGEST_INVALID", path, repr(value))
     return value
 
@@ -562,7 +579,7 @@ class ProtocolExecutionResult:
     output: object
     launch_status: Sequence[Mapping[str, int]]
     role_counters: tuple[int, ...]
-    traversal_receipt: dict[str, object]
+    traversal_receipt: Mapping[str, object]
     output_sha256: str
     executable_identity: ProtocolExecutableIdentity
     details: dict[str, object]
@@ -1353,36 +1370,65 @@ class PreparedProtocolProgram:
                     "PL031_OUTPUT_IDENTITY_MISMATCH", "result.output_sha256",
                     "public output bytes do not match the backend digest",
                 )
-            receipt = dict(raw.traversal_receipt)
             expected_route = (
                 "v4_callback_ir:custom_aabb_bounded_relation_v1"
                 if self._family is ProtocolFamily.BOUNDED_RELATION else
                 "v4_builtin_triangle_callback_ir:checked_reduction_v1"
             )
-            if (
-                receipt.get("physical_executor_classification")
-                    != "optix_traversal_observed"
-                or receipt.get("provider_library_sha256")
-                    != self._identity.native_library_sha256
-                or receipt.get("output_digest") != output_sha256
-                or receipt.get("route_identity") != expected_route
-                or receipt.get("expected_program_observed_at_receipt_edge") is not True
-            ):
-                _fail(
-                    "PL032_TRAVERSAL_RECEIPT_INVALID", "result.traversal_receipt",
-                    "receipt does not bind executor, route, native and output",
+            if type(raw.traversal_receipt) is ValidatedCompactTraversalReceipt:
+                if self._family is not ProtocolFamily.TRIANGLE_REDUCTION:
+                    _fail(
+                        "PL032_TRAVERSAL_RECEIPT_INVALID",
+                        "result.traversal_receipt",
+                        "validated compact receipt is not admitted for this family",
+                    )
+                assert isinstance(batch, TriangleReductionBatch)
+                try:
+                    receipt = validate_bound_compact_traversal_receipt(
+                        raw.traversal_receipt,
+                        provider_library_sha256=self._identity.native_library_sha256,
+                        route_identity=expected_route,
+                        output_digest=output_sha256,
+                        expected_program_bundle=(
+                            "v4_builtin_triangle_checked_reduction_composed"
+                        ),
+                        expected_raygen_invocation_count=len(batch.queries),
+                    )
+                except (TypeError, ValueError, RuntimeError) as exc:
+                    _fail(
+                        "PL032_TRAVERSAL_RECEIPT_INVALID",
+                        "result.traversal_receipt",
+                        str(exc),
+                    )
+            else:
+                receipt = dict(raw.traversal_receipt)
+                if (
+                    receipt.get("physical_executor_classification")
+                        != "optix_traversal_observed"
+                    or receipt.get("provider_library_sha256")
+                        != self._identity.native_library_sha256
+                    or receipt.get("output_digest") != output_sha256
+                    or receipt.get("route_identity") != expected_route
+                    or receipt.get("expected_program_observed_at_receipt_edge")
+                        is not True
+                ):
+                    _fail(
+                        "PL032_TRAVERSAL_RECEIPT_INVALID",
+                        "result.traversal_receipt",
+                        "receipt does not bind executor, route, native and output",
+                    )
+                _require_sha256(
+                    receipt.get("receipt_sha256"),
+                    "result.traversal_receipt.receipt_sha256",
                 )
-            _require_sha256(
-                receipt.get("receipt_sha256"),
-                "result.traversal_receipt.receipt_sha256",
-            )
-            receipt_body = dict(receipt)
-            receipt_sha256 = receipt_body.pop("receipt_sha256")
-            if _digest(receipt_body) != receipt_sha256:
-                _fail(
-                    "PL032_TRAVERSAL_RECEIPT_INVALID", "result.traversal_receipt",
-                    "receipt self-digest does not reproduce",
-                )
+                receipt_body = dict(receipt)
+                receipt_sha256 = receipt_body.pop("receipt_sha256")
+                if _digest(receipt_body) != receipt_sha256:
+                    _fail(
+                        "PL032_TRAVERSAL_RECEIPT_INVALID",
+                        "result.traversal_receipt",
+                        "receipt self-digest does not reproduce",
+                    )
             result = ProtocolExecutionResult(
                 output=output,
                 launch_status=raw.launch_status,

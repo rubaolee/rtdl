@@ -8,13 +8,15 @@ closed provider implementation.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
 import hashlib
 import json
-from pathlib import Path
 import struct
-from typing import Callable, Mapping
+from collections.abc import Callable, Mapping
+from dataclasses import dataclass
+from functools import lru_cache
+from pathlib import Path
 
+from .physical_execution_provenance import ValidatedCompactTraversalReceipt
 from .v4_callback_abi import compile_callback_abi
 from .v4_callback_lifecycle import (
     AnyHitProtocolProof,
@@ -39,10 +41,10 @@ from .v4_generic_family_lifecycle import (
     FamilyExecutableIdentityV1,
     FamilyMaterializedHandleV1,
     FamilyPreparedHandleV1,
+    FamilyProgramArtifactsV1,
     FamilyProviderDescriptorV1,
     FamilyProviderExecutionV1,
     FamilyProviderV1,
-    FamilyProgramArtifactsV1,
     VerifiedGenericFamilyProgram,
     bind_family_program_artifacts,
     compile_generic_family_program,
@@ -52,6 +54,13 @@ from .v4_generic_family_lifecycle import (
 
 
 _MODULE_PATH = Path(__file__).resolve()
+
+
+@lru_cache(maxsize=4096)
+def _is_canonical_sha256(value: str) -> bool:
+    return len(value) == 64 and all(
+        char in "0123456789abcdef" for char in value
+    )
 
 
 def _digest(value: object) -> str:
@@ -599,6 +608,7 @@ class _PreparedBridge(FamilyPreparedHandleV1):
     ) -> None:
         self._prepared = prepared
         self._identity = identity
+        self._identity_sha256 = identity.identity_sha256
         self._plan_sha256 = plan_sha256
         self._output_adapter = output_adapter
 
@@ -609,9 +619,15 @@ class _PreparedBridge(FamilyPreparedHandleV1):
     def execute(self, batch: object) -> FamilyProviderExecutionV1:
         result = getattr(self._prepared, "execute")(batch)
         output, output_sha256, receipt = self._output_adapter(result)
-        return FamilyProviderExecutionV1(
+        envelope = (
+            _ValidatedScalarProviderExecution
+            if type(output) is int
+            and type(receipt) is ValidatedCompactTraversalReceipt
+            else FamilyProviderExecutionV1
+        )
+        return envelope(
             self._plan_sha256,
-            self._identity.identity_sha256,
+            self._identity_sha256,
             "OK",
             0,
             output,
@@ -621,6 +637,38 @@ class _PreparedBridge(FamilyPreparedHandleV1):
 
     def close(self) -> None:
         getattr(self._prepared, "close")()
+
+
+class _ValidatedScalarProviderExecution(FamilyProviderExecutionV1):
+    """Bridge envelope for a scalar and factory-validated compact proof.
+
+    The protocol lifecycle immediately below this bridge has already checked
+    the output digest, native identity, route, program bundle, ray count, and
+    native stamp.  Repeating a JSON round trip here adds no independent fact.
+    External providers and every non-scalar/non-compact result continue through
+    ``FamilyProviderExecutionV1.__post_init__`` unchanged.
+    """
+
+    def __post_init__(self) -> None:
+        digests = (
+            self.plan_sha256,
+            self.executable_identity_sha256,
+            self.output_sha256,
+        )
+        if any(
+            type(value) is not str
+            or not _is_canonical_sha256(value)
+            for value in digests
+        ):
+            raise RuntimeError("validated scalar provider digest differs")
+        if (
+            self.status != "OK"
+            or self.status_code != 0
+            or type(self.output_document) is not int
+            or type(self.traversal_receipt)
+                is not ValidatedCompactTraversalReceipt
+        ):
+            raise RuntimeError("validated scalar provider envelope differs")
 
 
 class _MaterializedBridge(FamilyMaterializedHandleV1):

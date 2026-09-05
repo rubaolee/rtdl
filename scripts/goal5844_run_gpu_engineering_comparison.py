@@ -263,6 +263,8 @@ def _validate_worker_result(
             raise RuntimeError("Goal5844 RTDL attribution missing")
         for key in (
             "provider_owner_v8_compact",
+            "protocol_validated_compact",
+            "family_bridge_validated_compact",
             "direct_native_abi_v8_integrated_audit",
             "explicit_full_forensic_expansion",
         ):

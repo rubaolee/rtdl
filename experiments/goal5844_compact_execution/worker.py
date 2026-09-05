@@ -221,6 +221,41 @@ def _run_rtdl(args: argparse.Namespace, task: object) -> dict[str, object]:
             warmups=args.layer_warmups,
             repetitions=args.layer_repetitions,
         )
+
+        protocol_prepared = prepared._handle._prepared
+
+        def protocol_call() -> object:
+            return protocol_prepared.execute(task.batch, include_diagnostics=False)
+
+        def validate_protocol(result: object) -> None:
+            if result.output != expected or result.output_sha256 != expected_digest:
+                raise RuntimeError("Goal5844 protocol scalar differs from oracle")
+
+        protocol_samples = _sample(
+            protocol_call,
+            validate_protocol,
+            warmups=args.layer_warmups,
+            repetitions=args.layer_repetitions,
+        )
+
+        bridge = prepared._handle
+
+        def bridge_call() -> object:
+            return bridge.execute(task.batch)
+
+        def validate_bridge(result: object) -> None:
+            if (
+                result.output_document != expected
+                or result.output_sha256 != expected_digest
+            ):
+                raise RuntimeError("Goal5844 bridge scalar differs from oracle")
+
+        bridge_samples = _sample(
+            bridge_call,
+            validate_bridge,
+            warmups=args.layer_warmups,
+            repetitions=args.layer_repetitions,
+        )
         if latest_public is None or latest_provider is None:
             raise RuntimeError("Goal5844 RTDL worker lacks retained execution evidence")
 
@@ -327,6 +362,8 @@ def _run_rtdl(args: argparse.Namespace, task: object) -> dict[str, object]:
         "steady_public": _summary(public_samples),
         "attribution": {
             "provider_owner_v8_compact": _summary(provider_samples),
+            "protocol_validated_compact": _summary(protocol_samples),
+            "family_bridge_validated_compact": _summary(bridge_samples),
             "direct_native_abi_v8_integrated_audit": _summary(native_samples),
             "explicit_full_forensic_expansion": _summary(forensic_samples),
         },
