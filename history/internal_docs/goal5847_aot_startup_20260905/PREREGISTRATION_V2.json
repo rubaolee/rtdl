@@ -1,0 +1,97 @@
+{
+  "arms": [
+    "RTDL_FAMILY_RTDLEXE_AOT",
+    "PYOPTIX_PRECOMPILED_PTX_VALIDATION_OFF"
+  ],
+  "claim_boundary": {
+    "arbitrary_workload_claim_authorized": false,
+    "cross_hardware_generalization_authorized": false,
+    "external_review_complete": false,
+    "internal_engineering_evidence_only": true,
+    "production_signing_claim_authorized": false,
+    "public_or_manuscript_claim_authorized": false
+  },
+  "comparison_boundary": {
+    "block_device_cold_io_claimed": false,
+    "both_arms_consume_precompiled_device_programs": true,
+    "exact_result_validation_included_in_primary_endpoint": true,
+    "git_and_hardware_instrumentation_excluded_from_primary": true,
+    "primary_includes_interpreter_and_dependency_import": true,
+    "pyoptix_dependency_stack_may_map_nvrtc": true,
+    "pyoptix_harness_calls_source_compiler": false,
+    "pyoptix_validation_mode": "OFF",
+    "rtdl_arm_verifies_signed_artifact_authority_and_provider": true,
+    "secondary_excludes_implementation_import": true,
+    "steady_result_validation_outside_timed_action_for_both_arms": true,
+    "storage_page_cache_state_not_controlled": true,
+    "test_only_signing_not_production_key_custody": true
+  },
+  "design": {
+    "balanced_alternating_order": true,
+    "blocks": 8,
+    "fresh_process_per_arm_per_block": true,
+    "primary_estimand": "parent_pre_spawn_to_first_correct_result_ns",
+    "sample_discard_count": 0,
+    "samples_per_arm": 1024,
+    "samples_per_worker": 128,
+    "secondary_estimand": "implementation_import_end_to_first_correct_result_ns",
+    "steady_estimand": "complete_same_contract_execution_ns",
+    "warmups_per_worker": 16
+  },
+  "frozen_bindings": {
+    "candidate_manifest_seal": "6198d9dd8534bf16d90636e390c3aef7015f7b7f71e752324be96f2324001508",
+    "candidate_manifest_sha256": "b002957fe9405ee97ab76a05656ceeea594514e0c8adcc59a16fc83d0923233d",
+    "native_library_sha256": "6f695bc006114087aa85303f1faeb3f8d1dd2ffb8fab2256206ce6b3e42ec6a4",
+    "precompiled_ptx_sha256": "7f79eb31ff6eedaf25c24e0910bf2989b576b13a883a4a2e5c840f72b6203b2d",
+    "pyoptix_build_receipt_internal_seal": "06e8ea1d7ea3894972b5a4d6ca8b8860e526be0d6c5cf5a19c8b19aafd88a30e",
+    "pyoptix_build_receipt_sha256": "a05317ef879630fe9de3aced08fe2ce35ee9416e684799e1f571e64c4c9abfd4",
+    "pyoptix_commit": "3144f224c0fd18733925faf3d8fb82c7376b8dcf",
+    "pyoptix_tree": "0bf0ec24efb4a43f129aee25dd265aa8149374e3",
+    "relation_artifact_sha256": "7ee22c3baeb3f253e47b0fc58323c259b38ba11d1d79e031101e27eddb05ef47",
+    "triangle_artifact_sha256": "e945c9d65c1ff4ecf95e3a189af7170c287aa6b07d4919ab1435b6a7abe54e4f"
+  },
+  "implementation_source_commit": "f5e337feef6829e063c6aff06f4e8bd6d5466b3b",
+  "implementation_source_tree": "c276d64342bf17fee77b7ab0cf66ef5060c73341",
+  "pass_gates": {
+    "all_registered_samples_retained": true,
+    "all_workers_and_exact_oracles_pass": true,
+    "goal5845_rtdl_steady_reference_ns": 366340,
+    "pooled_rtdl_steady_regression_at_most": 1.25,
+    "pooled_steady_rtdl_to_pyoptix_ratio_at_most": 0.2,
+    "post_import_median_within_block_ratio_at_most": 3.0,
+    "post_import_worst_block_ratio_at_most": 4.0,
+    "primary_median_within_block_ratio_at_most": 0.5,
+    "primary_worst_block_ratio_at_most": 0.75
+  },
+  "preregistration_sha256": "34b977a163a21090d0820b1f6b2dafc6e9723ff9d7635d75bd0afa85bdd8d433",
+  "prior_exploration": {
+    "disclosed": true,
+    "pooled_into_formal_transaction": false,
+    "reason": "Exploration established that complete process startup and post-import setup answer different reviewer attacks; both are therefore frozen, and neither may be omitted.",
+    "used_to_select_metrics_or_thresholds": true
+  },
+  "question": "Can one signed, family-bound deploy-only RTDL artifact reach the same result as a pinned precompiled-PTX PyOptix program without loading or invoking NVRTC, while preserving true OptiX evidence, fail-closed admission, and Goal5845 steady performance?",
+  "required_rtdl_facts": {
+    "actual_optix_launch_count_per_execution": 2,
+    "application_specific_native_logic_added": false,
+    "compiler_modules_absent": true,
+    "diagnostic_execution_occurs_after_steady_samples": true,
+    "exact_output_required": true,
+    "full_generic_family_identity_match": true,
+    "nvrtc_mapping_absent": true,
+    "optional_batch_oracle_disabled_in_timed_path": true,
+    "prepared_steady_regression_forbidden": true,
+    "runtime_compiler_attempt_count_before_and_after_zero": true
+  },
+  "schema": "rtdl.goal5847.aot_startup_preregistration.v1",
+  "status": "FROZEN_BEFORE_FORMAL_GPU_TRANSACTION",
+  "task": {
+    "canonical_row_count": 4096,
+    "id": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+    "indexed_count": 4096,
+    "input_sha256": "8606dd3c22d424a7ee2d64b61918f6185d39d8090d1a0a64001de65054d25e0e",
+    "output_contract": "canonical_u32_relation_rows",
+    "output_sha256": "2fb668490480cbb5d4d9bbf5a8d357435eff5fc6bb3532427ac2726cdaa88c77",
+    "query_count": 4096
+  }
+}

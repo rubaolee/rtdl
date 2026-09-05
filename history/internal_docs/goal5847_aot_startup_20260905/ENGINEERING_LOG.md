@@ -42,3 +42,21 @@
   receipt verifier rather than weaken or omit receipt validation.
 
 Formal attempt 01 status: `TERMINAL__CONTROLLER_RECEIPT_LAYOUT_DEFECT`.
+
+## 2026-09-05T14:40:41Z: Successor V2 Preregistration Frozen
+
+- Repaired the controller to invoke the canonical strict full traversal
+  receipt verifier instead of reading nonexistent top-level counters.
+- Added positive full-receipt coverage and a re-sealed nested launch-count
+  mutation test. Replayed the actual Attempt 01 receipt through the repaired
+  verifier successfully.
+- Ran 192 current-path adjacent tests: all passed, with three environment
+  skips.
+- Rebuilt the minimal DSO and both family-bound artifacts at exact clean
+  source commit `f5e337feef6829e063c6aff06f4e8bd6d5466b3b`.
+- Re-ran GPU relation, triangle, compiler-absence, true-OptiX, and isolated
+  mutation validation successfully.
+- Frozen `PREREGISTRATION_V2.json`; its design and gates are unchanged. No
+  Attempt 01 or exploratory sample may be pooled into V2.
+
+Formal successor V2 status: `NOT_STARTED`.
