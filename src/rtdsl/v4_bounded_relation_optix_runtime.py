@@ -53,6 +53,7 @@ class V4BoundedRelationResult:
     output_sha256: str
     composed_ptx_sha256: str
     native_library_sha256: str
+    raw_rows_materialized: bool = True
 
 
 def _digest(value: object) -> str:

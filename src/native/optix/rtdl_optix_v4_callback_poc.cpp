@@ -6836,6 +6836,8 @@ static void execute_v4_prepared_bounded_relation_callback(
         ? static_cast<uint64_t>(unique_count_u32)
         : std::min(raw_count, raw_event_capacity);
     std::vector<V4RelationRow> host_rows;
+    V4RelationRow* canonical_rows = nullptr;
+    size_t canonical_count = 0;
     if (fast_mode) {
         if (stored) {
             CU_CHECK(cuMemcpyDtoHAsync(
@@ -6844,12 +6846,36 @@ static void execute_v4_prepared_bounded_relation_callback(
             ++output_fast_receipt->output_d2h_copy_call_count;
         }
         CU_CHECK(cuStreamSynchronize(execution_stream));
-        host_rows.assign(
-            prepared->fast_rows_host->data,
-            prepared->fast_rows_host->data + static_cast<size_t>(stored));
+        auto* const begin = prepared->fast_rows_host->data;
+        auto* const end = begin + static_cast<size_t>(stored);
+        std::sort(begin, end,
+            [](const V4RelationRow& left, const V4RelationRow& right) {
+                return left.source_id < right.source_id ||
+                    (left.source_id == right.source_id &&
+                     left.item_id < right.item_id);
+            });
+        canonical_rows = begin;
+        canonical_count = static_cast<size_t>(std::unique(begin, end,
+            [](const V4RelationRow& left, const V4RelationRow& right) {
+                return left.source_id == right.source_id &&
+                    left.item_id == right.item_id;
+            }) - begin);
     } else {
         host_rows.resize(static_cast<size_t>(stored));
         if (stored) download(host_rows.data(), prepared->rows->ptr, stored);
+        std::sort(host_rows.begin(), host_rows.end(),
+            [](const V4RelationRow& left, const V4RelationRow& right) {
+                return left.source_id < right.source_id ||
+                    (left.source_id == right.source_id &&
+                     left.item_id < right.item_id);
+            });
+        host_rows.erase(std::unique(host_rows.begin(), host_rows.end(),
+            [](const V4RelationRow& left, const V4RelationRow& right) {
+                return left.source_id == right.source_id &&
+                    left.item_id == right.item_id;
+            }), host_rows.end());
+        canonical_rows = host_rows.data();
+        canonical_count = host_rows.size();
     }
     if (fast_mode) {
         output_fast_receipt->host_blocking_boundary_count =
@@ -6858,18 +6884,7 @@ static void execute_v4_prepared_bounded_relation_callback(
         output_fast_receipt->output_d2h_bytes =
             sizeof(V4RelationRow) * stored;
     }
-    std::sort(host_rows.begin(), host_rows.end(),
-        [](const V4RelationRow& left, const V4RelationRow& right) {
-            return left.source_id < right.source_id ||
-                (left.source_id == right.source_id &&
-                 left.item_id < right.item_id);
-        });
-    host_rows.erase(std::unique(host_rows.begin(), host_rows.end(),
-        [](const V4RelationRow& left, const V4RelationRow& right) {
-            return left.source_id == right.source_id &&
-                left.item_id == right.item_id;
-        }), host_rows.end());
-    const uint64_t unique_count = static_cast<uint64_t>(host_rows.size());
+    const uint64_t unique_count = static_cast<uint64_t>(canonical_count);
     if (fast_mode && unique_count != unique_count_u32)
         throw std::runtime_error(
             "V4 prepared bounded relation device unique count changed");
@@ -6877,9 +6892,14 @@ static void execute_v4_prepared_bounded_relation_callback(
         unique_count > prepared->semantic_capacity;
     const uint64_t copy_count = std::min(
         unique_count, prepared->semantic_capacity);
-    for (size_t index = 0; index < static_cast<size_t>(copy_count); ++index) {
-        output_rows_interleaved[index * 2 + 0] = host_rows[index].source_id;
-        output_rows_interleaved[index * 2 + 1] = host_rows[index].item_id;
+    static_assert(
+        sizeof(V4RelationRow) == 2u * sizeof(uint32_t),
+        "V4 relation row must match the interleaved u32 ABI");
+    if (copy_count != 0u) {
+        std::memcpy(
+            output_rows_interleaved,
+            canonical_rows,
+            static_cast<size_t>(copy_count) * sizeof(V4RelationRow));
     }
     *output_raw_count = raw_count;
     *output_unique_count = unique_count;

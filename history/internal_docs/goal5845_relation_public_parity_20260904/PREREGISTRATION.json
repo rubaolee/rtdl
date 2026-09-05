@@ -1,0 +1,62 @@
+{
+  "schema": "rtdl.goal5845.relation_public_parity_preregistration.v1",
+  "status": "FROZEN_BEFORE_FORMAL_GPU_TRANSACTION",
+  "frozen_local_date": "2026-09-04",
+  "task": {
+    "id": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+    "input_sha256": "8606dd3c22d424a7ee2d64b61918f6185d39d8090d1a0a64001de65054d25e0e",
+    "output_sha256": "2fb668490480cbb5d4d9bbf5a8d357435eff5fc6bb3532427ac2726cdaa88c77",
+    "source_count": 4096,
+    "indexed_count": 4096,
+    "canonical_row_count": 4096,
+    "public_contract": "canonical_u32_relation_rows"
+  },
+  "arms": [
+    "RTDL_PUBLIC_RELATION_V8_COMPACT_STAMP",
+    "PINNED_PYOPTIX_COMPATIBLE_API"
+  ],
+  "design": {
+    "blocks": 8,
+    "balanced_alternating_order": true,
+    "fresh_process_per_arm_per_block": true,
+    "warmups_per_worker": 16,
+    "samples_per_worker": 128,
+    "samples_per_arm": 1024,
+    "sample_discard_count": 0
+  },
+  "pass_gates": {
+    "all_workers_and_exact_oracles_pass": true,
+    "all_registered_samples_retained": true,
+    "median_within_block_rtdl_over_pyoptix_at_most": 1.25,
+    "worst_block_rtdl_over_pyoptix_at_most": 1.5,
+    "median_within_block_rtdl_public_over_direct_native_at_most": 1.75
+  },
+  "required_rtdl_facts": {
+    "actual_optix_launch_count": 2,
+    "fail_closed_compact_status": true,
+    "device_semantic_compaction": true,
+    "role_counters_materialized_in_ordinary_path": false,
+    "canonical_rows_returned": true,
+    "immutable_output_identity_reuse": true,
+    "application_specific_native_logic_added": false
+  },
+  "prior_unregistered_diagnostic": {
+    "disclosed": true,
+    "pooled_into_transaction": false,
+    "rtdl_public_median_ns": 366095,
+    "rtdl_direct_native_v8_median_ns": 275587,
+    "pyoptix_public_median_ns": 3567897
+  },
+  "source_binding": {
+    "policy": "exact clean Git HEAD supplied to controller and every worker",
+    "commit_frozen_by_transaction": true
+  },
+  "claim_boundary": {
+    "internal_engineering_evidence_only": true,
+    "public_or_manuscript_claim_authorized": false,
+    "external_review_complete": false,
+    "cross_hardware_generalization_authorized": false,
+    "arbitrary_workload_claim_authorized": false
+  },
+  "preregistration_sha256": "2f246a54e172ec83e32ad93fa3c796c3c73ef9c2de54ded3b3fea63daf4d00db"
+}

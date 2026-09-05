@@ -1319,13 +1319,20 @@ class PreparedProtocolProgram:
                 if not isinstance(batch, BoundedRelationBatch):
                     _fail("PL027_BATCH_MISMATCH", "batch", type(batch).__name__)
                 raw = self._owner.execute(
-                    batch.source_boxes, expected_rows=batch.expected_rows)
+                    batch.source_boxes,
+                    expected_rows=batch.expected_rows,
+                    include_diagnostics=include_diagnostics,
+                )
                 output = raw.rows
-                details = {
-                    "raw_rows": raw.raw_rows,
-                    "raw_event_count": raw.raw_event_count,
-                    "duplicate_count": raw.duplicate_count,
-                }
+                details = (
+                    {
+                        "raw_rows": raw.raw_rows,
+                        "raw_event_count": raw.raw_event_count,
+                        "duplicate_count": raw.duplicate_count,
+                    }
+                    if include_diagnostics
+                    else {}
+                )
             else:
                 if not isinstance(batch, TriangleReductionBatch):
                     _fail("PL027_BATCH_MISMATCH", "batch", type(batch).__name__)
@@ -1365,7 +1372,26 @@ class PreparedProtocolProgram:
                     )
             output_sha256 = _require_sha256(
                 raw.output_sha256, "result.output_sha256")
-            if _digest(output) != output_sha256:
+            validated_relation_output = False
+            if self._family is ProtocolFamily.BOUNDED_RELATION:
+                from .v4_bounded_relation_prepared_runtime import (
+                    ValidatedBoundedRelationRows,
+                    validate_bound_relation_rows,
+                )
+
+                if type(output) is ValidatedBoundedRelationRows:
+                    try:
+                        validate_bound_relation_rows(
+                            output, output_sha256=output_sha256
+                        )
+                    except RuntimeError as exc:
+                        _fail(
+                            "PL031_OUTPUT_IDENTITY_MISMATCH",
+                            "result.output_sha256",
+                            str(exc),
+                        )
+                    validated_relation_output = True
+            if not validated_relation_output and _digest(output) != output_sha256:
                 _fail(
                     "PL031_OUTPUT_IDENTITY_MISMATCH", "result.output_sha256",
                     "public output bytes do not match the backend digest",
@@ -1376,23 +1402,37 @@ class PreparedProtocolProgram:
                 "v4_builtin_triangle_callback_ir:checked_reduction_v1"
             )
             if type(raw.traversal_receipt) is ValidatedCompactTraversalReceipt:
-                if self._family is not ProtocolFamily.TRIANGLE_REDUCTION:
-                    _fail(
-                        "PL032_TRAVERSAL_RECEIPT_INVALID",
-                        "result.traversal_receipt",
-                        "validated compact receipt is not admitted for this family",
+                if self._family is ProtocolFamily.BOUNDED_RELATION:
+                    if not validated_relation_output:
+                        _fail(
+                            "PL032_TRAVERSAL_RECEIPT_INVALID",
+                            "result.traversal_receipt",
+                            "compact relation receipt requires validated rows",
+                        )
+                    assert isinstance(batch, BoundedRelationBatch)
+                    expected_program_bundle = (
+                        "v4_custom_aabb_bounded_relation_composed"
                     )
-                assert isinstance(batch, TriangleReductionBatch)
+                    expected_raygen_count = (
+                        len(batch.source_boxes) + int(self._owner.indexed_count)
+                    )
+                    expected_launch_count = 2
+                else:
+                    assert isinstance(batch, TriangleReductionBatch)
+                    expected_program_bundle = (
+                        "v4_builtin_triangle_checked_reduction_composed"
+                    )
+                    expected_raygen_count = len(batch.queries)
+                    expected_launch_count = 1
                 try:
                     receipt = validate_bound_compact_traversal_receipt(
                         raw.traversal_receipt,
                         provider_library_sha256=self._identity.native_library_sha256,
                         route_identity=expected_route,
                         output_digest=output_sha256,
-                        expected_program_bundle=(
-                            "v4_builtin_triangle_checked_reduction_composed"
-                        ),
-                        expected_raygen_invocation_count=len(batch.queries),
+                        expected_program_bundle=expected_program_bundle,
+                        expected_raygen_invocation_count=expected_raygen_count,
+                        expected_successful_launch_count=expected_launch_count,
                     )
                 except (TypeError, ValueError, RuntimeError) as exc:
                     _fail(

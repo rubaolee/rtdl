@@ -266,6 +266,13 @@ def _native_audit_mix_u64(state: int, value: int) -> int:
     ) & mask
 
 
+def _repeated_native_audit_mix(value: int, count: int) -> int:
+    state = 0
+    for _ in range(count):
+        state = _native_audit_mix_u64(state, value)
+    return state
+
+
 def _register_audit_abi(library: object) -> None:
     with _LOADED_PROVIDER_IDENTITIES_LOCK:
         current = _AUDIT_ABI_REGISTERED.get(id(library))
@@ -458,6 +465,11 @@ def _validate_compact_stamp(
     expected_raygen_invocation_count: int,
 ) -> None:
     if (
+        type(expected_successful_launch_count) is not int
+        or expected_successful_launch_count not in {1, 2}
+    ):
+        raise RuntimeError("compact traversal launch count is unsupported")
+    if (
         not isinstance(values, (list, tuple))
         or len(values) != len(_COMPACT_STAMP_FIELDS)
         or any(type(value) is not int or not 0 <= value < 1 << 64 for value in values)
@@ -499,13 +511,28 @@ def _validate_compact_stamp(
         or first_program_bundle_id != expected_program_bundle_id
         or last_program_bundle_id != expected_program_bundle_id
         or first_traversable == 0
-        or last_traversable != first_traversable
+        or last_traversable == 0
+        or (
+            expected_successful_launch_count == 1
+            and last_traversable != first_traversable
+        )
         or pending_context_at_finish != 0
         or session_error != 0
         or incomplete_callsite_record_count != 0
         or program_bundle_mix
-            != _native_audit_mix_u64(0, expected_program_bundle_id)
-        or traversable_mix != _native_audit_mix_u64(0, first_traversable)
+            != _repeated_native_audit_mix(
+                expected_program_bundle_id,
+                expected_successful_launch_count,
+            )
+        or traversable_mix
+            != (
+                _native_audit_mix_u64(0, first_traversable)
+                if expected_successful_launch_count == 1
+                else _native_audit_mix_u64(
+                    _native_audit_mix_u64(0, first_traversable),
+                    last_traversable,
+                )
+            )
     ):
         raise RuntimeError("compact traversal native stamp differs")
 
@@ -526,6 +553,7 @@ class ValidatedCompactTraversalReceipt(Mapping[str, object]):
         "_expected_program_bundle",
         "_expected_program_bundle_id",
         "_expected_raygen_invocation_count",
+        "_expected_successful_launch_count",
         "_native_stamp",
         "_output_digest",
         "_provider_library_sha256",
@@ -542,6 +570,7 @@ class ValidatedCompactTraversalReceipt(Mapping[str, object]):
         output_digest: str,
         expected_program_bundle: str,
         expected_program_bundle_id: int,
+        expected_successful_launch_count: int,
         expected_raygen_invocation_count: int,
         native_stamp: tuple[int, ...],
         _token: object,
@@ -557,6 +586,11 @@ class ValidatedCompactTraversalReceipt(Mapping[str, object]):
         )
         object.__setattr__(
             self, "_expected_program_bundle_id", expected_program_bundle_id
+        )
+        object.__setattr__(
+            self,
+            "_expected_successful_launch_count",
+            expected_successful_launch_count,
         )
         object.__setattr__(
             self,
@@ -616,6 +650,7 @@ def build_validated_compact_traversal_receipt(
     expected_program_bundle: str,
     expected_raygen_invocation_count: int,
     execution_sequence: int,
+    expected_successful_launch_count: int = 1,
 ) -> ValidatedCompactTraversalReceipt:
     """Validate native facts now and defer only the export representation."""
 
@@ -627,6 +662,11 @@ def build_validated_compact_traversal_receipt(
         raise ValueError("expected_program_bundle must be a nonempty string")
     if type(execution_sequence) is not int or not 0 < execution_sequence < 1 << 64:
         raise ValueError("execution_sequence must be a positive uint64")
+    if (
+        type(expected_successful_launch_count) is not int
+        or expected_successful_launch_count not in {1, 2}
+    ):
+        raise ValueError("expected successful launch count must be one or two")
     if (
         type(expected_raygen_invocation_count) is not int
         or not 0 < expected_raygen_invocation_count < 1 << 64
@@ -642,7 +682,7 @@ def build_validated_compact_traversal_receipt(
     _validate_compact_stamp(
         native_stamp,
         expected_program_bundle_id=bundle_id,
-        expected_successful_launch_count=1,
+        expected_successful_launch_count=expected_successful_launch_count,
         expected_raygen_invocation_count=expected_raygen_invocation_count,
     )
     return ValidatedCompactTraversalReceipt(
@@ -652,6 +692,7 @@ def build_validated_compact_traversal_receipt(
         output_digest=output,
         expected_program_bundle=expected_program_bundle,
         expected_program_bundle_id=bundle_id,
+        expected_successful_launch_count=expected_successful_launch_count,
         expected_raygen_invocation_count=expected_raygen_invocation_count,
         native_stamp=native_stamp,
         _token=_VALIDATED_COMPACT_RECEIPT_TOKEN,
@@ -666,6 +707,7 @@ def validate_bound_compact_traversal_receipt(
     output_digest: str,
     expected_program_bundle: str,
     expected_raygen_invocation_count: int,
+    expected_successful_launch_count: int = 1,
 ) -> ValidatedCompactTraversalReceipt:
     """Check an unexpanded receipt against its immediate public boundary."""
 
@@ -678,6 +720,8 @@ def validate_bound_compact_traversal_receipt(
         or receipt._output_digest != output_digest
         or receipt._expected_program_bundle != expected_program_bundle
         or receipt._expected_program_bundle_id != expected_bundle_id
+        or receipt._expected_successful_launch_count
+            != expected_successful_launch_count
         or receipt._expected_raygen_invocation_count
             != expected_raygen_invocation_count
     ):
@@ -695,6 +739,7 @@ def build_compact_traversal_receipt(
     expected_program_bundle: str,
     expected_raygen_invocation_count: int,
     execution_sequence: int,
+    expected_successful_launch_count: int = 1,
 ) -> dict[str, object]:
     """Validate one integrated audit snapshot and emit its compact proof."""
 
@@ -721,7 +766,7 @@ def build_compact_traversal_receipt(
     _validate_compact_stamp(
         native_stamp,
         expected_program_bundle_id=bundle_id,
-        expected_successful_launch_count=1,
+        expected_successful_launch_count=expected_successful_launch_count,
         expected_raygen_invocation_count=expected_raygen_invocation_count,
     )
     receipt: dict[str, object] = {
@@ -754,7 +799,7 @@ def validate_compact_traversal_receipt(
 
     if (
         type(expected_successful_launch_count) is not int
-        or expected_successful_launch_count != 1
+        or expected_successful_launch_count not in {1, 2}
         or type(expected_raygen_invocation_count) is not int
         or not 0 < expected_raygen_invocation_count < 1 << 64
     ):
@@ -857,11 +902,12 @@ def validate_traversal_receipt(
     bundles = list(expected_program_bundles)
     if (
         type(expected_successful_launch_count) is not int
-        or expected_successful_launch_count != 1
+        or expected_successful_launch_count not in {1, 2}
         or len(bundles) != 1
     ):
         raise RuntimeError(
-            "this traversal receipt validator requires one launch and one bundle")
+            "this traversal receipt validator requires one or two launches "
+            "and one bundle")
     bundle_ids = [physical_program_bundle_id(item) for item in bundles]
     if (
         receipt.get("schema") != _RECEIPT_SCHEMA
@@ -941,11 +987,25 @@ def validate_traversal_receipt(
         or snapshot["last_program_bundle_id"] != bundle_ids[-1]
         or snapshot["first_traversable"] == 0
         or snapshot["last_traversable"] == 0
-        or snapshot["first_traversable"] != snapshot["last_traversable"]
+        or (
+            expected_successful_launch_count == 1
+            and snapshot["first_traversable"] != snapshot["last_traversable"]
+        )
         or snapshot["program_bundle_mix"]
-            != _native_audit_mix_u64(0, bundle_ids[0])
+            != _repeated_native_audit_mix(
+                bundle_ids[0], expected_successful_launch_count
+            )
         or snapshot["traversable_mix"]
-            != _native_audit_mix_u64(0, snapshot["first_traversable"])
+            != (
+                _native_audit_mix_u64(0, snapshot["first_traversable"])
+                if expected_successful_launch_count == 1
+                else _native_audit_mix_u64(
+                    _native_audit_mix_u64(
+                        0, snapshot["first_traversable"]
+                    ),
+                    snapshot["last_traversable"],
+                )
+            )
     ):
         raise RuntimeError("traversal receipt native snapshot differs")
 

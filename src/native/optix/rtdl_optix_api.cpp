@@ -1403,10 +1403,30 @@ extern "C" int rtdl_optix_v4_execute_prepared_bounded_relation_callback_v4(
 }
 
 // Goal5801/5802 application fast ABI.  Both OptiX launches and the complete
-// product-status reducers execute before one 12-byte control boundary.  Raw
+// product-status reducers execute before one fixed-size control boundary.  Raw
 // rows are copied only after status success and form the sole output boundary.
 // First-generation source upload/GAS work is separately counted in the native
 // receipt and becomes zero only for an exact committed source generation.
+static void execute_prepared_bounded_relation_callback_v5_checked(
+        uint64_t prepared_token, const float* source_bounds_xyxy,
+        const uint32_t* source_ids, size_t source_count,
+        uint32_t reuse_cached_sources,
+        uint64_t* output_raw_event_count, uint64_t* output_unique_count,
+        uint32_t* output_overflowed, uint32_t* output_rows_interleaved,
+        uint32_t* output_fast_status,
+        RtdlV4FastPathReceipt* output_fast_receipt) {
+    if (reuse_cached_sources > 1u || !output_fast_status ||
+            !output_fast_receipt)
+        throw std::runtime_error(
+            "V4 bounded-relation fast-control inputs are invalid");
+    execute_v4_prepared_bounded_relation_callback_fast(
+        prepared_token, source_bounds_xyxy, source_ids, source_count,
+        reuse_cached_sources != 0u,
+        output_raw_event_count, output_unique_count, output_overflowed,
+        output_rows_interleaved, output_fast_status,
+        output_fast_receipt);
+}
+
 extern "C" int rtdl_optix_v4_execute_prepared_bounded_relation_callback_v5(
         uint64_t prepared_token, const float* source_bounds_xyxy,
         const uint32_t* source_ids, size_t source_count,
@@ -1417,13 +1437,9 @@ extern "C" int rtdl_optix_v4_execute_prepared_bounded_relation_callback_v5(
         RtdlV4FastPathReceipt* output_fast_receipt,
         char* error_out, size_t error_size) {
     return handle_native_call([&]() {
-        if (reuse_cached_sources > 1u || !output_fast_status ||
-                !output_fast_receipt)
-            throw std::runtime_error(
-                "V4 bounded-relation fast-control inputs are invalid");
-        execute_v4_prepared_bounded_relation_callback_fast(
+        execute_prepared_bounded_relation_callback_v5_checked(
             prepared_token, source_bounds_xyxy, source_ids, source_count,
-            reuse_cached_sources != 0u,
+            reuse_cached_sources,
             output_raw_event_count, output_unique_count, output_overflowed,
             output_rows_interleaved, output_fast_status,
             output_fast_receipt);
@@ -1460,6 +1476,48 @@ extern "C" int rtdl_optix_v4_execute_prepared_bounded_relation_callback_v7(
         reuse_cached_sources, output_raw_event_count, output_unique_count,
         output_overflowed, output_rows_interleaved, output_fast_status,
         output_fast_receipt, error_out, error_size);
+}
+
+// Row-returning public successor: perform the same app-neutral compact-status
+// execution as v5 while capturing both OptiX launches in the same native call.
+// This removes Python audit-boundary overhead without weakening traversal
+// evidence or changing the canonical bounded-pair output contract.
+extern "C" int rtdl_optix_v4_execute_prepared_bounded_relation_callback_v8(
+        uint64_t prepared_token, const float* source_bounds_xyxy,
+        const uint32_t* source_ids, size_t source_count,
+        uint32_t reuse_cached_sources,
+        uint64_t* output_raw_event_count, uint64_t* output_unique_count,
+        uint32_t* output_overflowed, uint32_t* output_rows_interleaved,
+        uint32_t* output_fast_status,
+        RtdlV4FastPathReceipt* output_fast_receipt,
+        uint64_t audit_nonce_hi, uint64_t audit_nonce_lo,
+        RtdlOptixTraversalAuditSnapshot* output_audit_snapshot,
+        char* error_out, size_t error_size) {
+    return handle_native_call([&]() {
+        if (!output_audit_snapshot)
+            throw std::runtime_error(
+                "V4 bounded-relation v8 audit snapshot output is null");
+        rtdl_optix_traversal_audit_begin_checked(
+            audit_nonce_hi, audit_nonce_lo);
+        try {
+            execute_prepared_bounded_relation_callback_v5_checked(
+                prepared_token, source_bounds_xyxy, source_ids, source_count,
+                reuse_cached_sources,
+                output_raw_event_count, output_unique_count,
+                output_overflowed, output_rows_interleaved,
+                output_fast_status, output_fast_receipt);
+            rtdl_optix_traversal_audit_finish_checked(
+                audit_nonce_hi, audit_nonce_lo, output_audit_snapshot);
+        } catch (...) {
+            auto& audit = g_optix_traversal_audit;
+            if (audit.active && audit.nonce_hi == audit_nonce_hi &&
+                    audit.nonce_lo == audit_nonce_lo) {
+                rtdl_optix_traversal_audit_abort_checked(
+                    audit_nonce_hi, audit_nonce_lo);
+            }
+            throw;
+        }
+    }, error_out, error_size);
 }
 
 // Goal5801 A1: expose an actual native build counter and a two-phase commit.

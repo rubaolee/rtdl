@@ -26,6 +26,10 @@ from .v4_callback_lifecycle import (
     compile_protocol_program,
     standard_protocol_physical_plan,
 )
+from .v4_bounded_relation_prepared_runtime import (
+    ValidatedBoundedRelationRows,
+    validate_bound_relation_rows,
+)
 from .v4_family_schema import (
     CanonicalFamilyCompilationPlan,
     FamilySchemaV1,
@@ -619,12 +623,18 @@ class _PreparedBridge(FamilyPreparedHandleV1):
     def execute(self, batch: object) -> FamilyProviderExecutionV1:
         result = getattr(self._prepared, "execute")(batch)
         output, output_sha256, receipt = self._output_adapter(result)
-        envelope = (
-            _ValidatedScalarProviderExecution
-            if type(output) is int
+        if (
+            type(output) is int
             and type(receipt) is ValidatedCompactTraversalReceipt
-            else FamilyProviderExecutionV1
-        )
+        ):
+            envelope = _ValidatedScalarProviderExecution
+        elif (
+            type(output) is ValidatedBoundedRelationRows
+            and type(receipt) is ValidatedCompactTraversalReceipt
+        ):
+            envelope = _ValidatedRelationProviderExecution
+        else:
+            envelope = FamilyProviderExecutionV1
         return envelope(
             self._plan_sha256,
             self._identity_sha256,
@@ -669,6 +679,41 @@ class _ValidatedScalarProviderExecution(FamilyProviderExecutionV1):
                 is not ValidatedCompactTraversalReceipt
         ):
             raise RuntimeError("validated scalar provider envelope differs")
+
+
+class _ValidatedRelationProviderExecution(FamilyProviderExecutionV1):
+    """Bridge envelope for factory-validated immutable relation rows."""
+
+    def __post_init__(self) -> None:
+        digests = (
+            self.plan_sha256,
+            self.executable_identity_sha256,
+            self.output_sha256,
+        )
+        if any(
+            type(value) is not str or not _is_canonical_sha256(value)
+            for value in digests
+        ):
+            raise RuntimeError("validated relation provider digest differs")
+        if (
+            self.status != "OK"
+            or self.status_code != 0
+            or type(self.output_document) is not ValidatedBoundedRelationRows
+            or type(self.traversal_receipt)
+                is not ValidatedCompactTraversalReceipt
+        ):
+            raise RuntimeError("validated relation provider envelope differs")
+        validate_bound_relation_rows(
+            self.output_document,
+            output_sha256=self.output_sha256,
+        )
+        if (
+            self.traversal_receipt._route_identity
+                != "v4_callback_ir:custom_aabb_bounded_relation_v1"
+            or self.traversal_receipt._output_digest != self.output_sha256
+            or self.traversal_receipt._expected_successful_launch_count != 2
+        ):
+            raise RuntimeError("validated relation traversal binding differs")
 
 
 class _MaterializedBridge(FamilyMaterializedHandleV1):
