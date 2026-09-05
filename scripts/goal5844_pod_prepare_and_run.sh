@@ -131,7 +131,7 @@ select_compatible_nvcc() {
   while IFS= read -r candidate; do
     [[ -n "$candidate" && -x "$candidate" ]] || continue
     if "$candidate" --list-gpu-code 2>/dev/null \
-        | grep -qx "compute_${COMPUTE_CODE}"; then
+        | grep -Eq "^(compute|sm)_${COMPUTE_CODE}$"; then
       printf '%s\n' "$candidate"
       return 0
     fi

@@ -768,6 +768,7 @@ class Goal5844PrePodReadinessTest(unittest.TestCase):
         self.assertIn("dependency_install_report.json", text)
         self.assertIn("active compute processes", text)
         self.assertIn('[[ -n "$NVCC" ]] && break', text)
+        self.assertIn('grep -Eq "^(compute|sm)_${COMPUTE_CODE}$"', text)
         self.assertIn(comparison.V8_SYMBOL, text)
 
 
