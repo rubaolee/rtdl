@@ -1,5 +1,29 @@
 # RTDL Codex Working Guide
 
+## Critical active work: Goal5848 strong-baseline and post-import closure (2026-09-05)
+
+Goal5848 is defined in
+`history/internal_docs/goal5848_strong_baseline_post_import_20260905/GOAL5848.md`.
+Its primary target is the real remaining Goal5847 debt: after implementation
+imports, RTDL took 637.846 ms versus 263.349 ms for pinned precompiled PyOptix
+(`2.504242x` paired median). Do not optimize or cite the favorable
+complete-process result dominated by PyOptix/CuPy import latency as a language
+speedup.
+
+The goal requires both the frozen 4,096-by-4,096 canonical relation and the
+16,384-query checked-U64 triangle scalar, plus idiomatic PyOptix, equivalently
+device-optimized PyOptix and Direct OptiX arms. Hard gates include post-import
+RTDL/strong-PyOptix median `<=1.20x`, every block `<=1.35x`, prepared public
+RTDL/Direct `<=1.20x`, same-machine successor/predecessor regression
+`<=1.05x`, compiler-free RTDL deploy, exact output/OptiX receipts, fail-closed
+mutations, exact AOT cache reuse and independent replay on two RTX generations.
+
+No validation-off path, weak host-continuation baseline, task-specific engine
+logic, hidden timer movement, discarded adverse row or cross-machine raw-time
+ratio is admissible. Formal timing requires a committed preregistration after
+exploration and repair. Goal5848 has no performance or manuscript result yet;
+external review remains a later claim gate.
+
 ## Critical current override: Goal5845 relation steady debt closed (2026-09-04)
 
 Goal5845 is internally complete at exactly
