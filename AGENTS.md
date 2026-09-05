@@ -1,5 +1,37 @@
 # RTDL Codex Working Guide
 
+## Critical current override: Goal5845 relation steady debt closed (2026-09-04)
+
+Goal5845 is internally complete at exactly
+`PASS__GOAL5845_RELATION_PUBLIC_STEADY_PERFORMANCE_DEBT_CLOSED__EXTERNAL_REVIEW_PENDING`.
+At clean source commit `22c6a45020e3da6894fa108fe92d50fbd2c5aa27`,
+one RTX 2000 Ada transaction retained 1,024 samples per arm in eight balanced
+alternating-order blocks. The prepared public RTDL and pinned PyOptiX medians
+were 366,340 ns and 3,486,126 ns. Median within-block RTDL/PyOptiX was
+`0.1049444491x` (reciprocal `9.5288508222x`), and the worst block was
+`0.1073019810x`. The median RTDL public/direct-native ratio was
+`1.3291058851x`.
+
+The repair is generic bounded-relation device compaction plus compact traversal
+audit and exact immutable row transport; no app dispatch or app formula entered
+the engine. Both arms returned the same 4,096 canonical rows, all registered
+samples were retained, and every RTDL execution recorded two actual OptiX
+launches. The controlling authority is
+`history/internal_docs/goal5845_relation_public_parity_20260904/GOAL5845_INTERNAL_AUTHORITY.json`;
+its internal seal is
+`49827211b3b721fd7c893c15386c32b9fe701362258e7b168e64072807466e6a`.
+Verify it with
+`python3 scripts/goal5845_build_relation_public_parity_authority.py --verify-stored`.
+
+This is exact-task prepared-steady internal evidence only. The PyOptiX arm
+returns raw duplicate events and canonicalizes on the host, so the result is
+not a best-possible PyOptiX lower bound or an intrinsic 9.53x language/API
+claim. Cold RTDL setup remains materially slower and is the next performance
+debt for low-reuse claims. External review, consensus, public/manuscript
+wording, cross-hardware generalization, arbitrary-workload claims, and
+cold-start parity remain unauthorized. Preserve Goal5843's adverse relation
+transaction; no old samples were pooled into Goal5845.
+
 ## Critical current override: Goal5844 internal parity target met (2026-09-04)
 
 Goal5844's first complete GPU transaction is immutable adverse evidence. At

@@ -1,0 +1,94 @@
+{
+  "schema": "rtdl.goal5845.relation_public_parity.pod_transaction.v1",
+  "status": "PASS__FORMAL_GPU_TRANSACTION_COMPLETE",
+  "recorded_at_utc": "2026-09-05T03:51:36Z",
+  "endpoint": {
+    "host": "213.173.108.40",
+    "port": 37784,
+    "ssh_user": "root",
+    "key_path_on_controller": "/Users/rl2025/.ssh/id_ed25519_rtdl_codex"
+  },
+  "host": {
+    "operating_system": "Ubuntu 24.04.3 LTS",
+    "kernel": "Linux 6.8.0-124-generic",
+    "architecture": "x86_64",
+    "gpu_name": "NVIDIA RTX 2000 Ada Generation",
+    "gpu_uuid": "GPU-4b436f5f-bf8f-1d8c-0202-98e6e7b387e9",
+    "gpu_memory_mib": 16380,
+    "compute_capability": "8.9",
+    "driver_version": "580.159.04"
+  },
+  "source": {
+    "origin": "https://github.com/rubaolee/rtdl",
+    "path_on_pod": "/workspace/goal5845-22c6a450-source",
+    "commit": "22c6a45020e3da6894fa108fe92d50fbd2c5aa27",
+    "tree": "d3efda68c1a1b7f70c6538e9f97daf73b3648731",
+    "clean_before_formal_run": true,
+    "clean_after_formal_run": true
+  },
+  "toolchain": {
+    "python": "3.12.3",
+    "cuda_toolkit": "12.8.93",
+    "optix_headers": "9.0.0",
+    "host_compiler": "x86_64-linux-gnu-g++-13 13.3.0",
+    "pyoptix_distribution": "pyoptix 9.1.0",
+    "pyoptix_source_commit": "3144f224c0fd18733925faf3d8fb82c7376b8dcf",
+    "pyoptix_source_tree": "0bf0ec24efb4a43f129aee25dd265aa8149374e3"
+  },
+  "native_provider": {
+    "path_on_pod": "/workspace/goal5845-22c6a450-run/native/librtdl_optix.so",
+    "bytes": 7187784,
+    "sha256": "2383cc988ca7b5c99112c1b360a1c36380de88e750959fb4b17d9012d4e8efb8",
+    "build_manifest_file_sha256": "5cb4b9c5bc2bb6416ecbab71ae3e67c72ebd1c9fd7ed77264f8703e741b2e341",
+    "required_symbol": "rtdl_optix_v4_execute_prepared_bounded_relation_callback_v8"
+  },
+  "formal_run": {
+    "path_on_pod": "/workspace/goal5845-22c6a450-run/formal-comparison-22c6a450",
+    "summary_file_sha256": "c323577659896e3ec4298efab18f18eecc52b1ef9a2ad7334b699e2a90470046",
+    "summary_semantic_sha256": "7c5f47b6e8cf47968cf12b2db9b1982dd5f46493323b300413c73f9082ef031d",
+    "preregistration_semantic_sha256": "2f246a54e172ec83e32ad93fa3c796c3c73ef9c2de54ded3b3fea63daf4d00db",
+    "blocks": 8,
+    "samples_per_worker": 128,
+    "samples_per_arm": 1024,
+    "sample_discard_count": 0,
+    "worker_count": 16,
+    "all_workers_passed": true
+  },
+  "preflight": {
+    "performed_before_formal_run": true,
+    "arms": [
+      "RTDL_PUBLIC_RELATION_V8_COMPACT_STAMP",
+      "PINNED_PYOPTIX_COMPATIBLE_API"
+    ],
+    "pooled_into_formal_estimators": false,
+    "output_sha256": "2fb668490480cbb5d4d9bbf5a8d357435eff5fc6bb3532427ac2726cdaa88c77"
+  },
+  "setup_failures_before_timing": [
+    {
+      "cause": "CUDA_VISIBLE_DEVICES was not explicitly set to the frozen single-device value",
+      "timing_samples_produced": false,
+      "classified_as_scientific_attempt": false
+    },
+    {
+      "cause": "the controller received OptiX SDK string 9.0 instead of the exact manifest value 9.0.0",
+      "timing_samples_produced": false,
+      "classified_as_scientific_attempt": false
+    }
+  ],
+  "post_formal_checks": {
+    "focused_tests_passed": 55,
+    "focused_tests_failed": 0,
+    "source_status_empty": true,
+    "required_symbol_observed_with_nm": true,
+    "compute_process_rows_after_capture": 0
+  },
+  "claim_boundary": {
+    "internal_engineering_evidence_only": true,
+    "public_or_manuscript_claim_authorized": false,
+    "external_review_complete": false,
+    "cross_hardware_generalization_authorized": false,
+    "cold_start_parity_claim_authorized": false,
+    "arbitrary_workload_claim_authorized": false
+  },
+  "transaction_sha256": "8bbd45bfce84d9e5a6140579a1875381599b74d70ec7882be78ed70ad4d1fefa"
+}

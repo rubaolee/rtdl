@@ -1,0 +1,168 @@
+{
+  "arm": "RTDL_PUBLIC_RELATION_V8_COMPACT_STAMP",
+  "block": 0,
+  "claim_boundary": {
+    "engineering_evidence_only": true,
+    "external_review_complete": false,
+    "public_or_manuscript_claim_authorized": false
+  },
+  "hardware": {
+    "compute_capability": "8.9",
+    "driver_version": "580.159.04",
+    "gpu_name": "NVIDIA RTX 2000 Ada Generation",
+    "gpu_uuid": "GPU-4b436f5f-bf8f-1d8c-0202-98e6e7b387e9",
+    "memory_mib": 16380
+  },
+  "measurements": {
+    "attribution": {
+      "direct_native_v8": {
+        "maximum_ns": 278557,
+        "median_ns": 278557,
+        "minimum_ns": 278557,
+        "sample_count": 1,
+        "samples_ns": [
+          278557
+        ]
+      },
+      "explicit_full_diagnostic_ns": 8884674,
+      "family_bridge": {
+        "maximum_ns": 399411,
+        "median_ns": 399411,
+        "minimum_ns": 399411,
+        "sample_count": 1,
+        "samples_ns": [
+          399411
+        ]
+      },
+      "prepared_owner": {
+        "maximum_ns": 373851,
+        "median_ns": 373851,
+        "minimum_ns": 373851,
+        "sample_count": 1,
+        "samples_ns": [
+          373851
+        ]
+      },
+      "protocol_lifecycle": {
+        "maximum_ns": 383661,
+        "median_ns": 383661,
+        "minimum_ns": 383661,
+        "sample_count": 1,
+        "samples_ns": [
+          383661
+        ]
+      }
+    },
+    "evidence": {
+      "immutable_output_reused": true,
+      "latest_compact_receipt": {
+        "expected_program_bundle": "v4_custom_aabb_bounded_relation_composed",
+        "expected_program_bundle_id": 2653562265751913892,
+        "expected_program_observed_at_receipt_edge": true,
+        "native_stamp": [
+          13436725715832464277,
+          3,
+          3,
+          2,
+          2,
+          0,
+          2,
+          0,
+          2,
+          8192,
+          2653562265751913892,
+          2653562265751913892,
+          127753999763980,
+          127754000642572,
+          0,
+          0,
+          0,
+          9754822321397870388,
+          654286603895553586
+        ],
+        "output_digest": "2fb668490480cbb5d4d9bbf5a8d357435eff5fc6bb3532427ac2726cdaa88c77",
+        "physical_executor_classification": "optix_traversal_observed",
+        "provider_library_sha256": "2383cc988ca7b5c99112c1b360a1c36380de88e750959fb4b17d9012d4e8efb8",
+        "receipt_sha256": "3196d2e1c260c33ca9ef9886b8da90a983cae3001aff56af81c9ec8d18592cdf",
+        "route_identity": "v4_callback_ir:custom_aabb_bounded_relation_v1",
+        "schema": "rtdl.physical_execution.compact_traversal_receipt.v1",
+        "semantic_digest": "c5c31b1aa1d7b69db60e41e4dd9a510f2a453fe69373f900b019fb4eb1f2c8fa"
+      },
+      "latest_fast_operation_receipt": {
+        "callback_status_kernel_launch_count": 0,
+        "checked_product_kernel_launch_count": 0,
+        "compact_control_finalizer_kernel_launch_count": 0,
+        "control_d2h_bytes": 28,
+        "dynamic_accel_build_count": 0,
+        "dynamic_blocking_upload_call_count": 0,
+        "dynamic_device_upload_bytes": 0,
+        "dynamic_device_upload_call_count": 0,
+        "dynamic_explicit_sync_count": 0,
+        "dynamic_input_generation": 1,
+        "execution_parameter_h2d_bytes": 240,
+        "execution_parameter_h2d_copy_call_count": 2,
+        "host_blocking_boundary_count": 2,
+        "optix_launch_count": 2,
+        "output_d2h_after_status_failure": 0,
+        "output_d2h_bytes": 32768,
+        "output_d2h_copy_call_count": 1,
+        "prepared_input_reused": true,
+        "role_counters_materialized": false,
+        "schema_version": 2,
+        "semantic_compaction_key_capacity": 8192,
+        "semantic_compaction_launch_count": 1,
+        "semantic_compaction_scratch_bytes": 98312,
+        "status_before_output": true,
+        "status_d2h_copy_call_count": 1,
+        "stream_ordered_memset_call_count": 4,
+        "total_auxiliary_cuda_kernel_launch_count": 1
+      },
+      "public_output_sha256": "2fb668490480cbb5d4d9bbf5a8d357435eff5fc6bb3532427ac2726cdaa88c77",
+      "public_row_count": 4096,
+      "two_actual_optix_launches": true
+    },
+    "first_execution_ns": 20283088,
+    "identity": {
+      "generic_executable_identity": {
+        "executable_sha256": "bbce35369aca4330493cef578c96a6203b31c9e8037b7d688f1348c77008b604",
+        "generated_artifact_sha256": "f59fc1a989bd31962ea5422440fc77cfb1e35a05d6e4f1956fe85863ae18a042",
+        "identity_sha256": "6f808fb7dc6968973b275001f385060d75f9106d43af420b10ac9fa02baf23b2",
+        "plan_sha256": "fa9f40b9c96410190e5135513e7f6788b242ffd6e11e609d0a0b4d5bdc0051b8",
+        "provider_artifact_sha256": "2383cc988ca7b5c99112c1b360a1c36380de88e750959fb4b17d9012d4e8efb8",
+        "provider_descriptor_sha256": "4b6fbf84c9a507e156b0b4f5a14c4fe87a3f88d64e7a4a47f2de80ad7df0bc03",
+        "provider_projection_sha256": "898ef630b76de55767279c76a52348ee9cefdb6d15df1c6308d5af66f715ad84",
+        "schema": "rtdl.family_executable_identity.v1",
+        "target_sha256": "9a9c98d518448a3a73306c26529e622ca38f4c44605d2178933af4777b6b313e"
+      },
+      "native_library_sha256": "2383cc988ca7b5c99112c1b360a1c36380de88e750959fb4b17d9012d4e8efb8"
+    },
+    "setup_ns": {
+      "close": 1381668,
+      "generic_admission": 100091376,
+      "materialize": 33600462646,
+      "prepare": 1188142501,
+      "route_declaration": 104116198
+    },
+    "steady_public": {
+      "maximum_ns": 410201,
+      "median_ns": 410201,
+      "minimum_ns": 410201,
+      "sample_count": 1,
+      "samples_ns": [
+        410201
+      ]
+    }
+  },
+  "output_sha256": "2fb668490480cbb5d4d9bbf5a8d357435eff5fc6bb3532427ac2726cdaa88c77",
+  "python": "3.12.3",
+  "query_count": 4096,
+  "repetitions": 1,
+  "result_sha256": "5ab0074720a6a8e664f1fc5bdb4f38245b865420db84f634a7b96d74597c5346",
+  "row_count": 4096,
+  "schema": "rtdl.goal5845.relation_compact_execution.worker.v1",
+  "source_commit": "22c6a45020e3da6894fa108fe92d50fbd2c5aa27",
+  "source_tree": "d3efda68c1a1b7f70c6538e9f97daf73b3648731",
+  "status": "PASS__INTERNAL_ENGINEERING_WORKER",
+  "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+  "warmups": 1
+}

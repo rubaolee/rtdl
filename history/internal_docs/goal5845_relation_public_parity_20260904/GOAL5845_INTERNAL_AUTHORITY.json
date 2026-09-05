@@ -1,0 +1,509 @@
+{
+  "architecture_boundary": {
+    "application_dispatch_added": false,
+    "full_diagnostics_remain_explicitly_available": true,
+    "native_abi_app_neutral": true,
+    "ordinary_path_materializes_role_counters": false,
+    "ordinary_path_returns_canonical_rows_once": true,
+    "ordinary_path_uses_device_semantic_compaction": true,
+    "two_actual_optix_launches_per_execution": true
+  },
+  "authority_sha256": "49827211b3b721fd7c893c15386c32b9fe701362258e7b168e64072807466e6a",
+  "claim_boundary": {
+    "arbitrary_workload_claim_authorized": false,
+    "cold_start_parity_claim_authorized": false,
+    "consensus_claimed": false,
+    "cross_hardware_generalization_authorized": false,
+    "exact_task_and_prepared_steady_path_only": true,
+    "external_review_complete": false,
+    "internal_engineering_evidence_only": true,
+    "intrinsic_language_or_api_speedup_claim_authorized": false,
+    "public_or_manuscript_claim_authorized": false
+  },
+  "evidence_identity": {
+    "native_build_manifest_sha256": "5cb4b9c5bc2bb6416ecbab71ae3e67c72ebd1c9fd7ed77264f8703e741b2e341",
+    "native_build_result_sha256": "4e6bb20ee58f8299c01f736dffc35cebe2e5f559e7aa9b0d73352a46681ec32b",
+    "native_provider_bytes": 7187784,
+    "native_provider_sha256": "2383cc988ca7b5c99112c1b360a1c36380de88e750959fb4b17d9012d4e8efb8",
+    "pod_transaction_sha256": "8bbd45bfce84d9e5a6140579a1875381599b74d70ec7882be78ed70ad4d1fefa",
+    "preregistration_file_sha256": "7b83ec092503e902590bad66b6a674b0c1216e62bfa433a75c943c8785334fb2",
+    "preregistration_sha256": "2f246a54e172ec83e32ad93fa3c796c3c73ef9c2de54ded3b3fea63daf4d00db",
+    "pyoptix_source_commit": "3144f224c0fd18733925faf3d8fb82c7376b8dcf",
+    "pyoptix_source_tree": "0bf0ec24efb4a43f129aee25dd265aa8149374e3",
+    "summary_file_sha256": "c323577659896e3ec4298efab18f18eecc52b1ef9a2ad7334b699e2a90470046",
+    "summary_sha256": "7c5f47b6e8cf47968cf12b2db9b1982dd5f46493323b300413c73f9082ef031d"
+  },
+  "hardware": {
+    "compute_capability": "8.9",
+    "driver_version": "580.159.04",
+    "gpu_name": "NVIDIA RTX 2000 Ada Generation",
+    "gpu_uuid": "GPU-4b436f5f-bf8f-1d8c-0202-98e6e7b387e9",
+    "memory_mib": 16380
+  },
+  "historical_boundary": {
+    "formal_transaction_is_new_and_preregistered": true,
+    "goal5843_adverse_relation_result_preserved": true,
+    "goal5843_samples_reused_or_pooled": false,
+    "unregistered_preflight_or_diagnostics_pooled": false
+  },
+  "producer": {
+    "imports_rtdl_or_gpu_package": false,
+    "path": "scripts/goal5845_build_relation_public_parity_authority.py",
+    "sha256": "56e66945abec5600a9ed9f40438c470b718165a4125d3737c23f811298829b6b"
+  },
+  "result": {
+    "all_samples_retained": true,
+    "attribution_samples_per_layer": 512,
+    "block_rows": [
+      {
+        "block": 0,
+        "direct_native_v8_median_ns": 275082,
+        "order": [
+          "RTDL_PUBLIC_RELATION_V8_COMPACT_STAMP",
+          "PINNED_PYOPTIX_COMPATIBLE_API"
+        ],
+        "pyoptix_median_ns": 3484995,
+        "rtdl_median_ns": 365170,
+        "rtdl_over_pyoptix": 0.1047835075803552,
+        "rtdl_public_over_direct_native": 1.3274950741960578
+      },
+      {
+        "block": 1,
+        "direct_native_v8_median_ns": 273262,
+        "order": [
+          "PINNED_PYOPTIX_COMPATIBLE_API",
+          "RTDL_PUBLIC_RELATION_V8_COMPACT_STAMP"
+        ],
+        "pyoptix_median_ns": 3485191,
+        "rtdl_median_ns": 367335,
+        "rtdl_over_pyoptix": 0.10539881458433699,
+        "rtdl_public_over_direct_native": 1.3442593554903353
+      },
+      {
+        "block": 2,
+        "direct_native_v8_median_ns": 275477,
+        "order": [
+          "RTDL_PUBLIC_RELATION_V8_COMPACT_STAMP",
+          "PINNED_PYOPTIX_COMPATIBLE_API"
+        ],
+        "pyoptix_median_ns": 3515896,
+        "rtdl_median_ns": 365845,
+        "rtdl_over_pyoptix": 0.1040545567900757,
+        "rtdl_public_over_direct_native": 1.3280419054948327
+      },
+      {
+        "block": 3,
+        "direct_native_v8_median_ns": 276617,
+        "order": [
+          "PINNED_PYOPTIX_COMPATIBLE_API",
+          "RTDL_PUBLIC_RELATION_V8_COMPACT_STAMP"
+        ],
+        "pyoptix_median_ns": 3468611,
+        "rtdl_median_ns": 363070,
+        "rtdl_over_pyoptix": 0.10467302329376225,
+        "rtdl_public_over_direct_native": 1.3125368289006099
+      },
+      {
+        "block": 4,
+        "direct_native_v8_median_ns": 274277,
+        "order": [
+          "RTDL_PUBLIC_RELATION_V8_COMPACT_STAMP",
+          "PINNED_PYOPTIX_COMPATIBLE_API"
+        ],
+        "pyoptix_median_ns": 3471135,
+        "rtdl_median_ns": 364835,
+        "rtdl_over_pyoptix": 0.10510539059990465,
+        "rtdl_public_over_direct_native": 1.3301698647717453
+      },
+      {
+        "block": 5,
+        "direct_native_v8_median_ns": 275677,
+        "order": [
+          "PINNED_PYOPTIX_COMPATIBLE_API",
+          "RTDL_PUBLIC_RELATION_V8_COMPACT_STAMP"
+        ],
+        "pyoptix_median_ns": 3466500,
+        "rtdl_median_ns": 365965,
+        "rtdl_over_pyoptix": 0.10557190249531227,
+        "rtdl_public_over_direct_native": 1.32751372076742
+      },
+      {
+        "block": 6,
+        "direct_native_v8_median_ns": 277868,
+        "order": [
+          "RTDL_PUBLIC_RELATION_V8_COMPACT_STAMP",
+          "PINNED_PYOPTIX_COMPATIBLE_API"
+        ],
+        "pyoptix_median_ns": 3484931,
+        "rtdl_median_ns": 373940,
+        "rtdl_over_pyoptix": 0.10730198101483214,
+        "rtdl_public_over_direct_native": 1.3457469014064232
+      },
+      {
+        "block": 7,
+        "direct_native_v8_median_ns": 273807,
+        "order": [
+          "PINNED_PYOPTIX_COMPATIBLE_API",
+          "RTDL_PUBLIC_RELATION_V8_COMPACT_STAMP"
+        ],
+        "pyoptix_median_ns": 3497031,
+        "rtdl_median_ns": 365560,
+        "rtdl_over_pyoptix": 0.10453438931482163,
+        "rtdl_public_over_direct_native": 1.3351010018005383
+      }
+    ],
+    "diagnostic_path_median_ns": 9259284,
+    "median_rtdl_public_over_direct_native": 1.329105885133289,
+    "median_within_block_rtdl_over_pyoptix": 0.10494444909012993,
+    "pooled_attribution_median_ns": {
+      "direct_native_v8": 274997,
+      "family_bridge": 353444,
+      "prepared_owner": 333194,
+      "protocol_lifecycle": 347750
+    },
+    "pooled_pyoptix_median_ns": 3486126,
+    "pooled_rtdl_median_ns": 366340,
+    "public_samples_per_arm": 1024,
+    "rtdl_over_pyoptix_speedup": 9.528850822220862,
+    "workers": 16,
+    "worst_block_rtdl_over_pyoptix": 0.10730198101483214
+  },
+  "schema": "rtdl.goal5845.relation_public_parity.internal_authority.v1",
+  "source": {
+    "commit": "22c6a45020e3da6894fa108fe92d50fbd2c5aa27",
+    "origin": "https://github.com/rubaolee/rtdl",
+    "tree": "d3efda68c1a1b7f70c6538e9f97daf73b3648731"
+  },
+  "status": "PASS__GOAL5845_RELATION_PUBLIC_STEADY_PERFORMANCE_DEBT_CLOSED__EXTERNAL_REVIEW_PENDING",
+  "stored_evidence_files": [
+    {
+      "bytes": 3682,
+      "path": "history/internal_docs/goal5845_relation_public_parity_20260904/evidence/POD_TRANSACTION.json",
+      "sha256": "d8c5b371f9083b835fcc4381b0538d6bc8f6efbe4198e4e1c914208719d3ade9"
+    },
+    {
+      "bytes": 172946,
+      "path": "history/internal_docs/goal5845_relation_public_parity_20260904/evidence/formal_comparison/SUMMARY.json",
+      "sha256": "c323577659896e3ec4298efab18f18eecc52b1ef9a2ad7334b699e2a90470046"
+    },
+    {
+      "bytes": 4932,
+      "path": "history/internal_docs/goal5845_relation_public_parity_20260904/evidence/formal_comparison/workers/block_00_pyoptix.json",
+      "sha256": "13408946180f87548b70c9dc86f5f5b16a9cb0b16ed5e1b750053c4616f821dc"
+    },
+    {
+      "bytes": 0,
+      "path": "history/internal_docs/goal5845_relation_public_parity_20260904/evidence/formal_comparison/workers/block_00_pyoptix.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 3548,
+      "path": "history/internal_docs/goal5845_relation_public_parity_20260904/evidence/formal_comparison/workers/block_00_pyoptix.stdout.txt",
+      "sha256": "819f82733050335c69b0a04e7362f36547614ad8150f7b8bc768060a0e1dea95"
+    },
+    {
+      "bytes": 12659,
+      "path": "history/internal_docs/goal5845_relation_public_parity_20260904/evidence/formal_comparison/workers/block_00_rtdl.json",
+      "sha256": "371fdef82e3a8499e7eb904c17b4bd24698d065c888a144239cb9b7dccd096e8"
+    },
+    {
+      "bytes": 0,
+      "path": "history/internal_docs/goal5845_relation_public_parity_20260904/evidence/formal_comparison/workers/block_00_rtdl.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 7963,
+      "path": "history/internal_docs/goal5845_relation_public_parity_20260904/evidence/formal_comparison/workers/block_00_rtdl.stdout.txt",
+      "sha256": "47ecad1824b214200af52f676bf6f9c06e8d6870e5ab4a27d2dddbe0630a29cb"
+    },
+    {
+      "bytes": 4932,
+      "path": "history/internal_docs/goal5845_relation_public_parity_20260904/evidence/formal_comparison/workers/block_01_pyoptix.json",
+      "sha256": "4ccf5fa0d46ccea87299328cf16d1cdcf47be41eb52d3bc1ee354e02b6281b68"
+    },
+    {
+      "bytes": 0,
+      "path": "history/internal_docs/goal5845_relation_public_parity_20260904/evidence/formal_comparison/workers/block_01_pyoptix.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 3548,
+      "path": "history/internal_docs/goal5845_relation_public_parity_20260904/evidence/formal_comparison/workers/block_01_pyoptix.stdout.txt",
+      "sha256": "881818105d406fa79643488f18b47dca96c87110c9807241ec901a0bcb4518be"
+    },
+    {
+      "bytes": 12657,
+      "path": "history/internal_docs/goal5845_relation_public_parity_20260904/evidence/formal_comparison/workers/block_01_rtdl.json",
+      "sha256": "7eec4f42ff41ed47ef895c3bb22019b7aa74c23958a9d7c558325bcee1480d1d"
+    },
+    {
+      "bytes": 0,
+      "path": "history/internal_docs/goal5845_relation_public_parity_20260904/evidence/formal_comparison/workers/block_01_rtdl.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 7961,
+      "path": "history/internal_docs/goal5845_relation_public_parity_20260904/evidence/formal_comparison/workers/block_01_rtdl.stdout.txt",
+      "sha256": "156db55e90feb5c306a71edadc881ab318e600bc28241f6c0ae785e576542cba"
+    },
+    {
+      "bytes": 4932,
+      "path": "history/internal_docs/goal5845_relation_public_parity_20260904/evidence/formal_comparison/workers/block_02_pyoptix.json",
+      "sha256": "ff4896c241044bab94dbe78256dfb9763dcb736c2ffdd70c7314ddc86fc66b08"
+    },
+    {
+      "bytes": 0,
+      "path": "history/internal_docs/goal5845_relation_public_parity_20260904/evidence/formal_comparison/workers/block_02_pyoptix.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 3548,
+      "path": "history/internal_docs/goal5845_relation_public_parity_20260904/evidence/formal_comparison/workers/block_02_pyoptix.stdout.txt",
+      "sha256": "c366300bfba17a14bbfce858020501a8f4d4b648c5fae773b7aad65b95afc4b1"
+    },
+    {
+      "bytes": 12656,
+      "path": "history/internal_docs/goal5845_relation_public_parity_20260904/evidence/formal_comparison/workers/block_02_rtdl.json",
+      "sha256": "1a5e5260578679fef789dc783b4324f3732c2f1e3e6523ba15b5f4c84418e130"
+    },
+    {
+      "bytes": 0,
+      "path": "history/internal_docs/goal5845_relation_public_parity_20260904/evidence/formal_comparison/workers/block_02_rtdl.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 7960,
+      "path": "history/internal_docs/goal5845_relation_public_parity_20260904/evidence/formal_comparison/workers/block_02_rtdl.stdout.txt",
+      "sha256": "0dc78f957efe9e754c7993fa8b34e5d97dd557a47ff56f62318692b2bc229a0e"
+    },
+    {
+      "bytes": 4932,
+      "path": "history/internal_docs/goal5845_relation_public_parity_20260904/evidence/formal_comparison/workers/block_03_pyoptix.json",
+      "sha256": "926accab6626de06bfc8216916473ca7ad4c24f484a755f51bb5ed83a251160e"
+    },
+    {
+      "bytes": 0,
+      "path": "history/internal_docs/goal5845_relation_public_parity_20260904/evidence/formal_comparison/workers/block_03_pyoptix.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 3548,
+      "path": "history/internal_docs/goal5845_relation_public_parity_20260904/evidence/formal_comparison/workers/block_03_pyoptix.stdout.txt",
+      "sha256": "91b0be23b7ca5365b225ece0b7dd85b93af1024d25ce0ba52c8335a941b31f4f"
+    },
+    {
+      "bytes": 12658,
+      "path": "history/internal_docs/goal5845_relation_public_parity_20260904/evidence/formal_comparison/workers/block_03_rtdl.json",
+      "sha256": "73ad8768ae84fdf930165cf28fe283c4b93d20cc91e271d17f8d41ba9528893d"
+    },
+    {
+      "bytes": 0,
+      "path": "history/internal_docs/goal5845_relation_public_parity_20260904/evidence/formal_comparison/workers/block_03_rtdl.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 7962,
+      "path": "history/internal_docs/goal5845_relation_public_parity_20260904/evidence/formal_comparison/workers/block_03_rtdl.stdout.txt",
+      "sha256": "21c5e5db8033fb743b10228840e66f84afea7e2b45d2fafdc3872221561e1639"
+    },
+    {
+      "bytes": 4932,
+      "path": "history/internal_docs/goal5845_relation_public_parity_20260904/evidence/formal_comparison/workers/block_04_pyoptix.json",
+      "sha256": "9410203240a5886826dbfc2cfe75d9c7272b7d0e168a20e5647230fb43291f0c"
+    },
+    {
+      "bytes": 0,
+      "path": "history/internal_docs/goal5845_relation_public_parity_20260904/evidence/formal_comparison/workers/block_04_pyoptix.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 3548,
+      "path": "history/internal_docs/goal5845_relation_public_parity_20260904/evidence/formal_comparison/workers/block_04_pyoptix.stdout.txt",
+      "sha256": "52d2ef3ab6926711a8723dca831aaca5ec14cc890796a98706e4061a320e5411"
+    },
+    {
+      "bytes": 12656,
+      "path": "history/internal_docs/goal5845_relation_public_parity_20260904/evidence/formal_comparison/workers/block_04_rtdl.json",
+      "sha256": "efc8c71d0617c7c884f864558184b1df99759af9af594d865dcf901efc3e3db3"
+    },
+    {
+      "bytes": 0,
+      "path": "history/internal_docs/goal5845_relation_public_parity_20260904/evidence/formal_comparison/workers/block_04_rtdl.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 7960,
+      "path": "history/internal_docs/goal5845_relation_public_parity_20260904/evidence/formal_comparison/workers/block_04_rtdl.stdout.txt",
+      "sha256": "7c19c1b17d350e6f60e92cb154880b0c6038f332e5a48f6f115cc5a5744452c0"
+    },
+    {
+      "bytes": 4932,
+      "path": "history/internal_docs/goal5845_relation_public_parity_20260904/evidence/formal_comparison/workers/block_05_pyoptix.json",
+      "sha256": "34ae610b77995ed261c87c3a4fc58e2197ed28aba173f49b55755f1abfc0ef72"
+    },
+    {
+      "bytes": 0,
+      "path": "history/internal_docs/goal5845_relation_public_parity_20260904/evidence/formal_comparison/workers/block_05_pyoptix.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 3548,
+      "path": "history/internal_docs/goal5845_relation_public_parity_20260904/evidence/formal_comparison/workers/block_05_pyoptix.stdout.txt",
+      "sha256": "ff5c017c8c3d8a2be6b29738beb16f061d065b5b2df78d44b426a3ce76e81515"
+    },
+    {
+      "bytes": 12656,
+      "path": "history/internal_docs/goal5845_relation_public_parity_20260904/evidence/formal_comparison/workers/block_05_rtdl.json",
+      "sha256": "74077fcf317370735bbdc490edade3d7a031aef9d7d201d9fbe900de7b823ffe"
+    },
+    {
+      "bytes": 0,
+      "path": "history/internal_docs/goal5845_relation_public_parity_20260904/evidence/formal_comparison/workers/block_05_rtdl.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 7960,
+      "path": "history/internal_docs/goal5845_relation_public_parity_20260904/evidence/formal_comparison/workers/block_05_rtdl.stdout.txt",
+      "sha256": "ed7b4457e94b6626a66f8b9b8a9ca020d6a9683f2d68c9ae46554b277fbfb5a9"
+    },
+    {
+      "bytes": 4932,
+      "path": "history/internal_docs/goal5845_relation_public_parity_20260904/evidence/formal_comparison/workers/block_06_pyoptix.json",
+      "sha256": "c5539f7f9a09eba52a4bfe38120209d8bc148a8d054e5f8e5d385df5a55bd8f3"
+    },
+    {
+      "bytes": 0,
+      "path": "history/internal_docs/goal5845_relation_public_parity_20260904/evidence/formal_comparison/workers/block_06_pyoptix.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 3548,
+      "path": "history/internal_docs/goal5845_relation_public_parity_20260904/evidence/formal_comparison/workers/block_06_pyoptix.stdout.txt",
+      "sha256": "939caa8ee3aa9171a21a9771480771e89e881bb482fea507569f00644e2f5c60"
+    },
+    {
+      "bytes": 12655,
+      "path": "history/internal_docs/goal5845_relation_public_parity_20260904/evidence/formal_comparison/workers/block_06_rtdl.json",
+      "sha256": "0ac723d3e77fe267f0289ab4f2356903167a08d6cb7c6489f5109c0aeca2328a"
+    },
+    {
+      "bytes": 0,
+      "path": "history/internal_docs/goal5845_relation_public_parity_20260904/evidence/formal_comparison/workers/block_06_rtdl.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 7959,
+      "path": "history/internal_docs/goal5845_relation_public_parity_20260904/evidence/formal_comparison/workers/block_06_rtdl.stdout.txt",
+      "sha256": "24da81df48da39dce537cec880732f610e8a631097c428ad9a341c7150e384ec"
+    },
+    {
+      "bytes": 4932,
+      "path": "history/internal_docs/goal5845_relation_public_parity_20260904/evidence/formal_comparison/workers/block_07_pyoptix.json",
+      "sha256": "28d52d13fa9ce8463c7acb3335c8c8414045048f4bb9a443e963f4f6282cbb3f"
+    },
+    {
+      "bytes": 0,
+      "path": "history/internal_docs/goal5845_relation_public_parity_20260904/evidence/formal_comparison/workers/block_07_pyoptix.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 3548,
+      "path": "history/internal_docs/goal5845_relation_public_parity_20260904/evidence/formal_comparison/workers/block_07_pyoptix.stdout.txt",
+      "sha256": "60389d849cae82a8af567a1856a04bec7490dbd24305f02911497373d1b0dd38"
+    },
+    {
+      "bytes": 12654,
+      "path": "history/internal_docs/goal5845_relation_public_parity_20260904/evidence/formal_comparison/workers/block_07_rtdl.json",
+      "sha256": "f03a1206989ae68756f29a5d2d342e7c96fe7233f9a4482d1653fa642014dcc0"
+    },
+    {
+      "bytes": 0,
+      "path": "history/internal_docs/goal5845_relation_public_parity_20260904/evidence/formal_comparison/workers/block_07_rtdl.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 7958,
+      "path": "history/internal_docs/goal5845_relation_public_parity_20260904/evidence/formal_comparison/workers/block_07_rtdl.stdout.txt",
+      "sha256": "12c55c67f84f589fa8936d2747cdfadea9c264097c830e1b7bb36c0fe8daacfd"
+    },
+    {
+      "bytes": 14599,
+      "path": "history/internal_docs/goal5845_relation_public_parity_20260904/evidence/native/build_manifest.json",
+      "sha256": "5cb4b9c5bc2bb6416ecbab71ae3e67c72ebd1c9fd7ed77264f8703e741b2e341"
+    },
+    {
+      "bytes": 154,
+      "path": "history/internal_docs/goal5845_relation_public_parity_20260904/evidence/post_formal/focused_tests.stderr.txt",
+      "sha256": "4cfc442f766340ee7138119db6f837b683ec0289ccee6e434a5419f21ec185f5"
+    },
+    {
+      "bytes": 0,
+      "path": "history/internal_docs/goal5845_relation_public_parity_20260904/evidence/post_formal/focused_tests.stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "history/internal_docs/goal5845_relation_public_parity_20260904/evidence/post_formal/gpu_processes.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 92331,
+      "path": "history/internal_docs/goal5845_relation_public_parity_20260904/evidence/post_formal/native_defined_symbols.txt",
+      "sha256": "35b1b731bcc1c91612baf01363b90d399a5983bd1bede462cac531ff41065534"
+    },
+    {
+      "bytes": 123,
+      "path": "history/internal_docs/goal5845_relation_public_parity_20260904/evidence/post_formal/native_sha256.txt",
+      "sha256": "48ff89880db5ed346a6be938b822dec19e31a8c41f84891a7d851d0c9e116766"
+    },
+    {
+      "bytes": 14,
+      "path": "history/internal_docs/goal5845_relation_public_parity_20260904/evidence/post_formal/native_size.txt",
+      "sha256": "630539887790fe0af0ca343cff003ceecc3fd08b2e366c5c8996255f3167cdaf"
+    },
+    {
+      "bytes": 0,
+      "path": "history/internal_docs/goal5845_relation_public_parity_20260904/evidence/post_formal/source_status.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 2756,
+      "path": "history/internal_docs/goal5845_relation_public_parity_20260904/evidence/preflight/pyoptix.json",
+      "sha256": "bbbb117849af6faf25729020712ae74b4b204c425d3003d01dd5a14573b5063e"
+    },
+    {
+      "bytes": 0,
+      "path": "history/internal_docs/goal5845_relation_public_parity_20260904/evidence/preflight/pyoptix.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 2388,
+      "path": "history/internal_docs/goal5845_relation_public_parity_20260904/evidence/preflight/pyoptix.stdout",
+      "sha256": "801fce834d557adc24113969a200e31431629e5418f5ee0c5a86930a44312105"
+    },
+    {
+      "bytes": 6077,
+      "path": "history/internal_docs/goal5845_relation_public_parity_20260904/evidence/preflight/rtdl.json",
+      "sha256": "00386be1e2be9e81cc5640d5e9acc8934ad3aef560607f6648a9735df839509d"
+    },
+    {
+      "bytes": 0,
+      "path": "history/internal_docs/goal5845_relation_public_parity_20260904/evidence/preflight/rtdl.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 4917,
+      "path": "history/internal_docs/goal5845_relation_public_parity_20260904/evidence/preflight/rtdl.stdout",
+      "sha256": "ece9e1055e91e71b436de42917ab7fc4dd3690f963cbad6c1b2014387304faeb"
+    }
+  ],
+  "task": {
+    "canonical_row_count": 4096,
+    "id": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+    "indexed_count": 4096,
+    "input_sha256": "8606dd3c22d424a7ee2d64b61918f6185d39d8090d1a0a64001de65054d25e0e",
+    "output_sha256": "2fb668490480cbb5d4d9bbf5a8d357435eff5fc6bb3532427ac2726cdaa88c77",
+    "public_contract": "canonical_u32_relation_rows",
+    "source_count": 4096
+  }
+}
