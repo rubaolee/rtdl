@@ -23,5 +23,22 @@
   informed confidence only and are forbidden from the formal sample pool.
 - Frozen `PREREGISTRATION.json` before launching any formal worker.
 
-Formal transaction status: `NOT_STARTED`.
+## Attempt 01: Terminal Verifier Failure
 
+- The first formal worker completed exact RTDL execution and wrote its sealed
+  result, but the controller rejected the result before launching worker two.
+- Root cause: the controller incorrectly looked for
+  `successful_launch_count` and `raygen_invocation_count` at receipt top level.
+  The full receipt contract stores both under `native_snapshot`.
+- This is a formal verifier defect, not a GPU, correctness, traversal, or
+  performance failure. The attempt remains terminal and cannot be pooled into
+  a successor transaction.
+- Complete terminal archive:
+  `ATTEMPT_01_TERMINAL_FAILURE.tar.gz`
+- Archive SHA-256:
+  `d59b368b337d20d928329d1fd919551c49f8e397ba941b45d71bb8e22a80f8ea`
+- Remediation requires a new source commit and a separately frozen successor
+  preregistration. The controller must invoke the strict full traversal
+  receipt verifier rather than weaken or omit receipt validation.
+
+Formal attempt 01 status: `TERMINAL__CONTROLLER_RECEIPT_LAYOUT_DEFECT`.

@@ -24,6 +24,7 @@ from experiments.goal5847_aot_startup.contracts import (
     digest,
     expected_schedule,
 )
+from rtdsl.physical_execution_provenance import validate_traversal_receipt
 
 ROOT = Path(__file__).resolve().parents[1]
 BLOCKS = 8
@@ -241,6 +242,27 @@ def _validate_samples(value: object, expected_count: int, label: str) -> list[in
     return [int(item) for item in samples]
 
 
+def _validate_rtdl_traversal_receipt(
+    receipt: object,
+    *,
+    provider_library_sha256: str,
+    output_sha256: str,
+) -> None:
+    if not isinstance(receipt, dict):
+        raise TypeError("Goal5847 RTDL traversal receipt is absent")
+    validate_traversal_receipt(
+        receipt,
+        provider_library_sha256=provider_library_sha256,
+        route_identity="v4_callback_ir:custom_aabb_bounded_relation_v1",
+        output_digest=output_sha256,
+        expected_program_bundles=(
+            "v4_custom_aabb_bounded_relation_composed",
+        ),
+        expected_successful_launch_count=2,
+        expected_raygen_invocation_count=8192,
+    )
+
+
 def _validate_worker(
     path: Path,
     *,
@@ -358,11 +380,11 @@ def _validate_worker(
                 or identity.get("family_executable_identity_sha256") \
                     != relation["family_executable_identity_sha256"]:
             raise RuntimeError("Goal5847 RTDL AOT evidence differs")
-        receipt = evidence.get("diagnostic_traversal_receipt")
-        if not isinstance(receipt, dict) \
-                or receipt.get("successful_launch_count") != 2 \
-                or receipt.get("raygen_invocation_count") != 8192:
-            raise RuntimeError("Goal5847 RTDL traversal receipt differs")
+        _validate_rtdl_traversal_receipt(
+            evidence.get("diagnostic_traversal_receipt"),
+            provider_library_sha256=str(candidate["native_sha256"]),
+            output_sha256=expected_output,
+        )
     else:
         source = identity.get("pyoptix_repository")
         if set(phases) != {
