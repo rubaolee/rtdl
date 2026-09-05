@@ -1,0 +1,80 @@
+{
+  "arm": "PINNED_PYOPTIX_COMPATIBLE_API",
+  "block": 0,
+  "claim_boundary": {
+    "engineering_evidence_only": true,
+    "external_review_complete": false,
+    "public_or_manuscript_claim_authorized": false
+  },
+  "expected_scalar": 65530,
+  "hardware": {
+    "compute_capability": "8.9",
+    "driver_version": "580.159.04",
+    "gpu_name": "NVIDIA RTX 2000 Ada Generation",
+    "gpu_uuid": "GPU-4b436f5f-bf8f-1d8c-0202-98e6e7b387e9",
+    "memory_mib": 16380
+  },
+  "measurements": {
+    "attribution": null,
+    "evidence": {
+      "latest_public_output": {
+        "device_status": 0,
+        "weighted_sum": 65530
+      }
+    },
+    "first_execution_ns": 269488,
+    "identity": {
+      "cupy_version": "14.0.1",
+      "device_source_sha256": "dcfb335a2a63ab609d21ce0361d0d530f148d157bd98b122989df0dab51f17a8",
+      "loaded_extension": {
+        "bytes": 2630616,
+        "path": "/workspace/goal5844-5e1518afe242-20260905T012050Z-run/venv/lib/python3.12/site-packages/optix/_optix.cpython-312-x86_64-linux-gnu.so",
+        "sha256": "7a7c555635062180e8f5d6246e41e8c7033e287218e963668eb34365f3e1b927"
+      },
+      "optix_api_version": "9.0.0",
+      "ptx_sha256": "7f79eb31ff6eedaf25c24e0910bf2989b576b13a883a4a2e5c840f72b6203b2d",
+      "pyoptix_build_receipt": {
+        "bytes": 8335,
+        "extension_sha256": "7a7c555635062180e8f5d6246e41e8c7033e287218e963668eb34365f3e1b927",
+        "path": "/workspace/goal5844-5e1518afe242-20260905T012050Z-run/pyoptix-build/build_receipt.json",
+        "receipt_sha256": "83c8861bdeea28376369cc616365956e5f966a9c7e4220f390afa1447e927e0f",
+        "sha256": "9a86ff723a3e882eaeb6d44cd3a12a0521dba1b859f08faaa327927404bf0f84",
+        "wheel_sha256": "e14c1c8694157344196a987db90e7208d385cbf0ed541500f7d7963c6f4620e3"
+      },
+      "pyoptix_distribution": "pyoptix",
+      "pyoptix_distribution_version": "9.1.0",
+      "pyoptix_repository_commit": "3144f224c0fd18733925faf3d8fb82c7376b8dcf",
+      "pyoptix_source": {
+        "clean": true,
+        "commit": "3144f224c0fd18733925faf3d8fb82c7376b8dcf",
+        "path": "/workspace/goal5844-5e1518afe242-20260905T012050Z-run/upstream/otk-pyoptix",
+        "status": "",
+        "tree": "0bf0ec24efb4a43f129aee25dd265aa8149374e3"
+      }
+    },
+    "setup_ns": {
+      "close": 33923701,
+      "device_compile": 443186815,
+      "module_pipeline_sbt": 288843346,
+      "prepare": 89621984
+    },
+    "steady_public": {
+      "maximum_ns": 134613,
+      "median_ns": 134613,
+      "minimum_ns": 134613,
+      "sample_count": 1,
+      "samples_ns": [
+        134613
+      ]
+    }
+  },
+  "python": "3.12.3",
+  "query_count": 16384,
+  "repetitions": 1,
+  "result_sha256": "157cebe82f4386a991dc581374651087d8d1b18f6d29d107cdabac754a467050",
+  "schema": "rtdl.goal5844.compact_execution.worker.v2",
+  "source_commit": "5e1518afe24230be677484f8e437e0a0da6bb30d",
+  "status": "PASS__INTERNAL_ENGINEERING_WORKER",
+  "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+  "warmups": 1
+}

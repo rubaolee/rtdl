@@ -1,0 +1,16 @@
+{
+  "claim_boundary": {
+    "external_review_complete": false,
+    "internal_engineering_evidence_only": true,
+    "public_or_manuscript_claim_authorized": false
+  },
+  "comparison_summary_sha256": "bb009e9f2a3cfb185e8f95812c82af3a9890e4ea1c3e2036d855fdb75f027d1a",
+  "cuda_root": "/usr/local/cuda-12.8",
+  "gpu_identity_row": "NVIDIA RTX 2000 Ada Generation, GPU-4b436f5f-bf8f-1d8c-0202-98e6e7b387e9, 580.159.04, 8.9, 16380",
+  "schema": "rtdl.goal5844.pod_transaction.v1",
+  "selected_optix_api": "9.0.0",
+  "selected_stack_id": "PYOPTIX_V1_3_OPTIX_9_0",
+  "source_commit": "ee0237963bcd838d652a059f15ecc0d3f56dfd09",
+  "status": "PASS__PREPARE_PREFLIGHT_COMPARE_AND_REVERIFY_COMPLETE",
+  "transaction_sha256": "a4e55aa649eee12b55d1e3688af38ade20986636f48482fa4f66e97e11d27701"
+}

@@ -1,0 +1,225 @@
+{
+  "aggregate": {
+    "engineering_target_met": true,
+    "engineering_target_ratio": 1.25,
+    "median_within_block_ratio": 1.0456709696813038,
+    "pyoptix_median_ns": 131744,
+    "pyoptix_sample_count": 1024,
+    "rtdl_median_ns": 132534,
+    "rtdl_sample_count": 1024
+  },
+  "all_samples_retained": true,
+  "claim_boundary": {
+    "external_review_complete": false,
+    "formal_baseline": false,
+    "goal5843_rows_reused_or_pooled": false,
+    "internal_engineering_evidence_only": true,
+    "public_or_manuscript_claim_authorized": false
+  },
+  "configuration": {
+    "blocks": 8,
+    "compute_capability": "8.9",
+    "layer_repetitions_per_worker": 64,
+    "layer_warmups_per_worker": 8,
+    "optix_sdk": "9.0.0",
+    "pyoptix_distribution": "pyoptix",
+    "repetitions_per_worker": 128,
+    "warmups_per_worker": 16
+  },
+  "hardware": {
+    "compute_capability": "8.9",
+    "driver_version": "580.159.04",
+    "gpu_name": "NVIDIA RTX 2000 Ada Generation",
+    "gpu_uuid": "GPU-4b436f5f-bf8f-1d8c-0202-98e6e7b387e9",
+    "memory_mib": 16380
+  },
+  "provenance": {
+    "device_source": {
+      "bytes": 5513,
+      "path": "provenance/matched_device.cu",
+      "sha256": "dcfb335a2a63ab609d21ce0361d0d530f148d157bd98b122989df0dab51f17a8"
+    },
+    "native_build_log": {
+      "bytes": 0,
+      "path": "provenance/rtdl_native/build.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "native_build_manifest": {
+      "bytes": 14915,
+      "path": "provenance/rtdl_native/build_manifest.json",
+      "sha256": "b77e2a4c97459336ca2556c32833c9ae0ef63448ab50c0a718552d7b1dcc0de1"
+    },
+    "native_dynamic_defined_symbols": {
+      "bytes": 92252,
+      "path": "provenance/rtdl_native/dynamic_defined_symbols.txt",
+      "sha256": "a1c81d49451e5e5c7941d5d5157039de102a8bd9a3cae82dc8488d0ebf7f2988"
+    },
+    "native_library": {
+      "bytes": 7186208,
+      "path": "provenance/rtdl_native/librtdl_optix.so",
+      "sha256": "29711445c708f7eac572a0cff1417f60f93ac480dd36424016968d0c333a997f"
+    },
+    "pyoptix_build_receipt": {
+      "bytes": 8335,
+      "path": "provenance/pyoptix_build/build_receipt.json",
+      "sha256": "a05317ef879630fe9de3aced08fe2ce35ee9416e684799e1f571e64c4c9abfd4"
+    },
+    "required_v8_symbol": "rtdl_optix_v4_execute_prepared_triangle_reduction_callback_v8",
+    "required_v8_symbol_present": true
+  },
+  "result_sha256": "6229aeba61fa681cbcda37e0ca253f725269fe08c2dd5e85f91502e5ad0a3b03",
+  "schedule": [
+    {
+      "arm": "RTDL_PUBLIC_V8_COMPACT_STAMP",
+      "block": 0,
+      "position": 0
+    },
+    {
+      "arm": "PINNED_PYOPTIX_COMPATIBLE_API",
+      "block": 0,
+      "position": 1
+    },
+    {
+      "arm": "PINNED_PYOPTIX_COMPATIBLE_API",
+      "block": 1,
+      "position": 0
+    },
+    {
+      "arm": "RTDL_PUBLIC_V8_COMPACT_STAMP",
+      "block": 1,
+      "position": 1
+    },
+    {
+      "arm": "RTDL_PUBLIC_V8_COMPACT_STAMP",
+      "block": 2,
+      "position": 0
+    },
+    {
+      "arm": "PINNED_PYOPTIX_COMPATIBLE_API",
+      "block": 2,
+      "position": 1
+    },
+    {
+      "arm": "PINNED_PYOPTIX_COMPATIBLE_API",
+      "block": 3,
+      "position": 0
+    },
+    {
+      "arm": "RTDL_PUBLIC_V8_COMPACT_STAMP",
+      "block": 3,
+      "position": 1
+    },
+    {
+      "arm": "RTDL_PUBLIC_V8_COMPACT_STAMP",
+      "block": 4,
+      "position": 0
+    },
+    {
+      "arm": "PINNED_PYOPTIX_COMPATIBLE_API",
+      "block": 4,
+      "position": 1
+    },
+    {
+      "arm": "PINNED_PYOPTIX_COMPATIBLE_API",
+      "block": 5,
+      "position": 0
+    },
+    {
+      "arm": "RTDL_PUBLIC_V8_COMPACT_STAMP",
+      "block": 5,
+      "position": 1
+    },
+    {
+      "arm": "RTDL_PUBLIC_V8_COMPACT_STAMP",
+      "block": 6,
+      "position": 0
+    },
+    {
+      "arm": "PINNED_PYOPTIX_COMPATIBLE_API",
+      "block": 6,
+      "position": 1
+    },
+    {
+      "arm": "PINNED_PYOPTIX_COMPATIBLE_API",
+      "block": 7,
+      "position": 0
+    },
+    {
+      "arm": "RTDL_PUBLIC_V8_COMPACT_STAMP",
+      "block": 7,
+      "position": 1
+    }
+  ],
+  "schema": "rtdl.goal5844.compact_execution.engineering_comparison.v2",
+  "source_commit": "ee0237963bcd838d652a059f15ecc0d3f56dfd09",
+  "status": "PASS__INTERNAL_ENGINEERING_TARGET_MET",
+  "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+  "within_block": [
+    {
+      "block": 0,
+      "pyoptix_median_ns": 125613,
+      "rtdl_median_ns": 131273,
+      "rtdl_over_pyoptix": 1.0450590305143577
+    },
+    {
+      "block": 1,
+      "pyoptix_median_ns": 126028,
+      "rtdl_median_ns": 131538,
+      "rtdl_over_pyoptix": 1.0437204430761418
+    },
+    {
+      "block": 2,
+      "pyoptix_median_ns": 125878,
+      "rtdl_median_ns": 131704,
+      "rtdl_over_pyoptix": 1.04628290884825
+    },
+    {
+      "block": 3,
+      "pyoptix_median_ns": 125503,
+      "rtdl_median_ns": 131484,
+      "rtdl_over_pyoptix": 1.0476562313251476
+    },
+    {
+      "block": 4,
+      "pyoptix_median_ns": 135288,
+      "rtdl_median_ns": 130969,
+      "rtdl_over_pyoptix": 0.9680755129797174
+    },
+    {
+      "block": 5,
+      "pyoptix_median_ns": 124508,
+      "rtdl_median_ns": 132153,
+      "rtdl_over_pyoptix": 1.0614016770006747
+    },
+    {
+      "block": 6,
+      "pyoptix_median_ns": 125053,
+      "rtdl_median_ns": 144354,
+      "rtdl_over_pyoptix": 1.1543425587550877
+    },
+    {
+      "block": 7,
+      "pyoptix_median_ns": 133488,
+      "rtdl_median_ns": 135348,
+      "rtdl_over_pyoptix": 1.0139338367493707
+    }
+  ],
+  "worker_result_sha256": [
+    "5af79e59f2ae2277b0069aede6ad209ee9c800efa351ff9bae509262d8dab875",
+    "c472175036db1d2f7225792237136254a01fbf3e902dcea7dc359adb975b1288",
+    "ba6f90eea540c12a0fcd7ae86bfd59e96e3996b3829d3e1463b5219befc6409d",
+    "b67a2a677c3b7cc48c9816692d49f78e8747c4f2a01b72cac8b1ae35e678c609",
+    "8dd6d587bf15c1470e2a66a102fd9f36fcd437b5315e945db2b2425892982e37",
+    "8f69bd19e3277640a2d1ef3cc719fb9a1de6d9b2a7dc47160d6cf7bef1c2cdc8",
+    "9b65f629457463ee2bf1d7a0a3655e56e4e8f4b87349346f2009653252d78a6b",
+    "511b155bd0d567b681379863a7d788247e03b5c3090d1af8ee764a09bdf18654",
+    "3200da4b4669b0e076c2588f2b1f06f8d635c6c9c01041369720d555692f84b7",
+    "4527eaa56d6c8489eb66a6035ae46316b323a2df7d72921e32679806a6cdaead",
+    "00e1080a23ea77f3ccbd6752380fb777c4deb0556c9984a92e59963ef3086898",
+    "08bf6eea9b2ada504dc66784b773fd865a8d2ff14c972b325f29799088ac4cc2",
+    "36bac4bd873c36b448250494d447b814d437e8a089c019dd1fc2a837ad82d4f9",
+    "624dabdcd313199bf95bdf335ed1152da3d7778a6306cf0622d4f22ee019b0ae",
+    "7b8735a0530f57352c0bdfff97e8a48c6166b8cc74b7c7daeea4e7bd5b2c1604",
+    "b25007d9f9e25fda4f823bc6f027465675aa5e6791323c4bd9106d2deec404af"
+  ]
+}

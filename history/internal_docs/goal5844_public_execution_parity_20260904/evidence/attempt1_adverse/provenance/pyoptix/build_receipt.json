@@ -1,0 +1,203 @@
+{
+  "build": {
+    "build_environment": {
+      "CMAKE_ARGS": "-DFETCHCONTENT_SOURCE_DIR_OPTIX_HEADERS=/workspace/goal5844-5e1518afe242-20260905T012050Z-run/upstream/optix-dev",
+      "CUDACXX": "/usr/local/cuda-12.8/bin/nvcc",
+      "CUDA_VISIBLE_DEVICES": "0",
+      "CXX": "/usr/bin/x86_64-linux-gnu-g++-13",
+      "PYOPTIX_CMAKE_ARGS": "-DFETCHCONTENT_SOURCE_DIR_OPTIX_HEADERS=/workspace/goal5844-5e1518afe242-20260905T012050Z-run/upstream/optix-dev"
+    },
+    "build_stderr": {
+      "bytes": 0,
+      "path": "logs/build_stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "build_stdout": {
+      "bytes": 819,
+      "path": "logs/build_stdout.txt",
+      "sha256": "0e967e5e27b885487b5c1f797a06e9caf3fbd9304e1be283eaefae7aad21dc02"
+    },
+    "cmake_args": "-DFETCHCONTENT_SOURCE_DIR_OPTIX_HEADERS=/workspace/goal5844-5e1518afe242-20260905T012050Z-run/upstream/optix-dev",
+    "dependency_install_report": {
+      "bytes": 124812,
+      "path": "logs/dependency_install_report.json",
+      "sha256": "c2993c4715f3c6253bbf8c201fe2dc0ae3c47d6d56710e26a9df4444de71e30c"
+    },
+    "install_command": [
+      "/workspace/goal5844-5e1518afe242-20260905T012050Z-run/venv/bin/python",
+      "-m",
+      "pip",
+      "install",
+      "--force-reinstall",
+      "--no-deps",
+      "/workspace/goal5844-5e1518afe242-20260905T012050Z-run/pyoptix-build/wheelhouse/pyoptix-9.1.0-cp312-cp312-linux_x86_64.whl"
+    ],
+    "install_stderr": {
+      "bytes": 0,
+      "path": "logs/install_stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "install_stdout": {
+      "bytes": 203,
+      "path": "logs/install_stdout.txt",
+      "sha256": "c17a42312f66d834f9ed11dddec6122002f7c6226c33590159423a8ccf21ffb2"
+    },
+    "installed_dependencies": {
+      "cmake": "3.31.6",
+      "cuda-bindings": "12.9.7",
+      "cuda-pathfinder": "1.6.1",
+      "cuda-python": "12.9.7",
+      "cupy-cuda12x": "14.0.1",
+      "llvmlite": "0.47.0",
+      "ninja": "1.13.0",
+      "numba": "0.65.1",
+      "numpy": "2.4.4",
+      "nvidia-ml-py": "13.580.82",
+      "packaging": "26.3",
+      "pathspec": "1.1.1",
+      "pillow": "10.2.0",
+      "pip": "26.2.1",
+      "pybind11": "3.1.0",
+      "scikit-build-core": "1.0.3",
+      "wheel": "0.45.1"
+    },
+    "pip_freeze": {
+      "bytes": 507,
+      "path": "logs/pip_freeze.txt",
+      "sha256": "1219210ac435fd35a0538774dc599962893a73cf11e0cfc26f386a290edf93b0"
+    },
+    "platform": "Linux-6.8.0-124-generic-x86_64-with-glibc2.39",
+    "python_executable": "/workspace/goal5844-5e1518afe242-20260905T012050Z-run/venv/bin/python",
+    "python_sha256": "1d3cf64f97cadc79fdc6fe2496a21b7b456cb94211978cfef5a65f616af74fd5",
+    "python_version": "3.12.3",
+    "tools": {
+      "cmake": {
+        "bytes": 207,
+        "path": "/workspace/goal5844-5e1518afe242-20260905T012050Z-run/venv/bin/cmake",
+        "sha256": "88a36112f1b53ca89171ed39a9938d109a8b897392faa9572f272340f9617296",
+        "version": "cmake version 3.31.6\n\nCMake suite maintained and supported by Kitware (kitware.com/cmake)."
+      },
+      "cxx": {
+        "bytes": 1027128,
+        "path": "/usr/bin/x86_64-linux-gnu-g++-13",
+        "sha256": "52f1ddb33fe78b9441e0f42e9cd22c571f1101938e046c8a26582494e041cc73",
+        "version": "x86_64-linux-gnu-g++-13 (Ubuntu 13.3.0-6ubuntu2~24.04) 13.3.0\nCopyright (C) 2023 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE."
+      },
+      "ninja": {
+        "bytes": 372384,
+        "path": "/workspace/goal5844-5e1518afe242-20260905T012050Z-run/venv/bin/ninja",
+        "sha256": "696f9628a79d9ce50314cf9556d7cd1a1d1ec52b8fd52828f6f9db1719565b67",
+        "version": "1.13.0.git.kitware.jobserver-pipe-1"
+      },
+      "nvcc": {
+        "bytes": 24828456,
+        "path": "/usr/local/cuda-12.8/bin/nvcc",
+        "sha256": "59e4e55f9a38b78c590df1e28a69dad91052958f18a03868ca4a547c043fbba7",
+        "version": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2025 NVIDIA Corporation\nBuilt on Fri_Feb_21_20:23:50_PST_2025\nCuda compilation tools, release 12.8, V12.8.93\nBuild cuda_12.8.r12.8/compiler.35583870_0"
+      }
+    },
+    "wheel_command": [
+      "/workspace/goal5844-5e1518afe242-20260905T012050Z-run/venv/bin/python",
+      "-m",
+      "pip",
+      "wheel",
+      "--no-build-isolation",
+      "--no-deps",
+      "--wheel-dir",
+      "/workspace/goal5844-5e1518afe242-20260905T012050Z-run/pyoptix-build/wheelhouse",
+      "/workspace/goal5844-5e1518afe242-20260905T012050Z-run/pyoptix-build/build_source"
+    ]
+  },
+  "builder": {
+    "bytes": 18471,
+    "path": "inputs/goal5844_build_install_pyoptix.py",
+    "sha256": "ac66acae72e7c0905cc510844910244386c7121c491171b5916aaadb7b96ad34"
+  },
+  "claim_boundary": {
+    "clean_source_build_bound": true,
+    "loaded_extension_bound_to_wheel_member": true,
+    "performance_measurement_in_receipt": false,
+    "public_or_manuscript_claim_authorized": false
+  },
+  "installed": {
+    "distribution_name": "pyoptix",
+    "distribution_version": "9.1.0",
+    "installed_distributions": {
+      "cmake": "3.31.6",
+      "cuda-bindings": "12.9.7",
+      "cuda-pathfinder": "1.6.1",
+      "cuda-python": "12.9.7",
+      "cupy-cuda12x": "14.0.1",
+      "llvmlite": "0.47.0",
+      "ninja": "1.13.0",
+      "numba": "0.65.1",
+      "numpy": "2.4.4",
+      "nvidia-ml-py": "13.580.82",
+      "packaging": "26.3",
+      "pathspec": "1.1.1",
+      "pillow": "10.2.0",
+      "pip": "26.2.1",
+      "pybind11": "3.1.0",
+      "pyoptix": "9.1.0",
+      "scikit-build-core": "1.0.3",
+      "wheel": "0.45.1"
+    },
+    "loaded_extension": {
+      "bytes": 2630616,
+      "path": "installed/_optix.cpython-312-x86_64-linux-gnu.so",
+      "sha256": "7a7c555635062180e8f5d6246e41e8c7033e287218e963668eb34365f3e1b927"
+    },
+    "loaded_extension_source_path": "/workspace/goal5844-5e1518afe242-20260905T012050Z-run/venv/lib/python3.12/site-packages/optix/_optix.cpython-312-x86_64-linux-gnu.so",
+    "optix_api_version": "9.0.0",
+    "package_initializer": {
+      "bytes": 895,
+      "path": "installed/optix___init__.py",
+      "sha256": "5b0579af1004eba5dd41b9598f40ced6bb418a59af1de1179d996524c5f458b1"
+    }
+  },
+  "optix_headers": {
+    "api_macro": 90000,
+    "api_version": "9.0.0",
+    "archive": {
+      "bytes": 686080,
+      "path": "inputs/optix-dev.tar",
+      "sha256": "39e49900c76acd5e2eb38dad4313efcea484472380455ed16b3cbe7bfaf08b86"
+    },
+    "checkout_path": "/workspace/goal5844-5e1518afe242-20260905T012050Z-run/upstream/optix-dev",
+    "clean": true,
+    "commit": "fff65c2a7c592f1ea5f1661ad7d2381cf965f9bd",
+    "key_header_sha256": {
+      "optix.h": "85a13f5966e98e23b00cb6be0fa25ad6580bbbea94bc9fce9d0bf00d16827b8f",
+      "optix_device.h": "3a5c1f784b64161479546462f35f953ab0f9e14058356c45ab1422313e79676f"
+    },
+    "repository_url": "https://github.com/NVIDIA/optix-dev.git",
+    "tree": "c30f1b41cb64f6cba6290d7ad82686cc84922267"
+  },
+  "pyoptix_source": {
+    "archive": {
+      "bytes": 9338880,
+      "path": "inputs/otk-pyoptix.tar",
+      "sha256": "a999f8372d8d46d40735e7535e2fc3ede0cb06bf9244635f8cc91b824830e634"
+    },
+    "checkout_path": "/workspace/goal5844-5e1518afe242-20260905T012050Z-run/upstream/otk-pyoptix",
+    "clean": true,
+    "commit": "3144f224c0fd18733925faf3d8fb82c7376b8dcf",
+    "repository_url": "https://github.com/NVIDIA/otk-pyoptix.git",
+    "tree": "0bf0ec24efb4a43f129aee25dd265aa8149374e3"
+  },
+  "receipt_sha256": "83c8861bdeea28376369cc616365956e5f966a9c7e4220f390afa1447e927e0f",
+  "registered_performance_timing_count": 0,
+  "schema": "rtdl.goal5844.pyoptix_clean_build_install.v1",
+  "status": "PASS__CLEAN_SOURCE_WHEEL_AND_LOADED_EXTENSION_BOUND",
+  "transaction_kind": "build_install_provenance_not_performance",
+  "wheel": {
+    "extension_bytes": 2630616,
+    "extension_member": "optix/_optix.cpython-312-x86_64-linux-gnu.so",
+    "extension_sha256": "7a7c555635062180e8f5d6246e41e8c7033e287218e963668eb34365f3e1b927",
+    "file": {
+      "bytes": 620137,
+      "path": "wheelhouse/pyoptix-9.1.0-cp312-cp312-linux_x86_64.whl",
+      "sha256": "e14c1c8694157344196a987db90e7208d385cbf0ed541500f7d7963c6f4620e3"
+    }
+  }
+}

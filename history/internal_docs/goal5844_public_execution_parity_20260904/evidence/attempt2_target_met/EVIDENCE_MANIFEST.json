@@ -1,0 +1,349 @@
+{
+  "bytes_excluding_manifest": 21046708,
+  "claim_boundary": {
+    "internal_engineering_evidence_only": true,
+    "public_or_manuscript_claim_authorized": false
+  },
+  "file_count_excluding_manifest": 67,
+  "files": [
+    {
+      "bytes": 6641,
+      "path": "SUMMARY.json",
+      "sha256": "bb009e9f2a3cfb185e8f95812c82af3a9890e4ea1c3e2036d855fdb75f027d1a"
+    },
+    {
+      "bytes": 5513,
+      "path": "provenance/matched_device.cu",
+      "sha256": "dcfb335a2a63ab609d21ce0361d0d530f148d157bd98b122989df0dab51f17a8"
+    },
+    {
+      "bytes": 8335,
+      "path": "provenance/pyoptix_build/build_receipt.json",
+      "sha256": "a05317ef879630fe9de3aced08fe2ce35ee9416e684799e1f571e64c4c9abfd4"
+    },
+    {
+      "bytes": 18471,
+      "path": "provenance/pyoptix_build/inputs/goal5844_build_install_pyoptix.py",
+      "sha256": "ac66acae72e7c0905cc510844910244386c7121c491171b5916aaadb7b96ad34"
+    },
+    {
+      "bytes": 686080,
+      "path": "provenance/pyoptix_build/inputs/optix-dev.tar",
+      "sha256": "39e49900c76acd5e2eb38dad4313efcea484472380455ed16b3cbe7bfaf08b86"
+    },
+    {
+      "bytes": 9338880,
+      "path": "provenance/pyoptix_build/inputs/otk-pyoptix.tar",
+      "sha256": "a999f8372d8d46d40735e7535e2fc3ede0cb06bf9244635f8cc91b824830e634"
+    },
+    {
+      "bytes": 2630616,
+      "path": "provenance/pyoptix_build/installed/_optix.cpython-312-x86_64-linux-gnu.so",
+      "sha256": "7a7c555635062180e8f5d6246e41e8c7033e287218e963668eb34365f3e1b927"
+    },
+    {
+      "bytes": 895,
+      "path": "provenance/pyoptix_build/installed/optix___init__.py",
+      "sha256": "5b0579af1004eba5dd41b9598f40ced6bb418a59af1de1179d996524c5f458b1"
+    },
+    {
+      "bytes": 0,
+      "path": "provenance/pyoptix_build/logs/build_stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 819,
+      "path": "provenance/pyoptix_build/logs/build_stdout.txt",
+      "sha256": "5778f6c51e1a2e1e6bb54f2b153e80f030b133146a0f4f382c8da5fd732862b4"
+    },
+    {
+      "bytes": 124812,
+      "path": "provenance/pyoptix_build/logs/dependency_install_report.json",
+      "sha256": "c2993c4715f3c6253bbf8c201fe2dc0ae3c47d6d56710e26a9df4444de71e30c"
+    },
+    {
+      "bytes": 0,
+      "path": "provenance/pyoptix_build/logs/install_stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 203,
+      "path": "provenance/pyoptix_build/logs/install_stdout.txt",
+      "sha256": "9dca6a2e4ab0b7fd8a1c3f04839e99dd612fc0dcd2e38caf9ea2e4920ca0bc7a"
+    },
+    {
+      "bytes": 507,
+      "path": "provenance/pyoptix_build/logs/pip_freeze.txt",
+      "sha256": "b3908d6caab2909338e43a9e51c73e8299db8c5a70c4f155d671a8563770d440"
+    },
+    {
+      "bytes": 620137,
+      "path": "provenance/pyoptix_build/wheelhouse/pyoptix-9.1.0-cp312-cp312-linux_x86_64.whl",
+      "sha256": "be5a2424c16d991d1cc35e9b9dd67be84f20f7772472a498afe567a58db58210"
+    },
+    {
+      "bytes": 0,
+      "path": "provenance/rtdl_native/build.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 14915,
+      "path": "provenance/rtdl_native/build_manifest.json",
+      "sha256": "b77e2a4c97459336ca2556c32833c9ae0ef63448ab50c0a718552d7b1dcc0de1"
+    },
+    {
+      "bytes": 92252,
+      "path": "provenance/rtdl_native/dynamic_defined_symbols.txt",
+      "sha256": "a1c81d49451e5e5c7941d5d5157039de102a8bd9a3cae82dc8488d0ebf7f2988"
+    },
+    {
+      "bytes": 7186208,
+      "path": "provenance/rtdl_native/librtdl_optix.so",
+      "sha256": "29711445c708f7eac572a0cff1417f60f93ac480dd36424016968d0c333a997f"
+    },
+    {
+      "bytes": 18494,
+      "path": "workers/block_00_0_RTDL_PUBLIC_V8_COMPACT_STAMP.json",
+      "sha256": "08d9df79d8a0220922b3b2800cbe28f27ddb3b9ff48def7e4a0fb746dac97365"
+    },
+    {
+      "bytes": 0,
+      "path": "workers/block_00_0_RTDL_PUBLIC_V8_COMPACT_STAMP.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 11786,
+      "path": "workers/block_00_0_RTDL_PUBLIC_V8_COMPACT_STAMP.stdout.txt",
+      "sha256": "060f084adc455054d6bb09cd7c9320e004901112639e272acdb03e42ef3d8bfa"
+    },
+    {
+      "bytes": 5032,
+      "path": "workers/block_00_1_PINNED_PYOPTIX_COMPATIBLE_API.json",
+      "sha256": "f0ab9c583199a287cbe3864a345518d6acb1454994c6c6381a83c92bf505a09a"
+    },
+    {
+      "bytes": 0,
+      "path": "workers/block_00_1_PINNED_PYOPTIX_COMPATIBLE_API.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 3596,
+      "path": "workers/block_00_1_PINNED_PYOPTIX_COMPATIBLE_API.stdout.txt",
+      "sha256": "55078c6483c706838cff987715f81524b7d8e1484b20483b693442cb73c3118e"
+    },
+    {
+      "bytes": 5032,
+      "path": "workers/block_01_0_PINNED_PYOPTIX_COMPATIBLE_API.json",
+      "sha256": "855d440dd5b858b54711354c7bc0a5cedc5e13b6024d69731c8f56b755590681"
+    },
+    {
+      "bytes": 0,
+      "path": "workers/block_01_0_PINNED_PYOPTIX_COMPATIBLE_API.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 3596,
+      "path": "workers/block_01_0_PINNED_PYOPTIX_COMPATIBLE_API.stdout.txt",
+      "sha256": "d629793ce0c04ce1ca4bc1b80779aafe28648bffcdc90c3d0e80691279d2ddac"
+    },
+    {
+      "bytes": 18495,
+      "path": "workers/block_01_1_RTDL_PUBLIC_V8_COMPACT_STAMP.json",
+      "sha256": "0da96c7e5529e7e2a32d9336561ca6cfa1f1861b49c243320cd5ecdcc5c456bd"
+    },
+    {
+      "bytes": 0,
+      "path": "workers/block_01_1_RTDL_PUBLIC_V8_COMPACT_STAMP.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 11787,
+      "path": "workers/block_01_1_RTDL_PUBLIC_V8_COMPACT_STAMP.stdout.txt",
+      "sha256": "38e2fa6bb27fde927a23769437c5c89d7d9c35654bdc01f8c7c5472f955403a0"
+    },
+    {
+      "bytes": 18500,
+      "path": "workers/block_02_0_RTDL_PUBLIC_V8_COMPACT_STAMP.json",
+      "sha256": "09822b2fb2b2b924340213ceabd4f221745d21fc950d64addb3324d90d427c97"
+    },
+    {
+      "bytes": 0,
+      "path": "workers/block_02_0_RTDL_PUBLIC_V8_COMPACT_STAMP.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 11792,
+      "path": "workers/block_02_0_RTDL_PUBLIC_V8_COMPACT_STAMP.stdout.txt",
+      "sha256": "8c5c7342ea9f0ca64f06c34c51c3986eccd36eb4d48e9557da146b876c4fcfb9"
+    },
+    {
+      "bytes": 5032,
+      "path": "workers/block_02_1_PINNED_PYOPTIX_COMPATIBLE_API.json",
+      "sha256": "78e4ad914203f2e8b003d542ef31ad0f4432bd30aac22e9f943d76839441d56a"
+    },
+    {
+      "bytes": 0,
+      "path": "workers/block_02_1_PINNED_PYOPTIX_COMPATIBLE_API.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 3596,
+      "path": "workers/block_02_1_PINNED_PYOPTIX_COMPATIBLE_API.stdout.txt",
+      "sha256": "8febd660d2039d0234282ffd3fe2ee14ca3a76db0d7511c9f158ad32f5090c52"
+    },
+    {
+      "bytes": 5032,
+      "path": "workers/block_03_0_PINNED_PYOPTIX_COMPATIBLE_API.json",
+      "sha256": "03064f84e91d11083fc9e2b47cf913a34a4d6619afb507b3346831867d746e60"
+    },
+    {
+      "bytes": 0,
+      "path": "workers/block_03_0_PINNED_PYOPTIX_COMPATIBLE_API.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 3596,
+      "path": "workers/block_03_0_PINNED_PYOPTIX_COMPATIBLE_API.stdout.txt",
+      "sha256": "03610eb9e1d2b402ca11ba356e8202f928d41215ff7ecf38e265ac3a4af508da"
+    },
+    {
+      "bytes": 18497,
+      "path": "workers/block_03_1_RTDL_PUBLIC_V8_COMPACT_STAMP.json",
+      "sha256": "7bedf01d6c6d9cc431bc956f03adfc649b41a07e25ea1be52c44ab441e8eaf32"
+    },
+    {
+      "bytes": 0,
+      "path": "workers/block_03_1_RTDL_PUBLIC_V8_COMPACT_STAMP.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 11789,
+      "path": "workers/block_03_1_RTDL_PUBLIC_V8_COMPACT_STAMP.stdout.txt",
+      "sha256": "1373c9b019be42fd6d34a93e9a7689cf385a3f49fa9ed7d202ba8e3e1911f952"
+    },
+    {
+      "bytes": 18497,
+      "path": "workers/block_04_0_RTDL_PUBLIC_V8_COMPACT_STAMP.json",
+      "sha256": "a6b41ba709d67abc191ff33aba146a2c876bc6d6a926a6ac4301b44fe5ac0f7e"
+    },
+    {
+      "bytes": 0,
+      "path": "workers/block_04_0_RTDL_PUBLIC_V8_COMPACT_STAMP.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 11789,
+      "path": "workers/block_04_0_RTDL_PUBLIC_V8_COMPACT_STAMP.stdout.txt",
+      "sha256": "d3ffc880b27dcf52586ae8fb17566fda694b2536b6757619c1048396670f2cab"
+    },
+    {
+      "bytes": 5032,
+      "path": "workers/block_04_1_PINNED_PYOPTIX_COMPATIBLE_API.json",
+      "sha256": "0c9d49a72d55cbb571dbc06557019542c9c059f0331b4fc5dbd15d407f459d72"
+    },
+    {
+      "bytes": 0,
+      "path": "workers/block_04_1_PINNED_PYOPTIX_COMPATIBLE_API.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 3596,
+      "path": "workers/block_04_1_PINNED_PYOPTIX_COMPATIBLE_API.stdout.txt",
+      "sha256": "40c155a7fe6652001c2951bb8fc48391eac69bbebe211b38618e945b1f08e489"
+    },
+    {
+      "bytes": 5032,
+      "path": "workers/block_05_0_PINNED_PYOPTIX_COMPATIBLE_API.json",
+      "sha256": "c701ccb235452d277aa22cbd357f557859924c7cf52f05d5c10f3263bd373d62"
+    },
+    {
+      "bytes": 0,
+      "path": "workers/block_05_0_PINNED_PYOPTIX_COMPATIBLE_API.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 3596,
+      "path": "workers/block_05_0_PINNED_PYOPTIX_COMPATIBLE_API.stdout.txt",
+      "sha256": "55bf33fe608fd33ebf3926224709f56d0d320c4c1d1401e4c90ef361bde5e031"
+    },
+    {
+      "bytes": 18505,
+      "path": "workers/block_05_1_RTDL_PUBLIC_V8_COMPACT_STAMP.json",
+      "sha256": "8270f65eadef443af8f068bcbf950db38dd1cab29e7b47cef33e2213958ac390"
+    },
+    {
+      "bytes": 0,
+      "path": "workers/block_05_1_RTDL_PUBLIC_V8_COMPACT_STAMP.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 11797,
+      "path": "workers/block_05_1_RTDL_PUBLIC_V8_COMPACT_STAMP.stdout.txt",
+      "sha256": "a16053ee894d272ee448633a12dc4a4fb1d25b1d44a01367301048383b3a7ef0"
+    },
+    {
+      "bytes": 18548,
+      "path": "workers/block_06_0_RTDL_PUBLIC_V8_COMPACT_STAMP.json",
+      "sha256": "7ea39e2d2e75d56153317ee4df8eed231e85c3fcba7d1932cf377a83aa8d8edf"
+    },
+    {
+      "bytes": 0,
+      "path": "workers/block_06_0_RTDL_PUBLIC_V8_COMPACT_STAMP.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 11840,
+      "path": "workers/block_06_0_RTDL_PUBLIC_V8_COMPACT_STAMP.stdout.txt",
+      "sha256": "863cdb6207441dcb7f715e148323596226f6d3291bd410f6a6267213b1838d51"
+    },
+    {
+      "bytes": 5032,
+      "path": "workers/block_06_1_PINNED_PYOPTIX_COMPATIBLE_API.json",
+      "sha256": "3438938d4299675a21ab3bebc6ad7ea86fd84a20344c3d3e26ed41a91c753969"
+    },
+    {
+      "bytes": 0,
+      "path": "workers/block_06_1_PINNED_PYOPTIX_COMPATIBLE_API.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 3596,
+      "path": "workers/block_06_1_PINNED_PYOPTIX_COMPATIBLE_API.stdout.txt",
+      "sha256": "cf958ad3c2717c3c2367a25f9c3f92c6bcb95c5858e4ac538689e9bb55ed8185"
+    },
+    {
+      "bytes": 5032,
+      "path": "workers/block_07_0_PINNED_PYOPTIX_COMPATIBLE_API.json",
+      "sha256": "8f1031f81f1d5a8f1e4c3122eb1adf83bc5d596f01880209a49ddf7749cef962"
+    },
+    {
+      "bytes": 0,
+      "path": "workers/block_07_0_PINNED_PYOPTIX_COMPATIBLE_API.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 3596,
+      "path": "workers/block_07_0_PINNED_PYOPTIX_COMPATIBLE_API.stdout.txt",
+      "sha256": "15d079e9e4f69cf33b206fb5e441d19088664e11056b9e1d4526dd85d8545008"
+    },
+    {
+      "bytes": 18496,
+      "path": "workers/block_07_1_RTDL_PUBLIC_V8_COMPACT_STAMP.json",
+      "sha256": "4f9eeacda4a4ba5e4eff8fc419187195aebff145c0650ca7ff3915ea322c19be"
+    },
+    {
+      "bytes": 0,
+      "path": "workers/block_07_1_RTDL_PUBLIC_V8_COMPACT_STAMP.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 11788,
+      "path": "workers/block_07_1_RTDL_PUBLIC_V8_COMPACT_STAMP.stdout.txt",
+      "sha256": "eeb5b75b92df9855b59f682c12e2588dbd306865122973f55af51b6a1631928d"
+    }
+  ],
+  "manifest_is_non_self_referential": true,
+  "manifest_sha256": "2ad9bd95b1a54a84f3c87aaa0dfed86dd3f47c65485db7c22b3d6946772106ca",
+  "schema": "rtdl.goal5844.engineering_evidence_manifest.v1",
+  "status": "PASS__ALL_ENGINEERING_EVIDENCE_PAYLOADS_HASHED"
+}

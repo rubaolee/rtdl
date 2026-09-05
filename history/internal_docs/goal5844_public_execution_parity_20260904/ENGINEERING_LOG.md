@@ -67,17 +67,39 @@ diagnostic checkout and are not registered performance evidence.
 | Plus bundle/SHA/scalar-digest memoization | 131.824 us | 1.019x |
 | Same code without frozen-core identity memoization | 170.080 us | 1.315x |
 
-The diagnostic indicates that the target is plausible, but only a fresh clean
-transaction can accept it.
+The diagnostic indicated that the target was plausible, but only a fresh clean
+transaction could accept it.
+
+## Clean successor transaction
+
+- Source commit: `ee0237963bcd838d652a059f15ecc0d3f56dfd09`
+- Same GPU UUID as attempt 1:
+  `GPU-4b436f5f-bf8f-1d8c-0202-98e6e7b387e9`
+- RTDL public median: 132,534 ns
+- PyOptiX public median: 131,744 ns
+- Median within-block RTDL/PyOptiX: 1.0456709696813038x
+- Minimum/maximum block ratio: 0.9680755129797174x / 1.1543425587550877x
+- RTDL-first stratified median: 1.0456709696813038x
+- PyOptiX-first stratified median: 1.0456883372006447x
+- Direct-native before/after medians: 82,757 ns / 82,592 ns
+- Outcome: `PASS__INTERNAL_ENGINEERING_TARGET_MET`
+- Summary SHA-256:
+  `6229aeba61fa681cbcda37e0ca253f725269fe08c2dd5e85f91502e5ad0a3b03`
+- Downloaded archive SHA-256:
+  `4336526eb6084d18353812187b2bd6c57515a642d804313abbaa79b52b1b678d`
+
+The successor reduced the RTDL public median by 2.0633x while the PyOptiX
+median changed by only 1.0184x and direct native changed by 0.9980x. This
+supports a protocol-overhead repair, not a changed RT workload explanation.
 
 ## Gates
 
 - Run all focused functional, mutation, provenance, and harness tests.
-- Commit and push the successor source.
-- Use a new create-only pod checkout and output directory.
-- Rebuild from that exact clean commit.
-- Run both worker-zero arms, then all eight balanced blocks.
-- Download and independently verify the complete result on the Mac.
-- Retain every outcome. Do not claim success from the dirty diagnostics.
+- Commit and push the successor source: complete.
+- Use a new create-only pod checkout and output directory: complete.
+- Rebuild from that exact clean commit: complete.
+- Run both worker-zero arms, then all eight balanced blocks: complete.
+- Download and independently verify the complete result on the Mac: complete.
+- Retain every outcome: complete; attempts are not pooled.
 - External review remains unavailable and pending. No public or manuscript
   performance wording is authorized.

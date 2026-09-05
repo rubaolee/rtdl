@@ -1,0 +1,282 @@
+{
+  "arm": "RTDL_PUBLIC_V8_COMPACT_STAMP",
+  "block": 0,
+  "claim_boundary": {
+    "engineering_evidence_only": true,
+    "external_review_complete": false,
+    "public_or_manuscript_claim_authorized": false
+  },
+  "expected_scalar": 65530,
+  "hardware": {
+    "compute_capability": "8.9",
+    "driver_version": "580.159.04",
+    "gpu_name": "NVIDIA RTX 2000 Ada Generation",
+    "gpu_uuid": "GPU-4b436f5f-bf8f-1d8c-0202-98e6e7b387e9",
+    "memory_mib": 16380
+  },
+  "measurements": {
+    "attribution": {
+      "direct_native_abi_v8_integrated_audit": {
+        "maximum_ns": 69872,
+        "median_ns": 69872,
+        "minimum_ns": 69872,
+        "sample_count": 1,
+        "samples_ns": [
+          69872
+        ]
+      },
+      "explicit_full_forensic_expansion": {
+        "maximum_ns": 2966853,
+        "median_ns": 2966853,
+        "minimum_ns": 2966853,
+        "sample_count": 1,
+        "samples_ns": [
+          2966853
+        ]
+      },
+      "provider_owner_v8_compact": {
+        "maximum_ns": 163365,
+        "median_ns": 163365,
+        "minimum_ns": 163365,
+        "sample_count": 1,
+        "samples_ns": [
+          163365
+        ]
+      }
+    },
+    "evidence": {
+      "execution_boundary": {
+        "event_rows_materialized_on_host": false,
+        "execution_path": "device_resident_checked_u64_scalar_v8_integrated_audit",
+        "fast_operation_receipt": {
+          "callback_status_kernel_launch_count": 0,
+          "checked_product_kernel_launch_count": 0,
+          "compact_control_finalizer_kernel_launch_count": 0,
+          "control_d2h_bytes": 12,
+          "dynamic_accel_build_count": 0,
+          "dynamic_blocking_upload_call_count": 0,
+          "dynamic_device_upload_bytes": 0,
+          "dynamic_device_upload_call_count": 0,
+          "dynamic_explicit_sync_count": 0,
+          "dynamic_input_generation": 1,
+          "execution_parameter_h2d_bytes": 224,
+          "execution_parameter_h2d_copy_call_count": 1,
+          "host_blocking_boundary_count": 2,
+          "optix_launch_count": 1,
+          "output_d2h_after_status_failure": 0,
+          "output_d2h_bytes": 8,
+          "output_d2h_copy_call_count": 1,
+          "prepared_input_reused": true,
+          "role_counters_materialized": false,
+          "schema_version": 2,
+          "semantic_compaction_key_capacity": 0,
+          "semantic_compaction_launch_count": 0,
+          "semantic_compaction_scratch_bytes": 0,
+          "status_before_output": true,
+          "status_d2h_copy_call_count": 1,
+          "stream_ordered_memset_call_count": 2,
+          "total_auxiliary_cuda_kernel_launch_count": 0
+        },
+        "per_ray_u64_materialized_on_host": false,
+        "prepared_query_input_reused": true,
+        "public_output_scalar_bytes": 8,
+        "schema": "rtdl.v4.triangle_reduction_execution_boundary.v1"
+      },
+      "latest_full_forensic_receipt": {
+        "claim_rules": {
+          "nonzero_traversable_binding_required": true,
+          "output_digest_bound": true,
+          "program_bundle_binding_required": true,
+          "provider_name_alone_proves_traversal": false,
+          "selected_template_alone_proves_traversal": false,
+          "successful_optix_launch_required": true
+        },
+        "expected_program_bundle_ids": [
+          1224572139032198259
+        ],
+        "expected_program_bundles": [
+          "v4_builtin_triangle_checked_reduction_composed"
+        ],
+        "expected_program_observed_at_receipt_edge": true,
+        "native_snapshot": {
+          "attempted_launch_count": 1,
+          "callsite_mix": 9533322913432651287,
+          "complete_context_launch_count": 1,
+          "context_bind_count": 1,
+          "failed_launch_count": 0,
+          "first_program_bundle_id": 1224572139032198259,
+          "first_traversable": 131751876632076,
+          "incomplete_callsite_lines": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "incomplete_callsite_record_count": 0,
+          "incomplete_context_launch_count": 0,
+          "last_program_bundle_id": 1224572139032198259,
+          "last_traversable": 131751876632076,
+          "nonce_hi": 6790417444612365943,
+          "nonce_lo": 5,
+          "params_mix": 10903527984419039779,
+          "pending_context_at_finish": 0,
+          "pipeline_mix": 3836140357183906073,
+          "program_bundle_mix": 11219378070064071360,
+          "raygen_invocation_count": 16384,
+          "sbt_mix": 1621909188981617447,
+          "session_error": 0,
+          "stream_mix": 17678359452271609789,
+          "successful_launch_count": 1,
+          "traversable_mix": 38957432723743061
+        },
+        "nonce": {
+          "hi": 6790417444612365943,
+          "lo": 5
+        },
+        "output_digest": "2df49102543561c678ce39e05cc6c79ce92c0ea919ad45134d53d19bb67174ef",
+        "physical_executor_classification": "optix_traversal_observed",
+        "provider_library": "librtdl_optix",
+        "provider_library_path": "/workspace/goal5844-5e1518afe242-20260905T012050Z-run/native-build/librtdl_optix.so",
+        "provider_library_sha256": "2b47512c24b8a36babc4cbab26fbb3b08cd86ae58d59b1cf73c8f32c03a48cee",
+        "receipt_sha256": "124e601b1ff50e327954937b4f0c5ddfa023b671a58241a3860ae12f68102e7a",
+        "route_identity": "v4_builtin_triangle_callback_ir:checked_reduction_v1",
+        "schema": "rtdl.physical_execution.traversal_receipt.v1",
+        "semantic_digest": "0dcdd5844cfeceb45fb720c72b832bc89fed0510b41e927e8071b746bf4fa524"
+      },
+      "latest_provider_compact_receipt": {
+        "expected_program_bundle": "v4_builtin_triangle_checked_reduction_composed",
+        "expected_program_bundle_id": 1224572139032198259,
+        "expected_program_observed_at_receipt_edge": true,
+        "native_stamp": [
+          6790417444612365943,
+          5,
+          5,
+          1,
+          1,
+          0,
+          1,
+          0,
+          1,
+          16384,
+          1224572139032198259,
+          1224572139032198259,
+          131751876632076,
+          131751876632076,
+          0,
+          0,
+          0,
+          11219378070064071360,
+          38957432723743061
+        ],
+        "output_digest": "2df49102543561c678ce39e05cc6c79ce92c0ea919ad45134d53d19bb67174ef",
+        "physical_executor_classification": "optix_traversal_observed",
+        "provider_library_sha256": "2b47512c24b8a36babc4cbab26fbb3b08cd86ae58d59b1cf73c8f32c03a48cee",
+        "receipt_sha256": "f63a3284ea3ea114e87c578d1271b25daf004b938db737488c2c5ef2b1c1b37a",
+        "route_identity": "v4_builtin_triangle_callback_ir:checked_reduction_v1",
+        "schema": "rtdl.physical_execution.compact_traversal_receipt.v1",
+        "semantic_digest": "0dcdd5844cfeceb45fb720c72b832bc89fed0510b41e927e8071b746bf4fa524"
+      },
+      "latest_public_compact_receipt": {
+        "expected_program_bundle": "v4_builtin_triangle_checked_reduction_composed",
+        "expected_program_bundle_id": 1224572139032198259,
+        "expected_program_observed_at_receipt_edge": true,
+        "native_stamp": [
+          6790417444612365943,
+          3,
+          3,
+          1,
+          1,
+          0,
+          1,
+          0,
+          1,
+          16384,
+          1224572139032198259,
+          1224572139032198259,
+          131751876632076,
+          131751876632076,
+          0,
+          0,
+          0,
+          11219378070064071360,
+          38957432723743061
+        ],
+        "output_digest": "2df49102543561c678ce39e05cc6c79ce92c0ea919ad45134d53d19bb67174ef",
+        "physical_executor_classification": "optix_traversal_observed",
+        "provider_library_sha256": "2b47512c24b8a36babc4cbab26fbb3b08cd86ae58d59b1cf73c8f32c03a48cee",
+        "receipt_sha256": "917d3800770aa89713b2dcfd9a0ddabbb1be9cc0902523db50c1aea543c63905",
+        "route_identity": "v4_builtin_triangle_callback_ir:checked_reduction_v1",
+        "schema": "rtdl.physical_execution.compact_traversal_receipt.v1",
+        "semantic_digest": "0dcdd5844cfeceb45fb720c72b832bc89fed0510b41e927e8071b746bf4fa524"
+      }
+    },
+    "first_execution_ns": 53165704,
+    "identity": {
+      "generic_executable_identity": {
+        "executable_sha256": "1a1d12d3da3a3fa4ccc5975073bc71ab9888ad5c5449b7e5ebea768d5227754e",
+        "generated_artifact_sha256": "f3a1a21e3b319d236d770b79a7724129d529d3aed6fc8debeba7212b2b56e000",
+        "identity_sha256": "43f6e22faa032f50576cbfcc5b3b22b4e6f5afbf340ac39ca5b277140b887697",
+        "plan_sha256": "f42e84dbc44bdae382269da91a4f4fffed355e3898b1190e3d56bba3ebe8017f",
+        "provider_artifact_sha256": "2b47512c24b8a36babc4cbab26fbb3b08cd86ae58d59b1cf73c8f32c03a48cee",
+        "provider_descriptor_sha256": "5c051272e67c0e2f5d7b95b9e57efa0bfef5fa312daf65872da026761065f08b",
+        "provider_projection_sha256": "57b5416bddc37c7fa2a36c2b124955dbc8958235392fc91ce37393a399775b6f",
+        "schema": "rtdl.family_executable_identity.v1",
+        "target_sha256": "70b20c2e4de566409840112a08a48ef84cb584d11317bfe8391a8458dca3ca7a"
+      },
+      "native_library_sha256": "2b47512c24b8a36babc4cbab26fbb3b08cd86ae58d59b1cf73c8f32c03a48cee"
+    },
+    "setup_ns": {
+      "close": 1765069,
+      "generic_admission": 94981213,
+      "materialize": 21490883127,
+      "prepare": 2674207304,
+      "route_declaration": 84456081
+    },
+    "steady_public": {
+      "maximum_ns": 300978,
+      "median_ns": 300978,
+      "minimum_ns": 300978,
+      "sample_count": 1,
+      "samples_ns": [
+        300978
+      ]
+    }
+  },
+  "python": "3.12.3",
+  "query_count": 16384,
+  "repetitions": 1,
+  "result_sha256": "050d783f4c67dd984e37621ed32b79ffef2f3e70c866f40efb8b2e0f857161a0",
+  "schema": "rtdl.goal5844.compact_execution.worker.v2",
+  "source_commit": "5e1518afe24230be677484f8e437e0a0da6bb30d",
+  "status": "PASS__INTERNAL_ENGINEERING_WORKER",
+  "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+  "warmups": 1
+}

@@ -1,6 +1,6 @@
 # RTDL Codex Working Guide
 
-## Critical current override: Goal5844 parity repair awaits clean rerun (2026-09-04)
+## Critical current override: Goal5844 internal parity target met (2026-09-04)
 
 Goal5844's first complete GPU transaction is immutable adverse evidence. At
 source commit `5e1518afe24230be677484f8e437e0a0da6bb30d`, one RTX 2000 Ada run
@@ -12,17 +12,24 @@ and the downloaded archive SHA-256 is
 `d4d57100f77c74b1f43187d7c82e290fa6071524aa8478b8369f0925a6e93814`.
 Do not discard, pool with, or relabel this failed target transaction.
 
-The measured cause is repeated public-envelope proof serialization and static
-identity hashing, not the native v8 OptiX operation. The current successor
+The measured cause was repeated public-envelope proof serialization and static
+identity hashing, not the native v8 OptiX operation. The successor
 defers only JSON transport expansion for an eagerly validated immutable compact
 receipt, retains per-execution validation of all 19 native stamp words, caches
 only immutable bundle/digest identities, and preserves the old strict path for
-external providers, ordinary mappings, and non-scalar outputs. Dirty-checkout
-diagnostics on the same pod reduced the public median to 131,824 ns, but this is
-not formal evidence. The next action is a new exact-commit, clean-checkout,
-balanced eight-block transaction using the same pinned PyOptiX commit
-`3144f224...`; pass still requires median within-block RTDL/PyOptiX at most
-1.25x.
+external providers, ordinary mappings, and non-scalar outputs.
+
+The clean successor transaction at source commit
+`ee0237963bcd838d652a059f15ecc0d3f56dfd09` passed on the same GPU UUID. It
+retained 1,024 samples per arm in eight balanced alternating-order blocks. RTDL
+and PyOptiX public medians were 132,534 ns and 131,744 ns; median within-block
+RTDL/PyOptiX was `1.0456709697x`, and the worst block was `1.1543425588x`.
+The RTDL-first and PyOptiX-first stratified medians were respectively
+`1.0456709697x` and `1.0456883372x`. Direct native time remained stable at
+82,592 ns versus 82,757 ns before. The successor summary seal is
+`6229aeba61fa681cbcda37e0ca253f725269fe08c2dd5e85f91502e5ad0a3b03`;
+the archive SHA-256 is
+`4336526eb6084d18353812187b2bd6c57515a642d804313abbaa79b52b1b678d`.
 
 This successor intentionally adds memoization to
 `src/rtdsl/v4_generic_family_lifecycle.py` after the completed Goal5838
@@ -33,7 +40,10 @@ generic lifecycle optimization, not a repair made during the prospective
 exam and not application dispatch. Goal5843 also remains immutable. All
 Goal5844 results are internal engineering evidence; no public/manuscript
 performance claim, hardware-independent claim, external review, or consensus
-is authorized.
+is authorized. The controlling internal authority is
+`history/internal_docs/goal5844_public_execution_parity_20260904/GOAL5844_INTERNAL_AUTHORITY.json`;
+verify it with
+`PYTHONPATH=src:. python scripts/goal5844_build_public_parity_authority.py --verify-stored`.
 
 ## Critical current override: Goal5843 fair post-R1 baseline internally complete (2026-09-04)
 
@@ -62,7 +72,8 @@ no-pooling rule. v4 is a separately preregistered transaction with unchanged
 experimental contracts and a repaired custody verifier; it is not a retry of
 v3. The Goal5838 frozen core remains byte-identical.
 
-The exact successor regression is 91/91. A broader adjacent-history run is
+At the exact Goal5843 source commit, the Goal5838 frozen core remained
+byte-identical. The exact successor regression is 91/91. A broader adjacent-history run is
 245/247 because two old Goal5840 repair-freezer tests try to rebuild an early
 source manifest from later legitimate Goal5840 files; do not hide these two
 historical current-tree replay errors or rewrite old evidence to make them

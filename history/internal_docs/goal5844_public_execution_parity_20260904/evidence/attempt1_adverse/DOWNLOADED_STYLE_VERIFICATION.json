@@ -1,0 +1,16 @@
+{
+  "claim_boundary": {
+    "external_review_complete": false,
+    "internal_engineering_evidence_only": true,
+    "public_or_manuscript_claim_authorized": false
+  },
+  "engineering_target_met": false,
+  "evidence_manifest_sha256": "22ce17211edae3dca13590a08297051fb096eadd10d5c7fb92373ac8d41c69e7",
+  "median_within_block_ratio": 2.1713906352159866,
+  "schema": "rtdl.goal5844.downloaded_engineering_result_verification.v1",
+  "source_commit": "5e1518afe24230be677484f8e437e0a0da6bb30d",
+  "status": "PASS__DOWNLOADED_RESULT_RECOMPUTED_FROM_HASHED_PAYLOADS",
+  "summary_file_sha256": "ac27caed9f55587169be6844e6a89009bf46f4ddccbdf6ec539bc4b909e26737",
+  "summary_result_sha256": "4d6548238849c49e7aa89dcb663f08febb2815d83da924dd3a083db5549a94d3",
+  "worker_count": 16
+}
