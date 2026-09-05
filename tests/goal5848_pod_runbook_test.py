@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+import json
 import os
 import subprocess
+import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -9,6 +12,37 @@ from experiments.goal5848_strong_baseline import controller
 
 
 class Goal5848PodRunbookTest(unittest.TestCase):
+    def test_direct_recipe_canonicalizes_aliased_cuda_library_directories(self):
+        root = Path(__file__).resolve().parents[1]
+        with tempfile.TemporaryDirectory() as temporary:
+            temporary_root = Path(temporary)
+            canonical = temporary_root / "targets" / "x86_64-linux" / "lib"
+            canonical.mkdir(parents=True)
+            alias = temporary_root / "lib64"
+            alias.symlink_to(canonical, target_is_directory=True)
+            output = temporary_root / "recipe.json"
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(root / "scripts/goal5802_build_direct_recipe.py"),
+                    "--library-directory",
+                    str(alias),
+                    "--library-directory",
+                    str(canonical),
+                    "--output",
+                    str(output),
+                ],
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            recipe = json.loads(output.read_text(encoding="utf-8"))
+            self.assertEqual(
+                recipe["argv_template"].count(f"-L{canonical.resolve()}"),
+                1,
+            )
+
     def test_single_generation_runbook_is_syntax_valid_and_fail_closed(self):
         root = Path(__file__).resolve().parents[1]
         script = root / "scripts/goal5848_pod_prepare_and_run.sh"

@@ -17,10 +17,14 @@ def main() -> int:
     if args.output.exists() or args.output.is_symlink():
         raise FileExistsError(args.output)
     library_arguments: list[str] = []
+    seen_library_directories: set[Path] = set()
     for raw in args.library_directory:
         directory = Path(raw).resolve(strict=True)
         if not directory.is_dir():
             raise RuntimeError(f"Direct library directory invalid: {directory}")
+        if directory in seen_library_directories:
+            continue
+        seen_library_directories.add(directory)
         library_arguments.append(f"-L{directory}")
     argv = [
         "{CXX}", "-std=c++17", "-O3", "-DNDEBUG",
