@@ -95,6 +95,23 @@ class Goal5847AotStartupExperimentTest(unittest.TestCase):
         diagnostic = rtdl.index("diagnostic = prepared.execute(")
         self.assertLess(steady, diagnostic)
 
+    def test_rtdlexe_owner_reuses_preallocated_storage_and_canonical_rows(self):
+        source = (ROOT / "src/rtdsl/v4_rtdlexe.py").read_text(
+            encoding="utf-8"
+        )
+        owner = source.split("class _PreparedBoundedOwner:", 1)[1].split(
+            "class _PreparedTriangleOwner:", 1
+        )[0]
+        self.assertIn("self._row_storage =", owner)
+        self.assertIn("rows_native = self._row_storage", owner)
+        self.assertIn("packed_rows == self._cached_output_packed", owner)
+        self.assertIn("rows = self._cached_output_rows", owner)
+        commit = owner.index(
+            "self._commit_source_cache(batch._device_input_sha256)"
+        )
+        publish = owner.index("self._cached_output_packed,", commit)
+        self.assertLess(commit, publish)
+
     def test_controller_enforces_every_preregistered_binary_binding(self):
         source = Path(controller.__file__).read_text(encoding="utf-8")
         for field in (

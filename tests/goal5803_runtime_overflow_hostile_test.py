@@ -184,6 +184,15 @@ def _owner(native: _FakeRelationNative):
     owner._last_source_arrays = None
     owner._last_fast_operation_receipt = None
     owner._last_fast_compact_control = None
+    owner._row_storage = (ctypes.c_uint32 * (native.capacity * 2))()
+    owner._fast_raw_count = ctypes.c_uint64()
+    owner._fast_unique_count = ctypes.c_uint64()
+    owner._fast_overflowed = ctypes.c_uint32()
+    owner._fast_compact_status = ctypes.c_uint32()
+    owner._call_error = ctypes.create_string_buffer(16384)
+    owner._cached_output_packed = None
+    owner._cached_output_rows = None
+    owner._cached_output_sha = None
     owner._online_monitor = True
     owner._lean_monitor = False
     owner._artifact_identity = "a" * 64
@@ -572,6 +581,50 @@ class Goal5803RuntimeOverflowHostileTest(unittest.TestCase):
         self.assertEqual(operation["status_d2h_copy_call_count"], 1)
         self.assertEqual(operation["output_d2h_copy_call_count"], 1)
         self.assertEqual(operation["output_d2h_after_status_failure"], 0)
+
+    def test_identical_canonical_output_reuses_immutable_python_rows(self):
+        native = _FakeRelationNative(
+            capacity=1,
+            compact_status=0,
+            raw_count=1,
+            unique_count=1,
+            overflowed=0,
+            rows=((10, 100),),
+        )
+        owner = _owner(native)
+        prepared = _direct_prepared(owner)
+        batch = _batch(expected_rows=((10, 100),))
+
+        first = prepared.execute(batch, include_diagnostics=False)
+        second = prepared.execute(batch, include_diagnostics=False)
+
+        self.assertIs(second.output, first.output)
+        self.assertIs(owner._cached_output_rows, first.output)
+        self.assertEqual(native.call_count, 2)
+
+    def test_oracle_failure_cannot_publish_output_cache(self):
+        native = _FakeRelationNative(
+            capacity=1,
+            compact_status=0,
+            raw_count=1,
+            unique_count=1,
+            overflowed=0,
+            rows=((10, 100),),
+        )
+        owner = _owner(native)
+        prepared = _direct_prepared(owner)
+        batch = _batch(expected_rows=((10, 100),))
+        first = prepared.execute(batch, include_diagnostics=False)
+
+        native.rows = ((10, 101),)
+        with self.assertRaises(runtime.RTDLExecutableError) as caught:
+            prepared.execute(batch, include_diagnostics=False)
+        self.assertEqual(caught.exception.code, "RX043_ORACLE_MISMATCH")
+        self.assertIs(owner._cached_output_rows, first.output)
+
+        native.rows = ((10, 100),)
+        recovered = prepared.execute(batch, include_diagnostics=False)
+        self.assertIs(recovered.output, first.output)
 
     def test_impossible_success_control_is_rx035_before_public_output(self):
         hostile_controls = (

@@ -345,7 +345,8 @@ def _run_pyoptix(args: argparse.Namespace) -> dict[str, object]:
             )
         return baseline.optix.deviceContextCreate(0, options), logger
 
-    context, phases["cuda_optix_context"] = _measure(make_context)
+    context_state, phases["cuda_optix_context"] = _measure(make_context)
+    context, logger = context_state
 
     def make_pipeline():
         pipeline, groups, logs = baseline.build_pipeline(
@@ -418,7 +419,7 @@ def _run_pyoptix(args: argparse.Namespace) -> dict[str, object]:
     )
     validate(latest)
     # These handles deliberately remain strongly referenced through all samples.
-    _ = (pipeline_state, groups, _logs, keepalive, context)
+    _ = (pipeline_state, groups, _logs, keepalive, context, logger)
 
     return {
         "correct_result_ns": correct_result_ns,

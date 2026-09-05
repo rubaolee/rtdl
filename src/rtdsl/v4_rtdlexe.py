@@ -5423,6 +5423,19 @@ class _PreparedBoundedOwner:
         # the native call after a public failure.  This remains private: the
         # application API still exposes only accepted device status/results.
         self._last_fast_compact_control = None
+        # The owner is thread-bound and rejects reentrancy, so successful calls
+        # can reuse fixed ABI storage.  Native already returns canonical packed
+        # rows; retaining their immutable Python decoding avoids rebuilding
+        # thousands of identical tuples for a repeated prepared batch.
+        self._row_storage = (ctypes.c_uint32 * (self._capacity * 2))()
+        self._fast_raw_count = ctypes.c_uint64()
+        self._fast_unique_count = ctypes.c_uint64()
+        self._fast_overflowed = ctypes.c_uint32()
+        self._fast_compact_status = ctypes.c_uint32()
+        self._call_error = ctypes.create_string_buffer(16384)
+        self._cached_output_packed: bytes | None = None
+        self._cached_output_rows: tuple[tuple[int, int], ...] | None = None
+        self._cached_output_sha: str | None = None
 
     def _native_source_build_count(self) -> int:
         count = ctypes.c_uint64()
@@ -5510,12 +5523,25 @@ class _PreparedBoundedOwner:
                     batch._packed_bounds_f32)
                 source_ids = (ctypes.c_uint32 * (len(batch._packed_ids_u32) // 4)).from_buffer_copy(
                     batch._packed_ids_u32)
-            raw_count = ctypes.c_uint64(); unique_count = ctypes.c_uint64(); overflowed = ctypes.c_uint32()
-            rows_native = (ctypes.c_uint32 * (self._capacity * 2))()
-            summary = _ProductStatusSummary(); counters = (ctypes.c_uint64 * 7)()
-            compact_status = ctypes.c_uint32(); fast_receipt = _FastPathReceipt()
-            error = ctypes.create_string_buffer(16384)
+            rows_native = self._row_storage
+            if diagnostics:
+                raw_count = ctypes.c_uint64()
+                unique_count = ctypes.c_uint64()
+                overflowed = ctypes.c_uint32()
+                summary = _ProductStatusSummary()
+                counters = (ctypes.c_uint64 * 7)()
+                compact_status = ctypes.c_uint32()
+                error = ctypes.create_string_buffer(16384)
+            else:
+                raw_count = self._fast_raw_count
+                unique_count = self._fast_unique_count
+                overflowed = self._fast_overflowed
+                compact_status = self._fast_compact_status
+                error = self._call_error
+                error[0] = 0
+            fast_receipt = _FastPathReceipt()
             audit = _open_audit(self._library) if diagnostics else None
+            next_output_cache = None
             try:
                 launch_count = source_count + self._indexed_count
                 # Full role counters remain an explicit diagnostic request.
@@ -5606,10 +5632,33 @@ class _PreparedBoundedOwner:
                 row_count = int(unique_count.value)
                 packed_rows = ctypes.string_at(
                     ctypes.addressof(rows_native), row_count * 8)
-                rows = tuple(struct.iter_unpack("<II", packed_rows))
+                cached_rows_reused = (
+                    packed_rows == self._cached_output_packed
+                    and self._cached_output_rows is not None
+                )
+                if cached_rows_reused:
+                    rows = self._cached_output_rows
+                else:
+                    rows = tuple(struct.iter_unpack("<II", packed_rows))
                 if batch.expected_rows is not None and rows != tuple(sorted(batch.expected_rows)):
                     _fail("RX043_ORACLE_MISMATCH", "bounded.output", rows)
-                output_sha = _digest(rows) if diagnostics else None
+                if diagnostics:
+                    output_sha = (
+                        self._cached_output_sha
+                        if cached_rows_reused
+                        and self._cached_output_sha is not None
+                        else _digest(rows)
+                    )
+                else:
+                    output_sha = None
+                if not cached_rows_reused or (
+                    diagnostics and self._cached_output_sha is None
+                ):
+                    next_output_cache = (
+                        packed_rows,
+                        rows,
+                        output_sha,
+                    )
                 receipt = None
                 if diagnostics:
                     receipt = audit.finish(
@@ -5623,6 +5672,12 @@ class _PreparedBoundedOwner:
                     self._commit_source_cache(batch._device_input_sha256)
                 self._last_batch_key = batch_key
                 self._last_source_arrays = (sources, source_ids)
+                if next_output_cache is not None:
+                    (
+                        self._cached_output_packed,
+                        self._cached_output_rows,
+                        self._cached_output_sha,
+                    ) = next_output_cache
             # Asynchronous Python control-flow exits (KeyboardInterrupt,
             # SystemExit) must not strand a newly committed native generation
             # behind the preceding Python batch key.
