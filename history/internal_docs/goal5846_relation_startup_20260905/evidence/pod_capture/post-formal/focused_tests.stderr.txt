@@ -1,0 +1,32 @@
+.................................................................................................................................................E.............fatal: path 'history/internal_docs/goal5842_causal_admission_cost_20260903/DESIGN.md' exists on disk, but not in '04305fc820290cc183a599376f13d2fb48175233'
+E........................................................................
+======================================================================
+ERROR: test_preregistration_is_bound_to_frozen_source_without_timing (tests.goal5842_causal_admission_cost_test.Goal5842CausalAdmissionCostTest.test_preregistration_is_bound_to_frozen_source_without_timing)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/goal5846-a6f395cc9-source/tests/goal5842_causal_admission_cost_test.py", line 189, in test_preregistration_is_bound_to_frozen_source_without_timing
+    subprocess.run(
+  File "/usr/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['git', 'cat-file', '-e', '04305fc820290cc183a599376f13d2fb48175233^{commit}']' returned non-zero exit status 128.
+
+======================================================================
+ERROR: test_v12_binds_v11_terminal_failure_and_recounts_frozen_rows (tests.goal5842_causal_admission_cost_test.Goal5842CausalAdmissionCostTest.test_v12_binds_v11_terminal_failure_and_recounts_frozen_rows)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/goal5846-a6f395cc9-source/tests/goal5842_causal_admission_cost_test.py", line 1012, in test_v12_binds_v11_terminal_failure_and_recounts_frozen_rows
+    _git_blob(self.source_commit, row["path"])
+  File "/workspace/goal5846-a6f395cc9-source/tests/goal5842_causal_admission_cost_test.py", line 169, in _git_blob
+    return subprocess.check_output(
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/subprocess.py", line 466, in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['git', 'show', '04305fc820290cc183a599376f13d2fb48175233:history/internal_docs/goal5842_causal_admission_cost_20260903/DESIGN.md']' returned non-zero exit status 128.
+
+----------------------------------------------------------------------
+Ran 232 tests in 31.097s
+
+FAILED (errors=2)

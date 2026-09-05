@@ -1,0 +1,10 @@
+os=Ubuntu 24.04
+Linux 6.8.0-124-generic #124~22.04.1-Ubuntu SMP PREEMPT_DYNAMIC Tue May 26 21:05:19 UTC  x86_64 GNU/Linux
+NVIDIA RTX 2000 Ada Generation, GPU-4b436f5f-bf8f-1d8c-0202-98e6e7b387e9, 16380, 8.9, 580.159.04
+nvcc: NVIDIA (R) Cuda compiler driver
+Copyright (c) 2005-2025 NVIDIA Corporation
+Built on Fri_Feb_21_20:23:50_PST_2025
+Cuda compilation tools, release 12.8, V12.8.93
+Build cuda_12.8.r12.8/compiler.35583870_0
+x86_64-linux-gnu-g++-13 (Ubuntu 13.3.0-6ubuntu2~24.04) 13.3.0
+Python 3.12.3

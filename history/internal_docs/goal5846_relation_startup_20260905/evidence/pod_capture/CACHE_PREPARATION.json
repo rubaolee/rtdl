@@ -1,0 +1,99 @@
+{
+  "claim_boundary": {
+    "cache_fill_excluded_from_formal_estimand": true,
+    "gpu_execution_performed": false,
+    "public_or_manuscript_claim_authorized": false
+  },
+  "executable_cache": {
+    "entries_sha256": "5e9555894db915b6dcb9c7105816fb7822c67ce1edc05ac37b972207c15d9f0f",
+    "entry_count": 1,
+    "manifest": "/workspace/goal5846-a6f395cc9-formal/executable-cache-manifest.json",
+    "manifest_sha256": "6a6d06deb8a760f1e5b7e58146f600b2494b971278f170cb1b5809e563328236",
+    "root": "/workspace/goal5846-a6f395cc9-formal/executable-cache",
+    "snapshot": [
+      [
+        "d2dcdc656ddd0ca4e7e3e0ac688d06f555407af202afa8a0da80ce2f9b3ba917/artifact.json",
+        156401,
+        "aad98349094384f959c58d91b5f86c80ab0cbbe1b4561eac8444033187ac8371"
+      ]
+    ]
+  },
+  "executable_identity": {
+    "executable_sha256": "51595a15dca95309316d3aee221c59d8c75f201dd71c58dacc120535958c50c1",
+    "generated_artifact_sha256": "f59fc1a989bd31962ea5422440fc77cfb1e35a05d6e4f1956fe85863ae18a042",
+    "identity_sha256": "31732d65329ea17be5aec6a7ed0f18f52ed405d67ef42161f5e4bb04f9369aa8",
+    "plan_sha256": "fa9f40b9c96410190e5135513e7f6788b242ffd6e11e609d0a0b4d5bdc0051b8",
+    "provider_artifact_sha256": "c56343fad27b4084566febbafeddca19f89c04fc66a0b878ca94417b64d2163e",
+    "provider_descriptor_sha256": "ec4fcd377584f4387c8bd889944e7375f017d751225891fba2b1516b9386cd3c",
+    "provider_projection_sha256": "f736df9df9f0726e87b4241be23ff5a4155e803dfff8ac230214814eaec287d9",
+    "schema": "rtdl.family_executable_identity.v1",
+    "target_sha256": "17eb9a13cd1f6b2df4e44e14a3384320e3bd132da5942cb2fc1c5d05006f5ae2"
+  },
+  "first_ever_cache_fill": {
+    "generic_admission_ns": 23160219,
+    "materialize_and_compile_ns": 36879724764,
+    "registered_performance_sample": false,
+    "route_declaration_ns": 79506924,
+    "total_ns": 36982403737
+  },
+  "leaf_cache": {
+    "entries_sha256": "22ac6651bba4b3d7e3f31a0c241908bd0ec61306656b90ecc44c7a93f6ffa4c6",
+    "entry_count": 7,
+    "manifest": "/workspace/goal5846-a6f395cc9-formal/leaf-cache-manifest.json",
+    "manifest_sha256": "2db7c1aeb6f80a77646a7eda4878244769459c138898f28b27c8666e9a5554f9",
+    "root": "/workspace/goal5846-a6f395cc9-formal/leaf-cache",
+    "snapshot": [
+      [
+        "277f3961586a65e4da5c3b07ab3cbe89f488383614ea0afdba18dbb7f8e03c44/artifact.json",
+        9063,
+        "751311e85c04caafcbcb5dd4d187cd437ff86d21233d0ffcb7183e6675c69250"
+      ],
+      [
+        "3cf0839c3444745df84787789d2d047e18425b68d02d074f484cb75eb236967b/artifact.json",
+        5514,
+        "748d29b34322e1006f3027c32b3d72c14f46c8e232874acc2ba22326528f1d9f"
+      ],
+      [
+        "8ffa6856c1d9f00fcb0d882b89a3e72fc554b0bc5803276f7cbaa650df1a03a7/artifact.json",
+        9206,
+        "c9942b74a918dbaa13f1add412f1d95fa9f4aa7304f5b53f42ec86061c0b81df"
+      ],
+      [
+        "c3bea2af7fe63f1c10ae5593dccbdce1f43a092e0bc797ad7334b18aa2c313de/artifact.json",
+        6334,
+        "622ef528557577f40212ea1a65292fcc8297d45e222462356e22d6090f0b410d"
+      ],
+      [
+        "d4241b061283071111db4f5215ddbfcda66eb0be42da52c3156b81fa9ec38c9e/artifact.json",
+        13818,
+        "1db082d1de3bc11b8c163edc97cc0b2c18621fb2ef769d885c718d3ca3acea20"
+      ],
+      [
+        "ee425fd1b9a179cd25fd52c903ea577526c26a402e197a19ea74954c4c01b2cd/artifact.json",
+        13771,
+        "1e47af84c6045e5a192ce492f08c0e5d9297eb213bec1aea0eb69bea65313243"
+      ],
+      [
+        "ee7376b7b91caeff3286cf03973b335e2caf7f75d2233fd0db56953c12e40d30/artifact.json",
+        6585,
+        "339cceb3ebcee8f576c1304fc71c5cd3ffda8344e6a6bc822ec8b273a8e27054"
+      ]
+    ]
+  },
+  "native_build_manifest": {
+    "path": "/workspace/goal5846-a6f395cc9-formal/native/BUILD_MANIFEST.json",
+    "sha256": "b18cb198aedda56a08e95edb372d86d57a027119c63474fc4e83c09a566acc47"
+  },
+  "native_library": {
+    "bytes": 7191992,
+    "path": "/workspace/goal5846-a6f395cc9-formal/native/librtdl_optix.so",
+    "sha256": "c56343fad27b4084566febbafeddca19f89c04fc66a0b878ca94417b64d2163e"
+  },
+  "preparation_sha256": "c09edd09bd10e0c88c473376bbc3b37d0a7ab1c091acd75c88dc016e229618d8",
+  "schema": "rtdl.goal5846.relation_startup_cache_preparation.v1",
+  "sealed_replay_ns": 127638632,
+  "source_commit": "a6f395cc9411cbed3045c11145d92eda3bc2f502",
+  "source_tree": "19546ddeaee191de3e756cd1c14d979a8387fec7",
+  "status": "PASS__FIRST_FILL_SEALED_AND_HIT_ONLY_REPLAY",
+  "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1"
+}

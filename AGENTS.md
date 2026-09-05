@@ -2641,3 +2641,30 @@ reduction design/implementation for the weighted callback path, preserving
 canonical IDs, overflow, lifecycle, exact output and behavioral true-OptiX.
 No POD, formal matrix, predicted saving, RT-BarnesHut repair or performance/
 no-slower/author/silicon/public/production claim is authorized by Goal5777.
+
+# Critical current override: Goal5846 exact warm-cache startup target met; AOT deployment is next (2026-09-05)
+
+Goal5846 is internally complete only at
+`PASS__GOAL5846_EXACT_WARM_CACHE_FRESH_PROCESS_STARTUP_TARGET_MET__EXTERNAL_REVIEW_PENDING`.
+Its controlling authority is
+`history/internal_docs/goal5846_relation_startup_20260905/GOAL5846_INTERNAL_AUTHORITY.json`.
+On one RTX 2000 Ada GPU, the exact 4,096-by-4,096 bounded-relation task retained
+1,024 steady samples per arm and all eight fresh-process paired setup rows. The
+median within-block setup-plus-first RTDL/PyOptiX ratio is `0.990957x`, worst
+block `1.132343x`; pooled RTDL steady is 364,985 ns versus PyOptiX 3,487,496 ns.
+This closes the exact inherited source-compiling PyOptiX warm-cache setup debt
+without regressing Goal5845 or adding app-specific engine logic.
+
+Do not generalize Goal5846. First-ever cache fill remains 36.982 s. A separate
+unregistered precompiled-PTX, validation-off PyOptiX sensitivity is about
+236.415 ms and remains materially faster than RTDL's 577.153 ms formal median.
+The cache is logical manifest-bound hit-only, not OS-permission read-only; pod
+files were mode 0666. External review, consensus, public/manuscript wording,
+cross-hardware claims, arbitrary-workload claims, full process-wall parity, and
+precompiled/AOT PyOptiX parity remain unauthorized.
+
+The next performance target is a generic deployable whole-route/AOT artifact:
+load a provider-compatible verified executable without first-use leaf compile,
+retain exact source/provider/ABI/proof identities and fail-closed mutation
+behavior, and compare against a precompiled PyOptiX arm under a new frozen
+same-contract experiment. Do not rewrite or pool Goal5846 evidence.

@@ -1,0 +1,8 @@
+666 13771 /workspace/goal5846-a6f395cc9-formal/leaf-cache/ee425fd1b9a179cd25fd52c903ea577526c26a402e197a19ea74954c4c01b2cd/artifact.json
+666 13818 /workspace/goal5846-a6f395cc9-formal/leaf-cache/d4241b061283071111db4f5215ddbfcda66eb0be42da52c3156b81fa9ec38c9e/artifact.json
+666 156401 /workspace/goal5846-a6f395cc9-formal/executable-cache/d2dcdc656ddd0ca4e7e3e0ac688d06f555407af202afa8a0da80ce2f9b3ba917/artifact.json
+666 5514 /workspace/goal5846-a6f395cc9-formal/leaf-cache/3cf0839c3444745df84787789d2d047e18425b68d02d074f484cb75eb236967b/artifact.json
+666 6334 /workspace/goal5846-a6f395cc9-formal/leaf-cache/c3bea2af7fe63f1c10ae5593dccbdce1f43a092e0bc797ad7334b18aa2c313de/artifact.json
+666 6585 /workspace/goal5846-a6f395cc9-formal/leaf-cache/ee7376b7b91caeff3286cf03973b335e2caf7f75d2233fd0db56953c12e40d30/artifact.json
+666 9063 /workspace/goal5846-a6f395cc9-formal/leaf-cache/277f3961586a65e4da5c3b07ab3cbe89f488383614ea0afdba18dbb7f8e03c44/artifact.json
+666 9206 /workspace/goal5846-a6f395cc9-formal/leaf-cache/8ffa6856c1d9f00fcb0d882b89a3e72fc554b0bc5803276f7cbaa650df1a03a7/artifact.json

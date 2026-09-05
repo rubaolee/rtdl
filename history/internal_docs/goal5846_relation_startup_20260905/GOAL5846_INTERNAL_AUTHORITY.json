@@ -1,0 +1,676 @@
+{
+  "architecture_boundary": {
+    "application_dispatch_added": false,
+    "cache_bytes_unchanged_in_every_formal_worker": true,
+    "generic_executable_identity_bound_to_provider": true,
+    "native_abi_app_neutral": true,
+    "prepared_target_reused": true,
+    "public_canonical_rows_returned": true,
+    "sealed_cache_policy_is_logical_hit_only_not_os_permission": true,
+    "two_actual_optix_launches_per_execution": true
+  },
+  "authority_sha256": "7ccf6b63f8df173c6909c641d4e30810f32be102ed6e6f71e8fb7b2b61dbc27a",
+  "claim_boundary": {
+    "arbitrary_workload_claim_authorized": false,
+    "consensus_claimed": false,
+    "cross_hardware_generalization_authorized": false,
+    "exact_task_hardware_and_comparison_contract_only": true,
+    "external_review_complete": false,
+    "internal_engineering_evidence_only": true,
+    "intrinsic_language_or_api_speedup_claim_authorized": false,
+    "precompiled_pyoptix_parity_claim_authorized": false,
+    "public_or_manuscript_claim_authorized": false
+  },
+  "closure_boundary": {
+    "all_startup_performance_debt_closed": false,
+    "exact_pinned_warm_cache_startup_debt_closed": true,
+    "first_ever_cache_fill_debt_closed": false,
+    "goal5845_prepared_steady_path_not_regressed": true,
+    "native_dso_bytes_stored_in_git": false,
+    "precompiled_pyoptix_aot_parity_closed": false
+  },
+  "evidence_identity": {
+    "cache_preparation_file_sha256": "3fd9927ee1c605f97a9bd1800220007f165bbd26af369fa24aa256d84aa13d16",
+    "cache_preparation_sha256": "c09edd09bd10e0c88c473376bbc3b37d0a7ab1c091acd75c88dc016e229618d8",
+    "device_source_sha256": "dcfb335a2a63ab609d21ce0361d0d530f148d157bd98b122989df0dab51f17a8",
+    "executable_cache_manifest_sha256": "6a6d06deb8a760f1e5b7e58146f600b2494b971278f170cb1b5809e563328236",
+    "leaf_cache_manifest_sha256": "2db7c1aeb6f80a77646a7eda4878244769459c138898f28b27c8666e9a5554f9",
+    "native_build_manifest_sha256": "b18cb198aedda56a08e95edb372d86d57a027119c63474fc4e83c09a566acc47",
+    "native_build_result_sha256": "c63f9d9f3694fd7d04347e6ca79ca1d3bc286df0b60c3757e60c6cb2bc055d06",
+    "native_provider_bytes": 7191992,
+    "native_provider_sha256": "c56343fad27b4084566febbafeddca19f89c04fc66a0b878ca94417b64d2163e",
+    "preregistration_file_sha256": "aff9abe35ec9a01b8bb9b41695b29c975c6ca4a74e66b77050fbc5798ca1ced2",
+    "preregistration_sha256": "53111d83efc13497edae9f2721edaad5255b0bc8f268f721289f2752183d541b",
+    "pyoptix_build_receipt_file_sha256": "a05317ef879630fe9de3aced08fe2ce35ee9416e684799e1f571e64c4c9abfd4",
+    "pyoptix_build_receipt_sha256": "06e8ea1d7ea3894972b5a4d6ca8b8860e526be0d6c5cf5a19c8b19aafd88a30e",
+    "pyoptix_source_commit": "3144f224c0fd18733925faf3d8fb82c7376b8dcf",
+    "pyoptix_source_tree": "0bf0ec24efb4a43f129aee25dd265aa8149374e3",
+    "summary_file_sha256": "6ee6a95e932daf8bf473e5c18fbbeba6e784126004eb608c6bbe8439b7f92207",
+    "summary_sha256": "12f35f8a8665272274189c6d077d977f771d5610de22fd362ae6ee094c19e171"
+  },
+  "first_ever_cache_fill": {
+    "generic_admission_ns": 23160219,
+    "materialize_and_compile_ns": 36879724764,
+    "registered_performance_sample": false,
+    "route_declaration_ns": 79506924,
+    "total_ns": 36982403737
+  },
+  "hardware": {
+    "compute_capability": "8.9",
+    "driver_version": "580.159.04",
+    "gpu_name": "NVIDIA RTX 2000 Ada Generation",
+    "gpu_uuid": "GPU-4b436f5f-bf8f-1d8c-0202-98e6e7b387e9",
+    "memory_mib": 16380
+  },
+  "post_formal": {
+    "first_run_shallow_clone_history_error_count": 2,
+    "historical_commit_fetched_before_second_run": "04305fc820290cc183a599376f13d2fb48175233",
+    "second_run_passed": true,
+    "second_run_test_count": 232,
+    "source_change_between_test_runs": false
+  },
+  "producer": {
+    "imports_rtdl_or_gpu_package": false,
+    "path": "scripts/goal5846_build_relation_startup_authority.py",
+    "sha256": "4490e67be75a1a4656eb82a3b26f108aa830aab9ccf8d4f22b04800b966b64cc"
+  },
+  "result": {
+    "block_rows": [
+      {
+        "block": 0,
+        "order": [
+          "RTDL_PUBLIC_RELATION_OVERLAPPED_WARM_CACHE_V1",
+          "PINNED_PYOPTIX_COMPATIBLE_API"
+        ],
+        "pyoptix_setup_plus_first_ns": 573167755,
+        "rtdl_over_pyoptix_setup_plus_first": 1.009156436233926,
+        "rtdl_setup_plus_first_ns": 578415929,
+        "rtdl_steady_median_ns": 369730,
+        "rtdl_steady_over_goal5845_reference": 1.0092536987497953
+      },
+      {
+        "block": 1,
+        "order": [
+          "PINNED_PYOPTIX_COMPATIBLE_API",
+          "RTDL_PUBLIC_RELATION_OVERLAPPED_WARM_CACHE_V1"
+        ],
+        "pyoptix_setup_plus_first_ns": 547771053,
+        "rtdl_over_pyoptix_setup_plus_first": 1.1323427380891558,
+        "rtdl_setup_plus_first_ns": 620264574,
+        "rtdl_steady_median_ns": 365505,
+        "rtdl_steady_over_goal5845_reference": 0.9977206966206257
+      },
+      {
+        "block": 2,
+        "order": [
+          "RTDL_PUBLIC_RELATION_OVERLAPPED_WARM_CACHE_V1",
+          "PINNED_PYOPTIX_COMPATIBLE_API"
+        ],
+        "pyoptix_setup_plus_first_ns": 572665532,
+        "rtdl_over_pyoptix_setup_plus_first": 1.0790859349292914,
+        "rtdl_setup_plus_first_ns": 617955321,
+        "rtdl_steady_median_ns": 362045,
+        "rtdl_steady_over_goal5845_reference": 0.9882759185456134
+      },
+      {
+        "block": 3,
+        "order": [
+          "PINNED_PYOPTIX_COMPATIBLE_API",
+          "RTDL_PUBLIC_RELATION_OVERLAPPED_WARM_CACHE_V1"
+        ],
+        "pyoptix_setup_plus_first_ns": 581510735,
+        "rtdl_over_pyoptix_setup_plus_first": 0.9727577926828814,
+        "rtdl_setup_plus_first_ns": 565669099,
+        "rtdl_steady_median_ns": 368220,
+        "rtdl_steady_over_goal5845_reference": 1.0051318447343998
+      },
+      {
+        "block": 4,
+        "order": [
+          "RTDL_PUBLIC_RELATION_OVERLAPPED_WARM_CACHE_V1",
+          "PINNED_PYOPTIX_COMPATIBLE_API"
+        ],
+        "pyoptix_setup_plus_first_ns": 580249101,
+        "rtdl_over_pyoptix_setup_plus_first": 1.0577988400881642,
+        "rtdl_setup_plus_first_ns": 613786826,
+        "rtdl_steady_median_ns": 365775,
+        "rtdl_steady_over_goal5845_reference": 0.9984577168750342
+      },
+      {
+        "block": 5,
+        "order": [
+          "PINNED_PYOPTIX_COMPATIBLE_API",
+          "RTDL_PUBLIC_RELATION_OVERLAPPED_WARM_CACHE_V1"
+        ],
+        "pyoptix_setup_plus_first_ns": 602043661,
+        "rtdl_over_pyoptix_setup_plus_first": 0.9565588466514889,
+        "rtdl_setup_plus_first_ns": 575890190,
+        "rtdl_steady_median_ns": 363785,
+        "rtdl_steady_over_goal5845_reference": 0.9930256046295791
+      },
+      {
+        "block": 6,
+        "order": [
+          "RTDL_PUBLIC_RELATION_OVERLAPPED_WARM_CACHE_V1",
+          "PINNED_PYOPTIX_COMPATIBLE_API"
+        ],
+        "pyoptix_setup_plus_first_ns": 606503004,
+        "rtdl_over_pyoptix_setup_plus_first": 0.9467092466371362,
+        "rtdl_setup_plus_first_ns": 574182002,
+        "rtdl_steady_median_ns": 363575,
+        "rtdl_steady_over_goal5845_reference": 0.992452366653928
+      },
+      {
+        "block": 7,
+        "order": [
+          "PINNED_PYOPTIX_COMPATIBLE_API",
+          "RTDL_PUBLIC_RELATION_OVERLAPPED_WARM_CACHE_V1"
+        ],
+        "pyoptix_setup_plus_first_ns": 616760599,
+        "rtdl_over_pyoptix_setup_plus_first": 0.9013060154966223,
+        "rtdl_setup_plus_first_ns": 555890038,
+        "rtdl_steady_median_ns": 362985,
+        "rtdl_steady_over_goal5845_reference": 0.9908418409128132
+      }
+    ],
+    "median_pyoptix_setup_plus_first_ns": 580879918.0,
+    "median_rtdl_phase_ns": {
+      "first_public_execution": 24883341.5,
+      "generic_admission": 19692498.5,
+      "materialize": 144662126.5,
+      "native_initialization_start": 11295051.5,
+      "prepare": 322319383.5,
+      "route_declaration": 59438710.0
+    },
+    "median_rtdl_setup_plus_first_ns": 577153059.5,
+    "median_within_block_rtdl_over_pyoptix_setup_plus_first": 0.9909571144584037,
+    "pooled_pyoptix_steady_median_ns": 3487496,
+    "pooled_rtdl_steady_median_ns": 364985,
+    "pyoptix_first_block_ratio_median": 0.9646583196671852,
+    "reciprocal_pyoptix_over_rtdl": 1.0091254055394099,
+    "registered_samples_per_arm": 1024,
+    "rtdl_first_block_ratio_median": 1.033477638161045,
+    "rtdl_steady_over_goal5845_reference": 0.9963012502047278,
+    "rtdl_steady_over_pyoptix": 0.10465531716738886,
+    "sample_discard_count": 0,
+    "worst_block_rtdl_over_pyoptix_setup_plus_first": 1.1323427380891558
+  },
+  "schema": "rtdl.goal5846.relation_startup.internal_authority.v1",
+  "source": {
+    "commit": "a6f395cc9411cbed3045c11145d92eda3bc2f502",
+    "origin": "https://github.com/rubaolee/rtdl",
+    "tree": "19546ddeaee191de3e756cd1c14d979a8387fec7"
+  },
+  "status": "PASS__GOAL5846_EXACT_WARM_CACHE_FRESH_PROCESS_STARTUP_TARGET_MET__EXTERNAL_REVIEW_PENDING",
+  "stored_evidence_files": [
+    {
+      "bytes": 4451,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/CACHE_PREPARATION.json",
+      "sha256": "3fd9927ee1c605f97a9bd1800220007f165bbd26af369fa24aa256d84aa13d16"
+    },
+    {
+      "bytes": 0,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/FORMAL_CONTROLLER_STDERR.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 74556,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/FORMAL_CONTROLLER_STDOUT.log",
+      "sha256": "d6944c65e6deb9c8ede25bfbf7864d2031ab59269ea7ad0ff26ddb57ef91d373"
+    },
+    {
+      "bytes": 437,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/executable-cache-manifest.json",
+      "sha256": "6a6d06deb8a760f1e5b7e58146f600b2494b971278f170cb1b5809e563328236"
+    },
+    {
+      "bytes": 156401,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/executable-cache/d2dcdc656ddd0ca4e7e3e0ac688d06f555407af202afa8a0da80ce2f9b3ba917/artifact.json",
+      "sha256": "aad98349094384f959c58d91b5f86c80ab0cbbe1b4561eac8444033187ac8371"
+    },
+    {
+      "bytes": 1662,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/leaf-cache-manifest.json",
+      "sha256": "2db7c1aeb6f80a77646a7eda4878244769459c138898f28b27c8666e9a5554f9"
+    },
+    {
+      "bytes": 9063,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/leaf-cache/277f3961586a65e4da5c3b07ab3cbe89f488383614ea0afdba18dbb7f8e03c44/artifact.json",
+      "sha256": "751311e85c04caafcbcb5dd4d187cd437ff86d21233d0ffcb7183e6675c69250"
+    },
+    {
+      "bytes": 5514,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/leaf-cache/3cf0839c3444745df84787789d2d047e18425b68d02d074f484cb75eb236967b/artifact.json",
+      "sha256": "748d29b34322e1006f3027c32b3d72c14f46c8e232874acc2ba22326528f1d9f"
+    },
+    {
+      "bytes": 9206,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/leaf-cache/8ffa6856c1d9f00fcb0d882b89a3e72fc554b0bc5803276f7cbaa650df1a03a7/artifact.json",
+      "sha256": "c9942b74a918dbaa13f1add412f1d95fa9f4aa7304f5b53f42ec86061c0b81df"
+    },
+    {
+      "bytes": 6334,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/leaf-cache/c3bea2af7fe63f1c10ae5593dccbdce1f43a092e0bc797ad7334b18aa2c313de/artifact.json",
+      "sha256": "622ef528557577f40212ea1a65292fcc8297d45e222462356e22d6090f0b410d"
+    },
+    {
+      "bytes": 13818,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/leaf-cache/d4241b061283071111db4f5215ddbfcda66eb0be42da52c3156b81fa9ec38c9e/artifact.json",
+      "sha256": "1db082d1de3bc11b8c163edc97cc0b2c18621fb2ef769d885c718d3ca3acea20"
+    },
+    {
+      "bytes": 13771,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/leaf-cache/ee425fd1b9a179cd25fd52c903ea577526c26a402e197a19ea74954c4c01b2cd/artifact.json",
+      "sha256": "1e47af84c6045e5a192ce492f08c0e5d9297eb213bec1aea0eb69bea65313243"
+    },
+    {
+      "bytes": 6585,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/leaf-cache/ee7376b7b91caeff3286cf03973b335e2caf7f75d2233fd0db56953c12e40d30/artifact.json",
+      "sha256": "339cceb3ebcee8f576c1304fc71c5cd3ffda8344e6a6bc822ec8b273a8e27054"
+    },
+    {
+      "bytes": 14631,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/native/BUILD_MANIFEST.json",
+      "sha256": "b18cb198aedda56a08e95edb372d86d57a027119c63474fc4e83c09a566acc47"
+    },
+    {
+      "bytes": 0,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/native/build.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1098,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/post-formal-v2/cache_files.txt",
+      "sha256": "4b3e403d7871a137296a0309744ab2576f88e777644645b21f1a63cc16cd0337"
+    },
+    {
+      "bytes": 262,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/post-formal-v2/cache_manifest_sha256.txt",
+      "sha256": "759a2d3d4e4e4dbaca44cca9bcd0403b4e45a83652016be49fb3156d61e04c95"
+    },
+    {
+      "bytes": 333,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/post-formal-v2/focused_tests.stderr.txt",
+      "sha256": "705e3bb87c7e7078983c974bcfbbd2cc28c2799f339f1e6a84521005be76bdb4"
+    },
+    {
+      "bytes": 1482,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/post-formal-v2/focused_tests.stdout.txt",
+      "sha256": "66ae1163097f2cd542a6f2ba8851478bd98d04480384540c8fe2c44dc4c482ff"
+    },
+    {
+      "bytes": 0,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/post-formal-v2/gpu_processes.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 503,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/post-formal-v2/host_toolchain.txt",
+      "sha256": "c954705b476287cb7bc2767bb59c6dffcf19ec1715dc0089ae9279df71c6d52f"
+    },
+    {
+      "bytes": 92380,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/post-formal-v2/native_defined_symbols.txt",
+      "sha256": "9315a0ebb53370de1ab92e8daa32e41a22a63af11d63d16329a85cde7383321f"
+    },
+    {
+      "bytes": 127,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/post-formal-v2/native_sha256.txt",
+      "sha256": "50a39ef22dfe0d72c9fea97117f9495d8eb4af152656caf1516eb9e9b97b3161"
+    },
+    {
+      "bytes": 14,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/post-formal-v2/native_size.txt",
+      "sha256": "de68ef6b4f2610620120c268b1994ead0b4e59d7fd5af38eabd9978431487c15"
+    },
+    {
+      "bytes": 41,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/post-formal-v2/source_commit.txt",
+      "sha256": "13df5a707328fd87515d64e656c8fb61aa196849c581102ff62a3cd77ab54b2e"
+    },
+    {
+      "bytes": 0,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/post-formal-v2/source_status.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 41,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/post-formal-v2/source_tree.txt",
+      "sha256": "f1f9c1a8f55931d0486d362bbb7dd823975109c1695b10b740636a9f1644cacf"
+    },
+    {
+      "bytes": 1098,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/post-formal/cache_files.txt",
+      "sha256": "4b3e403d7871a137296a0309744ab2576f88e777644645b21f1a63cc16cd0337"
+    },
+    {
+      "bytes": 262,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/post-formal/cache_manifest_sha256.txt",
+      "sha256": "759a2d3d4e4e4dbaca44cca9bcd0403b4e45a83652016be49fb3156d61e04c95"
+    },
+    {
+      "bytes": 2657,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/post-formal/focused_tests.stderr.txt",
+      "sha256": "a286e6e2d0253ae03d2e56bb3f3f31a2d9e8a8feec51d28d8a3e798715ba6ad5"
+    },
+    {
+      "bytes": 1482,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/post-formal/focused_tests.stdout.txt",
+      "sha256": "b5f30c048152cf9c0100a6284ed9cae2b49a71d1577135f61585d6a7456e74a7"
+    },
+    {
+      "bytes": 0,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/post-formal/gpu_processes.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 503,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/post-formal/host_toolchain.txt",
+      "sha256": "c954705b476287cb7bc2767bb59c6dffcf19ec1715dc0089ae9279df71c6d52f"
+    },
+    {
+      "bytes": 92380,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/post-formal/native_defined_symbols.txt",
+      "sha256": "9315a0ebb53370de1ab92e8daa32e41a22a63af11d63d16329a85cde7383321f"
+    },
+    {
+      "bytes": 127,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/post-formal/native_sha256.txt",
+      "sha256": "50a39ef22dfe0d72c9fea97117f9495d8eb4af152656caf1516eb9e9b97b3161"
+    },
+    {
+      "bytes": 14,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/post-formal/native_size.txt",
+      "sha256": "de68ef6b4f2610620120c268b1994ead0b4e59d7fd5af38eabd9978431487c15"
+    },
+    {
+      "bytes": 41,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/post-formal/source_commit.txt",
+      "sha256": "13df5a707328fd87515d64e656c8fb61aa196849c581102ff62a3cd77ab54b2e"
+    },
+    {
+      "bytes": 0,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/post-formal/source_status.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 41,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/post-formal/source_tree.txt",
+      "sha256": "f1f9c1a8f55931d0486d362bbb7dd823975109c1695b10b740636a9f1644cacf"
+    },
+    {
+      "bytes": 2837,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/preflight-v3/pyoptix.json",
+      "sha256": "169ea6392798b9f8a89aad067f15c6ea317ac4b8f93f55f4720273e45530d986"
+    },
+    {
+      "bytes": 4455,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/preflight-v3/rtdl.json",
+      "sha256": "3616d3093afaa3163222cc5cc4f3a2f7d7856ab5f87056f3bc4c3b5bd26e585a"
+    },
+    {
+      "bytes": 114662,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/registered-transaction/SUMMARY.json",
+      "sha256": "6ee6a95e932daf8bf473e5c18fbbeba6e784126004eb608c6bbe8439b7f92207"
+    },
+    {
+      "bytes": 4960,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/registered-transaction/workers/block_00_pyoptix.json",
+      "sha256": "5dc4539239f419e6705f856c5588299e3f0abe6e8e03fd22cd47fe977bf365c3"
+    },
+    {
+      "bytes": 0,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/registered-transaction/workers/block_00_pyoptix.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 3572,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/registered-transaction/workers/block_00_pyoptix.stdout.txt",
+      "sha256": "d596cbeefa5c3a76e0dfffb2febba7e7468478d73ab5d3e911a0939defa3de58"
+    },
+    {
+      "bytes": 6445,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/registered-transaction/workers/block_00_rtdl.json",
+      "sha256": "2b42cc68de2091c229c090f5278b3f600a1fcf6c11bfc51f14d44e23c28fa5e7"
+    },
+    {
+      "bytes": 0,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/registered-transaction/workers/block_00_rtdl.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 4777,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/registered-transaction/workers/block_00_rtdl.stdout.txt",
+      "sha256": "27d6b1c7ba04555456d34e45b242058f2ff2fbb646ef9a8e0258c92b3002e14f"
+    },
+    {
+      "bytes": 4960,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/registered-transaction/workers/block_01_pyoptix.json",
+      "sha256": "d9ce3343af3570c08dfff0edf0fa5d04f5fcff74ca0a32eb9a05b44e6fde316d"
+    },
+    {
+      "bytes": 0,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/registered-transaction/workers/block_01_pyoptix.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 3572,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/registered-transaction/workers/block_01_pyoptix.stdout.txt",
+      "sha256": "70f67446f566ff2cd3a5c89fe00a0334ad79cdca653289b56e0965450fba96c2"
+    },
+    {
+      "bytes": 6447,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/registered-transaction/workers/block_01_rtdl.json",
+      "sha256": "ca7f358705a5298ed29c2407ba41a5fca4516b1947937cbea50f8729cb39ba2a"
+    },
+    {
+      "bytes": 0,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/registered-transaction/workers/block_01_rtdl.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 4779,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/registered-transaction/workers/block_01_rtdl.stdout.txt",
+      "sha256": "b3447d78cc97c19ea355519e70f7dcb14d6c449ac0a8a6df49fbf19e108854fe"
+    },
+    {
+      "bytes": 4960,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/registered-transaction/workers/block_02_pyoptix.json",
+      "sha256": "91a5c4493e38cba736560925b0772c8bae5dc25529c800a750db55f801d34b85"
+    },
+    {
+      "bytes": 0,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/registered-transaction/workers/block_02_pyoptix.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 3572,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/registered-transaction/workers/block_02_pyoptix.stdout.txt",
+      "sha256": "6f7e397eca9e736e4a39ed40e2ef051f2425b5e8284e640dc18ba72397d8de83"
+    },
+    {
+      "bytes": 6444,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/registered-transaction/workers/block_02_rtdl.json",
+      "sha256": "fd2b81c0b3c44ea3d5267454eb47e7108309cfce6b4ca537753fa6d9ab73e34a"
+    },
+    {
+      "bytes": 0,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/registered-transaction/workers/block_02_rtdl.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 4776,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/registered-transaction/workers/block_02_rtdl.stdout.txt",
+      "sha256": "87aaa7697e4c5eb57dc82fae539931b9942196d04e0a0590bc40dba06a4baee3"
+    },
+    {
+      "bytes": 4960,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/registered-transaction/workers/block_03_pyoptix.json",
+      "sha256": "40e0e88c2345803e7d99622c90439587a6ddbbe7b3d1785d58d99c97b1a30888"
+    },
+    {
+      "bytes": 0,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/registered-transaction/workers/block_03_pyoptix.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 3572,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/registered-transaction/workers/block_03_pyoptix.stdout.txt",
+      "sha256": "fd12fbbc4f4a5809d5f256ff4cded0250a735eb8e0f08c28eb75f0a3aaab7342"
+    },
+    {
+      "bytes": 6446,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/registered-transaction/workers/block_03_rtdl.json",
+      "sha256": "aa1de19d7c287747be4e8b55eb1f17a85165bdff5043c78c852e28d4147fa3a9"
+    },
+    {
+      "bytes": 0,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/registered-transaction/workers/block_03_rtdl.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 4778,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/registered-transaction/workers/block_03_rtdl.stdout.txt",
+      "sha256": "730c90e9c129bb7107eb64471324b519b4273b08bdae7d32284e47ff1c681cde"
+    },
+    {
+      "bytes": 4960,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/registered-transaction/workers/block_04_pyoptix.json",
+      "sha256": "2d7a36cd2c25faacb59f466426fc6702b339e966614989795a48dc14db214b07"
+    },
+    {
+      "bytes": 0,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/registered-transaction/workers/block_04_pyoptix.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 3572,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/registered-transaction/workers/block_04_pyoptix.stdout.txt",
+      "sha256": "4be223290be92d56b421be1c02b4b5813569ebe9dd3e573d4b1b3c1025754564"
+    },
+    {
+      "bytes": 6444,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/registered-transaction/workers/block_04_rtdl.json",
+      "sha256": "6ee16c408f676dc8becf3ef8ec72dbb1ac53767f666508e43efc271affcd2796"
+    },
+    {
+      "bytes": 0,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/registered-transaction/workers/block_04_rtdl.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 4776,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/registered-transaction/workers/block_04_rtdl.stdout.txt",
+      "sha256": "0754983bca7bd75cf690fab5a54096fa09054a931b4610556546e940169ad1ac"
+    },
+    {
+      "bytes": 4960,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/registered-transaction/workers/block_05_pyoptix.json",
+      "sha256": "d11d86a4b62eadb00732727e8bbd77e973ecf3bad7b39c7d98c9fc9b4a4144ec"
+    },
+    {
+      "bytes": 0,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/registered-transaction/workers/block_05_pyoptix.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 3572,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/registered-transaction/workers/block_05_pyoptix.stdout.txt",
+      "sha256": "7f078ce62fe6b0f3dc27c81cec7ebf03ed6a6625ed4f7d765e90fda29783ff70"
+    },
+    {
+      "bytes": 6447,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/registered-transaction/workers/block_05_rtdl.json",
+      "sha256": "d68727855d040bd353b4708548cf5bd44fbcf7a99a1444fb29ec4304f6a5a6d6"
+    },
+    {
+      "bytes": 0,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/registered-transaction/workers/block_05_rtdl.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 4779,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/registered-transaction/workers/block_05_rtdl.stdout.txt",
+      "sha256": "da90fd089eaaf2bf730e507505cb140b4839657e3a3c73134bc5b6e89db19dfd"
+    },
+    {
+      "bytes": 4960,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/registered-transaction/workers/block_06_pyoptix.json",
+      "sha256": "60f9cf87b0b82ac675620c6b39969a816eb1bf2ed2ba698517499a75c839cd47"
+    },
+    {
+      "bytes": 0,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/registered-transaction/workers/block_06_pyoptix.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 3572,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/registered-transaction/workers/block_06_pyoptix.stdout.txt",
+      "sha256": "60e6168111250eb4db30acc847c7603351e8cf807dd5e3e6fe8f0246affdb471"
+    },
+    {
+      "bytes": 6447,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/registered-transaction/workers/block_06_rtdl.json",
+      "sha256": "1dfe3a4f58502d889a8f9a459828943da767477d94b6851d11510f0b6679e1ae"
+    },
+    {
+      "bytes": 0,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/registered-transaction/workers/block_06_rtdl.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 4779,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/registered-transaction/workers/block_06_rtdl.stdout.txt",
+      "sha256": "f48ae45efde80c4202c50ee0b13fb317647fdaad88506090a0f0b2cf06769469"
+    },
+    {
+      "bytes": 4960,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/registered-transaction/workers/block_07_pyoptix.json",
+      "sha256": "a1591f2de2d1ef71b29c747e7f4e263d36eef9060ea73fbc8ddeac90a6c6e81e"
+    },
+    {
+      "bytes": 0,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/registered-transaction/workers/block_07_pyoptix.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 3572,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/registered-transaction/workers/block_07_pyoptix.stdout.txt",
+      "sha256": "75ce2527732e887863a7df7e96742f8ffb0fffc89d999639600f550d2487426a"
+    },
+    {
+      "bytes": 6445,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/registered-transaction/workers/block_07_rtdl.json",
+      "sha256": "0dd7c82dbec76131b6bdf66bcd1c5905544b658edc8a1bd6ead2f8755394eed6"
+    },
+    {
+      "bytes": 0,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/registered-transaction/workers/block_07_rtdl.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 4777,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/pod_capture/registered-transaction/workers/block_07_rtdl.stdout.txt",
+      "sha256": "4e0f4c68db929934abf3adb11c041c18198d4c651868d1e1772d73cfa23f2a82"
+    },
+    {
+      "bytes": 5513,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/provenance/matched_device.cu",
+      "sha256": "dcfb335a2a63ab609d21ce0361d0d530f148d157bd98b122989df0dab51f17a8"
+    },
+    {
+      "bytes": 8335,
+      "path": "history/internal_docs/goal5846_relation_startup_20260905/evidence/provenance/pyoptix_build_receipt.json",
+      "sha256": "a05317ef879630fe9de3aced08fe2ce35ee9416e684799e1f571e64c4c9abfd4"
+    }
+  ],
+  "task": {
+    "canonical_row_count": 4096,
+    "id": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+    "indexed_count": 4096,
+    "input_sha256": "8606dd3c22d424a7ee2d64b61918f6185d39d8090d1a0a64001de65054d25e0e",
+    "output_sha256": "2fb668490480cbb5d4d9bbf5a8d357435eff5fc6bb3532427ac2726cdaa88c77",
+    "public_contract": "canonical_u32_relation_rows",
+    "source_count": 4096
+  }
+}
