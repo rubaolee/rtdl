@@ -229,14 +229,25 @@ class Goal5846ExecutableCacheTest(unittest.TestCase):
 class Goal5846NativeWarmupTest(unittest.TestCase):
     def test_native_source_exports_app_free_runtime_warmup(self):
         root = Path(__file__).resolve().parents[1]
-        api = (root / "src/native/optix/rtdl_optix_api.cpp").read_text(
+        shared_api = (
+            root / "src/native/optix/rtdl_optix_rtdlexe_api.inc"
+        ).read_text(encoding="utf-8")
+        full_translation_unit = (root / "src/native/rtdl_optix.cpp").read_text(
             encoding="utf-8-sig"
+        )
+        aot_translation_unit = (
+            root / "src/native/rtdl_optix_rtdlexe.cpp"
+        ).read_text(
+            encoding="utf-8"
         )
         core = (root / "src/native/optix/rtdl_optix_core.cpp").read_text(
             encoding="utf-8"
         )
-        self.assertIn("rtdl_optix_v4_warm_runtime_v1", api)
-        self.assertIn("ScopedRtdlCudaContext context_guard", api)
+        self.assertIn("rtdl_optix_v4_warm_runtime_v1", shared_api)
+        self.assertIn("ScopedRtdlCudaContext context_guard", shared_api)
+        include = '#include "optix/rtdl_optix_rtdlexe_api.inc"'
+        self.assertIn(include, full_translation_unit)
+        self.assertIn(include, aot_translation_unit)
         constructor = core.split("ScopedRtdlCudaContext() {", 1)[1].split(
             "~ScopedRtdlCudaContext", 1
         )[0]

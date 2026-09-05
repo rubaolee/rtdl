@@ -1,9 +1,10 @@
 import json
-from pathlib import Path
 import tempfile
 import unittest
+from pathlib import Path
 from unittest.mock import patch
 
+import rtdsl.v4_rtdlexe as runtime_module
 from experiments.goal5842_causal_admission.contracts import RELATION_TASK
 from experiments.goal5842_causal_admission.tasks import build_task
 from rtdsl.v4_generic_family_lifecycle import (
@@ -16,15 +17,13 @@ from rtdsl.v4_rtdlexe import (
     install_rtdlexe_deployment,
     load_rtdlexe,
 )
-import rtdsl.v4_rtdlexe as runtime_module
 from scripts.goal5801_rtdlexe_trust import create_root, freeze
 from tests.goal5801_rtdlexe_runtime_test import (
-    _MappingObject,
     _candidate,
     _digest,
+    _MappingObject,
     _native_descriptor,
 )
-
 
 ROOT = Path(__file__).resolve().parents[1]
 

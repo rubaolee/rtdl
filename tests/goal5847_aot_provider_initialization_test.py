@@ -1,17 +1,17 @@
 from __future__ import annotations
 
-import hashlib
 import gc
+import hashlib
 import os
-from pathlib import Path
-from types import SimpleNamespace
 import tempfile
 import threading
 import unittest
-from unittest.mock import patch
+from pathlib import Path
+from types import SimpleNamespace
+from unittest.mock import Mock, patch
 
-from rtdsl import physical_execution_provenance as provenance
 import rtdsl.v4_rtdlexe as runtime
+from rtdsl import physical_execution_provenance as provenance
 
 
 class Goal5847AotProviderInitializationTest(unittest.TestCase):
@@ -75,8 +75,14 @@ class Goal5847AotProviderInitializationTest(unittest.TestCase):
         sealed.write_bytes(source.read_bytes())
         descriptor = os.open(sealed, os.O_RDONLY)
         self._descriptors.append(descriptor)
+        compiler_attempt_count = Mock(return_value=0)
         entry = runtime._NativeImageCacheEntry(
-            library=SimpleNamespace(_handle=0x5847),
+            library=SimpleNamespace(
+                _handle=0x5847,
+                rtdl_optix_v4_runtime_compiler_attempt_count_v1=(
+                    compiler_attempt_count
+                ),
+            ),
             sha256=digest,
             source_path=source,
             image_descriptor=descriptor,
@@ -207,6 +213,12 @@ class Goal5847AotProviderInitializationTest(unittest.TestCase):
 
         self.assertEqual(initializing.state, "BOUND")
         self.assertEqual(provider.native_library_sha256, digest)
+        self.assertEqual(provider.runtime_compiler_attempt_count, 0)
+        self.assertEqual(
+            entry.library.rtdl_optix_v4_runtime_compiler_attempt_count_v1
+                .call_count,
+            1,
+        )
         self.assertEqual(loader.call_count, 1)
         self.assertEqual(warm.call_count, 1)
         self.assertEqual(query.call_count, 1)
@@ -219,6 +231,9 @@ class Goal5847AotProviderInitializationTest(unittest.TestCase):
         self.assertEqual(
             repeated.exception.code, "RX057_PROVIDER_INITIALIZATION_INVALID")
         provider.close()
+        with self.assertRaises(runtime.RTDLExecutableError) as closed_counter:
+            _ = provider.runtime_compiler_attempt_count
+        self.assertEqual(closed_counter.exception.code, "RX037_USE_AFTER_CLOSE")
         self.assertTrue(readiness.released)
         self.assertEqual(entry.active_lease_ids, set())
 
@@ -247,6 +262,25 @@ class Goal5847AotProviderInitializationTest(unittest.TestCase):
                 initializing.bind(mismatched)
         self.assertEqual(rejected.exception.code, "RX050_DEPLOYMENT_INTENT_MISMATCH")
         self.assertEqual(initializing.state, "CLOSED")
+        self.assertTrue(readiness.released)
+        self.assertEqual(entry.active_lease_ids, set())
+
+    def test_public_compiler_counter_fails_closed_when_abi_is_absent(self):
+        source, digest, entry, lease, readiness = self._resources()
+        deployment, loaded, descriptor = self._deployment_and_loaded(digest)
+        delattr(
+            entry.library,
+            "rtdl_optix_v4_runtime_compiler_attempt_count_v1",
+        )
+        patches = self._patches(lease, readiness, descriptor)
+        with patches[0], patches[1], patches[2], patches[3]:
+            provider = deployment.begin_provider_initialization(source).bind(loaded)
+            try:
+                with self.assertRaises(runtime.RTDLExecutableError) as rejected:
+                    _ = provider.runtime_compiler_attempt_count
+            finally:
+                provider.close()
+        self.assertEqual(rejected.exception.code, "RX036_NATIVE_ABI_MISSING")
         self.assertTrue(readiness.released)
         self.assertEqual(entry.active_lease_ids, set())
 

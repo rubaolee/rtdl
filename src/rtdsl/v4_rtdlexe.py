@@ -3082,6 +3082,28 @@ class ProviderReadyRTDLExecutable:
     def owner_pid(self) -> int:
         return self._binding.owner_pid
 
+    @property
+    def runtime_compiler_attempt_count(self) -> int:
+        """Return the exact bound provider's app-free compiler-attempt counter."""
+
+        self._check_owner_pid_without_lock()
+        with self._active:
+            self._check()
+            counter = getattr(
+                self._binding_library,
+                "rtdl_optix_v4_runtime_compiler_attempt_count_v1",
+                None,
+            )
+            if counter is None:
+                _fail(
+                    "RX036_NATIVE_ABI_MISSING",
+                    "native.runtime_compiler_attempt_count",
+                    "rtdl_optix_v4_runtime_compiler_attempt_count_v1",
+                )
+            counter.argtypes = []
+            counter.restype = ctypes.c_uint64
+            return int(counter())
+
     def _check(self) -> None:
         if self._closed or self._closing:
             _fail(
