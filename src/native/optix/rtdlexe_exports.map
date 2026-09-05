@@ -3,6 +3,9 @@
     rtdl_optix_v4_warm_runtime_v1;
     rtdl_optix_v4_runtime_compiler_attempt_count_v1;
     rtdl_optix_v4_rtdlexe_producer_descriptor_v1;
+    rtdl_optix_traversal_audit_begin;
+    rtdl_optix_traversal_audit_finish;
+    rtdl_optix_traversal_audit_abort;
     rtdl_optix_v4_prepare_bounded_relation_callback_v1;
     rtdl_optix_v4_execute_prepared_bounded_relation_callback_v4;
     rtdl_optix_v4_execute_prepared_bounded_relation_callback_v5;

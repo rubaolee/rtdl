@@ -21,6 +21,8 @@ extern "C" int rtdl_optix_v4_goal5801_product_status_device_probe_v1(
     }, error_out, error_size);
 }
 
+#endif  // !RTDL_OPTIX_RTDLEXE_AOT_RUNTIME
+
 static void rtdl_optix_traversal_audit_begin_checked(
         uint64_t nonce_hi,
         uint64_t nonce_lo) {
@@ -103,6 +105,8 @@ extern "C" int rtdl_optix_traversal_audit_abort(
         rtdl_optix_traversal_audit_abort_checked(nonce_hi, nonce_lo);
     }, error_out, error_size);
 }
+
+#if !defined(RTDL_OPTIX_RTDLEXE_AOT_RUNTIME)
 
 #ifndef RTDL_V4_PRODUCT_ONLY
 extern "C" int rtdl_optix_collect_k_cooperative_launch_capability(

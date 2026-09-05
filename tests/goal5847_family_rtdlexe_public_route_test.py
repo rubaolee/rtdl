@@ -222,6 +222,18 @@ class Goal5847FamilyRTDLExecutablePublicRouteTest(unittest.TestCase):
             if line.strip().startswith("rtdl_optix_")
         )
         self.assertEqual(exported, builder.RTDLEXE_AOT_REQUIRED_SYMBOLS)
+        self.assertEqual(
+            set(exported) & {
+                "rtdl_optix_traversal_audit_begin",
+                "rtdl_optix_traversal_audit_finish",
+                "rtdl_optix_traversal_audit_abort",
+            },
+            {
+                "rtdl_optix_traversal_audit_begin",
+                "rtdl_optix_traversal_audit_finish",
+                "rtdl_optix_traversal_audit_abort",
+            },
+        )
         translation_unit = (
             ROOT / "src/native/rtdl_optix_rtdlexe.cpp"
         ).read_text(encoding="utf-8")
