@@ -6,7 +6,7 @@ Submission date: 2026-09-10
 
 Internal code-freeze deadline: **2026-09-08 00:00 America/New_York**
 
-Status: `PLAN_ACTIVE__GOAL5849_NEXT`
+Status: `GOAL5849_COMPLETE__GOAL5850_NEXT`
 
 ## 1. Non-negotiable operating rule
 
@@ -236,10 +236,33 @@ Goal5849 clean commit
 ```
 
 Goal5850 and Goal5851 are the only remaining GPU-dependent goals. Goal5849 is
-the next active goal. Goal5852 prevents either GPU availability or a bad result
-from consuming the protected final two days.
+complete; Goal5850 is the next active goal. Goal5852 prevents either GPU
+availability or a bad result from consuming the protected final two days.
 
-## 4. Submission success definition
+## 4. Goal5849 completion record
+
+Goal5849 completed locally on 2026-09-05.
+
+- reviewed implementation commit:
+  `1f5e06f67cd0ad08354d5659cf3684f5bb1e8e24`;
+- reviewed implementation tree:
+  `086a61d827f35fdaf5930d7d4963ab0087c1b491`;
+- Goal5844--Goal5848 tests: `232/232 PASS`;
+- Goal5848 tests under `python -O`: `98/98 PASS`;
+- selected cross-goal provider/lifecycle/runtime tests: `212/212 PASS`, with
+  four declared skips;
+- default Ruff over new Goal5848 code: pass;
+- fatal Ruff selectors over touched legacy files: pass;
+- compileall, all Goal5848 CLI `--help`, Bash syntax, Markdown links,
+  staged-diff validation and secret scan: pass.
+
+The commit immediately following the reviewed implementation commit changes
+only this sprint-status record and the repository work guide. That clean pushed
+commit, reported by `git rev-parse HEAD` after checkout, is the exact source
+identity Goal5850 and Goal5851 must both use. No implementation byte may differ
+between the two generations.
+
+## 5. Submission success definition
 
 The sprint succeeds when a scientifically defensible, anonymous paper and
 replayable artifact are submitted on time. Acceptance is not under author

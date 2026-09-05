@@ -12,8 +12,10 @@ the affected submission claim; it does not authorize code repair or rerunning a
 changed experiment.
 
 The controlling final-sprint sequence is
-`history/internal_docs/cgo2027_final_sprint_goals_20260905.md`. Goal5849 is the
-next goal. Goal5852 is the irreversible code/evidence freeze.
+`history/internal_docs/cgo2027_final_sprint_goals_20260905.md`. Goal5849 is
+complete at its recorded local gates; Goal5850, the first RTX-generation
+Goal5848 transaction, is next. Both RTX generations must use the same final
+clean pushed commit. Goal5852 is the irreversible code/evidence freeze.
 
 ## Critical active work: Goal5848 strong-baseline and post-import closure (2026-09-05)
 
