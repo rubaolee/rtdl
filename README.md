@@ -88,14 +88,13 @@ utilization.
 
 ## Documentation
 
-- [V4 overview](docs/v4/README.md)
-- [Tutorial](docs/v4/tutorial.md)
-- [Public API](docs/v4/api_reference.md)
-- [Security model](docs/v4/security_model.md)
-- [Nine-application coverage](docs/v4/nine_app_coverage.md)
-- [V3 migration](docs/v4/migration_from_v3.md)
-- [Full design](docs/v4/restricted_python_optix_callbacks_design.md)
+- [Current examples](examples/current/README.md)
+- [Getting started examples](examples/current/getting_started/README.md)
+- [Current feature examples](examples/current/features/README.md)
+- [Current research benchmarks](examples/current/research_benchmarks/README.md)
+- [CGO manuscript workspace](paper/cgo2027/README.md)
+- [Historical/current custody boundaries](KNOWN_STALE_CUSTODY_CHECKS.md)
 
-V3 remains documented under [`docs/v3`](docs/v3/README.md).  Its canonical
-Action model is still useful when an existing closed primitive already matches
-the application.
+The repository retains earlier V1-V3 examples and reports as historical
+material. They are not the V4 public compiler specification and must not be
+used to infer current V4 support.

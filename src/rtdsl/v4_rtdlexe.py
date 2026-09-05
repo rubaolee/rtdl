@@ -733,7 +733,10 @@ class InstalledRTDLDeployment:
         self.entry = MappingProxyType(frozen_entry)
 
     def begin_provider_initialization(
-        self, native_library_path: str | os.PathLike[str],
+        self,
+        native_library_path: str | os.PathLike[str],
+        *,
+        collect_phase_timings: bool = False,
     ) -> "InitializingRTDLProvider":
         """Start app-free provider admission while an artifact is verified.
 
@@ -745,6 +748,7 @@ class InstalledRTDLDeployment:
 
         return InitializingRTDLProvider(
             deployment=self, native_library_path=native_library_path,
+            collect_phase_timings=collect_phase_timings,
             _token=_INITIALIZING_PROVIDER_CAPABILITY_TOKEN)
 
 
@@ -2082,7 +2086,12 @@ def _build_rtdlexe_impl(
             composed_ptx_sha256=ptx_sha,
         )
         family_identity = family_binding["family_executable_identity"]
-        assert isinstance(family_identity, Mapping)
+        if not isinstance(family_identity, Mapping):
+            _fail(
+                "RX058_FAMILY_BINDING_INVALID",
+                "generic_family_binding.family_executable_identity",
+                "mapping required",
+            )
         family_identity_sha = _require_sha(
             family_identity["identity_sha256"],
             "generic_family_binding.family_executable_identity.identity_sha256",
@@ -2534,7 +2543,12 @@ class LoadedRTDLExecutable:
 
     def _native_admission_parameters(self) -> tuple[str, tuple[int, int]]:
         target = self.product_projection["target_toolchain"]
-        assert isinstance(target, Mapping)
+        if not isinstance(target, Mapping):
+            _fail(
+                "RX027_TARGET_BINDING_MISMATCH",
+                "product_projection.target_toolchain",
+                "mapping required",
+            )
         return (
             _require_sha(
                 target["native_library_sha256"],
@@ -2546,11 +2560,26 @@ class LoadedRTDLExecutable:
         self, library: object, *, identity_path: str,
     ) -> None:
         runtime = self.product_projection["runtime"]
-        assert isinstance(runtime, Mapping)
+        if not isinstance(runtime, Mapping):
+            _fail(
+                "RX052_EXECUTION_SCHEMA_INVALID",
+                "product_projection.runtime",
+                "mapping required",
+            )
         execution_schema = self.product_projection["execution_schema"]
-        assert isinstance(execution_schema, Mapping)
+        if not isinstance(execution_schema, Mapping):
+            _fail(
+                "RX052_EXECUTION_SCHEMA_INVALID",
+                "product_projection.execution_schema",
+                "mapping required",
+            )
         expected_descriptor = execution_schema["native_producer_descriptor"]
-        assert isinstance(expected_descriptor, Mapping)
+        if not isinstance(expected_descriptor, Mapping):
+            _fail(
+                "RX055_NATIVE_PRODUCER_SCHEMA_MISMATCH",
+                f"{identity_path}.native_producer_descriptor",
+                "mapping required",
+            )
         bundle = ("v4_custom_aabb_bounded_relation_composed"
                   if self.family == _BOUNDED
                   else "v4_builtin_triangle_checked_reduction_composed")
@@ -2573,7 +2602,12 @@ class LoadedRTDLExecutable:
         owner_handoff: _PreparedOwnerHandoff | None = None,
     ) -> object:
         runtime = self.product_projection["runtime"]
-        assert isinstance(runtime, Mapping)
+        if not isinstance(runtime, Mapping):
+            _fail(
+                "RX052_EXECUTION_SCHEMA_INVALID",
+                "product_projection.runtime",
+                "mapping required",
+            )
         if self.family == _BOUNDED:
             if not isinstance(static_input, (
                     BoundedRelationStaticInput,
@@ -2731,12 +2765,14 @@ class InitializingRTDLProvider:
         "_deployment", "_native_path", "_expected_native",
         "_expected_compute_capability", "_pid", "_state", "_error",
         "_library", "_readiness", "_timings_ns", "_lock", "_active",
-        "_thread",
+        "_thread", "_collect_phase_timings",
     )
 
     def __init__(
         self, *, deployment: InstalledRTDLDeployment,
-        native_library_path: str | os.PathLike[str], _token: object,
+        native_library_path: str | os.PathLike[str],
+        collect_phase_timings: bool = False,
+        _token: object,
     ) -> None:
         if _token is not _INITIALIZING_PROVIDER_CAPABILITY_TOKEN \
                 or not isinstance(deployment, InstalledRTDLDeployment) \
@@ -2745,6 +2781,12 @@ class InitializingRTDLProvider:
             _fail(
                 "RX057_PROVIDER_INITIALIZATION_INVALID", "initializing_provider",
                 "use InstalledRTDLDeployment.begin_provider_initialization")
+        if type(collect_phase_timings) is not bool:
+            _fail(
+                "RX006_INPUT_INVALID",
+                "initializing_provider.collect_phase_timings",
+                "exact bool required",
+            )
         self._deployment = deployment
         self._native_path = _absolute_unresolved_path(native_library_path)
         self._expected_native = _require_sha(
@@ -2758,6 +2800,7 @@ class InitializingRTDLProvider:
         self._library: _NativeLibraryLease | None = None
         self._readiness: _CudaPrimaryContextReadinessLease | None = None
         self._timings_ns: dict[str, int] = {}
+        self._collect_phase_timings = collect_phase_timings
         self._lock = threading.Lock()
         self._active = threading.Lock()
         self._thread = threading.Thread(
@@ -2774,36 +2817,99 @@ class InitializingRTDLProvider:
                 "provider initialization belongs to a different process")
 
     def _initialize(self) -> None:
-        total_started = time.perf_counter_ns()
+        collect_timings = self._collect_phase_timings
+        total_started = time.perf_counter_ns() if collect_timings else 0
         readiness = None
         library = None
         lease_handoff = _NativeImageLeaseHandoff()
         timings: dict[str, int] = {}
+        sealed_state: dict[str, object] = {}
+
+        def load_sealed_native_image() -> None:
+            phase_started = time.perf_counter_ns() if collect_timings else 0
+            try:
+                admitted = _load_verified_native_file_descriptor(
+                    self._native_path,
+                    expected_sha256=self._expected_native,
+                    code="RX032_NATIVE_IDENTITY_MISMATCH",
+                    identity_path="native_library_path",
+                    lease_handoff=lease_handoff,
+                )
+                lease_handoff.publish(admitted)
+                sealed_state["library"] = admitted
+            except BaseException as error:
+                sealed_state["error"] = error
+            finally:
+                if collect_timings:
+                    sealed_state["elapsed_ns"] = (
+                        time.perf_counter_ns() - phase_started)
+
+        sealed_thread = threading.Thread(
+            target=load_sealed_native_image,
+            name="rtdl-sealed-native-image-load",
+            daemon=True,
+        )
         try:
-            phase_started = time.perf_counter_ns()
-            readiness = _acquire_cuda_primary_context_readiness(
-                expected_compute_capability=(
-                    self._expected_compute_capability))
-            timings["cuda_primary_context"] = (
-                time.perf_counter_ns() - phase_started)
+            parallel_started = time.perf_counter_ns() if collect_timings else 0
+            sealed_thread.start()
+            phase_started = time.perf_counter_ns() if collect_timings else 0
+            readiness_error = None
+            try:
+                readiness = _acquire_cuda_primary_context_readiness(
+                    expected_compute_capability=(
+                        self._expected_compute_capability))
+            except BaseException as error:
+                readiness_error = error
+            if collect_timings:
+                timings["cuda_primary_context"] = (
+                    time.perf_counter_ns() - phase_started)
+            sealed_thread.join()
+            if collect_timings:
+                timings["sealed_native_image"] = int(
+                    sealed_state.get("elapsed_ns", 0))
+                timings["parallel_admission_wall"] = (
+                    time.perf_counter_ns() - parallel_started)
+                timings["parallel_overlap_saved"] = max(
+                    0,
+                    timings["cuda_primary_context"]
+                    + timings["sealed_native_image"]
+                    - timings["parallel_admission_wall"],
+                )
+            loaded = sealed_state.get("library")
+            if isinstance(loaded, _NativeLibraryLease):
+                library = loaded
+            sealed_error = sealed_state.get("error")
+            if readiness_error is not None or sealed_error is not None:
+                if readiness_error is not None:
+                    primary_error = readiness_error
+                    secondary_error = sealed_error
+                elif isinstance(sealed_error, BaseException):
+                    primary_error = sealed_error
+                    secondary_error = None
+                else:
+                    _fail(
+                        "RX057_PROVIDER_INITIALIZATION_INVALID",
+                        "initializing_provider.parallel_admission",
+                        "parallel admission failed without an exception",
+                    )
+                if isinstance(secondary_error, BaseException):
+                    primary_error.add_note(
+                        "parallel provider admission also failed: "
+                        + repr(secondary_error))
+                raise primary_error
+            if library is None:
+                _fail(
+                    "RX057_PROVIDER_INITIALIZATION_INVALID",
+                    "initializing_provider.native_image",
+                    "parallel sealed image loader returned no lease",
+                )
 
-            phase_started = time.perf_counter_ns()
-            library = _load_verified_native_file_descriptor(
-                self._native_path,
-                expected_sha256=self._expected_native,
-                code="RX032_NATIVE_IDENTITY_MISMATCH",
-                identity_path="native_library_path",
-                lease_handoff=lease_handoff,
-            )
-            lease_handoff.publish(library)
-            timings["sealed_native_image"] = (
-                time.perf_counter_ns() - phase_started)
-
-            phase_started = time.perf_counter_ns()
+            phase_started = time.perf_counter_ns() if collect_timings else 0
             _warm_native_provider_runtime(library)
-            timings["native_runtime_warm"] = (
-                time.perf_counter_ns() - phase_started)
-            timings["total"] = time.perf_counter_ns() - total_started
+            if collect_timings:
+                timings["native_runtime_warm"] = (
+                    time.perf_counter_ns() - phase_started)
+                timings["total"] = time.perf_counter_ns() - total_started
             with self._lock:
                 self._readiness = readiness
                 self._library = library
@@ -2812,6 +2918,11 @@ class InitializingRTDLProvider:
             readiness = None
             library = None
         except BaseException as error:
+            if sealed_thread.is_alive():
+                sealed_thread.join()
+            loaded = sealed_state.get("library")
+            if library is None and isinstance(loaded, _NativeLibraryLease):
+                library = loaded
             admitted_library = (
                 library if isinstance(library, _NativeLibraryLease)
                 else lease_handoff.lease)
@@ -2830,7 +2941,8 @@ class InitializingRTDLProvider:
                 error.add_note(
                     "provider initialization cleanup also failed: " +
                     repr(cleanup_error))
-            timings["total"] = time.perf_counter_ns() - total_started
+            if collect_timings:
+                timings["total"] = time.perf_counter_ns() - total_started
             with self._lock:
                 self._error = error
                 self._timings_ns = timings
@@ -2866,9 +2978,15 @@ class InitializingRTDLProvider:
             self._check_pid()
             with self._lock:
                 if self._state == "FAILED":
-                    assert self._error is not None
+                    error = self._error
                     self._state = "CLOSED"
-                    raise self._error
+                    if not isinstance(error, BaseException):
+                        _fail(
+                            "RX057_PROVIDER_INITIALIZATION_INVALID",
+                            "initializing_provider.bind",
+                            "failed provider initialization has no exception",
+                        )
+                    raise error
                 if self._state != "READY":
                     _fail(
                         "RX057_PROVIDER_INITIALIZATION_INVALID",
@@ -3012,6 +3130,7 @@ class InitializingRTDLProvider:
 def begin_rtdlexe_provider_initialization(
     *, deployment: InstalledRTDLDeployment,
     native_library_path: str | os.PathLike[str],
+    collect_phase_timings: bool = False,
 ) -> InitializingRTDLProvider:
     """Public function form of deployment provider initialization."""
 
@@ -3019,7 +3138,10 @@ def begin_rtdlexe_provider_initialization(
         _fail(
             "RX057_PROVIDER_INITIALIZATION_INVALID", "deployment",
             type(deployment).__name__)
-    return deployment.begin_provider_initialization(native_library_path)
+    return deployment.begin_provider_initialization(
+        native_library_path,
+        collect_phase_timings=collect_phase_timings,
+    )
 
 
 class ProviderReadyRTDLExecutable:
@@ -3653,7 +3775,12 @@ def load_rtdlexe(
             composed_ptx_sha256=ptx_sha,
         )
         family_identity = family_binding["family_executable_identity"]
-        assert isinstance(family_identity, Mapping)
+        if not isinstance(family_identity, Mapping):
+            _fail(
+                "RX058_FAMILY_BINDING_INVALID",
+                "authority.generic_family_binding.family_executable_identity",
+                "mapping required",
+            )
         if family_binding["binding_sha256"] != \
                 authority["generic_family_binding_sha256"] \
                 or family_identity["identity_sha256"] != \
@@ -3664,7 +3791,12 @@ def load_rtdlexe(
                 "authority and artifact family identities differ",
             )
     producer_inputs = execution_schema["producer_inputs"]
-    assert isinstance(producer_inputs, Mapping)
+    if not isinstance(producer_inputs, Mapping):
+        _fail(
+            "RX052_EXECUTION_SCHEMA_INVALID",
+            "execution_schema.producer_inputs",
+            "mapping required",
+        )
     for name, row in producer_inputs.items():
         if not isinstance(row, Mapping) \
                 or row.get("callback_abi_sha256") != provider["callback_abi_sha256"] \

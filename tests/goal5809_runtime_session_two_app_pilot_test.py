@@ -11,7 +11,12 @@ from unittest import mock
 
 import numpy  # Keep the extension loaded across sys.modules patch snapshots.
 
-from experiments.goal5805_successor.protocol import digest, file_record
+from experiments.goal5805_successor.protocol import (
+    RUNTIME_SCHEMA,
+    TARGET_OBSERVATION_SCHEMA,
+    digest,
+    file_record,
+)
 from experiments import goal5809_pyoptix_bulk_input as bulk_input
 from scripts import goal5809_runtime_session_two_app_pilot as pilot
 
@@ -386,8 +391,7 @@ class RuntimeSessionTwoAppPilotTest(unittest.TestCase):
             for name in (
                     "trust_root", "trust_head", "trust_package",
                     "native_library", "matched_ptx",
-                    "relation_compaction_cubin", "runtime_manifest",
-                    "target_observation"):
+                    "relation_compaction_cubin"):
                 path = root / f"{name}.bin"
                 path.write_bytes(name.encode("ascii"))
                 files[name] = path
@@ -416,9 +420,73 @@ class RuntimeSessionTwoAppPilotTest(unittest.TestCase):
             candidate_path = root / "candidate.json"
             candidate_path.write_text(
                 json.dumps(candidate, sort_keys=True), encoding="utf-8")
+
+            observation = {
+                "schema": TARGET_OBSERVATION_SCHEMA,
+                "status": "PASS__OBSERVED_BEFORE_FORMAL_WORKER_ZERO",
+                "hostname": "fixture-host",
+                "gpu_uuid": "GPU-fixture",
+                "gpu_name": "fixture-gpu",
+                "compute_capability": "8.9",
+                "driver_version": "fixture-driver",
+                "gpu_memory_total_mib": 1,
+                "cuda_visible_devices": "0",
+                "nvcc_version": "fixture-nvcc",
+                "python_version": "fixture-python",
+                "clock_read_count": 0,
+                "gpu_kernel_launch_count": 0,
+                "formal_worker_count": 0,
+                "registered_performance_timing_count": 0,
+            }
+            observation["target_observation_sha256"] = digest(observation)
+            observation_path = root / "target_observation.json"
+            observation_path.write_text(
+                json.dumps(observation, sort_keys=True), encoding="utf-8")
+
+            runtime_files = {}
+            for role in (
+                    "python_executable", "numpy_module", "cupy_module",
+                    "pyoptix_extension", "rtdlexe_module"):
+                path = root / f"{role}.bin"
+                path.write_bytes(role.encode("ascii"))
+                runtime_files[role] = file_record(path)
+            measurement_files = {
+                **{name: file_record(path) for name, path in files.items()},
+                "candidate_manifest": file_record(candidate_path),
+            }
+            runtime = {
+                "schema": RUNTIME_SCHEMA,
+                "status": "TARGET_RUNTIME_FROZEN__FORMAL_WORKER_ZERO",
+                "target_observation": file_record(observation_path),
+                "measurement_files": measurement_files,
+                "runtime_files": runtime_files,
+                "runtime_versions": {
+                    "python": "fixture-python",
+                    "numpy": "fixture-numpy",
+                    "cupy": "fixture-cupy",
+                    "pyoptix": "fixture-pyoptix",
+                    "optix_api": "fixture-optix",
+                },
+                "loader_environment": {
+                    "cuda_home": None,
+                    "cuda_visible_devices": "0",
+                    "ld_library_path": None,
+                },
+                "clock_read_count": 0,
+                "gpu_kernel_launch_count": 0,
+                "formal_worker_count": 0,
+                "registered_performance_timing_count": 0,
+            }
+            runtime["runtime_manifest_sha256"] = digest(runtime)
+            runtime_path = root / "runtime_manifest.json"
+            runtime_path.write_text(
+                json.dumps(runtime, sort_keys=True), encoding="utf-8")
+
             target_files = {
                 **{name: file_record(path) for name, path in files.items()},
                 "candidate_manifest": file_record(candidate_path),
+                "runtime_manifest": file_record(runtime_path),
+                "target_observation": file_record(observation_path),
             }
             target: dict[str, object] = {
                 "schema": "rtdl.goal5805.target_products.v1",

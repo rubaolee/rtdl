@@ -173,7 +173,19 @@ static bool goal5807_native_profile_enabled() {
 }
 
 static Goal5807ProfileClock::time_point goal5807_profile_now() {
+    if (!goal5807_native_profile_enabled())
+        return Goal5807ProfileClock::time_point{};
     return Goal5807ProfileClock::now();
+}
+
+static bool rtdl_optix_disk_cache_disabled() {
+    const char* value = std::getenv("RTDL_OPTIX_DISK_CACHE_POLICY");
+    if (!value || value[0] == '\0' || std::strcmp(value, "enabled") == 0)
+        return false;
+    if (std::strcmp(value, "disabled") == 0)
+        return true;
+    throw std::runtime_error(
+        "RTDL_OPTIX_DISK_CACHE_POLICY must be enabled or disabled");
 }
 
 static void goal5807_emit_native_phase(
@@ -1232,6 +1244,11 @@ static void init_optix_context() {
         }
         phase_start = goal5807_profile_now();
         OPTIX_CHECK(optixDeviceContextCreate(retained, &opts, &created));
+        // Production keeps the OptiX cache default. Reproducible experiments
+        // may explicitly disable it without embedding a benchmark policy in
+        // the engine or silently weakening normal startup performance.
+        if (rtdl_optix_disk_cache_disabled())
+            OPTIX_CHECK(optixDeviceContextSetCacheEnabled(created, 0));
         phase_end = goal5807_profile_now();
         goal5807_emit_native_phase(
             "shared", "context.optix_device_context_create",

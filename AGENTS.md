@@ -1,5 +1,20 @@
 # RTDL Codex Working Guide
 
+## Critical deadline override: no development after 2026-09-08 00:00 ET
+
+The CGO 2027 submission date is 2026-09-10. Production, compiler, native,
+experiment-script, test, workload, arm, timer, estimator and threshold changes
+must stop at 2026-09-08 00:00 America/New_York. After that point, only
+manuscript/bibliography edits, claim narrowing, execution of already committed
+tools, evidence preservation, artifact packaging/replay, external review and
+submission checks are allowed. A defect found after freeze removes or narrows
+the affected submission claim; it does not authorize code repair or rerunning a
+changed experiment.
+
+The controlling final-sprint sequence is
+`history/internal_docs/cgo2027_final_sprint_goals_20260905.md`. Goal5849 is the
+next goal. Goal5852 is the irreversible code/evidence freeze.
+
 ## Critical active work: Goal5848 strong-baseline and post-import closure (2026-09-05)
 
 Goal5848 is defined in
@@ -55,6 +70,15 @@ debt for low-reuse claims. External review, consensus, public/manuscript
 wording, cross-hardware generalization, arbitrary-workload claims, and
 cold-start parity remain unauthorized. Preserve Goal5843's adverse relation
 transaction; no old samples were pooled into Goal5845.
+
+Mechanism wording must be exact: RTDL device-deduplicates, transfers the
+deduplicated packed rows, then performs final native-host `std::sort` and
+`std::unique`. The pinned PyOptiX arm transfers raw duplicate events and uses
+NumPy/Python object materialization plus Python `sorted(set(...))`. No retained
+phase experiment causally allocates the exact-arm difference. The controlling
+correction is
+`history/internal_docs/goal5845_relation_public_parity_20260904/CAUSAL_WORDING_CORRECTION_20260905.md`;
+do not rewrite the historical report.
 
 ## Critical current override: Goal5844 internal parity target met (2026-09-04)
 

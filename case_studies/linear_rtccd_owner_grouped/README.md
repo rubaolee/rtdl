@@ -57,7 +57,7 @@ Included:
 - finite directed obstacle-edge queries;
 - per-trajectory Boolean collision decisions;
 - duplicate/order-invariant any-hit reduction; and
-- start-inside local fixtures with bidirectional query edges.
+- start-inside local fixtures with bidirectional query edges; and
 - a cheap O(P+Q) surface-crossing admission requiring every finite query edge
   to be longer than every individual capsule diameter.
 
@@ -68,6 +68,9 @@ Excluded:
 - face-interior collision without an edge/curve intersection;
 - query edges wholly contained in one swept capsule;
 - tangent and near-tangent inputs outside the registered numeric gap;
+- near-parallel query/capsule-axis configurations; the Boolean and
+  owner-grouped public routes do not currently enforce this exclusion, so the
+  frozen fixtures avoid it by construction rather than by admission;
 - time of impact, contact points, normals, and hit counts;
 - author-code performance comparison; and
 - any public performance or paper-reproduction claim.
@@ -98,6 +101,12 @@ collision discovery; the registered workload oracle separately verifies a
 nonzero surface-distance gap. Arbitrary near-boundary inputs are outside the
 current claim; every registered pair is at least `2^-10` away from the
 capsule-radius boundary under the independent distance oracle.
+
+The length admission does not certify the separate near-parallel exclusion.
+The current evidence is therefore exact only for the registered fixture domain;
+it is not a claim of arbitrary closed-capsule equivalence. A future broader
+route needs either an executable sufficient direction-domain certificate or a
+pairwise admission/oracle policy whose cost is disclosed.
 
 The current handoff snapshot has no root `Makefile`. On a compatible NVIDIA
 host, first run the fail-fast toolchain preflight. It compiles a minimal

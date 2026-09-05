@@ -205,7 +205,8 @@ class Goal5847AotProviderInitializationTest(unittest.TestCase):
                 patch.object(
                     runtime, "_query_native_producer_descriptor",
                     return_value=descriptor) as query:
-            initializing = deployment.begin_provider_initialization(source)
+            initializing = deployment.begin_provider_initialization(
+                source, collect_phase_timings=True)
             self.assertTrue(admitted.wait(timeout=2.0))
             self.assertEqual(initializing.state, "INITIALIZING")
             release.set()
@@ -224,8 +225,11 @@ class Goal5847AotProviderInitializationTest(unittest.TestCase):
         self.assertEqual(query.call_count, 1)
         self.assertEqual(set(initializing.phase_timings_ns), {
             "cuda_primary_context", "sealed_native_image",
+            "parallel_admission_wall", "parallel_overlap_saved",
             "native_runtime_warm", "total",
         })
+        self.assertGreaterEqual(
+            initializing.phase_timings_ns["parallel_overlap_saved"], 0)
         with self.assertRaises(runtime.RTDLExecutableError) as repeated:
             initializing.bind(loaded)
         self.assertEqual(
@@ -236,6 +240,63 @@ class Goal5847AotProviderInitializationTest(unittest.TestCase):
         self.assertEqual(closed_counter.exception.code, "RX037_USE_AFTER_CLOSE")
         self.assertTrue(readiness.released)
         self.assertEqual(entry.active_lease_ids, set())
+
+    def test_sealed_image_load_overlaps_blocked_cuda_readiness(self):
+        source, digest, entry, lease, readiness = self._resources()
+        deployment, loaded, descriptor = self._deployment_and_loaded(digest)
+        readiness_started = threading.Event()
+        sealed_loaded = threading.Event()
+        release_readiness = threading.Event()
+
+        def delayed_readiness(**_kwargs):
+            readiness_started.set()
+            self.assertTrue(release_readiness.wait(timeout=2.0))
+            return readiness
+
+        def observed_load(*_args, **_kwargs):
+            sealed_loaded.set()
+            return lease
+
+        with patch.object(
+                runtime, "_acquire_cuda_primary_context_readiness",
+                side_effect=delayed_readiness), \
+                patch.object(
+                    runtime, "_load_verified_native_file_descriptor",
+                    side_effect=observed_load), \
+                patch.object(runtime, "_warm_native_provider_runtime"), \
+                patch.object(
+                    runtime, "_query_native_producer_descriptor",
+                    return_value=descriptor):
+            initializing = deployment.begin_provider_initialization(
+                source, collect_phase_timings=True)
+            self.assertTrue(readiness_started.wait(timeout=2.0))
+            self.assertTrue(sealed_loaded.wait(timeout=2.0))
+            release_readiness.set()
+            provider = initializing.bind(loaded)
+
+        provider.close()
+        self.assertTrue(readiness.released)
+        self.assertEqual(entry.active_lease_ids, set())
+
+    def test_phase_timing_is_explicitly_opt_in(self):
+        source, digest, entry, lease, readiness = self._resources()
+        deployment, loaded, descriptor = self._deployment_and_loaded(digest)
+        patches = self._patches(lease, readiness, descriptor)
+        with patches[0], patches[1], patches[2], patches[3]:
+            initializing = deployment.begin_provider_initialization(source)
+            provider = initializing.bind(loaded)
+        self.assertEqual(dict(initializing.phase_timings_ns), {})
+        provider.close()
+        self.assertTrue(readiness.released)
+        self.assertEqual(entry.active_lease_ids, set())
+
+    def test_phase_timing_rejects_non_bool_switch(self):
+        source, digest, _entry, _lease, _readiness = self._resources()
+        deployment, _loaded, _descriptor = self._deployment_and_loaded(digest)
+        with self.assertRaises(runtime.RTDLExecutableError) as rejected:
+            deployment.begin_provider_initialization(
+                source, collect_phase_timings=1)
+        self.assertEqual(rejected.exception.code, "RX006_INPUT_INVALID")
 
     def test_mismatched_loaded_slot_fails_closed_and_releases_resources(self):
         source, digest, entry, lease, readiness = self._resources()
@@ -300,6 +361,7 @@ class Goal5847AotProviderInitializationTest(unittest.TestCase):
         self.assertTrue(readiness.released)
         self.assertEqual(entry.active_lease_ids, set())
 
+    def test_unbound_close_is_idempotent_and_releases_resources(self):
         source, digest, entry, lease, readiness = self._resources()
         deployment, _loaded, descriptor = self._deployment_and_loaded(digest)
         patches = self._patches(lease, readiness, descriptor)
@@ -309,6 +371,76 @@ class Goal5847AotProviderInitializationTest(unittest.TestCase):
             initializing.close()
         self.assertEqual(initializing.state, "CLOSED")
         self.assertTrue(readiness.released)
+        self.assertEqual(entry.active_lease_ids, set())
+
+    def test_parallel_readiness_failure_releases_loaded_native_image(self):
+        source, digest, entry, lease, _readiness = self._resources()
+        deployment, loaded, descriptor = self._deployment_and_loaded(digest)
+        with patch.object(
+                runtime, "_acquire_cuda_primary_context_readiness",
+                side_effect=RuntimeError("injected readiness failure")), \
+                patch.object(
+                    runtime, "_load_verified_native_file_descriptor",
+                    return_value=lease), \
+                patch.object(runtime, "_warm_native_provider_runtime") as warm, \
+                patch.object(
+                    runtime, "_query_native_producer_descriptor",
+                    return_value=descriptor):
+            initializing = deployment.begin_provider_initialization(source)
+            with self.assertRaisesRegex(
+                    RuntimeError, "injected readiness failure"):
+                initializing.bind(loaded)
+        self.assertEqual(warm.call_count, 0)
+        self.assertEqual(initializing.state, "CLOSED")
+        self.assertEqual(entry.active_lease_ids, set())
+
+    def test_parallel_native_load_failure_releases_readiness(self):
+        source, digest, entry, unused_lease, readiness = self._resources()
+        runtime._release_native_library_image(unused_lease)
+        deployment, loaded, descriptor = self._deployment_and_loaded(digest)
+        with patch.object(
+                runtime, "_acquire_cuda_primary_context_readiness",
+                return_value=readiness), \
+                patch.object(
+                    runtime, "_load_verified_native_file_descriptor",
+                    side_effect=RuntimeError("injected native load failure")), \
+                patch.object(runtime, "_warm_native_provider_runtime") as warm, \
+                patch.object(
+                    runtime, "_query_native_producer_descriptor",
+                    return_value=descriptor):
+            initializing = deployment.begin_provider_initialization(source)
+            with self.assertRaisesRegex(
+                    RuntimeError, "injected native load failure"):
+                initializing.bind(loaded)
+        self.assertEqual(warm.call_count, 0)
+        self.assertEqual(initializing.state, "CLOSED")
+        self.assertTrue(readiness.released)
+        self.assertEqual(entry.active_lease_ids, set())
+
+    def test_parallel_dual_failure_preserves_primary_and_secondary_errors(self):
+        source, digest, entry, unused_lease, _readiness = self._resources()
+        runtime._release_native_library_image(unused_lease)
+        deployment, loaded, descriptor = self._deployment_and_loaded(digest)
+        with patch.object(
+                runtime, "_acquire_cuda_primary_context_readiness",
+                side_effect=RuntimeError("injected readiness failure")), \
+                patch.object(
+                    runtime, "_load_verified_native_file_descriptor",
+                    side_effect=RuntimeError("injected native load failure")), \
+                patch.object(runtime, "_warm_native_provider_runtime") as warm, \
+                patch.object(
+                    runtime, "_query_native_producer_descriptor",
+                    return_value=descriptor):
+            initializing = deployment.begin_provider_initialization(source)
+            with self.assertRaisesRegex(
+                    RuntimeError, "injected readiness failure") as rejected:
+                initializing.bind(loaded)
+        self.assertEqual(warm.call_count, 0)
+        self.assertEqual(initializing.state, "CLOSED")
+        self.assertIn(
+            "injected native load failure",
+            "\n".join(getattr(rejected.exception, "__notes__", ())),
+        )
         self.assertEqual(entry.active_lease_ids, set())
 
     def test_forked_or_directly_constructed_capability_is_rejected(self):
