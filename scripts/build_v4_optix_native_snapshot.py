@@ -21,6 +21,7 @@ TRANSLATION_UNITS = (
     ROOT / "src/native/optix/rtdl_optix_cuda_helpers.cu",
 )
 REQUIRED_SYMBOLS = (
+    "rtdl_optix_v4_warm_runtime_v1",
     "rtdl_optix_v4_prepare_curve_owner_grouped_any_hit_v1",
     "rtdl_optix_v4_execute_curve_owner_grouped_any_hit_v1",
     "rtdl_optix_v4_describe_curve_owner_grouped_any_hit_v1",

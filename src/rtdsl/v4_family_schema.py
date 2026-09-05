@@ -1394,8 +1394,14 @@ def reverify_family_admission(
 
 def _derive_compilation_plan_document(
     admission: VerifiedFamilyAdmission,
+    *,
+    already_verified: bool = False,
 ) -> dict[str, Any]:
-    verified = reverify_family_admission(admission)
+    verified = (
+        admission
+        if already_verified
+        else reverify_family_admission(admission)
+    )
     receipt = verified.to_dict()
     protocol = verified.protocol_instance.to_dict()
     return {
@@ -1428,7 +1434,9 @@ class CanonicalFamilyCompilationPlan:
         if not isinstance(admission, VerifiedFamilyAdmission):
             _fail("FS048_API_TYPE", "admission", "VerifiedFamilyAdmission required")
         verified = reverify_family_admission(admission)
-        document = _derive_compilation_plan_document(verified)
+        document = _derive_compilation_plan_document(
+            verified, already_verified=True
+        )
         canonical = _canonical_bytes(document)
         object.__setattr__(self, "admission", verified)
         object.__setattr__(self, "_canonical_document", canonical)
@@ -1456,6 +1464,33 @@ def lower_canonical_compilation_plan(
     """Lower an admitted family without concrete-family dispatch."""
 
     return CanonicalFamilyCompilationPlan(admission)
+
+
+def _lower_canonical_compilation_plan_verified(
+    admission: VerifiedFamilyAdmission,
+) -> CanonicalFamilyCompilationPlan:
+    """Lower an admission issued by the current internal call chain.
+
+    The public compiler boundary subsequently reverifies the complete plan.
+    This helper only prevents the same admission from being rebuilt between
+    adjacent trusted constructors.
+    """
+
+    if not isinstance(admission, VerifiedFamilyAdmission):
+        _fail("FS048_API_TYPE", "admission", "VerifiedFamilyAdmission required")
+    document = _derive_compilation_plan_document(
+        admission, already_verified=True
+    )
+    canonical = _canonical_bytes(document)
+    result = object.__new__(CanonicalFamilyCompilationPlan)
+    object.__setattr__(result, "admission", admission)
+    object.__setattr__(result, "_canonical_document", canonical)
+    object.__setattr__(
+        result,
+        "plan_sha256",
+        _domain_digest(FAMILY_COMPILATION_PLAN_SCHEMA, canonical),
+    )
+    return result
 
 
 def reverify_canonical_compilation_plan(

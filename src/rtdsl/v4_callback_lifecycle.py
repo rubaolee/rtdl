@@ -26,7 +26,7 @@ import sys
 import threading
 import time
 from collections.abc import Mapping, Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, field, replace
 from enum import Enum
 from functools import lru_cache
 from pathlib import Path
@@ -43,6 +43,7 @@ from .v4_callback_ir import (
     VerifiedCallbackProgram,
 )
 from .v4_callback_numba_codegen import FormalNumbaLeafCachePolicy
+from .v4_executable_cache import V4ExecutableCachePolicy
 from .v4_protocol_contract import (
     CompilerProtocolProjection,
     ProtocolContractDecision,
@@ -282,15 +283,16 @@ class ProtocolPhysicalPlan:
         }
 
 
-def standard_protocol_physical_plan(protocol: ProtocolSpec) -> ProtocolPhysicalPlan:
-    """Construct the sole admitted public plan for a closed protocol."""
-
-    if isinstance(protocol, BoundedRelationProtocol):
+def _build_standard_protocol_physical_plan(
+    family: ProtocolFamily,
+    mode: TriangleReductionMode | None,
+) -> ProtocolPhysicalPlan:
+    if family is ProtocolFamily.BOUNDED_RELATION:
         from .v4_box_relation_callback import compile_callback
 
         callback = compile_callback()
         return ProtocolPhysicalPlan(
-            family=protocol.family,
+            family=family,
             geometry_family="custom_aabb",
             callback_roles=(
                 "any_hit", "bounds", "closest_hit", "finalize",
@@ -301,12 +303,13 @@ def standard_protocol_physical_plan(protocol: ProtocolSpec) -> ProtocolPhysicalP
             callback_ir_sha256=callback.ir_sha256,
             effect_digest=callback.effect_digest,
         )
-    if isinstance(protocol, TriangleReductionProtocol):
+    if family is ProtocolFamily.TRIANGLE_REDUCTION:
         from .v4_triangle_standard_library import compile_count_callback
 
+        assert mode is not None
         callback = compile_count_callback()
         return ProtocolPhysicalPlan(
-            family=protocol.family,
+            family=family,
             geometry_family="builtin_triangle",
             callback_roles=("any_hit", "finalize", "make_ray", "miss"),
             template_id="builtin_triangle_checked_reduction_v1",
@@ -315,11 +318,40 @@ def standard_protocol_physical_plan(protocol: ProtocolSpec) -> ProtocolPhysicalP
             effect_digest=callback.effect_digest,
             reducer_algebra=(
                 "checked_u64_product_sum"
-                if protocol.mode is TriangleReductionMode.WEIGHTED_HIT_COUNT
+                if mode is TriangleReductionMode.WEIGHTED_HIT_COUNT
                 else "checked_u64_sum"
             ),
         )
-    _fail("PL014_PROTOCOL_UNSUPPORTED", "protocol", type(protocol).__name__)
+    _fail("PL014_PROTOCOL_UNSUPPORTED", "protocol", family.value)
+
+
+@lru_cache(maxsize=8)
+def _standard_protocol_physical_plan_template(
+    family: ProtocolFamily,
+    mode: TriangleReductionMode | None,
+) -> tuple[ProtocolPhysicalPlan, str, bytes]:
+    plan = _build_standard_protocol_physical_plan(family, mode)
+    return plan, plan.plan_sha256, _canonical(plan.to_dict())
+
+
+def standard_protocol_physical_plan(protocol: ProtocolSpec) -> ProtocolPhysicalPlan:
+    """Return the exact sealed plan for one closed public protocol family."""
+
+    if isinstance(protocol, BoundedRelationProtocol):
+        key = (protocol.family, None)
+    elif isinstance(protocol, TriangleReductionProtocol):
+        key = (protocol.family, protocol.mode)
+    else:
+        _fail("PL014_PROTOCOL_UNSUPPORTED", "protocol", type(protocol).__name__)
+    plan, expected_sha256, expected_document = (
+        _standard_protocol_physical_plan_template(*key)
+    )
+    if (
+        plan.plan_sha256 != expected_sha256
+        or _canonical(plan.to_dict()) != expected_document
+    ):
+        _fail("PL034_PHYSICAL_PLAN_MISMATCH", "physical_plan", "sealed plan drift")
+    return plan
 
 
 @dataclass(frozen=True)
@@ -383,6 +415,11 @@ class V4Toolchain:
     expected_numba_version: str
     expected_numpy_version: str
     formal_leaf_cache: FormalNumbaLeafCachePolicy | None = None
+    executable_cache: V4ExecutableCachePolicy | None = None
+    overlap_native_initialization: bool = False
+    _native_library_warmup: object | None = field(
+        default=None, repr=False, compare=False
+    )
 
     def __post_init__(self) -> None:
         capability = tuple(int(item) for item in self.compute_capability)
@@ -410,9 +447,70 @@ class V4Toolchain:
                 "toolchain.formal_leaf_cache",
                 type(self.formal_leaf_cache).__name__,
             )
+        if self.executable_cache is not None and not isinstance(
+            self.executable_cache, V4ExecutableCachePolicy
+        ):
+            _fail(
+                "PL037_CACHE_POLICY_INVALID",
+                "toolchain.executable_cache",
+                type(self.executable_cache).__name__,
+            )
+        if type(self.overlap_native_initialization) is not bool:
+            _fail(
+                "PL038_OVERLAP_POLICY_INVALID",
+                "toolchain.overlap_native_initialization",
+                type(self.overlap_native_initialization).__name__,
+            )
+        if (
+            self._native_library_warmup is not None
+            and not isinstance(self._native_library_warmup, _NativeLibraryWarmup)
+        ):
+            _fail(
+                "PL041_NATIVE_WARMUP_INVALID",
+                "toolchain.native_library_warmup",
+                type(self._native_library_warmup).__name__,
+            )
         object.__setattr__(self, "compute_capability", capability)
         object.__setattr__(self, "optix_include", optix)
         object.__setattr__(self, "cuda_include", cuda)
+
+    def begin_native_initialization(self, target: V4Target) -> "V4Toolchain":
+        """Return a target-bound toolchain while app-free startup proceeds.
+
+        Calling this before route construction overlaps one process-wide native
+        context initialization with CPU-only declaration, admission, and
+        materialization.  The operation exposes no CUDA/OptiX handle and all
+        failures are joined and reported before native prepare can proceed.
+        """
+
+        if not isinstance(target, V4Target):
+            _fail(
+                "PL007_TARGET_PROFILE_REQUIRED",
+                "target",
+                type(target).__name__,
+            )
+        expected_capability = ".".join(
+            str(item) for item in self.compute_capability
+        )
+        if target.profile.compute_capability != expected_capability:
+            _fail(
+                "PL010_COMPUTE_CAPABILITY_INVALID",
+                "target.compute_capability",
+                target.profile.compute_capability,
+            )
+        if self._native_library_warmup is not None:
+            if not self._native_library_warmup.matches(target):
+                _fail(
+                    "PL042_NATIVE_WARMUP_TARGET_MISMATCH",
+                    "target",
+                    target.profile.target_sha256,
+                )
+            return self
+        return replace(
+            self,
+            overlap_native_initialization=True,
+            _native_library_warmup=_NativeLibraryWarmup(target),
+        )
 
     @classmethod
     def current(
@@ -422,6 +520,8 @@ class V4Toolchain:
         optix_include: str | Path,
         cuda_include: str | Path,
         formal_leaf_cache: FormalNumbaLeafCachePolicy | None = None,
+        executable_cache: V4ExecutableCachePolicy | None = None,
+        overlap_native_initialization: bool = False,
     ) -> "V4Toolchain":
         return cls(
             compute_capability=compute_capability,
@@ -434,6 +534,8 @@ class V4Toolchain:
             expected_numba_version=importlib.metadata.version("numba"),
             expected_numpy_version=importlib.metadata.version("numpy"),
             formal_leaf_cache=formal_leaf_cache,
+            executable_cache=executable_cache,
+            overlap_native_initialization=overlap_native_initialization,
         )
 
 
@@ -933,6 +1035,15 @@ def materialize_protocol_program(
     """Compile one exact target-bound executable; does not create GPU state."""
 
     _check_target_toolchain(program, target, toolchain)
+    native_warmup = toolchain._native_library_warmup
+    if native_warmup is not None and not native_warmup.matches(target):
+        _fail(
+            "PL042_NATIVE_WARMUP_TARGET_MISMATCH",
+            "target",
+            target.profile.target_sha256,
+        )
+    if native_warmup is None and toolchain.overlap_native_initialization:
+        native_warmup = _NativeLibraryWarmup(target)
     started = time.perf_counter()
     options = dict(
         compute_capability=toolchain.compute_capability,
@@ -971,6 +1082,7 @@ def materialize_protocol_program(
         executable, compiler_log = compile_verified_bounded_relation_executable(
             authority, contract, abi,
             any_hit_proof_authority=program._proof,
+            executable_cache=toolchain.executable_cache,
             **options,
         )
         physical_sha = authority.physical.schema.schema_sha256
@@ -1060,6 +1172,7 @@ def materialize_protocol_program(
         compiler_log_sha256=hashlib.sha256(compiler_log.encode("utf-8")).hexdigest(),
         materialize_seconds=time.perf_counter() - started,
         protocol_contract_decision=protocol_contract_decision,
+        native_library_warmup=native_warmup,
     )
 
 
@@ -1070,9 +1183,6 @@ def _load_exact_native_library(target: V4Target):
     before = _file_sha256(path)
     if before != target.profile.native_sha256:
         _fail("PL009_NATIVE_IDENTITY_MISMATCH", "target", "bytes changed before load")
-    from . import optix_runtime
-
-    optix_runtime._ensure_cuda_driver_initialized()
     try:
         library = ctypes.CDLL(str(path))
     except OSError as error:
@@ -1087,8 +1197,111 @@ def _load_exact_native_library(target: V4Target):
     from .physical_execution_provenance import _register_loaded_provider_identity
 
     _register_loaded_provider_identity(library, path, after)
-    optix_runtime._register_argtypes(library)
     return library
+
+
+def _warm_exact_native_runtime(library) -> None:
+    """Initialize the app-free native OptiX singleton or fail closed."""
+
+    warm = getattr(library, "rtdl_optix_v4_warm_runtime_v1", None)
+    if warm is None:
+        _fail(
+            "PL039_NATIVE_WARMUP_ABI_MISSING",
+            "native.rtdl_optix_v4_warm_runtime_v1",
+            "required overlap ABI is absent",
+        )
+    warm.argtypes = [ctypes.POINTER(ctypes.c_char), ctypes.c_size_t]
+    warm.restype = ctypes.c_int
+    error = ctypes.create_string_buffer(16_384)
+    if int(warm(error, len(error))) != 0:
+        detail = error.value.decode("utf-8", errors="replace") or "unknown error"
+        _fail("PL040_NATIVE_WARMUP_FAILED", "native.runtime", detail)
+
+
+def _initialize_v4_cuda_driver():
+    """Run only process-wide cuInit; native code retains the sole context."""
+
+    names = ("nvcuda.dll",) if os.name == "nt" else ("libcuda.so.1", "libcuda.so")
+    cuda = None
+    for name in names:
+        try:
+            cuda = ctypes.CDLL(name)
+            break
+        except OSError:
+            continue
+    if cuda is None:
+        _fail("PL030_NATIVE_LOAD_FAILED", "cuda", "CUDA driver library unavailable")
+    cuda.cuInit.argtypes = [ctypes.c_uint]
+    cuda.cuInit.restype = ctypes.c_int
+    if int(cuda.cuInit(0)) != 0:
+        _fail("PL030_NATIVE_LOAD_FAILED", "cuda", "cuInit failed")
+    return cuda
+
+
+class _NativeLibraryWarmup:
+    """Overlap app-free driver/DSO initialization with CPU materialization."""
+
+    def __init__(self, target: V4Target) -> None:
+        self._target = target
+        self._library = None
+        self._cuda_driver_library = None
+        self._error: Exception | None = None
+        self._event = threading.Event()
+        self._thread = threading.Thread(
+            target=self._run,
+            name="rtdl-v4-native-initialization",
+            daemon=True,
+        )
+        self._thread.start()
+
+    def _run(self) -> None:
+        try:
+            driver_result: list[object] = []
+            driver_errors: list[Exception] = []
+
+            def initialize_driver() -> None:
+                try:
+                    driver_result.append(_initialize_v4_cuda_driver())
+                except Exception as error:
+                    driver_errors.append(error)
+
+            driver_thread = threading.Thread(
+                target=initialize_driver,
+                name="rtdl-v4-cuda-driver-initialization",
+                daemon=True,
+            )
+            driver_thread.start()
+            try:
+                self._library = _load_exact_native_library(self._target)
+            finally:
+                driver_thread.join()
+            if driver_errors:
+                raise driver_errors[0]
+            if len(driver_result) != 1:
+                _fail("PL030_NATIVE_LOAD_FAILED", "cuda", "cuInit produced no result")
+            self._cuda_driver_library = driver_result[0]
+            _warm_exact_native_runtime(self._library)
+        except Exception as error:
+            self._error = error
+        finally:
+            self._event.set()
+
+    def matches(self, target: V4Target) -> bool:
+        return (
+            isinstance(target, V4Target)
+            and target.profile.target_sha256
+            == self._target.profile.target_sha256
+        )
+
+    def finish(self):
+        self._event.wait()
+        if self._error is not None:
+            raise self._error
+        if self._library is None:
+            _fail("PL030_NATIVE_LOAD_FAILED", "native_warmup", "no library")
+        # Native prepare selects the singleton's primary context on this
+        # thread.  The warmup deliberately exposes no context handle here.
+        return self._library
 
 
 def _prepare_bounded_relation_backend(backend, static_input, target, library):
@@ -1138,6 +1351,7 @@ class MaterializedProtocolProgram:
         compiler_log_sha256: str,
         materialize_seconds: float,
         protocol_contract_decision: ProtocolContractDecision,
+        native_library_warmup: _NativeLibraryWarmup | None = None,
     ) -> None:
         self._program = program
         self._target = target
@@ -1147,6 +1361,7 @@ class MaterializedProtocolProgram:
         self._compiler_log_sha256 = compiler_log_sha256
         self.materialize_seconds = float(materialize_seconds)
         self._protocol_contract_decision = protocol_contract_decision
+        self._native_library_warmup = native_library_warmup
         self._pid = os.getpid()
         self._thread = threading.get_ident()
         self._lock = threading.Lock()
@@ -1198,7 +1413,11 @@ class MaterializedProtocolProgram:
                 )
             self._state = "preparing"
             try:
-                library = _load_exact_native_library(self._target)
+                library = (
+                    self._native_library_warmup.finish()
+                    if self._native_library_warmup is not None
+                    else _load_exact_native_library(self._target)
+                )
                 if self._program.protocol.family is ProtocolFamily.BOUNDED_RELATION:
                     if not isinstance(static_input, BoundedRelationStaticInput):
                         _fail("PL025_STATIC_INPUT_MISMATCH", "static_input", type(static_input).__name__)
@@ -1514,6 +1733,7 @@ __all__ = [
     "BoundedRelationProtocol",
     "BoundedRelationStaticInput",
     "FormalNumbaLeafCachePolicy",
+    "V4ExecutableCachePolicy",
     "MaterializedProtocolProgram",
     "PreparedProtocolProgram",
     "ProtocolExecutableIdentity",

@@ -18,8 +18,6 @@ from .physical_execution_provenance import (
     build_validated_compact_traversal_receipt,
 )
 from .v4_bounded_relation import (
-    compile_bounded_relation_contract,
-    verify_bounded_relation_schema,
     verify_precanonical_bounded_relation,
 )
 from .v4_bounded_relation_optix_compiler import (
@@ -32,7 +30,6 @@ from .v4_bounded_relation_optix_runtime import (
     _native_path,
     _Status,
 )
-from .v4_callback_abi import verify_compiled_callback_abi
 
 
 class _FastPathReceipt(ctypes.Structure):
@@ -425,23 +422,13 @@ class PreparedBoundedRelationOwner:
         native_library_path=None,
     ):
         started = time.perf_counter()
-        fresh = verify_bounded_relation_schema(authority.physical, authority.schema)
-        if (
-            fresh != authority
-            or verify_compiled_callback_abi(
-                abi,
-                fresh.physical.callback,
-                any_hit_proof_authority=any_hit_proof_authority,
-                physical_schema_authority=fresh.physical,
-            )
-            != abi
-            or compile_bounded_relation_contract(fresh, abi_sha256=abi.abi_sha256)
-            != contract
-        ):
-            raise RuntimeError("bounded-relation authority/ABI/contract drift")
+        # The compiler registered this executable as a one-shot live
+        # capability after full schema/ABI/contract verification.  Consuming
+        # its structural seal rechecks every bound byte and rejects drift;
+        # replaying the three derivations here proved no additional fact.
         composed_ptx = consume_verified_bounded_relation_executable(
             executable,
-            fresh,
+            authority,
             contract,
             abi,
             any_hit_proof_authority=any_hit_proof_authority,
@@ -453,7 +440,7 @@ class PreparedBoundedRelationOwner:
             library = optix_runtime._load_optix_library()
         native_path = _native_path(library, native_library_path)
         native_sha = hashlib.sha256(native_path.read_bytes()).hexdigest()
-        if native_sha != fresh.physical.target.native_sha256:
+        if native_sha != authority.physical.target.native_sha256:
             raise RuntimeError("executed native bytes do not match target authority")
         (
             prepare,
@@ -485,7 +472,7 @@ class PreparedBoundedRelationOwner:
         if not token.value:
             raise RuntimeError("prepared bounded relation returned zero token")
         self._token = int(token.value)
-        self._fresh = fresh
+        self._fresh = authority
         self._contract = contract
         self._abi = abi
         self._library = library
@@ -545,7 +532,7 @@ class PreparedBoundedRelationOwner:
         self._session_identity = _digest(
             {
                 "schema": "rtdl.v4.prepared_bounded_relation_owner.v1",
-                "authority": fresh.authority_nonce,
+                "authority": authority.authority_nonce,
                 "contract": contract.contract_sha256,
                 "abi": abi.abi_sha256,
                 "ptx": self._ptx_sha,

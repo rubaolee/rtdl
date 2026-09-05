@@ -1,0 +1,106 @@
+{
+  "schema": "rtdl.goal5846.relation_startup_preregistration.v1",
+  "status": "FROZEN_BEFORE_FORMAL_GPU_TRANSACTION",
+  "frozen_local_date": "2026-09-05",
+  "question": "Can the exact public V4 bounded-relation path load a sealed compiler executable, overlap app-free native initialization, preserve all public checks and actual OptiX provenance, and reach reasonable fresh-process setup-plus-first parity with the pinned PyOptiX compatible-API path without regressing prepared steady execution?",
+  "task": {
+    "id": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+    "input_sha256": "8606dd3c22d424a7ee2d64b61918f6185d39d8090d1a0a64001de65054d25e0e",
+    "output_sha256": "2fb668490480cbb5d4d9bbf5a8d357435eff5fc6bb3532427ac2726cdaa88c77",
+    "source_count": 4096,
+    "indexed_count": 4096,
+    "canonical_row_count": 4096,
+    "public_contract": "canonical_u32_relation_rows"
+  },
+  "arms": [
+    "RTDL_PUBLIC_RELATION_OVERLAPPED_WARM_CACHE_V1",
+    "PINNED_PYOPTIX_COMPATIBLE_API"
+  ],
+  "design": {
+    "blocks": 8,
+    "balanced_alternating_order": true,
+    "fresh_process_per_arm_per_block": true,
+    "warmups_per_worker": 16,
+    "samples_per_worker": 128,
+    "samples_per_arm": 1024,
+    "sample_discard_count": 0,
+    "correctness_and_receipt_validation_outside_timed_intervals": true,
+    "rtdl_setup_phases": [
+      "native_initialization_start",
+      "route_declaration",
+      "generic_admission",
+      "materialize",
+      "prepare",
+      "first_public_execution"
+    ],
+    "pyoptix_setup_phases": [
+      "device_compile",
+      "pipeline",
+      "prepare",
+      "first_public_execution"
+    ]
+  },
+  "pass_gates": {
+    "all_workers_and_exact_oracles_pass": true,
+    "all_registered_samples_retained": true,
+    "median_within_block_setup_ratio_at_most": 1.25,
+    "worst_block_setup_ratio_at_most": 2.0,
+    "goal5845_steady_reference_ns": 366340,
+    "pooled_rtdl_steady_regression_at_most": 1.15,
+    "worst_worker_rtdl_steady_regression_at_most": 1.25
+  },
+  "required_rtdl_facts": {
+    "actual_optix_launch_count_per_execution": 2,
+    "exact_output_required": true,
+    "fail_closed_compact_status": true,
+    "sealed_leaf_cache_read_only": true,
+    "sealed_executable_cache_read_only": true,
+    "cache_bytes_unchanged_in_every_worker": true,
+    "immutable_output_identity_reuse": true,
+    "application_specific_native_logic_added": false,
+    "prepared_steady_regression_forbidden": true
+  },
+  "first_ever_cache_fill_policy": {
+    "must_be_recorded": true,
+    "must_precede_formal_worker_zero": true,
+    "must_use_new_empty_cache_roots": true,
+    "must_be_excluded_from_registered_estimands": true,
+    "sealed_hit_only_replay_required": true
+  },
+  "known_comparison_boundary": {
+    "primary_pyoptix_arm_recompiles_its_pinned_device_source_in_each_fresh_worker": true,
+    "primary_rtdl_arm_loads_a_sealed_compiler_executable_in_each_fresh_worker": true,
+    "reason_for_retention": "This is the exact existing pinned compatible-API comparison contract inherited from Goal5845 and directly measures the original RTDL setup debt against that frozen path.",
+    "not_a_universal_aot_deployment_parity_claim": true
+  },
+  "prior_unregistered_diagnostics": {
+    "disclosed": true,
+    "pooled_into_transaction": false,
+    "corrected_rtdl_cached_overlapped_setup_plus_first_ns": 627851000,
+    "corrected_rtdl_steady_median_ns": 365375,
+    "approximate_existing_pinned_pyoptix_setup_plus_first_ns": 535590000,
+    "stronger_precompiled_validation_off_pyoptix_sensitivity": {
+      "setup_plus_first_ns": 236415000,
+      "steady_median_ns": 3488841,
+      "loaded_ptx_sha256": "7f79eb31ff6eedaf25c24e0910bf2989b576b13a883a4a2e5c840f72b6203b2d",
+      "interpretation": "This removes PyOptiX device compilation and debug validation. It is a separate AOT-deployment sensitivity, not the frozen primary arm, and remains an explicit next-debt warning."
+    },
+    "misinstrumented_steady_rows_retained_as_diagnostics": true,
+    "misinstrumentation": "Early Goal5846 diagnostics timed correctness and receipt validation inside the steady interval; corrected diagnostics and the formal worker time execution only."
+  },
+  "source_binding": {
+    "policy": "exact clean Git HEAD supplied to cache preparation, controller, and every worker",
+    "native_dso_built_from_that_exact_commit": true,
+    "cache_manifests_bound_by_sha256": true
+  },
+  "claim_boundary": {
+    "internal_engineering_evidence_only": true,
+    "public_or_manuscript_claim_authorized": false,
+    "external_review_complete": false,
+    "cross_hardware_generalization_authorized": false,
+    "arbitrary_workload_claim_authorized": false,
+    "precompiled_pyoptix_parity_claim_authorized": false,
+    "all_setup_performance_debt_closed_claim_authorized": false
+  },
+  "preregistration_sha256": "53111d83efc13497edae9f2721edaad5255b0bc8f268f721289f2752183d541b"
+}

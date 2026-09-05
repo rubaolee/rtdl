@@ -24,6 +24,7 @@ from rtdsl.v4 import (
     TriangleReductionMode,
     TriangleReductionProtocol,
     TriangleReductionStaticInput,
+    V4ExecutableCachePolicy,
     V4Target,
     V4Toolchain,
     compile_protocol_program,
@@ -562,6 +563,53 @@ class Goal5795PublicLifecycleTest(unittest.TestCase):
             )
         self.assertIs(compiler.call_args.kwargs["formal_leaf_cache"], policy)
 
+    def test_toolchain_threads_executable_cache_only_to_bounded_compiler(self):
+        policy = V4ExecutableCachePolicy(Path(self.temp.name) / "executables")
+        toolchain = V4Toolchain(
+            compute_capability=(8, 9),
+            optix_include=self.optix_include,
+            cuda_include=self.cuda_include,
+            expected_python_version="3.11.0",
+            expected_numba_version="test",
+            expected_numpy_version="test",
+            executable_cache=policy,
+        )
+        bounded_protocol = BoundedRelationProtocol(capacity=8)
+        bounded_program = compile_protocol_program(
+            bounded_protocol,
+            physical_plan=standard_protocol_physical_plan(bounded_protocol),
+            any_hit_proof=self.bounded_proof,
+        )
+        with patch(
+            "rtdsl.v4_bounded_relation_optix_compiler."
+            "compile_verified_bounded_relation_executable",
+            return_value=(self._fake_executable("bounded-executable-cache"), "log"),
+        ) as bounded_compiler:
+            materialize_protocol_program(
+                bounded_program, target=self.target, toolchain=toolchain
+            )
+        self.assertIs(
+            bounded_compiler.call_args.kwargs["executable_cache"], policy
+        )
+
+        triangle_protocol = TriangleReductionProtocol(
+            TriangleReductionMode.WEIGHTED_HIT_COUNT
+        )
+        triangle_program = compile_protocol_program(
+            triangle_protocol,
+            physical_plan=standard_protocol_physical_plan(triangle_protocol),
+            any_hit_proof=self.triangle_proof,
+        )
+        with patch(
+            "rtdsl.v4_triangle_reduction_optix_compiler."
+            "compile_verified_triangle_reduction_executable",
+            return_value=(self._fake_executable("triangle-no-executable-cache"), "log"),
+        ) as triangle_compiler:
+            materialize_protocol_program(
+                triangle_program, target=self.target, toolchain=toolchain
+            )
+        self.assertNotIn("executable_cache", triangle_compiler.call_args.kwargs)
+
     def test_unrecognized_or_decorative_proof_kind_is_rejected(self):
         with self.assertRaisesRegex(
             ProtocolLifecycleError, "PL003_PROOF_KIND_INVALID",
@@ -597,8 +645,6 @@ class Goal5795PublicLifecycleTest(unittest.TestCase):
 
     def test_native_dependency_load_failure_has_public_diagnostic(self):
         with patch(
-            "rtdsl.optix_runtime._ensure_cuda_driver_initialized",
-        ), patch(
             "rtdsl.v4_callback_lifecycle.ctypes.CDLL",
             side_effect=OSError("missing declared dependency"),
         ):

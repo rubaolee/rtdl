@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 from dataclasses import replace
+from functools import lru_cache
+import hashlib
 
 from .v4_callback_frontend import compile_callback_source
 from .v4_callback_ir import (
@@ -102,8 +104,43 @@ def manifest() -> CallbackModuleManifest:
     )
 
 
+@lru_cache(maxsize=1)
+def _standard_callback_template():
+    callback = compile_callback_source(BOX_RELATION_SOURCE, manifest())
+    seal = (
+        callback.program.ir_sha256,
+        callback.ir_sha256,
+        callback.effect_digest,
+        callback.payload_u32_slots,
+        callback.attribute_u32_slots,
+        callback.total_static_iterations,
+        callback.helper_call_depth,
+        callback.program.source_sha256,
+        hashlib.sha256(
+            callback.program.normalized_source.encode("utf-8")
+        ).hexdigest(),
+    )
+    return callback, seal
+
+
 def compile_callback():
-    return compile_callback_source(BOX_RELATION_SOURCE, manifest())
+    callback, expected = _standard_callback_template()
+    observed = (
+        callback.program.ir_sha256,
+        callback.ir_sha256,
+        callback.effect_digest,
+        callback.payload_u32_slots,
+        callback.attribute_u32_slots,
+        callback.total_static_iterations,
+        callback.helper_call_depth,
+        callback.program.source_sha256,
+        hashlib.sha256(
+            callback.program.normalized_source.encode("utf-8")
+        ).hexdigest(),
+    )
+    if observed != expected:
+        raise RuntimeError("standard bounded-relation callback template drift")
+    return callback
 
 
 def is_exact_standard_relation_callback(callback) -> bool:

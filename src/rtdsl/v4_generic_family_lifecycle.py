@@ -194,6 +194,7 @@ class FamilyProgramArtifactsV1:
         artifacts: Sequence[FamilyArtifactV1],
         *,
         _token: object,
+        _verified_plan_token: object | None = None,
     ) -> None:
         if _token is not _CONSTRUCTION_TOKEN:
             _fail(
@@ -201,7 +202,12 @@ class FamilyProgramArtifactsV1:
                 "artifacts",
                 "use bind_family_program_artifacts",
             )
-        verified = reverify_canonical_compilation_plan(plan)
+        if _verified_plan_token is _VERIFIED_PLAN_CONSTRUCTION_TOKEN:
+            if not isinstance(plan, CanonicalFamilyCompilationPlan):
+                _fail("GF003_PLAN", "plan", "CanonicalFamilyCompilationPlan required")
+            verified = plan
+        else:
+            verified = reverify_canonical_compilation_plan(plan)
         if not isinstance(artifacts, Sequence) or isinstance(
             artifacts, (str, bytes, bytearray, memoryview)
         ):
@@ -283,17 +289,41 @@ def bind_family_program_artifacts(
     return FamilyProgramArtifactsV1(plan, artifacts, _token=_CONSTRUCTION_TOKEN)
 
 
+def _bind_family_program_artifacts_verified(
+    plan: CanonicalFamilyCompilationPlan,
+    artifacts: Sequence[FamilyArtifactV1],
+) -> FamilyProgramArtifactsV1:
+    """Bind rows to a plan just issued by the same trusted route builder."""
+
+    return FamilyProgramArtifactsV1(
+        plan,
+        artifacts,
+        _token=_CONSTRUCTION_TOKEN,
+        _verified_plan_token=_VERIFIED_PLAN_CONSTRUCTION_TOKEN,
+    )
+
+
 def reverify_family_program_artifacts(
     plan: CanonicalFamilyCompilationPlan,
     bundle: FamilyProgramArtifactsV1,
 ) -> FamilyProgramArtifactsV1:
+    verified = reverify_canonical_compilation_plan(plan)
+    return _reverify_family_program_artifacts_verified(verified, bundle)
+
+
+def _reverify_family_program_artifacts_verified(
+    verified: CanonicalFamilyCompilationPlan,
+    bundle: FamilyProgramArtifactsV1,
+) -> FamilyProgramArtifactsV1:
+    """Rebuild a bundle against a plan verified at this trust edge."""
+
     if not isinstance(bundle, FamilyProgramArtifactsV1):
         _fail("GF035_ARTIFACT_BUNDLE", "artifacts", type(bundle).__name__)
     fresh_rows = tuple(
         FamilyArtifactV1(row.artifact_id, row.format_id, row.payload)
         for row in bundle.artifacts
     )
-    fresh = bind_family_program_artifacts(plan, fresh_rows)
+    fresh = _bind_family_program_artifacts_verified(verified, fresh_rows)
     if fresh.to_dict() != bundle.to_dict():
         _fail("GF037_ARTIFACT_DRIFT", "artifacts", "bundle identity changed")
     return fresh
@@ -329,6 +359,14 @@ def derive_family_plan_requirements(
     plan: CanonicalFamilyCompilationPlan,
 ) -> FamilyPlanRequirementsV1:
     verified = reverify_canonical_compilation_plan(plan)
+    return _derive_family_plan_requirements_verified(verified)
+
+
+def _derive_family_plan_requirements_verified(
+    verified: CanonicalFamilyCompilationPlan,
+) -> FamilyPlanRequirementsV1:
+    """Project requirements from a plan verified at the current trust edge."""
+
     shape = verified.to_dict()["family_shape"]
     graph_kinds = tuple(sorted({str(row["kind"]) for row in shape["graph_nodes"]}))
     primitive_kinds = tuple(sorted({
@@ -580,10 +618,25 @@ def expected_provider_projection(
     artifacts: FamilyProgramArtifactsV1,
 ) -> FamilyProviderProjectionV1:
     verified = reverify_canonical_compilation_plan(plan)
-    artifacts = reverify_family_program_artifacts(verified, artifacts)
+    artifacts = _reverify_family_program_artifacts_verified(
+        verified, artifacts
+    )
+    descriptor = reverify_family_provider_descriptor(descriptor)
+    return _expected_provider_projection_verified(
+        verified, descriptor, artifacts
+    )
+
+
+def _expected_provider_projection_verified(
+    verified: CanonicalFamilyCompilationPlan,
+    descriptor: FamilyProviderDescriptorV1,
+    artifacts: FamilyProgramArtifactsV1,
+) -> FamilyProviderProjectionV1:
+    """Project a provider after the caller has verified all three inputs."""
+
     document = verified.to_dict()
     protocol = document["protocol_instance"]
-    requirements = derive_family_plan_requirements(verified)
+    requirements = _derive_family_plan_requirements_verified(verified)
     return FamilyProviderProjectionV1(
         descriptor.descriptor_sha256,
         verified.plan_sha256,
@@ -765,6 +818,24 @@ class VerifiedGenericFamilyProgram:
         self._projection = projection
         self._artifacts = artifacts
         self._descriptor = descriptor
+        self._plan_snapshot = (plan.plan_sha256, bytes(plan.canonical_bytes))
+        self._artifact_snapshot = _family_artifact_snapshot(artifacts)
+        self._descriptor_snapshot = _dataclass_snapshot(descriptor)
+        self._projection_snapshot = _dataclass_snapshot(projection)
+
+    def _check_live_inputs(self) -> None:
+        if (
+            not isinstance(self._plan, CanonicalFamilyCompilationPlan)
+            or (self._plan.plan_sha256, bytes(self._plan.canonical_bytes))
+                != self._plan_snapshot
+        ):
+            _fail("GF050_PLAN_LIVE_DRIFT", "plan", "identity changed")
+        if _family_artifact_snapshot(self._artifacts) != self._artifact_snapshot:
+            _fail("GF037_ARTIFACT_DRIFT", "artifacts", "identity changed")
+        if _dataclass_snapshot(self._projection) != self._projection_snapshot:
+            _fail("GF013_PROJECTION_DRIFT", "provider_projection", "changed")
+        if _dataclass_snapshot(self._provider.descriptor) != self._descriptor_snapshot:
+            _fail("GF039_PROVIDER_DESCRIPTOR_DRIFT", "provider.descriptor", "changed")
 
     @property
     def plan(self) -> CanonicalFamilyCompilationPlan:
@@ -781,13 +852,13 @@ class VerifiedGenericFamilyProgram:
     def materialize(
         self, *, target: object, toolchain: object,
     ) -> "MaterializedGenericFamilyProgram":
-        plan = reverify_canonical_compilation_plan(self._plan)
-        artifacts = reverify_family_program_artifacts(plan, self._artifacts)
-        descriptor = reverify_family_provider_descriptor(self._provider.descriptor)
-        if descriptor != self._descriptor:
-            _fail("GF039_PROVIDER_DESCRIPTOR_DRIFT", "provider.descriptor", "changed")
-        if expected_provider_projection(plan, self._descriptor, artifacts) != self._projection:
-            _fail("GF013_PROJECTION_DRIFT", "provider_projection", "projection changed")
+        # ``compile_generic_family_program`` performed the expensive structural
+        # rederivation at the public trust edge.  These objects are immutable
+        # live capabilities; subsequent layers check byte/digest snapshots
+        # rather than reparsing the same canonical document many times.
+        self._check_live_inputs()
+        plan = self._plan
+        artifacts = self._artifacts
         handle = self._provider.materialize(
             plan,
             self._projection,
@@ -795,11 +866,7 @@ class VerifiedGenericFamilyProgram:
             target=target,
             toolchain=toolchain,
         )
-        reported_descriptor = reverify_family_provider_descriptor(
-            self._provider.descriptor
-        )
-        if reported_descriptor != self._descriptor:
-            _fail("GF039_PROVIDER_DESCRIPTOR_DRIFT", "provider.descriptor", "changed")
+        self._check_live_inputs()
         if not isinstance(handle, FamilyMaterializedHandleV1):
             _fail("GF014_MATERIALIZED_HANDLE", "provider.materialize", type(handle).__name__)
         identity = handle.identity
@@ -1013,6 +1080,45 @@ class PreparedGenericFamilyProgram:
 
 
 _CONSTRUCTION_TOKEN = object()
+_VERIFIED_PLAN_CONSTRUCTION_TOKEN = object()
+
+
+def _dataclass_snapshot(value: object) -> tuple[object, ...]:
+    fields = getattr(value, "__dataclass_fields__", None)
+    if not isinstance(fields, dict):
+        return (type(value), value)
+    return (type(value), *(getattr(value, name) for name in fields))
+
+
+def _family_artifact_snapshot(
+    bundle: FamilyProgramArtifactsV1,
+) -> tuple[object, ...]:
+    if not isinstance(bundle, FamilyProgramArtifactsV1):
+        _fail("GF035_ARTIFACT_BUNDLE", "artifacts", type(bundle).__name__)
+    rows = []
+    for row in bundle.artifacts:
+        payload = row.payload
+        if not isinstance(payload, bytes):
+            _fail("GF037_ARTIFACT_DRIFT", "artifacts", "payload type changed")
+        observed_sha = hashlib.sha256(payload).hexdigest()
+        rows.append((
+            row.artifact_id,
+            row.format_id,
+            row.payload_bytes,
+            row.payload_sha256,
+            len(payload),
+            observed_sha,
+        ))
+    return (
+        bundle.plan_sha256,
+        bundle.callback_source_sha256,
+        bundle.callback_ir_sha256,
+        bundle.effect_digest,
+        bundle.abi_sha256,
+        bundle.behavior_schema_sha256,
+        bundle.bundle_sha256,
+        tuple(rows),
+    )
 
 
 def compile_generic_family_program(
@@ -1026,9 +1132,11 @@ def compile_generic_family_program(
     if not isinstance(provider, FamilyProviderV1):
         _fail("GF026_PROVIDER", "provider", type(provider).__name__)
     verified = reverify_canonical_compilation_plan(plan)
-    artifacts = reverify_family_program_artifacts(verified, artifacts)
+    artifacts = _reverify_family_program_artifacts_verified(
+        verified, artifacts
+    )
     descriptor = reverify_family_provider_descriptor(provider.descriptor)
-    requirements = derive_family_plan_requirements(verified)
+    requirements = _derive_family_plan_requirements_verified(verified)
     _require_provider_coverage(requirements, descriptor)
     missing_artifact_formats = sorted(
         set(artifacts.artifact_formats) - set(descriptor.artifact_formats)
@@ -1045,7 +1153,9 @@ def compile_generic_family_program(
         _fail("GF039_PROVIDER_DESCRIPTOR_DRIFT", "provider.descriptor", "changed")
     if not isinstance(projection, FamilyProviderProjectionV1):
         _fail("GF028_PROVIDER_PROJECTION", "provider.project", type(projection).__name__)
-    expected = expected_provider_projection(verified, descriptor, artifacts)
+    expected = _expected_provider_projection_verified(
+        verified, descriptor, artifacts
+    )
     if projection != expected:
         _fail("GF029_PROVIDER_PROJECTION_MISMATCH", "provider.project", "not exact")
     return VerifiedGenericFamilyProgram(

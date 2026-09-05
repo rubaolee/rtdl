@@ -35,7 +35,7 @@ from .v4_family_schema import (
     FamilySchemaV1,
     ProtocolInstanceV1,
     admit_family_schema,
-    lower_canonical_compilation_plan,
+    _lower_canonical_compilation_plan_verified,
 )
 from .v4_generic_family_lifecycle import (
     FAMILY_BEHAVIOR_SCHEMA_ARTIFACT_ID,
@@ -50,10 +50,10 @@ from .v4_generic_family_lifecycle import (
     FamilyProviderExecutionV1,
     FamilyProviderV1,
     VerifiedGenericFamilyProgram,
-    bind_family_program_artifacts,
+    _bind_family_program_artifacts_verified,
     compile_generic_family_program,
-    derive_family_plan_requirements,
-    expected_provider_projection,
+    _derive_family_plan_requirements_verified,
+    _expected_provider_projection_verified,
 )
 
 
@@ -121,7 +121,7 @@ def _program_artifacts(
             _canonical_json_bytes(getattr(behavior, "to_dict")()),
         ),
     )
-    return bind_family_program_artifacts(plan, rows)
+    return _bind_family_program_artifacts_verified(plan, rows)
 
 
 def _f32_bits(value: float) -> str:
@@ -594,12 +594,13 @@ def _plan(
     behavior_schema_sha256: str,
     template_id: str,
 ) -> CanonicalFamilyCompilationPlan:
-    return lower_canonical_compilation_plan(admit_family_schema(
+    admission = admit_family_schema(
         schema,
         instance,
         behavior_schema_sha256=behavior_schema_sha256,
         canonical_template_id=template_id,
-    ))
+    )
+    return _lower_canonical_compilation_plan_verified(admission)
 
 
 class _PreparedBridge(FamilyPreparedHandleV1):
@@ -776,11 +777,22 @@ class _BoundOptixProvider(FamilyProviderV1):
         output_adapter: Callable[[object], tuple[object, str, Mapping[str, object]]],
     ) -> None:
         self._plan_sha256 = plan.plan_sha256
+        self._plan_bytes = bytes(plan.canonical_bytes)
         self._artifacts = artifacts
+        self._artifact_snapshot = tuple(
+            (
+                row.artifact_id,
+                row.format_id,
+                row.payload_bytes,
+                row.payload_sha256,
+                hashlib.sha256(row.payload).hexdigest(),
+            )
+            for row in artifacts.artifacts
+        )
         self._implementation_sha256 = _module_sha256()
         self._materializer = materializer
         self._output_adapter = output_adapter
-        requirements = derive_family_plan_requirements(plan)
+        requirements = _derive_family_plan_requirements_verified(plan)
         self._descriptor = FamilyProviderDescriptorV1(
             provider_id=provider_id,
             provider_version="v1",
@@ -794,15 +806,29 @@ class _BoundOptixProvider(FamilyProviderV1):
             operator_contracts=requirements.operator_contracts,
             capabilities=requirements.capabilities,
         )
+        self._projection = None
 
     def _check_plan(self, plan: CanonicalFamilyCompilationPlan) -> None:
-        if plan.plan_sha256 != self._plan_sha256:
+        if (
+            plan.plan_sha256 != self._plan_sha256
+            or bytes(plan.canonical_bytes) != self._plan_bytes
+        ):
             raise ValueError("provider is bound to a different family plan")
         if _module_sha256() != self._implementation_sha256:
             raise RuntimeError("provider implementation bytes changed after binding")
 
     def _check_artifacts(self, artifacts: FamilyProgramArtifactsV1) -> None:
-        if artifacts != self._artifacts:
+        snapshot = tuple(
+            (
+                row.artifact_id,
+                row.format_id,
+                row.payload_bytes,
+                row.payload_sha256,
+                hashlib.sha256(row.payload).hexdigest(),
+            )
+            for row in artifacts.artifacts
+        )
+        if snapshot != self._artifact_snapshot:
             raise ValueError("provider is bound to a different artifact bundle")
 
     @property
@@ -816,12 +842,21 @@ class _BoundOptixProvider(FamilyProviderV1):
     ):
         self._check_plan(plan)
         self._check_artifacts(artifacts)
-        return expected_provider_projection(plan, self._descriptor, artifacts)
+        if self._projection is None:
+            self._projection = _expected_provider_projection_verified(
+                plan, self._descriptor, artifacts
+            )
+        return self._projection
 
     def materialize(self, plan, projection, artifacts, *, target, toolchain):
         self._check_plan(plan)
         self._check_artifacts(artifacts)
-        expected = expected_provider_projection(plan, self._descriptor, artifacts)
+        expected = self._projection
+        if expected is None:
+            expected = _expected_provider_projection_verified(
+                plan, self._descriptor, artifacts
+            )
+            self._projection = expected
         if projection != expected:
             raise ValueError("provider projection differs from bound plan")
         materialized = self._materializer(target, toolchain)

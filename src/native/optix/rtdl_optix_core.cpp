@@ -1146,9 +1146,13 @@ static OptixDeviceContext get_optix_context() {
 class ScopedRtdlCudaContext {
 public:
     ScopedRtdlCudaContext() {
+        // A genuinely cold process has no initialized CUDA driver yet, so
+        // querying its current context first is invalid.  The singleton
+        // initializer performs cuInit and restores its own caller context;
+        // only then can this per-thread guard snapshot and select safely.
+        std::call_once(g_optix_init_flag, init_optix_context);
         CU_CHECK(cuCtxGetCurrent(&prior_));
         try {
-            std::call_once(g_optix_init_flag, init_optix_context);
             CU_CHECK(cuCtxSetCurrent(g_cuda_primary_ctx));
             active_ = true;
         } catch (...) {

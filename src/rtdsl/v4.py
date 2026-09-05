@@ -25,6 +25,10 @@ from .v4_callback_interpreter import (
     execute_callback_role,
 )
 from .v4_callback_numba_codegen import FormalNumbaLeafCachePolicy
+from .v4_executable_cache import (
+    V4ExecutableCachePolicy,
+    materialize_executable_cache_manifest,
+)
 from .v4_callback_ir import (
     AABB3F,
     BOOL,
@@ -187,6 +191,7 @@ __all__ = sorted([
     "TriangleWindingPolicy",
     "V4_API_VERSION",
     "V4Target",
+    "V4ExecutableCachePolicy",
     "V4Toolchain",
     "VerifiedCallbackProgram",
     "VerifiedBuiltinTriangleCallbackProgram",
@@ -200,6 +205,7 @@ __all__ = sorted([
     "derive_compiler_recognized_any_hit_proof",
     "execute_callback_role",
     "materialize_protocol_program",
+    "materialize_executable_cache_manifest",
     "materialize_builtin_triangle_callback_program",
     "parse_callback_source",
     "standard_protocol_physical_plan",

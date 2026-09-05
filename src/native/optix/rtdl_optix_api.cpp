@@ -6,6 +6,17 @@
     return 0;
 }
 
+// App-free runtime warmup for public V4 lifecycle overlap.  The native
+// singleton remains the sole owner of OptiX context construction; callers do
+// not receive a context handle and cannot use this entry point to bypass a
+// family's prepare/execute contract.
+extern "C" int rtdl_optix_v4_warm_runtime_v1(
+        char* error_out, size_t error_size) {
+    return handle_native_call([&]() {
+        ScopedRtdlCudaContext context_guard;
+    }, error_out, error_size);
+}
+
 extern "C" uint64_t rtdl_optix_v4_runtime_compiler_attempt_count_v1() {
     return g_rtdlexe_runtime_compiler_attempt_count.load(
         std::memory_order_relaxed);
