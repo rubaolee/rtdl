@@ -1,4 +1,6 @@
-﻿extern "C" int rtdl_optix_get_version(int* major_out, int* minor_out, int* patch_out) {
+﻿#if !defined(RTDL_OPTIX_RTDLEXE_AOT_RUNTIME)
+
+extern "C" int rtdl_optix_get_version(int* major_out, int* minor_out, int* patch_out) {
     if (!major_out || !minor_out || !patch_out) return 1;
     *major_out = OPTIX_VERSION / 10000;
     *minor_out = (OPTIX_VERSION % 10000) / 100;
@@ -804,6 +806,8 @@ extern "C" int rtdl_optix_v4_destroy_prepared_particle_strict_interior_v1(
     }, error_out, error_size);
 }
 
+#endif  // !RTDL_OPTIX_RTDLEXE_AOT_RUNTIME
+
 // Goal5773 prepared form of the unchanged triangle-reduction family.
 extern "C" int rtdl_optix_v4_prepare_triangle_reduction_callback_v1(
         const char* composed_ptx,
@@ -1088,6 +1092,8 @@ extern "C" int rtdl_optix_v4_execute_prepared_triangle_reduction_callback_v7(
     }, error_out, error_size);
 }
 
+#if !defined(RTDL_OPTIX_RTDLEXE_AOT_RUNTIME)
+
 extern "C" int rtdl_optix_v4_execute_prepared_triangle_reduction_callback_v8(
         uint64_t prepared_token,
         const float* query_origins_xyz,
@@ -1133,6 +1139,8 @@ extern "C" int rtdl_optix_v4_execute_prepared_triangle_reduction_callback_v8(
         }
     }, error_out, error_size);
 }
+
+#endif  // !RTDL_OPTIX_RTDLEXE_AOT_RUNTIME
 
 extern "C" int rtdl_optix_v4_checked_u64_product_sum_host_v1(
         const uint64_t* values, const uint64_t* multipliers, size_t count,
@@ -1190,6 +1198,8 @@ extern "C" int rtdl_optix_v4_destroy_prepared_triangle_reduction_callback_v2(
         *prepared_token_inout = 0u;
     }, error_out, error_size);
 }
+
+#if !defined(RTDL_OPTIX_RTDLEXE_AOT_RUNTIME)
 
 // Goal5776 partner-resident form of the same verified built-in-triangle count
 // callback.  All input/output columns are CUDA device pointers; the symbol
@@ -1264,6 +1274,8 @@ extern "C" int rtdl_optix_v4_run_bounded_relation_callback_v1(
             output_status, output_counters);
     }, error_out, error_size);
 }
+
+#endif  // !RTDL_OPTIX_RTDLEXE_AOT_RUNTIME
 
 // Goal5773 prepared form of the unchanged bounded-relation family.
 extern "C" int rtdl_optix_v4_prepare_bounded_relation_callback_v1(
@@ -1446,6 +1458,8 @@ extern "C" int rtdl_optix_v4_execute_prepared_bounded_relation_callback_v7(
         output_fast_receipt, error_out, error_size);
 }
 
+#if !defined(RTDL_OPTIX_RTDLEXE_AOT_RUNTIME)
+
 // Row-returning public successor: perform the same app-neutral compact-status
 // execution as v5 while capturing both OptiX launches in the same native call.
 // This removes Python audit-boundary overhead without weakening traversal
@@ -1487,6 +1501,8 @@ extern "C" int rtdl_optix_v4_execute_prepared_bounded_relation_callback_v8(
         }
     }, error_out, error_size);
 }
+
+#endif  // !RTDL_OPTIX_RTDLEXE_AOT_RUNTIME
 
 // Goal5801 A1: expose an actual native build counter and a two-phase commit.
 // The public owner commits only after device status, oracle, and audit success;
@@ -1551,6 +1567,8 @@ extern "C" int rtdl_optix_v4_destroy_prepared_bounded_relation_callback_v2(
         *prepared_token_inout = 0u;
     }, error_out, error_size);
 }
+
+#if !defined(RTDL_OPTIX_RTDLEXE_AOT_RUNTIME)
 
 #ifndef RTDL_V4_PRODUCT_ONLY
 // Goal5761 app-neutral prepared multi-round spatial candidate route.  The
@@ -12171,3 +12189,5 @@ extern "C" int rtdl_optix_collect_k_four_way_merge_probe(
 }
 
 #endif  // RTDL_V4_PRODUCT_ONLY
+
+#endif  // !RTDL_OPTIX_RTDLEXE_AOT_RUNTIME

@@ -6,3 +6,4 @@ namespace {
 } // anonymous namespace
 
 #include "optix/rtdl_optix_rtdlexe_api.inc"
+#include "optix/rtdl_optix_api.cpp"

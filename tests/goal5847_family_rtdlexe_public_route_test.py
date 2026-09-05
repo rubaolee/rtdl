@@ -228,7 +228,18 @@ class Goal5847FamilyRTDLExecutablePublicRouteTest(unittest.TestCase):
         self.assertIn('rtdl_optix_v4_callback_poc.cpp', translation_unit)
         self.assertIn('rtdl_optix_rtdlexe_api.inc', translation_unit)
         self.assertNotIn('rtdl_optix_workloads.cpp', translation_unit)
-        self.assertNotIn('rtdl_optix_api.cpp', translation_unit)
+        self.assertIn('rtdl_optix_api.cpp', translation_unit)
+        api = (
+            ROOT / "src/native/optix/rtdl_optix_api.cpp"
+        ).read_text(encoding="utf-8-sig")
+        self.assertGreaterEqual(
+            api.count("#if !defined(RTDL_OPTIX_RTDLEXE_AOT_RUNTIME)"),
+            5,
+        )
+        self.assertEqual(
+            api.count("#if !defined(RTDL_OPTIX_RTDLEXE_AOT_RUNTIME)"),
+            api.count("#endif  // !RTDL_OPTIX_RTDLEXE_AOT_RUNTIME"),
+        )
         helper = (
             ROOT / "src/native/optix/rtdl_optix_cuda_helpers.cu"
         ).read_text(encoding="utf-8")
