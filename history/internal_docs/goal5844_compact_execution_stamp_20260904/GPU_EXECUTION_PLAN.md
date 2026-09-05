@@ -1,8 +1,13 @@
 # Goal5844 GPU execution and repair plan
 
-Status: ready for an arbitrary single-NVIDIA-GPU pod. No specific GPU model,
-driver branch, CUDA image, or preinstalled OptiX SDK is required from the
-owner. Environment repair is agent-owned.
+Status: pre-pod implementation and hostile validation complete. The remaining
+work is actual CUDA/OptiX compilation, GPU worker-zero, measurement, and any
+measurement-directed optimization. No specific GPU model, R570/R590 branch,
+or preinstalled OptiX SDK is required. The pod must expose an NVIDIA Linux GPU
+and a driver supported by the frozen OptiX 7.6--9.1 registry. A CUDA development
+toolkit is intrinsically required to compile the current native provider; the
+runner discovers it, and missing user-space Python/OptiX/PyOptiX dependencies
+are agent-owned repair work.
 
 ## Fixed comparison
 
@@ -29,9 +34,10 @@ owner. Environment repair is agent-owned.
 3. Select the highest mutually usable OptiX header API, beginning with 9.1 and
    falling back to 9.0 or another source-compatible API if runtime negotiation
    fails. Build pinned PyOptiX and RTDL against the same selected headers.
-4. Create an isolated Python 3.12 environment and install pinned NumPy, Numba,
-   llvmlite, CuPy/CUDA bindings, build tools, and the clean-built PyOptiX wheel.
-   Missing packages or headers are repair work, not a request for another pod.
+4. Create an isolated Python 3.11/3.12 environment and install the fully pinned
+   Python dependency closure and clean-built PyOptiX wheel. A missing suitable
+   Python uses pinned `uv==0.12.10`, not a mutable installer URL. Missing
+   packages or headers are repair work, not a request for another pod.
 5. Build the current RTDL DSO with
    `scripts/goal5838_build_selected_sphere_optix_provider.py`, binding exact
    commit, GPU compute capability, CUDA/NVRTC files, headers, and build log.
@@ -47,6 +53,54 @@ owner. Environment repair is agent-owned.
    selected SDK/CUDA identities.
 10. Copy evidence back, independently revalidate it on the Mac, and write the
     measured phase diagnosis.
+
+## Single local entry point
+
+After the final pre-pod commit is pushed as the tip of the current branch, the
+only host-side entry point is:
+
+```bash
+COMMIT=$(git rev-parse HEAD)
+PYTHONPATH=src:. /Users/rl2025/.venvs/rtdl-goal5837-py312/bin/python \
+  scripts/goal5844_launch_pod_transaction.py \
+  --host POD_HOST --port POD_PORT --user root \
+  --identity /Users/rl2025/.ssh/id_ed25519_rtdl_codex \
+  --expected-commit "$COMMIT" \
+  --local-output /tmp/goal5844-result
+```
+
+The launcher refuses a dirty checkout, a non-tip remote commit, reused local
+or remote output paths, and a wrong endpoint key. It fetches the exact commit
+on the pod, invokes `scripts/goal5844_pod_prepare_and_run.sh`, streams the
+result through SSH stdout even when SCP/SFTP is unavailable, verifies the
+remote archive SHA256, safely extracts it, and independently recomputes the
+downloaded result on the Mac.
+
+The pod-local entry point performs these create-only stages in order:
+
+1. Probe GPU, driver, compute capability, CUDA toolkit, compiler, and Python;
+   reject an NVCC that cannot target the observed compute capability.
+2. Select the highest compatible frozen OptiX stack solely from driver version.
+3. Clone exact PyOptiX and OptiX-header commits into fresh clean checkouts.
+4. Build a PyOptiX wheel from a Git archive and bind source, headers, Python,
+   CMake, C++, NVCC, Ninja, wheel member, installed extension, and package
+   versions in one sealed receipt.
+5. Build the exact RTDL DSO and require the native v8 symbol with `nm -D`.
+6. Run focused tests and one minimal untimed worker for each arm using
+   disposable formal/CUDA/CuPy/Numba/XDG preflight caches.
+7. Run the fresh-cache alternating eight-block engineering comparison.
+8. Verify every copied payload, worker receipt, raw timing summary, schedule,
+   native traversal receipt, PyOptiX binary binding, and aggregate twice: once
+   on the pod and once after download.
+
+The compact return archive intentionally excludes the venv, upstream clones,
+and disposable caches. Any failed stage produces a separately hashed failure
+bundle that the launcher retrieves automatically. The comparison directory
+itself preserves all evidence
+needed for offline verification: RTDL DSO/build manifest/build log/symbols,
+device source, PyOptiX source/header archives/wheel/installed extension/build
+logs, every worker JSON/stdout/stderr, `SUMMARY.json`, and the non-self-
+referential `EVIDENCE_MANIFEST.json`.
 
 ## Performance decision tree
 
@@ -64,8 +118,13 @@ owner. Environment repair is agent-owned.
 - Both arms unstable: rerun only after recording GPU utilization/clock state;
   never discard a completed adverse block selectively.
 
-## Current external dependency
+## Remaining GPU-only gates
 
-The last supplied endpoint `194.68.245.56:22160` timed out on 2026-09-04.
-Local implementation and review continue, but fresh GPU build and timing need
-one reachable NVIDIA pod endpoint.
+1. Compile and load the new native v8 ABI on the selected real toolchain.
+2. Pass both minimal GPU workers and the downloaded-result verifier.
+3. Obtain the balanced retained timing rows and respond to the measured largest
+   layer if the 1.25x internal engineering target is missed.
+
+No source design, environment orchestration, provenance format, transfer path,
+offline verifier, or pre-pod test remains to be invented after an endpoint is
+provided.

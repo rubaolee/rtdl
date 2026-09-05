@@ -12000,6 +12000,13 @@ author-artifact parity work.
 - [x] Build an alternating fresh-process RTDL/PyOptiX engineering controller that retains every sample.
 - [x] Prepare a clean Goal5844 source checkpoint for commit and pod transfer.
 - [x] Push Goal5844 implementation commit `192309f95` before GPU execution.
+- [x] Implement the exact-commit host launcher, pod-local one-shot transaction,
+      clean PyOptiX source-to-loaded-binary receipt, safe SSH-stream return,
+      offline verifier, and automatic failure-bundle retrieval.
+- [x] Pin the full Python dependency closure and isolate formal/CUDA/CuPy/Numba/
+      XDG preflight caches from comparison caches.
+- [x] Complete strict pre-pod hostile review: 28/28 Goal5844 tests and 175
+      adjacent tests with only five preserved historical identity refusals.
 - [ ] On one reachable NVIDIA pod, build the exact commit and verify the exported v8 symbol plus focused GPU tests.
 - [ ] Run untimed worker-zero for both arms, then the eight-block comparison using the exact Goal5843 triangle task.
 - [ ] If median within-block RTDL/PyOptiX is above 1.25x, retain the adverse result and optimize only the largest measured public/provider/native layer.

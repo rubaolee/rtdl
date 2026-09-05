@@ -12,21 +12,24 @@ forensic receipt expansion remains an explicit post-execution operation. Old
 DSOs without v8 retain the v7 plus separate-audit fallback.
 
 The implementation and engineering protocol are under
-`history/internal_docs/goal5844_compact_execution_stamp_20260904/`. Focused
-Goal5844 tests pass 12/12; the directly related cache/public/provenance set
-passes 51/52 with one expected no-GPU skip; Goal5842 causal tests pass 40/40;
-the Goal5838 frozen core and `src/native/optix/rtdl_optix_core.cpp` are
-byte-identical. The adjacent Goal5840--Goal5844 run executes 159 tests with
+`history/internal_docs/goal5844_compact_execution_stamp_20260904/`. Goal5844
+compact-stamp tests pass 12/12 and pod-readiness/provenance/transfer tests pass
+16/16, for 28/28 combined. Goal5842 compatibility tests pass 64/64 and the
+Goal5838 core/selection set passes 9/9. The Goal5838 frozen core and
+`src/native/optix/rtdl_optix_core.cpp` are byte-identical. The adjacent
+Goal5840--Goal5844 run executes 175 tests with
 exactly five known historical/current-tree identity refusals and no new
 functional failure. Three old Goal5790 integration tests currently fail before
 execution because their generated historical Goal5789 freeze file is absent
 from Git; do not fabricate that historical authority or count those errors as
 Goal5844 functional failures.
 
-No Goal5844 GPU build or timing exists yet. The next action is to build the
-exact committed source and pinned `otk-pyoptix` commit `3144f224...` on any
-reachable single-NVIDIA-GPU pod, run worker-zero for both arms, then execute
-the balanced eight-block engineering comparison. The internal target is
+No Goal5844 GPU build or timing exists yet. The next action is the single host
+entry point `scripts/goal5844_launch_pod_transaction.py`, which fetches the
+exact pushed tip, repairs ordinary user-space/toolkit gaps, runs both worker-
+zero arms, executes the balanced eight-block comparison, streams either success
+or failure evidence without SCP, and re-verifies it locally. The pinned
+`otk-pyoptix` commit is `3144f224...`. The internal target is
 RTDL/PyOptiX at most 1.25x, but every outcome remains engineering-only. Goal5843
 is immutable; do not pool or rewrite its rows. No public/manuscript performance
 claim, hardware-independent claim, external review or consensus is authorized.

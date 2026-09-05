@@ -19106,3 +19106,35 @@ result exists.
 The source checkpoint is committed as `192309f95` and pushed to
 `origin/codex/cgo-goal5836-handoff`; a pod must fetch that exact commit rather
 than receive a dirty source copy.
+
+## Goal5844 exact-commit pod transaction ready (2026-09-04)
+
+All remaining non-GPU execution work is implemented and internally audited.
+The host launcher now refuses a dirty or unpushed source, fetches the exact
+branch-tip commit into a fresh pod checkout, invokes one pod-local transaction,
+streams success evidence without SCP/SFTP, safely extracts it, and reruns the
+independent verifier on the Mac. A failed pod stage records stage/line/status,
+creates a hashed diagnostic archive, and is retrieved by the same launcher.
+
+The pod transaction selects OptiX solely from the frozen driver registry and
+accepts NVCC only when it advertises the observed GPU compute capability. It
+uses Python 3.11/3.12, fixed pip 26.2.1, a fully pinned direct/transitive
+dependency closure, and fixed `uv==0.12.10` only as a recorded fallback. The
+clean PyOptiX receipt binds its exact source/header archives, wheel member,
+installed and live extension bytes, build tools/logs, download hashes, and
+independently observed runtime package versions. Preflight and comparison have
+separate formal/CUDA/CuPy/Numba/XDG caches and timing-sensitive inherited
+environment variables are cleared.
+
+Current local evidence is 12/12 compact-stamp tests, 16/16 pod-readiness and
+custody tests, 28/28 combined Goal5844 tests, 64/64 Goal5842 compatibility
+tests inside the adjacent run, and 9/9 Goal5838 core/selection tests. The full
+Goal5840--5844 adjacent run executes 175 tests with exactly the same five known
+historical/current-tree identity refusals and no new functional failure. A
+clean temporary-repository no-GPU rehearsal verified failure bundling. Frozen
+Goal5838 sources and `rtdl_optix_core.cpp` remain byte-identical.
+
+No native v8 GPU compile, true-OptiX Goal5844 execution, RTDL/PyOptiX timing,
+external review, or manuscript/public performance authority exists yet. Those
+are the only open facts; use `scripts/goal5844_launch_pod_transaction.py` from
+the final clean pushed commit when a pod is supplied.

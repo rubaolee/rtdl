@@ -8,16 +8,20 @@ import gc
 import hashlib
 import importlib.metadata
 import json
-from pathlib import Path
 import statistics
 import subprocess
 import sys
 import time
-from typing import Any, Callable
+from collections.abc import Callable
+from pathlib import Path
+from typing import Any
 
 from experiments.goal5842_causal_admission.contracts import TRIANGLE_TASK, digest
 from experiments.goal5842_causal_admission.tasks import build_task
-
+from experiments.goal5844_compact_execution.provenance import (
+    validate_pyoptix_build_receipt,
+    write_json_create,
+)
 
 ROOT = Path(__file__).resolve().parents[2]
 RTDL_ARM = "RTDL_PUBLIC_V8_COMPACT_STAMP"
@@ -88,12 +92,11 @@ def _summary(values: list[int]) -> dict[str, object]:
 
 
 def _hardware() -> dict[str, object]:
-    fields = (
-        "name,uuid,driver_version,memory.total,compute_cap"
-    )
+    fields = "name,uuid,driver_version,memory.total,compute_cap"
     completed = subprocess.run(
         [
             "nvidia-smi",
+            "--id=0",
             f"--query-gpu={fields}",
             "--format=csv,noheader,nounits",
         ],
@@ -117,18 +120,18 @@ def _hardware() -> dict[str, object]:
 
 
 def _deep_owner(prepared: object) -> object:
-    bridge = getattr(prepared, "_handle")
-    protocol_prepared = getattr(bridge, "_prepared")
-    return getattr(protocol_prepared, "_owner")
+    bridge = prepared._handle
+    protocol_prepared = bridge._prepared
+    return protocol_prepared._owner
 
 
 def _run_rtdl(args: argparse.Namespace, task: object) -> dict[str, object]:
+    from rtdsl import v4_triangle_reduction_prepared_runtime as triangle_runtime
     from rtdsl.physical_execution_provenance import (
         NativeTraversalAuditSnapshot,
         validate_traversal_receipt,
     )
     from rtdsl.v4 import FormalNumbaLeafCachePolicy, V4Target, V4Toolchain
-    from rtdsl import v4_triangle_reduction_prepared_runtime as triangle_runtime
 
     native = args.native.resolve(strict=True)
     capability = tuple(int(part) for part in args.compute_capability.split("."))
@@ -339,12 +342,8 @@ def _run_rtdl(args: argparse.Namespace, task: object) -> dict[str, object]:
             "generic_executable_identity": materialized.identity.to_dict(),
         },
         "evidence": {
-            "latest_public_compact_receipt": dict(
-                latest_public.traversal_receipt
-            ),
-            "latest_provider_compact_receipt": dict(
-                latest_provider.traversal_receipt
-            ),
+            "latest_public_compact_receipt": dict(latest_public.traversal_receipt),
+            "latest_provider_compact_receipt": dict(latest_provider.traversal_receipt),
             "latest_full_forensic_receipt": dict(forensic),
             "execution_boundary": boundary,
         },
@@ -359,6 +358,7 @@ def _run_pyoptix(args: argparse.Namespace, task: object) -> dict[str, object]:
 
     if baseline.PYOPTIX_COMMIT != PYOPTIX_COMMIT:
         raise RuntimeError("Goal5844 pinned PyOptiX repository identity drift")
+    build_receipt = args.pyoptix_build_receipt_value
     source_identity = _git_identity(args.pyoptix_source)
     if (
         source_identity["commit"] != PYOPTIX_COMMIT
@@ -379,9 +379,7 @@ def _run_pyoptix(args: argparse.Namespace, task: object) -> dict[str, object]:
 
     def make_pipeline() -> tuple[object, ...]:
         context, logger = baseline.make_context()
-        pipeline, groups, logs = baseline.build_pipeline(
-            context, ptx, task="triangle"
-        )
+        pipeline, groups, logs = baseline.build_pipeline(context, ptx, task="triangle")
         sbt, keepalive = baseline.make_sbt(groups)
         return context, logger, pipeline, groups, logs, sbt, keepalive
 
@@ -405,7 +403,7 @@ def _run_pyoptix(args: argparse.Namespace, task: object) -> dict[str, object]:
 
     def validate(result: object) -> None:
         if not isinstance(result, dict):
-            raise RuntimeError("Goal5844 PyOptiX output is not a mapping")
+            raise TypeError("Goal5844 PyOptiX output is not a mapping")
         if int(result["device_status"]) != 0 or int(result["weighted_sum"]) != expected:
             raise RuntimeError("Goal5844 PyOptiX scalar differs from oracle")
 
@@ -434,6 +432,16 @@ def _run_pyoptix(args: argparse.Namespace, task: object) -> dict[str, object]:
     if not extension_path:
         raise RuntimeError("Goal5844 loaded PyOptiX extension identity is absent")
     extension_path = Path(extension_path).resolve(strict=True)
+    receipt_extension = build_receipt["installed"]["loaded_extension"]
+    extension_sha256 = _sha256_file(extension_path)
+    if (
+        extension_path.stat().st_size != receipt_extension["bytes"]
+        or extension_sha256 != receipt_extension["sha256"]
+        or extension_sha256 != build_receipt["wheel"]["extension_sha256"]
+    ):
+        raise RuntimeError(
+            "Goal5844 loaded PyOptiX extension is not the clean-built wheel member"
+        )
     return {
         "first_execution_ns": first_ns,
         "steady_public": _summary(samples),
@@ -462,7 +470,15 @@ def _run_pyoptix(args: argparse.Namespace, task: object) -> dict[str, object]:
             "loaded_extension": {
                 "path": str(extension_path),
                 "bytes": extension_path.stat().st_size,
-                "sha256": _sha256_file(extension_path),
+                "sha256": extension_sha256,
+            },
+            "pyoptix_build_receipt": {
+                "path": str(args.pyoptix_build_receipt.resolve(strict=True)),
+                "bytes": args.pyoptix_build_receipt.stat().st_size,
+                "sha256": _sha256_file(args.pyoptix_build_receipt),
+                "receipt_sha256": build_receipt["receipt_sha256"],
+                "wheel_sha256": build_receipt["wheel"]["file"]["sha256"],
+                "extension_sha256": build_receipt["wheel"]["extension_sha256"],
             },
         },
         "evidence": {"latest_public_output": latest_output},
@@ -482,23 +498,44 @@ def main() -> None:
     parser.add_argument("--cache-root", type=Path, required=True)
     parser.add_argument("--pyoptix-distribution", default="pyoptix")
     parser.add_argument("--pyoptix-source", type=Path, required=True)
+    parser.add_argument("--pyoptix-build-receipt", type=Path, required=True)
     parser.add_argument("--warmups", type=int, default=16)
     parser.add_argument("--repetitions", type=int, default=128)
     parser.add_argument("--layer-warmups", type=int, default=8)
     parser.add_argument("--layer-repetitions", type=int, default=64)
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
-    if args.output.exists():
+    if args.output.exists() or args.output.is_symlink():
         raise FileExistsError(args.output)
     if args.block < 0:
         raise ValueError("nonnegative block required")
-    if min(
-        args.warmups,
-        args.repetitions,
-        args.layer_warmups,
-        args.layer_repetitions,
-    ) <= 0:
+    if (
+        min(
+            args.warmups,
+            args.repetitions,
+            args.layer_warmups,
+            args.layer_repetitions,
+        )
+        <= 0
+    ):
         raise ValueError("positive timing counts required")
+    build_receipt = validate_pyoptix_build_receipt(
+        args.pyoptix_build_receipt.resolve(strict=True)
+    )
+    builder = ROOT / "scripts" / "goal5844_build_install_pyoptix.py"
+    if build_receipt["builder"]["sha256"] != _sha256_file(builder.resolve(strict=True)):
+        raise RuntimeError(
+            "Goal5844 PyOptiX receipt builder differs from current source"
+        )
+    if (
+        Path(str(build_receipt["pyoptix_source"]["checkout_path"])).resolve()
+        != args.pyoptix_source.resolve(strict=True)
+        or build_receipt["optix_headers"]["api_version"] != args.optix_sdk
+        or build_receipt["optix_headers"]["key_header_sha256"]["optix.h"]
+        != _sha256_file(args.optix_include.resolve(strict=True) / "optix.h")
+    ):
+        raise RuntimeError("Goal5844 PyOptiX receipt live input binding differs")
+    args.pyoptix_build_receipt_value = build_receipt
     status = subprocess.run(
         ["git", "status", "--porcelain"],
         cwd=ROOT,
@@ -529,7 +566,7 @@ def main() -> None:
     if hardware_after != hardware_before:
         raise RuntimeError("Goal5844 GPU identity changed during worker")
     result: dict[str, object] = {
-        "schema": "rtdl.goal5844.compact_execution.worker.v1",
+        "schema": "rtdl.goal5844.compact_execution.worker.v2",
         "status": "PASS__INTERNAL_ENGINEERING_WORKER",
         "source_commit": source_commit,
         "arm": args.arm,
@@ -549,11 +586,7 @@ def main() -> None:
         },
     }
     result["result_sha256"] = digest(result)
-    args.output.parent.mkdir(parents=True, exist_ok=True)
-    args.output.write_text(
-        json.dumps(result, indent=2, sort_keys=True) + "\n",
-        encoding="utf-8",
-    )
+    write_json_create(args.output, result)
     print(json.dumps(result, sort_keys=True))
 
 

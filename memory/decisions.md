@@ -8438,3 +8438,23 @@ after any native/status/proof failure. Treat the balanced RTDL/PyOptiX result as
 internal engineering evidence regardless of whether the 1.25x target passes.
 Goal5843 remains immutable and no public/manuscript claim follows without a
 separate reviewed transaction.
+
+## D244: one exact-commit Goal5844 transaction owns setup, comparison, and custody (2026-09-04)
+
+Do not prepare Goal5844 through ad hoc SSH commands, mutable installers,
+historical PyOptiX wheels, reused cache roots, or copied dirty source. The sole
+host entry point is `scripts/goal5844_launch_pod_transaction.py`; it must run
+from a clean pushed branch tip and fetch that exact commit on the pod.
+
+Treat the pod software stack as agent-owned. Select OptiX only from the frozen
+driver compatibility registry, select/install a CUDA 12 NVCC that can target
+the observed compute capability, use Python 3.11/3.12, pin the complete Python
+dependency closure, and bind the clean PyOptiX wheel member to the actually
+loaded extension. Isolate formal, CUDA, CuPy, Numba, and XDG preflight caches
+from comparison caches. Preserve all samples and retrieve a hashed diagnostic
+bundle on failure.
+
+The transaction remains internal engineering evidence regardless of whether
+the 1.25x RTDL/PyOptiX target passes. It cannot revise Goal5843, authorize
+public/manuscript wording, substitute for true GPU execution, or count as
+external review.
