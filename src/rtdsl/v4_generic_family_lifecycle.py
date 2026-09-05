@@ -40,6 +40,8 @@ _REQUIRED_PROGRAM_ARTIFACT_IDS = frozenset({
 _MAX_ARTIFACT_COUNT = 256
 _MAX_ARTIFACT_BYTES = 64 << 20
 _MAX_BUNDLE_BYTES = 256 << 20
+FAMILY_DEPLOYMENT_FORMAT_RTDLEXE_V2 = "rtdl.v4.rtdlexe.v2"
+_DEPLOYMENT_EXPORT_TOKEN = object()
 
 
 class GenericFamilyLifecycleError(RuntimeError):
@@ -772,6 +774,135 @@ class FamilyMaterializedHandleV1(ABC):
     def prepare(self, static_input: object) -> FamilyPreparedHandleV1:
         raise NotImplementedError
 
+    def export_deployment_payload(self, format_id: str) -> object:
+        """Return provider-owned build input for one declared deployment format.
+
+        Providers that do not support offline deployment inherit a fail-closed
+        implementation.  Keeping this method non-abstract preserves providers
+        written against the V1 execution-only SPI.
+        """
+
+        _identifier(format_id, "deployment.format_id")
+        _fail(
+            "GF051_DEPLOYMENT_FORMAT",
+            "provider.export_deployment_payload",
+            f"unsupported format {format_id}",
+        )
+
+
+def _family_deployment_binding(
+    materialized: "MaterializedGenericFamilyProgram",
+    format_id: str,
+) -> dict[str, object]:
+    program = materialized._program
+    identity = materialized.identity
+    descriptor = program._descriptor
+    projection = program.provider_projection
+    artifacts = program.artifacts
+    if (
+        identity.provider_descriptor_sha256 != descriptor.descriptor_sha256
+        or identity.provider_projection_sha256 != projection.projection_sha256
+        or identity.plan_sha256 != program.plan.plan_sha256
+        or projection.artifact_bundle_sha256 != artifacts.bundle_sha256
+    ):
+        _fail(
+            "GF052_DEPLOYMENT_IDENTITY",
+            "deployment.family_binding",
+            "materialized family identity chain differs",
+        )
+    body = {
+        "schema": "rtdl.generic_family_deployment_binding.v1",
+        "format_id": format_id,
+        "plan_sha256": program.plan.plan_sha256,
+        "provider_descriptor_sha256": descriptor.descriptor_sha256,
+        "provider_projection_sha256": projection.projection_sha256,
+        "artifact_bundle_sha256": artifacts.bundle_sha256,
+        "family_executable_identity": identity.to_dict(),
+    }
+    return {**body, "binding_sha256": _digest(body)}
+
+
+class FamilyDeploymentExportV1:
+    """Live, identity-bound build capability issued by a materialized family."""
+
+    __slots__ = (
+        "_owner", "_format_id", "_provider_payload", "_binding",
+        "_binding_bytes", "_token",
+    )
+
+    def __init__(
+        self,
+        owner: "MaterializedGenericFamilyProgram",
+        format_id: str,
+        provider_payload: object,
+        *,
+        _token: object,
+    ) -> None:
+        if _token is not _DEPLOYMENT_EXPORT_TOKEN:
+            _fail(
+                "GF012_LIVE_CAPABILITY",
+                "deployment_export",
+                "use materialized.export_deployment",
+            )
+        binding = _family_deployment_binding(owner, format_id)
+        self._owner = owner
+        self._format_id = format_id
+        self._provider_payload = provider_payload
+        self._binding = _readonly(_json_document(
+            binding, "deployment.family_binding"
+        ))
+        self._binding_bytes = _canonical(binding)
+        self._token = _token
+
+    def __getstate__(self):
+        _fail(
+            "GF030_NONSERIALIZABLE",
+            "deployment_export",
+            "cannot be serialized",
+        )
+
+    @property
+    def format_id(self) -> str:
+        return self._format_id
+
+    @property
+    def family_binding(self) -> Mapping[str, object]:
+        self.revalidate()
+        # Return a detached JSON document so build-side consumers cannot
+        # mutate the capability's sealed snapshot and do not receive nested
+        # MappingProxyType values that standard JSON encoders cannot consume.
+        return json.loads(self._binding_bytes)
+
+    @property
+    def provider_payload(self) -> object:
+        """Provider-owned input consumed only by the selected offline builder."""
+
+        self.revalidate()
+        return self._provider_payload
+
+    def revalidate(self) -> None:
+        if self._token is not _DEPLOYMENT_EXPORT_TOKEN:
+            _fail(
+                "GF012_LIVE_CAPABILITY",
+                "deployment_export",
+                "issuer token differs",
+            )
+        self._owner._check_owner()
+        if self._owner.state != "materialized":
+            _fail(
+                "GF018_STATE", "deployment_export", self._owner.state
+            )
+        self._owner._check_reported_identity()
+        current = _family_deployment_binding(
+            self._owner, self._format_id
+        )
+        if _canonical(current) != self._binding_bytes:
+            _fail(
+                "GF052_DEPLOYMENT_IDENTITY",
+                "deployment.family_binding",
+                "identity changed after export",
+            )
+
 
 class FamilyProviderV1(ABC):
     @property
@@ -934,6 +1065,36 @@ class MaterializedGenericFamilyProgram:
                 "provider.identity",
                 "identity changed after materialization",
             )
+
+    def export_deployment(
+        self, format_id: str,
+    ) -> FamilyDeploymentExportV1:
+        """Export one checked provider payload without exposing private handles."""
+
+        self._check_owner()
+        format_id = _identifier(format_id, "deployment.format_id")
+        if not self._lock.acquire(blocking=False):
+            _fail("GF020_REENTRANT", "materialized.export_deployment", "already active")
+        try:
+            if self._state != "materialized":
+                _fail("GF018_STATE", "materialized.export_deployment", self._state)
+            self._check_reported_identity()
+            payload = self._handle.export_deployment_payload(format_id)
+            if payload is None:
+                _fail(
+                    "GF051_DEPLOYMENT_FORMAT",
+                    "provider.export_deployment_payload",
+                    "provider returned no payload",
+                )
+            self._check_reported_identity()
+            return FamilyDeploymentExportV1(
+                self,
+                format_id,
+                payload,
+                _token=_DEPLOYMENT_EXPORT_TOKEN,
+            )
+        finally:
+            self._lock.release()
 
     def prepare(self, static_input: object) -> "PreparedGenericFamilyProgram":
         self._check_owner()
@@ -1169,6 +1330,8 @@ def compile_generic_family_program(
 
 
 __all__ = [
+    "FAMILY_DEPLOYMENT_FORMAT_RTDLEXE_V2",
+    "FamilyDeploymentExportV1",
     "FamilyExecutableIdentityV1",
     "FamilyArtifactV1",
     "FAMILY_BEHAVIOR_SCHEMA_ARTIFACT_ID",

@@ -589,6 +589,17 @@ void rtdl_cuda_compact_v4_relation_rows_precompiled(
                     "launching V4 relation device compaction");
 }
 
+#if defined(RTDL_OPTIX_RTDLEXE_AOT_RUNTIME)
+static void rtdl_cuda_check(cudaError_t status, const char* operation)
+{
+    if (status != cudaSuccess) {
+        throw std::runtime_error(
+            std::string("CUDA error during ") + operation + ": " +
+            cudaGetErrorString(status));
+    }
+}
+#else
+
 #pragma pack(push, 1)
 struct RtdlCudaGpuRay3DHost {
     float ox, oy, oz, dx, dy, dz, tmax;
@@ -3349,3 +3360,4 @@ extern "C" int rtdl_cuda_close_prepared_aggregate_hierarchy_continuation_3d(
         return 1;
     }
 }
+#endif

@@ -206,14 +206,32 @@ def _entry(authority_path: Path) -> dict[str, object]:
         "deployment_id", "family", "task_semantics_sha256",
         "target_compute_capability", "authority_seal",
     }
-    if set(authority) != expected or authority["schema"] != runtime._AUTHORITY_SCHEMA \
-            or type(authority["authority_version"]) is not int \
-            or authority["authority_version"] != 1 \
+    family_bound = (
+        authority.get("schema") == runtime._FAMILY_AUTHORITY_SCHEMA
+        and type(authority.get("authority_version")) is int
+        and authority["authority_version"] == 2
+    )
+    if family_bound:
+        expected.update({
+            "generic_family_binding_sha256",
+            "family_executable_identity_sha256",
+        })
+    valid_version = family_bound or (
+        authority.get("schema") == runtime._AUTHORITY_SCHEMA
+        and type(authority.get("authority_version")) is int
+        and authority["authority_version"] == 1
+    )
+    if set(authority) != expected or not valid_version \
             or type(authority["artifact_bytes"]) is not int \
             or authority["artifact_bytes"] <= 0:
         raise ValueError("detached authority schema invalid")
     body = dict(authority); seal = body.pop("authority_seal")
-    if seal != _sha_bytes(runtime._AUTHORITY_DOMAIN + _canonical(body)):
+    domain = (
+        runtime._FAMILY_AUTHORITY_DOMAIN
+        if family_bound
+        else runtime._AUTHORITY_DOMAIN
+    )
+    if seal != _sha_bytes(domain + _canonical(body)):
         raise ValueError("detached authority seal invalid")
     return {
         "deployment_id": authority["deployment_id"],

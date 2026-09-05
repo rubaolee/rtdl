@@ -38,6 +38,7 @@ from .v4_family_schema import (
     _lower_canonical_compilation_plan_verified,
 )
 from .v4_generic_family_lifecycle import (
+    FAMILY_DEPLOYMENT_FORMAT_RTDLEXE_V2,
     FAMILY_BEHAVIOR_SCHEMA_ARTIFACT_ID,
     FAMILY_CALLBACK_ABI_ARTIFACT_ID,
     FAMILY_CALLBACK_PROGRAM_ARTIFACT_ID,
@@ -742,6 +743,11 @@ class _MaterializedBridge(FamilyMaterializedHandleV1):
             self._plan_sha256,
             self._output_adapter,
         )
+
+    def export_deployment_payload(self, format_id: str) -> object:
+        if format_id != FAMILY_DEPLOYMENT_FORMAT_RTDLEXE_V2:
+            return super().export_deployment_payload(format_id)
+        return self._materialized
 
 
 def _stable_output(result: object) -> tuple[object, str, Mapping[str, object]]:

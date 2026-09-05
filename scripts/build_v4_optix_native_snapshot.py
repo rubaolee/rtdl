@@ -16,8 +16,12 @@ import tempfile
 
 
 ROOT = Path(__file__).resolve().parents[1]
-TRANSLATION_UNITS = (
+FULL_TRANSLATION_UNITS = (
     ROOT / "src/native/rtdl_optix.cpp",
+    ROOT / "src/native/optix/rtdl_optix_cuda_helpers.cu",
+)
+AOT_TRANSLATION_UNITS = (
+    ROOT / "src/native/rtdl_optix_rtdlexe.cpp",
     ROOT / "src/native/optix/rtdl_optix_cuda_helpers.cu",
 )
 REQUIRED_SYMBOLS = (
@@ -27,6 +31,29 @@ REQUIRED_SYMBOLS = (
     "rtdl_optix_v4_describe_curve_owner_grouped_any_hit_v1",
     "rtdl_optix_v4_destroy_curve_owner_grouped_any_hit_v1",
 )
+RTDLEXE_AOT_REQUIRED_SYMBOLS = (
+    "rtdl_optix_v4_warm_runtime_v1",
+    "rtdl_optix_v4_runtime_compiler_attempt_count_v1",
+    "rtdl_optix_v4_rtdlexe_producer_descriptor_v1",
+    "rtdl_optix_v4_prepare_bounded_relation_callback_v1",
+    "rtdl_optix_v4_execute_prepared_bounded_relation_callback_v4",
+    "rtdl_optix_v4_execute_prepared_bounded_relation_callback_v5",
+    "rtdl_optix_v4_execute_prepared_bounded_relation_callback_v6",
+    "rtdl_optix_v4_execute_prepared_bounded_relation_callback_v7",
+    "rtdl_optix_v4_prepared_bounded_relation_source_cache_build_count_v1",
+    "rtdl_optix_v4_commit_prepared_bounded_relation_source_cache_v2",
+    "rtdl_optix_v4_prepared_bounded_relation_source_cache_digest_v1",
+    "rtdl_optix_v4_destroy_prepared_bounded_relation_callback_v2",
+    "rtdl_optix_v4_prepare_triangle_reduction_callback_v1",
+    "rtdl_optix_v4_execute_prepared_triangle_reduction_callback_v4",
+    "rtdl_optix_v4_execute_prepared_triangle_reduction_callback_v5",
+    "rtdl_optix_v4_execute_prepared_triangle_reduction_callback_v6",
+    "rtdl_optix_v4_execute_prepared_triangle_reduction_callback_v7",
+    "rtdl_optix_v4_commit_prepared_triangle_reduction_cache_v1",
+    "rtdl_optix_v4_prepared_triangle_reduction_cache_digest_v1",
+    "rtdl_optix_v4_destroy_prepared_triangle_reduction_callback_v2",
+)
+RTDLEXE_EXPORT_MAP = ROOT / "src/native/optix/rtdlexe_exports.map"
 HEADER_SUFFIXES = frozenset({".h", ".hpp", ".inl", ".cuh"})
 
 
@@ -67,10 +94,14 @@ def _capture(command: list[str], *, required: bool = True) -> str:
 
 
 def _source_inventory() -> list[dict[str, object]]:
-    paths = [ROOT / "src/native/rtdl_optix.cpp"]
+    paths = [
+        ROOT / "src/native/rtdl_optix.cpp",
+        ROOT / "src/native/rtdl_optix_rtdlexe.cpp",
+        RTDLEXE_EXPORT_MAP,
+    ]
     paths.extend(sorted(
         path for path in (ROOT / "src/native/optix").iterdir()
-        if path.is_file() and path.suffix in {".cpp", ".cu", ".h"}
+        if path.is_file() and path.suffix in {".cpp", ".cu", ".h", ".inc"}
     ))
     return [{
         "path": path.relative_to(ROOT).as_posix(),
@@ -237,8 +268,15 @@ def build(args) -> dict[str, object]:
     optix_h = optix_include / "optix.h"
     cuda_h = cuda_include / "cuda.h"
     nvrtc_h = cuda_include / "nvrtc.h"
+    aot_runtime = bool(getattr(args, "rtdlexe_aot_runtime", False))
+    translation_units = (
+        AOT_TRANSLATION_UNITS if aot_runtime else FULL_TRANSLATION_UNITS
+    )
+    required_symbols = (
+        RTDLEXE_AOT_REQUIRED_SYMBOLS if aot_runtime else REQUIRED_SYMBOLS
+    )
     for path in (
-        *TRANSLATION_UNITS, nvcc, host_compiler,
+        *translation_units, nvcc, host_compiler,
         optix_h, cuda_h, nvrtc_h,
     ):
         if not path.is_file():
@@ -282,7 +320,7 @@ def build(args) -> dict[str, object]:
     ):
         if candidate.is_dir() and candidate not in library_dirs:
             library_dirs.append(candidate)
-    lazy_nvrtc = bool(getattr(args, "lazy_nvrtc", False))
+    lazy_nvrtc = bool(getattr(args, "lazy_nvrtc", False)) or aot_runtime
     nvrtc_library = (
         _resolve_nvrtc_library(library_dirs) if lazy_nvrtc else None)
     identity = {
@@ -291,7 +329,7 @@ def build(args) -> dict[str, object]:
         "builder_sha256": _sha(Path(__file__).resolve()),
         "source_inventory": source_inventory,
         "translation_units": [
-            path.relative_to(ROOT).as_posix() for path in TRANSLATION_UNITS],
+            path.relative_to(ROOT).as_posix() for path in translation_units],
         "nvcc_path": str(nvcc),
         "nvcc_sha256": _sha(nvcc),
         "nvcc_version": _capture([str(nvcc), "--version"]),
@@ -326,6 +364,16 @@ def build(args) -> dict[str, object]:
             "nvrtc_library_bytes": nvrtc_library.stat().st_size,
             "nvrtc_library_sha256": _sha(nvrtc_library),
         })
+    if aot_runtime:
+        identity.update({
+            "schema": "rtdl.v4.optix_native_build_input.v3",
+            "deployment_profile": "rtdlexe_aot_runtime_v1",
+            "export_map_path": RTDLEXE_EXPORT_MAP.relative_to(ROOT).as_posix(),
+            "export_map_sha256": _sha(RTDLEXE_EXPORT_MAP),
+            "exported_symbol_allowlist": list(required_symbols),
+            "section_garbage_collection": True,
+            "source_compiler_entry_points_exported": False,
+        })
     build_id = _build_input_id(identity)
     descriptor, temporary_name = tempfile.mkstemp(
         prefix=f".{output.name}.", suffix=".partial", dir=output.parent)
@@ -341,6 +389,18 @@ def build(args) -> dict[str, object]:
             f'-DRTDL_NVRTC_LIBRARY_PATH="{nvrtc_library}"',
         ]
         runtime_compiler_libraries = ["-ldl"]
+    aot_defines = []
+    aot_link_options = []
+    compiler_section_options = ["-fPIC"]
+    if aot_runtime:
+        aot_defines = ["-DRTDL_OPTIX_RTDLEXE_AOT_RUNTIME=1"]
+        compiler_section_options.extend([
+            "-ffunction-sections", "-fdata-sections",
+        ])
+        aot_link_options = [
+            "-Xlinker=--gc-sections",
+            f"-Xlinker=--version-script={RTDLEXE_EXPORT_MAP}",
+        ]
     command = [
         str(nvcc), "-ccbin", str(host_compiler),
         "-std=c++17", "-O3", "-shared",
@@ -350,9 +410,11 @@ def build(args) -> dict[str, object]:
         f'-DRTDL_CUDA_SYSTEM_INCLUDE_DIR="{cuda_system_include}"',
         f'-DRTDL_OPTIX_BUILD_ID="{build_id}"',
         *runtime_compiler_defines,
+        *aot_defines,
         f"-arch=sm_{capability[0]}{capability[1]}",
-        "-Xcompiler", "-fPIC",
-        *(str(path) for path in TRANSLATION_UNITS),
+        "-Xcompiler", ",".join(compiler_section_options),
+        *aot_link_options,
+        *(str(path) for path in translation_units),
         *(f"-L{path}" for path in library_dirs),
         "-lcuda", *runtime_compiler_libraries, *geos_libraries,
         "-o", str(temporary_output),
@@ -379,11 +441,18 @@ def build(args) -> dict[str, object]:
         exported = _capture([nm, "-D", "--defined-only", str(temporary_output)])
         exported_names = {
             line.split()[-1] for line in exported.splitlines() if line.split()}
-        missing = [name for name in REQUIRED_SYMBOLS
+        missing = [name for name in required_symbols
                    if name not in exported_names]
         if missing:
             raise RuntimeError(
                 f"native owner-grouped symbols are missing: {missing}")
+        unexpected = []
+        if aot_runtime:
+            unexpected = sorted(exported_names - set(required_symbols))
+            if unexpected:
+                raise RuntimeError(
+                    "AOT runtime exported symbols outside its allowlist: "
+                    f"{unexpected}")
         native_bytes = temporary_output.stat().st_size
         native_sha256 = _sha(temporary_output)
         dynamic_dependencies = None
@@ -448,7 +517,7 @@ def build(args) -> dict[str, object]:
         "optix_version": optix_version,
         "gpu": gpu_identity,
         "geos_mode": geos_mode,
-        "required_symbols": list(REQUIRED_SYMBOLS),
+        "required_symbols": list(required_symbols),
         "exported_symbol_match_mode": "exact_nm_dynamic_defined_name",
         "all_required_symbols_exported": True,
     }
@@ -459,6 +528,14 @@ def build(args) -> dict[str, object]:
             "runtime_compiler_linkage": identity["runtime_compiler_linkage"],
             "dynamic_dependencies": dynamic_dependencies,
             "eager_nvrtc_dependency": has_eager_nvrtc_dependency,
+        })
+    if aot_runtime:
+        result.update({
+            "schema": "rtdl.v4.optix_native_snapshot_build.v3",
+            "status": "PASS__MINIMAL_RTDLEXE_AOT_NATIVE",
+            "deployment_profile": identity["deployment_profile"],
+            "unexpected_exported_symbols": unexpected,
+            "all_exports_allowlisted": True,
         })
     try:
         _write_json(manifest, result)
@@ -483,6 +560,11 @@ def main() -> None:
         "--lazy-nvrtc", action="store_true",
         help=("omit eager NVRTC linkage and load the build-pinned compiler "
               "image only if runtime source compilation is requested"),
+    )
+    parser.add_argument(
+        "--rtdlexe-aot-runtime", action="store_true",
+        help=("build the minimal relation/triangle .rtdlexe provider image; "
+              "implies --lazy-nvrtc and strict exported-symbol allowlisting"),
     )
     args = parser.parse_args()
     result = build(args)

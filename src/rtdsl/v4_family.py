@@ -18,10 +18,12 @@ from .v4_family_schema import (
     reverify_family_admission,
 )
 from .v4_generic_family_lifecycle import (
+    FAMILY_DEPLOYMENT_FORMAT_RTDLEXE_V2,
     FAMILY_BEHAVIOR_SCHEMA_ARTIFACT_ID,
     FAMILY_CALLBACK_ABI_ARTIFACT_ID,
     FAMILY_CALLBACK_PROGRAM_ARTIFACT_ID,
     FamilyArtifactV1,
+    FamilyDeploymentExportV1,
     FamilyExecutableIdentityV1,
     FamilyMaterializedHandleV1,
     FamilyPlanRequirementsV1,
@@ -54,7 +56,9 @@ __all__ = sorted([
     "FAMILY_BEHAVIOR_SCHEMA_ARTIFACT_ID",
     "FAMILY_CALLBACK_ABI_ARTIFACT_ID",
     "FAMILY_CALLBACK_PROGRAM_ARTIFACT_ID",
+    "FAMILY_DEPLOYMENT_FORMAT_RTDLEXE_V2",
     "FamilyArtifactV1",
+    "FamilyDeploymentExportV1",
     "FamilyExecutableIdentityV1",
     "FamilyMaterializedHandleV1",
     "FamilyPlanRequirementsV1",

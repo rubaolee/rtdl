@@ -50,9 +50,15 @@ import weakref
 _ARTIFACT_SCHEMA = "rtdl.v4.rtdlexe.v1"
 _AUTHORITY_SCHEMA = "rtdl.v4.rtdlexe.detached_authority.v1"
 _PROJECTION_SCHEMA = "rtdl.v4.rtdlexe.product_projection.v1"
+_FAMILY_ARTIFACT_SCHEMA = "rtdl.v4.rtdlexe.v2"
+_FAMILY_AUTHORITY_SCHEMA = "rtdl.v4.rtdlexe.detached_authority.v2"
+_FAMILY_PROJECTION_SCHEMA = "rtdl.v4.rtdlexe.product_projection.v2"
+_FAMILY_BINDING_SCHEMA = "rtdl.generic_family_deployment_binding.v1"
+_FAMILY_DEPLOYMENT_FORMAT_ID = "rtdl.v4.rtdlexe.v2"
 _STATUS_SCHEMA = "rtdl.v4.fixed_device_status.v2"
 _NATIVE_DESCRIPTOR_SCHEMA = "rtdl.v4.rtdlexe.native_producer_descriptor.v1"
 _AUTHORITY_DOMAIN = b"RTDL-V4-RTDLEXE-DETACHED-AUTHORITY-V1\x00"
+_FAMILY_AUTHORITY_DOMAIN = b"RTDL-V4-RTDLEXE-DETACHED-AUTHORITY-V2\x00"
 _TRUST_ROOT_SCHEMA = "rtdl.v4.rtdlexe.installed_trust_root.v1"
 _TRUST_ROOT_DOMAIN = b"RTDL-V4-RTDLEXE-INSTALLED-TRUST-ROOT-V1\x00"
 _TRUST_PACKAGE_SCHEMA = "rtdl.v4.rtdlexe.deployment_trust_package.v1"
@@ -675,6 +681,7 @@ class BuiltRTDLExecutable:
     authority_path: Path
     authority_sha256: str
     executable_identity_sha256: str
+    family_executable_identity_sha256: str | None = None
 
 
 @dataclass(frozen=True)
@@ -1848,9 +1855,14 @@ def _build_product_projection(
     compiler_options: Sequence[str], ptx_metadata: Mapping[str, object],
     provider_key: Mapping[str, object], execution_schema: Mapping[str, object],
     deployment_id: str,
+    generic_family_binding: Mapping[str, object] | None = None,
 ) -> dict[str, object]:
-    return {
-        "schema": _PROJECTION_SCHEMA,
+    result = {
+        "schema": (
+            _FAMILY_PROJECTION_SCHEMA
+            if generic_family_binding is not None
+            else _PROJECTION_SCHEMA
+        ),
         "deployment_id": deployment_id,
         "family": runtime["family"],
         "executable_identity": dict(executable_identity),
@@ -1865,15 +1877,104 @@ def _build_product_projection(
         "provider_key": dict(provider_key),
         "execution_schema": dict(execution_schema),
     }
+    if generic_family_binding is not None:
+        result["generic_family_binding"] = dict(generic_family_binding)
+    return result
 
 
-def build_rtdlexe(
+def _verify_generic_family_binding(
+    value: object,
+    *,
+    family: str,
+    executable_identity: Mapping[str, object],
+    target: Mapping[str, object],
+    composed_ptx_sha256: str,
+) -> Mapping[str, object]:
+    binding = _require_exact_keys(value, {
+        "schema", "format_id", "plan_sha256",
+        "provider_descriptor_sha256", "provider_projection_sha256",
+        "artifact_bundle_sha256", "family_executable_identity",
+        "binding_sha256",
+    }, "generic_family_binding")
+    if binding["schema"] != _FAMILY_BINDING_SCHEMA \
+            or binding["format_id"] != _FAMILY_DEPLOYMENT_FORMAT_ID:
+        _fail(
+            "RX058_FAMILY_BINDING_INVALID",
+            "generic_family_binding.schema",
+            binding.get("schema"),
+        )
+    body = dict(binding)
+    binding_sha256 = body.pop("binding_sha256")
+    if _require_sha(
+        binding_sha256, "generic_family_binding.binding_sha256"
+    ) != _digest(body):
+        _fail(
+            "RX058_FAMILY_BINDING_INVALID",
+            "generic_family_binding.binding_sha256",
+            "seal differs",
+        )
+    for key in (
+        "plan_sha256", "provider_descriptor_sha256",
+        "provider_projection_sha256", "artifact_bundle_sha256",
+    ):
+        _require_sha(binding[key], f"generic_family_binding.{key}")
+    identity = _require_exact_keys(binding["family_executable_identity"], {
+        "schema", "provider_descriptor_sha256",
+        "provider_projection_sha256", "plan_sha256", "target_sha256",
+        "executable_sha256", "provider_artifact_sha256",
+        "generated_artifact_sha256", "identity_sha256",
+    }, "generic_family_binding.family_executable_identity")
+    identity_body = dict(identity)
+    identity_sha256 = identity_body.pop("identity_sha256")
+    if identity_body.pop("schema", None) != \
+            "rtdl.family_executable_identity.v1" \
+            or _require_sha(
+                identity_sha256,
+                "generic_family_binding.family_executable_identity.identity_sha256",
+            ) != _digest({
+                "schema": "rtdl.family_executable_identity.v1",
+                **identity_body,
+            }):
+        _fail(
+            "RX058_FAMILY_BINDING_INVALID",
+            "generic_family_binding.family_executable_identity",
+            "identity seal differs",
+        )
+    for key in identity_body:
+        _require_sha(
+            identity_body[key],
+            f"generic_family_binding.family_executable_identity.{key}",
+        )
+    if (
+        identity_body["provider_descriptor_sha256"]
+            != binding["provider_descriptor_sha256"]
+        or identity_body["provider_projection_sha256"]
+            != binding["provider_projection_sha256"]
+        or identity_body["plan_sha256"] != binding["plan_sha256"]
+        or identity_body["target_sha256"] != target["target_sha256"]
+        or identity_body["provider_artifact_sha256"]
+            != target["native_library_sha256"]
+        or identity_body["generated_artifact_sha256"]
+            != composed_ptx_sha256
+        or identity_body["executable_sha256"]
+            != executable_identity.get("generated_executable_sha256")
+    ):
+        _fail(
+            "RX058_FAMILY_BINDING_INVALID",
+            "generic_family_binding",
+            f"family/provider/product chain differs for {family}",
+        )
+    return binding
+
+
+def _build_rtdlexe_impl(
     materialized: object,
     *,
     artifact_directory: str | os.PathLike[str],
     authority_path: str | os.PathLike[str],
     build_roots: RTDLExecutableBuildRoots,
     deployment_id: str,
+    generic_family_binding: Mapping[str, object] | None,
 ) -> BuiltRTDLExecutable:
     """Freeze one already-checked materialized program for deployment.
 
@@ -1968,10 +2069,31 @@ def build_rtdlexe(
         provider_key=provider_key,
         execution_schema=execution_schema,
         deployment_id=deployment_id,
+        generic_family_binding=generic_family_binding,
     )
+    family_binding = None
+    family_identity_sha = None
+    if generic_family_binding is not None:
+        family_binding = _verify_generic_family_binding(
+            product_projection["generic_family_binding"],
+            family=family,
+            executable_identity=executable_identity,
+            target=target,
+            composed_ptx_sha256=ptx_sha,
+        )
+        family_identity = family_binding["family_executable_identity"]
+        assert isinstance(family_identity, Mapping)
+        family_identity_sha = _require_sha(
+            family_identity["identity_sha256"],
+            "generic_family_binding.family_executable_identity.identity_sha256",
+        )
     artifact = {
-        "schema": _ARTIFACT_SCHEMA,
-        "format_version": 1,
+        "schema": (
+            _FAMILY_ARTIFACT_SCHEMA
+            if family_binding is not None
+            else _ARTIFACT_SCHEMA
+        ),
+        "format_version": 2 if family_binding is not None else 1,
         "product_projection": product_projection,
         "protocol_declaration": declaration,
         "compiler_projection": compiler_projection,
@@ -1985,8 +2107,12 @@ def build_rtdlexe(
         artifact_path, artifact_bytes, code="RX011_ARTIFACT_COLLISION")
 
     authority_body = {
-        "schema": _AUTHORITY_SCHEMA,
-        "authority_version": 1,
+        "schema": (
+            _FAMILY_AUTHORITY_SCHEMA
+            if family_binding is not None
+            else _AUTHORITY_SCHEMA
+        ),
+        "authority_version": 2 if family_binding is not None else 1,
         "artifact_sha256": artifact_sha,
         "artifact_bytes": len(artifact_bytes),
         "product_projection_sha256": _digest(product_projection),
@@ -1999,9 +2125,22 @@ def build_rtdlexe(
         "task_semantics_sha256": declaration["task_semantics_sha256"],
         "target_compute_capability": list(target["compute_capability"]),
     }
+    if family_binding is not None:
+        authority_body["generic_family_binding_sha256"] = _require_sha(
+            family_binding["binding_sha256"],
+            "generic_family_binding.binding_sha256",
+        )
+        authority_body["family_executable_identity_sha256"] = \
+            family_identity_sha
     authority = {
         **authority_body,
-        "authority_seal": _sha_bytes(_AUTHORITY_DOMAIN + _canonical(authority_body)),
+        "authority_seal": _sha_bytes(
+            (
+                _FAMILY_AUTHORITY_DOMAIN
+                if family_binding is not None
+                else _AUTHORITY_DOMAIN
+            ) + _canonical(authority_body)
+        ),
     }
     authority_bytes = _canonical(authority) + b"\n"
     authority_output = _absolute_unresolved_path(authority_path)
@@ -2015,7 +2154,72 @@ def build_rtdlexe(
         authority_path=authority_output,
         authority_sha256=_sha_bytes(authority_bytes),
         executable_identity_sha256=executable_identity_sha,
+        family_executable_identity_sha256=family_identity_sha,
     )
+
+
+def build_rtdlexe(
+    materialized: object,
+    *,
+    artifact_directory: str | os.PathLike[str],
+    authority_path: str | os.PathLike[str],
+    build_roots: RTDLExecutableBuildRoots,
+    deployment_id: str,
+) -> BuiltRTDLExecutable:
+    """Freeze one accepted legacy V4 materialization as a V1 artifact."""
+
+    return _build_rtdlexe_impl(
+        materialized,
+        artifact_directory=artifact_directory,
+        authority_path=authority_path,
+        build_roots=build_roots,
+        deployment_id=deployment_id,
+        generic_family_binding=None,
+    )
+
+
+def build_family_rtdlexe(
+    materialized: object,
+    *,
+    artifact_directory: str | os.PathLike[str],
+    authority_path: str | os.PathLike[str],
+    build_roots: RTDLExecutableBuildRoots,
+    deployment_id: str,
+) -> BuiltRTDLExecutable:
+    """Freeze a public generic-family materialization as a family-bound artifact."""
+
+    from .v4_generic_family_lifecycle import (  # build-side import only
+        FAMILY_DEPLOYMENT_FORMAT_RTDLEXE_V2,
+        FamilyDeploymentExportV1,
+        MaterializedGenericFamilyProgram,
+    )
+
+    if not isinstance(materialized, MaterializedGenericFamilyProgram):
+        _fail(
+            "RX058_FAMILY_BINDING_INVALID",
+            "materialized",
+            "MaterializedGenericFamilyProgram required",
+        )
+    exported = materialized.export_deployment(
+        FAMILY_DEPLOYMENT_FORMAT_RTDLEXE_V2
+    )
+    if not isinstance(exported, FamilyDeploymentExportV1):
+        _fail(
+            "RX058_FAMILY_BINDING_INVALID",
+            "materialized.export_deployment",
+            type(exported).__name__,
+        )
+    exported.revalidate()
+    built = _build_rtdlexe_impl(
+        exported.provider_payload,
+        artifact_directory=artifact_directory,
+        authority_path=authority_path,
+        build_roots=build_roots,
+        deployment_id=deployment_id,
+        generic_family_binding=exported.family_binding,
+    )
+    exported.revalidate()
+    return built
 
 
 def _verify_contract_pair(
@@ -2227,6 +2431,7 @@ class _LoadedRuntimeSessionAdmissionCapsule(tuple):
         "deployment_id", "trust_root_sha256", "trust_package_sha256",
         "artifact_sha256", "executable_identity_sha256", "family",
         "composed_ptx", "product_projection",
+        "family_executable_identity_sha256",
     )
 
     def __new__(
@@ -2310,6 +2515,7 @@ class LoadedRTDLExecutable:
     family: str
     composed_ptx: str
     product_projection: Mapping[str, object]
+    family_executable_identity_sha256: str | None = None
     _token: object = field(default=None, repr=False, compare=False)
     _runtime_session_snapshot_seal: \
         _LoadedRuntimeSessionAdmissionCapsule | None = field(
@@ -3226,20 +3432,39 @@ def load_rtdlexe(
     authority, authority_raw = _read_canonical_json_with_raw(
         authority_file, code="RX018_AUTHORITY_INVALID")
     authority_sha = _sha_bytes(authority_raw)
-    authority = _require_exact_keys(authority, {
+    authority_schema = authority.get("schema") if isinstance(authority, Mapping) else None
+    authority_version = authority.get("authority_version") \
+        if isinstance(authority, Mapping) else None
+    family_bound = (
+        authority_schema == _FAMILY_AUTHORITY_SCHEMA
+        and type(authority_version) is int
+        and authority_version == 2
+    )
+    authority_keys = {
         "schema", "authority_version", "artifact_sha256", "artifact_bytes",
         "product_projection_sha256", "protocol_decision_sha256",
         "executable_identity_sha256", "native_library_sha256", "target_sha256",
         "deployment_id", "family", "task_semantics_sha256",
         "target_compute_capability", "authority_seal",
-    }, "authority")
-    if authority["schema"] != _AUTHORITY_SCHEMA \
-            or type(authority["authority_version"]) is not int \
-            or authority["authority_version"] != 1:
+    }
+    if family_bound:
+        authority_keys.update({
+            "generic_family_binding_sha256",
+            "family_executable_identity_sha256",
+        })
+    authority = _require_exact_keys(authority, authority_keys, "authority")
+    if not family_bound and (
+        authority["schema"] != _AUTHORITY_SCHEMA
+        or type(authority["authority_version"]) is not int
+        or authority["authority_version"] != 1
+    ):
         _fail("RX019_AUTHORITY_SCHEMA_ROLLBACK", "authority.schema", authority["schema"])
     authority_body = dict(authority); authority_seal = authority_body.pop("authority_seal")
     if _require_sha(authority_seal, "authority.authority_seal") != \
-            _sha_bytes(_AUTHORITY_DOMAIN + _canonical(authority_body)):
+            _sha_bytes(
+                (_FAMILY_AUTHORITY_DOMAIN if family_bound else _AUTHORITY_DOMAIN)
+                + _canonical(authority_body)
+            ):
         _fail("RX020_AUTHORITY_SEAL_MISMATCH", "authority.authority_seal", authority_seal)
     for key in (
         "artifact_sha256", "product_projection_sha256", "protocol_decision_sha256",
@@ -3247,6 +3472,12 @@ def load_rtdlexe(
         "task_semantics_sha256",
     ):
         _require_sha(authority[key], f"authority.{key}")
+    if family_bound:
+        for key in (
+            "generic_family_binding_sha256",
+            "family_executable_identity_sha256",
+        ):
+            _require_sha(authority[key], f"authority.{key}")
     for key in ("deployment_id", "family"):
         _require_string(authority[key], f"authority.{key}")
     if not isinstance(authority["target_compute_capability"], list) \
@@ -3266,13 +3497,26 @@ def load_rtdlexe(
         _fail("RX021_ARTIFACT_IDENTITY_MISMATCH", "artifact", "bytes/hash differ from authority")
     if artifact_file.name != f"{artifact_sha}.rtdlexe":
         _fail("RX022_CONTENT_ADDRESS_MISMATCH", "artifact.path", artifact_file.name)
+    artifact_schema = artifact.get("schema") if isinstance(artifact, Mapping) else None
+    artifact_version = artifact.get("format_version") \
+        if isinstance(artifact, Mapping) else None
+    artifact_family_bound = (
+        artifact_schema == _FAMILY_ARTIFACT_SCHEMA
+        and type(artifact_version) is int
+        and artifact_version == 2
+    )
     artifact = _require_exact_keys(artifact, {
         "schema", "format_version", "product_projection", "protocol_declaration",
         "compiler_projection", "protocol_decision", "composed_ptx_base64",
     }, "artifact")
-    if artifact["schema"] != _ARTIFACT_SCHEMA \
-            or type(artifact["format_version"]) is not int \
-            or artifact["format_version"] != 1:
+    if artifact_family_bound != family_bound or (
+        not artifact_family_bound
+        and (
+            artifact["schema"] != _ARTIFACT_SCHEMA
+            or type(artifact["format_version"]) is not int
+            or artifact["format_version"] != 1
+        )
+    ):
         _fail("RX024_ARTIFACT_SCHEMA_ROLLBACK", "artifact.schema", artifact["schema"])
     declaration = artifact["protocol_declaration"]
     projection = artifact["compiler_projection"]
@@ -3294,13 +3538,22 @@ def load_rtdlexe(
     if decision_seal != authority["protocol_decision_sha256"]:
         _fail("RX010_DECISION_CHAIN_MISMATCH", "authority.protocol_decision_sha256", decision_seal)
 
-    product = _require_exact_keys(artifact["product_projection"], {
+    product_keys = {
         "schema", "deployment_id", "family", "executable_identity", "protocol_contract_sha256",
         "compiler_projection_sha256", "protocol_decision_sha256", "runtime",
         "target_toolchain", "composed_ptx_sha256", "compiler_options", "ptx_metadata",
         "provider_key", "execution_schema",
-    }, "artifact.product_projection")
-    if product["schema"] != _PROJECTION_SCHEMA \
+    }
+    if family_bound:
+        product_keys.add("generic_family_binding")
+    product = _require_exact_keys(
+        artifact["product_projection"], product_keys,
+        "artifact.product_projection",
+    )
+    expected_product_schema = (
+        _FAMILY_PROJECTION_SCHEMA if family_bound else _PROJECTION_SCHEMA
+    )
+    if product["schema"] != expected_product_schema \
             or _digest(product) != authority["product_projection_sha256"]:
         _fail("RX026_PRODUCT_PROJECTION_MISMATCH", "artifact.product_projection", "outer binding failed")
     runtime = _validate_runtime(product["runtime"])
@@ -3369,6 +3622,25 @@ def load_rtdlexe(
         _fail("RX009_PTX_IDENTITY_MISMATCH", "artifact.composed_ptx", ptx_sha)
     if declaration["checked_executable_sha256"] != identity.get("generated_executable_sha256"):
         _fail("RX028_EXECUTABLE_IDENTITY_MISMATCH", "protocol.checked_executable", identity)
+    if family_bound:
+        family_binding = _verify_generic_family_binding(
+            product["generic_family_binding"],
+            family=str(product["family"]),
+            executable_identity=identity,
+            target=target,
+            composed_ptx_sha256=ptx_sha,
+        )
+        family_identity = family_binding["family_executable_identity"]
+        assert isinstance(family_identity, Mapping)
+        if family_binding["binding_sha256"] != \
+                authority["generic_family_binding_sha256"] \
+                or family_identity["identity_sha256"] != \
+                authority["family_executable_identity_sha256"]:
+            _fail(
+                "RX058_FAMILY_BINDING_INVALID",
+                "authority.generic_family_binding",
+                "authority and artifact family identities differ",
+            )
     producer_inputs = execution_schema["producer_inputs"]
     assert isinstance(producer_inputs, Mapping)
     for name, row in producer_inputs.items():
@@ -3447,6 +3719,11 @@ def load_rtdlexe(
         family=str(product["family"]),
         composed_ptx=ptx,
         product_projection=product,
+        family_executable_identity_sha256=(
+            str(authority["family_executable_identity_sha256"])
+            if family_bound
+            else None
+        ),
     ))
 
 
@@ -5842,6 +6119,6 @@ __all__ = [
     "RTDLExecutableBuildRoots", "RTDLExecutableError",
     "RTDLExecutionResult", "TriangleReductionBatch", "TriangleReductionStaticInput",
     "TriangleReductionBufferBatch", "TriangleReductionBufferStaticInput",
-    "begin_rtdlexe_provider_initialization", "build_rtdlexe",
+    "begin_rtdlexe_provider_initialization", "build_family_rtdlexe", "build_rtdlexe",
     "install_rtdlexe_deployment", "load_rtdlexe",
 ]

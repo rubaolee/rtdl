@@ -6,22 +6,6 @@
     return 0;
 }
 
-// App-free runtime warmup for public V4 lifecycle overlap.  The native
-// singleton remains the sole owner of OptiX context construction; callers do
-// not receive a context handle and cannot use this entry point to bypass a
-// family's prepare/execute contract.
-extern "C" int rtdl_optix_v4_warm_runtime_v1(
-        char* error_out, size_t error_size) {
-    return handle_native_call([&]() {
-        ScopedRtdlCudaContext context_guard;
-    }, error_out, error_size);
-}
-
-extern "C" uint64_t rtdl_optix_v4_runtime_compiler_attempt_count_v1() {
-    return g_rtdlexe_runtime_compiler_attempt_count.load(
-        std::memory_order_relaxed);
-}
-
 extern "C" int rtdl_optix_v4_goal5801_product_status_device_probe_v1(
         uint32_t case_id,
         RtdlV4CallbackProductStatusSummary* summary_out,
@@ -32,33 +16,6 @@ extern "C" int rtdl_optix_v4_goal5801_product_status_device_probe_v1(
             throw std::runtime_error(
                 "Goal5801 product-status probe output is null");
         *summary_out = goal5801_product_status_device_probe(case_id);
-    }, error_out, error_size);
-}
-
-// Static producer schema query.  This does not initialize CUDA or OptiX; it
-// reports constants and sizeof/offsetof values compiled into this exact
-// native library.  .rtdlexe binds the returned JSON at build time and checks
-// it again before prepare invokes an OptiX construction call.
-extern "C" int rtdl_optix_v4_rtdlexe_producer_descriptor_v1(
-        const char* family,
-        char* descriptor_out,
-        size_t descriptor_capacity,
-        size_t* descriptor_bytes_out,
-        char* error_out,
-        size_t error_size) {
-    return handle_native_call([&]() {
-        if (!family || !descriptor_out || descriptor_capacity == 0u ||
-                !descriptor_bytes_out)
-            throw std::runtime_error(
-                "V4 .rtdlexe producer descriptor outputs are invalid");
-        const std::string descriptor =
-            v4_rtdlexe_native_producer_descriptor(std::string(family));
-        if (descriptor.size() + 1u > descriptor_capacity)
-            throw std::runtime_error(
-                "V4 .rtdlexe producer descriptor buffer is too small");
-        std::memcpy(descriptor_out, descriptor.data(), descriptor.size());
-        descriptor_out[descriptor.size()] = '\0';
-        *descriptor_bytes_out = descriptor.size();
     }, error_out, error_size);
 }
 
