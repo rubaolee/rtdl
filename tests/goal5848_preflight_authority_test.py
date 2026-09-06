@@ -11,7 +11,7 @@ import unittest
 from pathlib import Path
 from unittest import mock
 
-from experiments.goal5848_strong_baseline import contracts, preflight_worker
+from experiments.goal5848_strong_baseline import contracts, preflight_worker, worker
 from scripts import goal5848_finalize_preflight as finalizer
 from scripts import goal5848_probe_aot_cache_hits as aot_probe
 from scripts import goal5848_run_timer_free_preflight as preflight
@@ -167,6 +167,20 @@ class Goal5848PreflightAuthorityTest(unittest.TestCase):
         self.assertEqual(
             evidence["reused_execute"]["independent_execute_guard"], guard
         )
+
+    def test_triangle_guarded_result_uses_reduced_u64_public_output(self):
+        self.assertEqual(
+            worker._public_output(
+                contracts.TRIANGLE_TASK,
+                {"reduced_u64": 65530},
+            ),
+            65530,
+        )
+        with self.assertRaisesRegex(RuntimeError, "outputs disagree"):
+            worker._public_output(
+                contracts.TRIANGLE_TASK,
+                {"weighted_sum": 65530, "reduced_u64": 1},
+            )
 
     def test_process_streams_are_preserved_byte_exact_without_overwrite(self):
         completed = subprocess.CompletedProcess(

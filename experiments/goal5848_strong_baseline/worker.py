@@ -238,10 +238,17 @@ def _public_output(task: str, result: object) -> object:
         )
         return tuple(tuple(int(item) for item in row) for row in raw)
     if isinstance(result, Mapping):
-        raw = result.get("weighted_sum", result.get("output"))
-    else:
-        raw = getattr(result, "output", getattr(result, "reduced_u64", None))
-    return int(raw)
+        candidates = [
+            int(result[key])
+            for key in ("weighted_sum", "output", "reduced_u64")
+            if key in result
+        ]
+        if not candidates:
+            raise TypeError("Goal5848 triangle public output is absent")
+        if any(value != candidates[0] for value in candidates[1:]):
+            raise RuntimeError("Goal5848 triangle public outputs disagree")
+        return candidates[0]
+    return int(getattr(result, "output", getattr(result, "reduced_u64", None)))
 
 
 def _validate_rtdl_result(task: str, result: object, expected: object) -> None:
