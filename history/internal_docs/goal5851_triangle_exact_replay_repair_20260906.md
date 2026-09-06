@@ -4,7 +4,7 @@ Date: 2026-09-06
 
 ## Status
 
-`IMPLEMENTED_AND_NONFORMALLY_GPU_VALIDATED__CLEAN_AOT_COMPARISON_REQUIRED`
+`SUCCESSOR_TRANSACTION_1_RETAINED_FAILED__SECOND_GENERIC_REPAIR_IN_PROGRESS`
 
 This document records a pre-freeze engineering repair. It does not complete
 Goal5851 and does not authorize a public or manuscript performance claim.
@@ -119,3 +119,50 @@ measured against Direct in the same balanced transaction.
 5. Only then preregister and execute a wholly fresh two-generation transaction.
 6. Preserve the passing Ada result for `c4351f612...` as historical evidence;
    it cannot serve as generation A for a changed successor source.
+
+## Clean Successor Transaction 1
+
+The v9 repair was committed and pushed as
+`12ab7b49c18f139543c236981e9dc43f5ddf15c8`, tree
+`7933d6fdcb3db5c548546360658b5200e14c5da1`. A fresh RTX 3090 transaction
+completed all 512 instrumentation workers and all 80 formal workers with zero
+retry or discard. The independent recount correctly rejected the transaction:
+
+- triangle public RTDL median: 65,263 ns;
+- triangle Direct OptiX median: 53,385 ns;
+- triangle median within-block RTDL/Direct: `1.220467x`, still above `1.20x`;
+- relation median within-block RTDL/Direct: `1.134680x`, passing;
+- triangle successor/predecessor: `0.979742x`, passing;
+- relation successor/predecessor: `0.617216x`, passing.
+
+The complete failure archive SHA-256 is
+`182043089d16d36cda9f613c86d3592b3bbe7b7bcaa1bb843ab9ff4441acfe60`.
+It is retained outside Git under
+`/Users/rl2025/RTDL_evidence/goal5848/goal5851_successor_ampere_transaction1_failure/`.
+It may not be retried, relabeled, pooled, or used as a passing generation.
+
+## Second Generic Repair
+
+The first v9 transaction left roughly 1.2 microseconds to the unchanged
+triangle public/Direct threshold. Two generic fixed-cost sources remained:
+
+1. The public owner reconstructed an exact-byte replay key and multiplier mode
+   for every call even when the caller supplied the same immutable batch object
+   that had already completed native digest commit.
+2. `ScopedRtdlCudaContext` called `cuCtxSetCurrent` twice per execution even
+   when `cuCtxGetCurrent` reported that the retained RTDL primary context was
+   already current on the calling thread.
+
+The in-progress successor caches only an identity shortcut to the already
+digest-committed immutable batch. A different object, including an equal-byte
+object, still enters the existing digest equality path. Any native or oracle
+failure clears both forms of Python reuse eligibility. The CUDA context guard
+now skips selection and restoration only when the prior context is exactly the
+retained context; null or different contexts retain the old select-and-restore
+behavior, including restoration after an exception.
+
+These changes add no application vocabulary, formula, task dispatch, timer
+movement, workload change, Direct change, or threshold change. The directly
+affected local suite currently passes 121 tests with 3 expected skips. GPU
+native build and a same-machine balanced public/Direct diagnostic remain
+required before this second repair can be called effective.

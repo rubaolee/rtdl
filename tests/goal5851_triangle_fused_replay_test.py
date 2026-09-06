@@ -5,6 +5,7 @@ import os
 import threading
 import unittest
 from pathlib import Path
+from types import MappingProxyType
 
 from rtdsl import v4_rtdlexe as runtime
 
@@ -45,10 +46,19 @@ def _owner(batch: runtime.TriangleReductionBatch):
     owner._fused_replay = True
     owner._last_batch_key = _batch_key(batch)
     owner._last_query_arrays = (object(), object(), object(), object())
+    owner._exact_replay_batch = batch
+    owner._exact_replay_count = len(batch.queries)
+    owner._exact_replay_use_multipliers = 1
+    owner._exact_replay_digest_u8 = batch._device_input_digest_u8
     owner._last_fast_operation_receipt = None
     owner._fast_reduced = ctypes.c_uint64()
     owner._fast_compact_status = ctypes.c_uint32()
     owner._call_error = ctypes.create_string_buffer(16384)
+    owner._fast_status_extras = MappingProxyType({
+        "success_event_count_d2h_bytes": 0,
+        "success_scalar_d2h_bytes": 8,
+        "success_total_product_d2h_bytes": 20,
+    })
     owner._execute_fast = lambda *_args: (_ for _ in ()).throw(
         AssertionError("full-column v7 execute reached during exact replay"))
     return owner
@@ -86,6 +96,8 @@ class Goal5851TriangleFusedReplayTest(unittest.TestCase):
             return 0
 
         owner._execute_replay = replay
+        owner._query_cache_reusable = lambda *_args: (_ for _ in ()).throw(
+            AssertionError("same-object replay recomputed the cache key"))
         output, output_sha, status, counters, traversal = owner.execute(
             batch, diagnostics=False)
 
@@ -122,6 +134,47 @@ class Goal5851TriangleFusedReplayTest(unittest.TestCase):
             owner.execute(batch, diagnostics=False)
         self.assertIsNone(owner._last_batch_key)
         self.assertIsNone(owner._last_query_arrays)
+        self.assertIsNone(owner._exact_replay_batch)
+        self.assertEqual(owner._exact_replay_count, 0)
+        self.assertEqual(owner._exact_replay_use_multipliers, 0)
+        self.assertIsNone(owner._exact_replay_digest_u8)
+
+    def test_equal_distinct_batch_uses_digest_path_then_becomes_identity(self) -> None:
+        first = _batch()
+        second = _batch()
+        owner = _owner(first)
+        observed = []
+
+        def replay(*args):
+            observed.append(args)
+            _publish_success(args)
+            return 0
+
+        owner._execute_replay = replay
+        output, *_rest = owner.execute(second, diagnostics=False)
+
+        self.assertEqual(output, 7)
+        self.assertEqual(len(observed), 1)
+        self.assertIs(owner._exact_replay_batch, second)
+        self.assertEqual(
+            bytes(owner._exact_replay_digest_u8[:32]).hex(),
+            second._device_input_sha256,
+        )
+
+    def test_oracle_rejection_clears_exact_identity_replay(self) -> None:
+        batch = _batch()
+        owner = _owner(batch)
+
+        def replay(*args):
+            _publish_success(args, value=8)
+            return 0
+
+        owner._execute_replay = replay
+        with self.assertRaisesRegex(runtime.RTDLExecutableError, "RX043"):
+            owner.execute(batch, diagnostics=False)
+        self.assertIsNone(owner._last_batch_key)
+        self.assertIsNone(owner._last_query_arrays)
+        self.assertIsNone(owner._exact_replay_batch)
 
     def test_native_replay_allows_only_all_absent_cached_host_columns(self) -> None:
         implementation = (

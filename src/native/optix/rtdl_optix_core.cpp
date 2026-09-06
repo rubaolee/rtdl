@@ -1291,9 +1291,11 @@ public:
         // only then can this per-thread guard snapshot and select safely.
         std::call_once(g_optix_init_flag, init_optix_context);
         CU_CHECK(cuCtxGetCurrent(&prior_));
+        if (prior_ == g_cuda_primary_ctx)
+            return;
         try {
             CU_CHECK(cuCtxSetCurrent(g_cuda_primary_ctx));
-            active_ = true;
+            restore_ = true;
         } catch (...) {
             // A constructor that throws has no destructor.  Restore the
             // caller's context explicitly so failed RTDL context selection
@@ -1303,13 +1305,13 @@ public:
         }
     }
     ~ScopedRtdlCudaContext() noexcept {
-        if (active_) (void)cuCtxSetCurrent(prior_);
+        if (restore_) (void)cuCtxSetCurrent(prior_);
     }
     ScopedRtdlCudaContext(const ScopedRtdlCudaContext&) = delete;
     ScopedRtdlCudaContext& operator=(const ScopedRtdlCudaContext&) = delete;
 private:
     CUcontext prior_ = nullptr;
-    bool active_ = false;
+    bool restore_ = false;
 };
 
 // ---------- SBT record types ------------------------------------------------

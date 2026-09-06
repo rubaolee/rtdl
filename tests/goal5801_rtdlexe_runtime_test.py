@@ -553,6 +553,9 @@ class Goal5801RTDLExecutableRuntimeTest(unittest.TestCase):
         context_guard = core.split("class ScopedRtdlCudaContext", 1)[1].split(
             "// ---------- SBT record types", 1)[0]
         self.assertIn("catch (...) {", context_guard)
+        self.assertIn("if (prior_ == g_cuda_primary_ctx)", context_guard)
+        self.assertIn("if (restore_) (void)cuCtxSetCurrent(prior_);",
+                      context_guard)
         self.assertIn("(void)cuCtxSetCurrent(prior_);", context_guard)
         self.assertLess(
             context_guard.index("(void)cuCtxSetCurrent(prior_);"),

@@ -255,6 +255,10 @@ class Goal5846NativeWarmupTest(unittest.TestCase):
             constructor.index("std::call_once(g_optix_init_flag"),
             constructor.index("CU_CHECK(cuCtxGetCurrent(&prior_))"),
         )
+        self.assertLess(
+            constructor.index("CU_CHECK(cuCtxGetCurrent(&prior_))"),
+            constructor.index("if (prior_ == g_cuda_primary_ctx)"),
+        )
 
     def test_narrow_native_warmup_abi_is_required(self):
         with self.assertRaisesRegex(
