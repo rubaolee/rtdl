@@ -60,6 +60,10 @@ class Goal5848PodRunbookTest(unittest.TestCase):
         self.assertIn(
             'export RTDL_OPTIX_DISK_CACHE_POLICY=disabled', text
         )
+        self.assertIn("-name 'libnvrtc.so.*'", text)
+        self.assertIn("! -path '*/stubs/*'", text)
+        self.assertIn("selected NVRTC image is a link-time stub", text)
+        self.assertNotIn("-name 'libnvrtc.so*' 2>/dev/null", text)
         self.assertIn('stage "run_single_attempt_eighty_cell_formal_transaction"', text)
         self.assertEqual(
             text.count(

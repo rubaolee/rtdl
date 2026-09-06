@@ -210,10 +210,15 @@ export PATH="$CUDA_ROOT/bin:$PATH"
 export LD_LIBRARY_PATH="$CUDA_ROOT/lib64:$CUDA_ROOT/targets/x86_64-linux/lib:${LD_LIBRARY_PATH:-}"
 "$NVCC" --version > "$OUTPUT_ROOT/environment/nvcc_version.txt"
 printf '%s\n' "$CUDA_ROOT" > "$OUTPUT_ROOT/environment/cuda_root.txt"
-NVRTC_LIBRARY="$(find "$CUDA_ROOT" -type f -name 'libnvrtc.so*' 2>/dev/null | sort -V | tail -1)"
+NVRTC_LIBRARY="$(find "$CUDA_ROOT" -type f -name 'libnvrtc.so.*' \
+  ! -path '*/stubs/*' 2>/dev/null | sort -V | tail -1)"
 test -n "$NVRTC_LIBRARY"
 NVRTC_LIBRARY="$(readlink -f "$NVRTC_LIBRARY")"
 test -f "$NVRTC_LIBRARY"
+case "$NVRTC_LIBRARY" in
+  */stubs/*) abort 21 "selected NVRTC image is a link-time stub" ;;
+esac
+printf '%s\n' "$NVRTC_LIBRARY" > "$OUTPUT_ROOT/environment/nvrtc_library.txt"
 
 stage "create_isolated_python"
 BASE_PYTHON=""
