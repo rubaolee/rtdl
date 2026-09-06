@@ -4,7 +4,7 @@ Date: 2026-09-06
 
 ## Status
 
-`SUCCESSOR_TRANSACTION_1_RETAINED_FAILED__THIRD_REPAIR_NONFORMAL_GATE_PASS__CLEAN_FORMAL_REQUIRED`
+`FINAL_SUCCESSOR_AMPERE_PASS__SECOND_COMPUTE_GENERATION_REQUIRED`
 
 This document records a pre-freeze engineering repair. It does not complete
 Goal5851 and does not authorize a public or manuscript performance claim.
@@ -242,3 +242,56 @@ selectors and `git diff --check` also pass.
    Goal5851 and authorize the corresponding bounded paper claim. The older Ada
    pass at `c4351f612...` is historical and cannot be combined with this
    changed source.
+
+## Final Successor Ampere Transaction
+
+The third repair was committed and pushed as exact experiment source
+`a4dd1d5d32b962b81a29e560ac8845e9c508101c`, tree
+`424a88cd806f76737ae3aec0d3238ebced833bfc`. A fresh detached clean checkout on
+one NVIDIA GeForce RTX 3090 (Ampere, compute capability 8.6, UUID
+`GPU-4c3be278-841f-27ce-6a4e-02ca58147d16`, driver 580.159.03) ran the unmodified
+one-shot Goal5848 runbook with a previously absent output root.
+
+The transaction passed every pre-formal stage, including 512 fresh-process
+instrumentation workers, timer-free eight-arm witnesses, baseline competence,
+fresh AOT cache qualification and preregistration. It then retained all 80
+formal process records and 10,240 steady samples with zero retry and zero
+discard. The controller reported:
+
+| Task | Public RTDL / Direct median | Worst block | Successor / predecessor median | Result |
+| --- | ---: | ---: | ---: | --- |
+| Triangle weighted all-hit | `1.176605x` | `1.187354x` | `0.950288x` | pass |
+| Closed AABB relation count | `1.121488x` | `1.285963x` | `0.597800x` | pass |
+
+The implementation-entry RTDL/strong-PyOptix medians were `0.660856x` for
+triangle and `0.712552x` for relation. The mandatory old post-import diagnostic
+remained adverse at `1.661868x` and `1.868936x`, respectively, because it starts
+after PyOptix has already created CUDA state during excluded import while RTDL
+remains lazy. These adverse diagnostics are retained and are not presented as
+passing equivalent-lifecycle comparisons.
+
+The single-generation authority status is
+`PASS__INDEPENDENT_BYTE_AND_GATE_RECOUNT`. Authority and independent recount
+are byte-identical, each with file SHA-256
+`873230497dc81b2c9013695804278915fe35fd2c76130a0077fa2da2c7a0bcfe`;
+the authority internal seal is
+`29f60d68c904aad9163f8a2faf21245d29aedd55d71bf8a8a9eb98bcff4056bf`.
+The complete 2,446-entry archive is 36 MiB and has SHA-256
+`a1b8300ab32ec8a846e82d1e6efde29c234718748415287293d76a903b25d824`.
+It is retained outside Git at
+`/Users/rl2025/RTDL_evidence/goal5848/goal5851_successor_ampere_a4dd1d5d_pass/`.
+
+The archive hash was independently reproduced after download on the Mac, and
+the extracted authority and recount remained byte-identical. A further
+path-relocated Mac invocation of the unmodified builder correctly rejected the
+pod-absolute `/workspace/...` artifact bindings before producing output. This
+is an artifact-relocation limitation, not a result mismatch; do not claim a
+Mac-rebuilt authority from this transaction.
+
+This transaction supplies generation 1 of 2 for the final successor only.
+Goal5851 and Goal5848 remain incomplete, external review remains absent, and
+`public_or_manuscript_claim_authorized` remains false. Closure requires a wholly
+fresh passing transaction on a non-Ampere RTX compute-capability generation
+and different UUID using exact experiment source `a4dd1d5d...`, followed by
+the independent cross-generation authority. A later documentation commit is
+not an admissible replacement experiment source.

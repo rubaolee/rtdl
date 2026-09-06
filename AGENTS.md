@@ -23,6 +23,23 @@ freeze.
 
 ## Critical current override: Goal5851 final successor repair (2026-09-06)
 
+The final successor experiment source is clean pushed commit
+`a4dd1d5d32b962b81a29e560ac8845e9c508101c`, tree
+`424a88cd806f76737ae3aec0d3238ebced833bfc`. Its first wholly fresh formal
+transaction passed on an RTX 3090 Ampere GPU (CC 8.6, UUID
+`GPU-4c3be278-841f-27ce-6a4e-02ca58147d16`). All 512 instrumentation workers
+and 80 formal workers completed with zero retry/discard. Triangle public RTDL
+over Direct was `1.176605x` median with `1.187354x` worst block; relation was
+`1.121488x` median with `1.285963x` worst block. Both tasks passed every frozen
+gate and authority/recount are byte-identical. The archive SHA-256 is
+`a1b8300ab32ec8a846e82d1e6efde29c234718748415287293d76a903b25d824`.
+
+This is generation 1 of 2 for the final successor. Goal5851 and Goal5848 remain
+incomplete, and no positive public/manuscript claim is authorized. The second
+generation must check out exact experiment source `a4dd1d5d...`, not a later
+documentation commit, and must differ in compute-capability generation and GPU
+UUID. The old `c4351f612...` Ada pass cannot be paired with this source.
+
 The first clean v9 successor transaction at `12ab7b49c...` retained all 512
 instrumentation workers and 80 formal cells with zero retry/discard, but failed
 the triangle prepared public RTDL/Direct gate at `1.220467x` against the
@@ -41,12 +58,11 @@ runtime diagnostic reached `1.183902x` median and `1.324360x` worst block
 against unchanged `1.20x` and `1.35x` limits. That diagnostic is not formal
 evidence.
 
-The next admissible transaction must start from the exact clean pushed commit
-containing this repair, use wholly fresh DSO/AOT/preregistration/output bytes,
-and retain any failure. If RTX 3090 passes, a different compute-capability
-generation and UUID must independently pass the identical commit before a
-cross-generation authority or positive paper claim is allowed. The full
-repair and custody record is
+The next admissible transaction must start from exact clean pushed experiment
+source `a4dd1d5d...`, use wholly fresh DSO/AOT/preregistration/output bytes,
+and retain any failure. A different compute-capability generation and UUID
+must independently pass before a cross-generation authority or positive paper
+claim is allowed. The full repair and custody record is
 `history/internal_docs/goal5851_triangle_exact_replay_repair_20260906.md`.
 
 ## Critical current override: Goal5850 generation A complete (2026-09-06)
