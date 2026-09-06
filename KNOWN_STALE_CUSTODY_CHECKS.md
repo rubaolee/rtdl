@@ -1,6 +1,6 @@
 # Historical and current-tree custody checks
 
-Date: 2026-09-05
+Date: 2026-09-06
 
 This repository retains historical authorities whose source bytes were later
 changed by explicitly named successor work. Their historical conclusions must
@@ -90,6 +90,73 @@ Do not invent an evidence commit for Goal5832. Its safe use is the declared
 terminology, denominator, and schema specification at the recorded file-hash
 scope. A public artifact must not promise repository-only replay of its full
 historical manifest.
+
+## Goal5837 owner-grouped classification
+
+Historical authority:
+
+- evidence commit:
+  `0f5c9d4297f73e412732e5a8ab133423fe4cfd21`;
+- evidence tree:
+  `5b80f7f07807679a7ea9eae5e7b29b303ab387ed`;
+- authority:
+  `history/internal_docs/goal5837_owner_grouped_classification_20260902/GOAL5837_AUTHORITY.json`;
+- authority SHA-256:
+  `962fe108326b51fe9ca1c31e5192aab2699d941a7ea0f733d39e718d15bae271`;
+- authority self-seal:
+  `025090252ac60b722cc398402297656877405a998024d221592e18aa888f0465`.
+
+At that commit, a fresh detached clone passes:
+
+```bash
+PYTHONPATH=src:. python \
+  scripts/goal5837_freeze_owner_grouped_classification.py --verify-stored
+```
+
+The current branch intentionally has a different root `AGENTS.md` identity.
+Goal5837's historical authority records that then-current root file as one of
+its inputs. The current-tree rebuild therefore differs only in the recorded
+current-root byte count, SHA-256, and derived authority seal, and this command
+fails closed with `Goal5837Error: AUTHORITY_CURRENT_INPUT_MISMATCH`.
+
+Do not regenerate or overwrite the stored authority to make the current-tree
+command green. Verify the historical classification at the exact evidence
+commit; use current source tests separately for successor behavior.
+
+## Goal5843 fair post-R1 baseline
+
+Historical final authority:
+
+- sealing commit:
+  `75b2b34fad1f0280a43ce6cbc00e99d4b9d9d937`;
+- sealing tree:
+  `50fc7f1b60fbbf1ecbf65cd99c02f5c39b6717f8`;
+- formal source commit recorded by the authority:
+  `c2662603c4d24902361fbd70325832ee7d98a0a4`;
+- authority:
+  `history/internal_docs/goal5843_post_r1_fair_baseline_20260904/GOAL5843_FINAL_INTERNAL_AUTHORITY.json`;
+- authority SHA-256:
+  `dbf86d19083fdba6adee26ca216aae8dc00fe1d836c1afbff37aafc28e3d48a0`;
+- authority self-seal:
+  `c40b9fe5d3ace2f58fe29a1a39363ce25373332f774f3c36ffa839ce650bdba8`.
+
+At the sealing commit, a fresh detached clone passes:
+
+```bash
+PYTHONPATH=src:. python \
+  scripts/goal5843_build_final_authority.py --verify-stored
+```
+
+The current branch contains legitimate successor changes to nine files pinned
+by Goal5843's preregistration, including its family schema/lifecycle and
+prepared runtimes. The unchanged current-tree command consequently fails with
+`Goal5843ContractError: preregistration differs from canonical builder` before
+comparing the stored final authority.
+
+This is an exact-snapshot refusal, not evidence that the historical transaction
+failed. Do not rebuild Goal5843's preregistration from current files or reseal
+its final authority. Run it only at the sealing commit, and classify current
+Goal5848/Goal5851 tests as a separate current-source layer.
 
 ## Goal5807 recovered-branch support files
 

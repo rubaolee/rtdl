@@ -1,5 +1,61 @@
 # RTDL Codex Working Guide
 
+## Current owner-delegated execution directive (2026-09-06)
+
+The user explicitly designated this review as the lead and required the main
+implementation AI to follow concrete instructions. The controlling execution
+entrypoint is
+[the post-Goal5851 lead directive](history/internal_docs/lead_execution_directive_post_goal5851_20260906.md).
+Read it before continuing submission remediation. Apply its four mandatory
+plan corrections, then execute R0--R8; do not replace implementation with
+another macro plan or repeated requests to begin. The four corrections are now
+applied; use `STATUS.json` for the current R-stage rather than repeating them.
+The detailed remediation plan remains inherited except where this directive
+resolves a difference.
+
+The four plan corrections and R0--R1 are closed with evidence. R2 has produced
+a deterministic anonymous projection, two byte-identical package builds, and
+normal/optimized offline recount from a foreign path, but only as a pre-F
+rehearsal. R3 control/custody reconciliation is active. The controlling live
+state, claim ledger, and append-only validation log are under
+`history/internal_docs/post_goal5851_submission_remediation_20260906/`.
+
+Preserve measured source M `d653fe4...`, predecessor E `12ab1bc...`, all
+historical authorities, and all adverse evidence. The R1 binding is exact:
+
+```text
+machine_numerical_contract_passed=true
+original_written_per_execution_receipt_requirement_fulfilled=false
+wrong_output_observed_in_final_gpu_samples=false
+public_prepared_a_over_direct_observation_retainable=true
+implementation_entry_positive_performance_claim_allowed=false
+```
+
+The formal timed Arm-A population contains 4,096 calls but only 32 separate
+diagnostic detailed receipts, not a detailed retained receipt for every timed
+call. Native/compact status and explicit output-oracle checks remain
+synchronous. The separate 512-worker-per-generation instrumentation
+qualification measured Arm A only. Cached-PID checks do not establish native
+fork coverage, and provider bind/close double faults can still overwrite the
+first error or lose retry ownership; those defects are narrowed out, not
+repaired.
+
+Prepared public A/D is the retained main performance observation. Entry and
+post-import are lifecycle diagnostics, not intrinsic-language speed claims.
+Post-import is adverse on all four rows and reaches `2.377129x`; relative to E,
+first-result medians regress about 8%--22% at entry and 16%--31% post-import.
+Those E comparisons are post hoc and non-gating, and both first-result endpoints
+are import/lifecycle-confounded. Reviews already received concern pre-final
+bytes; final PDF/package review and external human authoring evidence remain
+absent. Public/manuscript claim authorization remains false.
+
+The final candidate tooling commit F, its clean-checkout full rehearsal, the
+rewritten manuscript, final anonymous package, final-byte review, and submission
+are still pending. The 2026-09-08 00:00 America/New_York development freeze and
+explicit external sending/submission authorization boundaries remain unchanged.
+The immutable historical completion records below must be read with this
+current receipt- and claim-scope qualification.
+
 ## Critical deadline override: no development after 2026-09-08 00:00 ET
 
 The CGO 2027 submission date is 2026-09-10. Production, compiler, native,
@@ -14,12 +70,13 @@ changed experiment.
 The controlling final-sprint sequence is
 `history/internal_docs/cgo2027_final_sprint_goals_20260905.md`. Goal5849 is
 complete at its recorded local gates. Goal5850's RTX 2000 Ada pass at
-`c4351f612...` is retained historical evidence, but subsequent retained
-Goal5851 failures required pre-freeze successor repairs. It cannot be paired
-with a changed successor. Any positive Goal5848 result now requires two RTX
-compute-capability generations to pass independently at one identical clean,
-pushed final successor commit. Goal5852 is the irreversible code/evidence
-freeze.
+`c4351f612...` is retained historical evidence and is not pooled with later
+sources. Goal5851 subsequently obtained two independent passes at identical
+measured source M `d653fe4...` on Ada and Ampere. The current R1 adjudication
+preserves the machine observations but rejects unqualified original-protocol
+compliance because per-execution detailed receipt retention was not fulfilled.
+Goal5852 is now preparing the irreversible tooling/evidence freeze; F and its
+clean-checkout rehearsal remain pending.
 
 ## Critical current override: Goal5851 final successor (2026-09-06)
 
@@ -28,9 +85,11 @@ The final experiment source is clean pushed commit
 `d53af23a2599f9d6adb4ac0bfff39cd0ab31860b`. It preserves the frozen Goal5848
 protocol and removes only generic prepared-triangle Python control overhead:
 repeat dispatch and eager post-timer evidence-object construction. It retains
-all process/thread/reentrancy, owner-lock, native status, compact status,
-per-call receipt and output-oracle checks. No workload, arm, timer, estimator,
-threshold, native traversal or app-specific engine logic changed.
+all process/thread/reentrancy and owner-lock checks, synchronous native and
+compact status checks, and the explicit output oracle. Detailed receipt
+expansion is deferred; the retained timed-worker evidence does not contain one
+detailed receipt per timed call. No workload, arm, timer, estimator, threshold,
+native traversal or app-specific engine logic changed.
 
 One wholly fresh formal transaction passed on an RTX 4090 Ada GPU (CC 8.9,
 UUID `GPU-01a12a86-b470-30ee-c81c-272e3b8fb6d7`, driver 580.159.04). All 512
@@ -38,7 +97,8 @@ instrumentation workers and 80 formal workers completed, all 10,240 steady
 samples were retained, and retry/discard were zero. Triangle public RTDL over
 Direct was `1.175066x` median with `1.211025x` worst block; relation was
 `1.076852x` median with `1.092253x` worst block. Both tasks passed every frozen
-gate. Authority and independent recount are byte-identical with SHA-256
+machine-evaluated numerical/output gate, subject to the current receipt-scope
+adjudication above. Authority and independent recount are byte-identical with SHA-256
 `191e85ea19a2af2186cddf873d19483753197f258b5afddba06abd57cc0a66b7`;
 the complete archive SHA-256 is
 `c9128bae15da7ed3262c0bad96799e8cc56d1292c14f9af8713ea174cfc2cced`.
@@ -50,6 +110,8 @@ transaction. Triangle public RTDL/Direct was `1.133636x` median with
 block. It also retained all 512 instrumentation workers, 80 formal cells and
 10,240 steady samples with zero retry/discard. Its archive SHA-256 is
 `7bbabfc8d1d9dfd3cc9bd701bd7f40e9f50c8ccfcbbac9504db43e9e42b7c2a2`.
+The instrumentation workers in both generations qualify Arm A only; they do
+not establish measured instrumentation overhead for B or C.
 
 The independently rebuilt cross-generation authorities are byte-identical with
 file SHA-256
@@ -58,7 +120,9 @@ and status
 `PASS__GOAL5848_INTERNAL_TECHNICAL_COMPLETE__EXTERNAL_REVIEW_PENDING`.
 They compare only within-machine gate direction and report
 `cross_machine_raw_time_ratio_computed: false`. Goal5848/Goal5851 are internally
-technically complete. External review remains unavailable and no positive
+technically complete at their machine numerical-contract scope. This does not
+repair the unmet written per-execution receipt clause. Pre-final external
+reviews now exist, but final-byte review has not occurred and no positive
 public/manuscript claim is authorized.
 
 Preserve all earlier adverse evidence. In particular, exact source

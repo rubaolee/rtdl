@@ -291,3 +291,47 @@ The sprint succeeds when a scientifically defensible, anonymous paper and
 replayable artifact are submitted on time. Acceptance is not under author
 control. Honest claim scope, preserved adverse evidence, frozen measurement
 rules and a complete upload are under author control and are mandatory.
+
+## 7. Current superseding execution state (2026-09-06)
+
+This section updates current status without rewriting the chronology above.
+The post-Goal5851 lead directive and its R0--R8 remediation sequence now control
+the remaining sprint.
+
+- Goal5851's same-source machine numerical contract is complete at measured
+  implementation M `d653fe4...` on RTX 4090 Ada and RTX 3090 Ampere.
+- R1 found that the original written per-execution detailed-receipt requirement
+  was not fulfilled. This does not erase the numerical/output observations,
+  and it does not permit an unqualified claim that the original protocol passed.
+- R2 has reconstructed 160 formal cells and 20,480 steady samples into an
+  anonymous projection, built two byte-identical packages in external roots,
+  and replayed the package in a foreign path under normal and optimized Python.
+  This is a successful pre-F rehearsal, not the final artifact gate.
+- R3 now documents current-tree versus exact-snapshot custody for Goal5837 and
+  Goal5843 and installs additive review/measurement errata. Historical
+  authorities and reviewer prose remain unchanged.
+- Candidate tooling snapshot F, its clean-checkout indivisible replay, the
+  bounded manuscript rewrite, final anonymous package, final-byte review, and
+  upload remain open.
+
+The current claim boundary is:
+
+```text
+machine_numerical_contract_passed=true
+original_written_per_execution_receipt_requirement_fulfilled=false
+wrong_output_observed_in_final_gpu_samples=false
+public_or_manuscript_claim_authorized=false
+```
+
+The prepared public A/D result is the only retained main performance
+observation. Entry and post-import are adjacent lifecycle diagnostics. Main
+text must disclose the adverse post-import direction and maximum `2.377129x`
+block, the post hoc E first-result regressions (about 8%--22% entry and
+16%--31% post-import), endpoint revision after adverse evidence, and the fact
+that both first-result endpoints are lifecycle/import-confounded.
+
+No further GPU or performance development is authorized. Any executable tool
+needed for export, verification, or packaging must be committed and successfully
+rehearsed before the 2026-09-08 00:00 America/New_York freeze. After that point,
+only execution of frozen tools, writing, claim narrowing, evidence preservation,
+packaging/replay, review, and submission checks are permitted.

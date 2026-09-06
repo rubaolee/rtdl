@@ -1,0 +1,384 @@
+{
+  "schema": "rtdl.cgo2027.post_goal5851.claim_ledger.v1",
+  "version": 1,
+  "created_at_utc": "2026-09-06T20:35:00Z",
+  "measured_implementation": {
+    "commit": "d653fe4ad170c5b51fee309d653c9565944dcf2e",
+    "tree": "d53af23a2599f9d6adb4ac0bfff39cd0ab31860b",
+    "predecessor_commit": "12ab1bc0a8ebbcefe42e93c677a151c04c3ba3c8"
+  },
+  "binding_decisions": {
+    "machine_numerical_contract_passed": true,
+    "original_written_per_execution_receipt_requirement_fulfilled": false,
+    "wrong_output_observed_in_final_gpu_samples": false,
+    "public_prepared_a_over_direct_observation_retainable": true,
+    "implementation_entry_positive_performance_claim_allowed": false,
+    "public_or_manuscript_claim_authorized": false
+  },
+  "review": {
+    "current_reviewer": "Codex internal scope adjudication",
+    "current_review_version": "post_goal5851_r1_v1",
+    "external_final_bytes_review": "PENDING_R7"
+  },
+  "common_evidence": {
+    "goal5838_authority": {
+      "path": "history/internal_docs/goal5838_generic_core_exam_20260902/FINAL_AUTHORITY.json",
+      "sha256": "dafea025d8f9583cd186e914f6e2974b6aab2fdd59781a6d2a39087e0def7ce8"
+    },
+    "goal5840_authority": {
+      "path": "history/internal_docs/goal5840_independent_lowering_refinement_20260903/FINAL_AUTHORITY.json",
+      "sha256": "80fae4ccd065316b195fd1435534dd4fdf7343572525ecd57604da28dee7865e"
+    },
+    "goal5848_contract": {
+      "path": "history/internal_docs/goal5848_strong_baseline_post_import_20260905/GOAL5848.md",
+      "sha256": "e4f08161e1c146918368e562c3057895ed3054331fd3fad9f2c35088a5ab3403"
+    },
+    "goal5848_worker": {
+      "path": "experiments/goal5848_strong_baseline/worker.py",
+      "sha256": "353faec5a4dd46ad00c0979f2bb544eb278460d8b55fdf054127853a03ca11e4"
+    },
+    "goal5848_contracts": {
+      "path": "experiments/goal5848_strong_baseline/contracts.py",
+      "sha256": "58eaa97abacb43fdb05884b02f72cc6dd2d5729851a70ff3890dc07c9a5dc942"
+    },
+    "runtime": {
+      "path": "src/rtdsl/v4_rtdlexe.py",
+      "sha256": "99fdc5c0f4462fe153e9659ba5f2d541e9876be76e11cebbf46ede8fa8cc6a34"
+    },
+    "native_runtime": {
+      "path": "src/native/optix/rtdl_optix_v4_callback_poc.cpp",
+      "sha256": "4e9c05bdc227c48ccc998b10ec382d84e041a8c268c1dff9ca04d987455045a7"
+    },
+    "ada_authority_recount": {
+      "root": "/Users/rl2025/RTDL_evidence/goal5848/goal5851_successor_ada_d653fe4_pass",
+      "sha256": "191e85ea19a2af2186cddf873d19483753197f258b5afddba06abd57cc0a66b7"
+    },
+    "ampere_authority_recount": {
+      "root": "/Users/rl2025/RTDL_evidence/goal5848/goal5851_successor_ampere_d653fe4_pass",
+      "sha256": "35049de227c9c251314615039f07aaf6af71dd26bf24e8c6f5e1c74fb8ceadb3"
+    },
+    "cross_generation_authority_recount": {
+      "root": "/Users/rl2025/RTDL_evidence/goal5848/goal5851_cross_generation_d653fe4_complete",
+      "sha256": "99e1eab6f33e609a8739caecb26dc05e5c8d669b3ad67f58fd0540d781151692"
+    },
+    "r2_anonymous_projection": {
+      "projection_sha256": "fa30b906b0d5a6edfdcc3267f24cea8274c9c9450a79edeef0058e89f6d252ca",
+      "summary_sha256": "54ecfddf642cfbd00dfba8af343392524143781744c698e2bc72a3c1b3843105",
+      "report_path": "history/internal_docs/post_goal5851_submission_remediation_20260906/R2_SUBMISSION_EVIDENCE_REPORT.md",
+      "report_sha256": "3f5585470558c9e0ab47ee1ea93cedaebdc08eb7531a0283ce5d9b7494acd439",
+      "final_f_rehearsal": "PENDING_R5"
+    }
+  },
+  "claims": [
+    {
+      "claim_id": "ARCH-CENTRAL-BOUNDED-COMPILER-001",
+      "candidate_sentence": "RTDL compiles a bounded restricted-Python callback protocol into statically admitted, provider-specific execution plans for the supported families.",
+      "scope": "The finite V4 callback subset, two stable constructors, and explicitly supported provider/family routes only.",
+      "source_evidence": [
+        {"path": "src/rtdsl/v4_family_schema.py", "sha256": "ed988db4aa5df2887366673b3a86ebc4b2aed2a46598ca12d68af98ac5744149"},
+        {"path": "src/rtdsl/v4_generic_family_lifecycle.py", "sha256": "d8b528ea0915eda2d4ce746ed31cac2411d813837945aa6f3e67008843620f38"},
+        {"path": "src/rtdsl/v4_family.py", "sha256": "060aaa5ab8f8810d88d7b2296a4ef2d7c98060ee80de8aeea8016044b55ce959"}
+      ],
+      "validation_phase": "Static source review plus bounded Goal5838/Goal5840 evidence.",
+      "limitations": "Not arbitrary Python, arbitrary Callback IR, arbitrary topology, or topology-generic native lowering.",
+      "paper_destination": "Abstract; Introduction; Design overview",
+      "disposition": "RETAIN_BOUNDED_WORDING",
+      "claim_authorized": false,
+      "reviewer": "Codex internal R1 v1; external final-bytes review pending"
+    },
+    {
+      "claim_id": "ARCH-STATIC-ADMISSION-IDENTITY-002",
+      "candidate_sentence": "Before execution, RTDL checks the supported static protocol and binds execution to an admitted loaded-image identity.",
+      "scope": "Static admission, materialization, provider binding, and loaded-image identity for supported V4 paths.",
+      "source_evidence": [
+        {"path": "src/rtdsl/v4_rtdlexe.py", "sha256": "99fdc5c0f4462fe153e9659ba5f2d541e9876be76e11cebbf46ede8fa8cc6a34"},
+        {"path": "src/rtdsl/v4_generic_family_lifecycle.py", "sha256": "d8b528ea0915eda2d4ce746ed31cac2411d813837945aa6f3e67008843620f38"}
+      ],
+      "validation_phase": "Compile/admit/materialize/bind before execution; identity rechecked at supported public boundaries.",
+      "limitations": "No per-execution reread of disk bytes and no semantic proof merely from hashing an image.",
+      "paper_destination": "Static admission and lifecycle section",
+      "disposition": "RETAIN_WITH_LOADED_IMAGE_QUALIFIER",
+      "claim_authorized": false,
+      "reviewer": "Codex internal R1 v1; external final-bytes review pending"
+    },
+    {
+      "claim_id": "ARCH-TCB-TOPOLOGY-LOWERING-003",
+      "candidate_sentence": "The trusted computing base includes topology-specific lowering and wrappers, the native provider runtime, driver, GPU, and host; the current compiler does not synthesize arbitrary topology lowering.",
+      "scope": "Current supported sphere, triangle, curve, and relation-family routes.",
+      "source_evidence": [
+        {"path": "src/rtdsl/v4_family.py", "sha256": "060aaa5ab8f8810d88d7b2296a4ef2d7c98060ee80de8aeea8016044b55ce959"},
+        {"path": "src/native/optix/rtdl_optix_v4_callback_poc.cpp", "sha256": "4e9c05bdc227c48ccc998b10ec382d84e041a8c268c1dff9ca04d987455045a7"}
+      ],
+      "validation_phase": "Source-bound architecture audit.",
+      "limitations": "The sealed schema/lifecycle layer alone produces no executable topology-generic native lowerer.",
+      "paper_destination": "Architecture; TCB; Threats to validity",
+      "disposition": "MANDATORY_LIMITATION",
+      "claim_authorized": false,
+      "reviewer": "Codex internal R1 v1; external final-bytes review pending"
+    },
+    {
+      "claim_id": "EVAL-G5838-PROSPECTIVE-COMPOSITION-004",
+      "candidate_sentence": "One preregistered bounded composition exam selected builtin_sphere::any_hit_count_continue_u64_per_query and completed without changing the three frozen generic-core files.",
+      "scope": "One narrow-domain prospective composition exam using already supported primitive roles and topology vocabulary.",
+      "source_evidence": [
+        {"path": "history/internal_docs/goal5838_generic_core_exam_20260902/FINAL_AUTHORITY.json", "sha256": "dafea025d8f9583cd186e914f6e2974b6aab2fdd59781a6d2a39087e0def7ce8"}
+      ],
+      "validation_phase": "Historical sealed-core exam authority.",
+      "limitations": "Prospective composition exam count is 1; unbiased new-application exam count is 0. Provider-specific implementation was allowed outside the three-file seal.",
+      "paper_destination": "Extensibility evaluation",
+      "disposition": "RETAIN_AS_NARROW_EXAM",
+      "claim_authorized": false,
+      "reviewer": "Codex internal R1 v1; external final-bytes review pending"
+    },
+    {
+      "claim_id": "EVAL-G5838-CANDIDATE-SELECTION-005",
+      "candidate_sentence": "builtin_round_linear_curve::any_hit_terminate_bool_per_query was an eligible candidate, whereas builtin_sphere::any_hit_count_continue_u64_per_query was the selected Goal5838 item.",
+      "scope": "Goal5838 candidate/selection terminology only.",
+      "source_evidence": [
+        {"path": "history/internal_docs/goal5838_generic_core_exam_20260902/FINAL_AUTHORITY.json", "sha256": "dafea025d8f9583cd186e914f6e2974b6aab2fdd59781a6d2a39087e0def7ce8"}
+      ],
+      "validation_phase": "Authority field inspection.",
+      "limitations": "The eligible curve item must never be relabeled as the selected exam.",
+      "paper_destination": "Extensibility evaluation and artifact notes",
+      "disposition": "RETAIN_EXACT_IDENTITIES",
+      "claim_authorized": false,
+      "reviewer": "Codex internal R1 v1; external final-bytes review pending"
+    },
+    {
+      "claim_id": "EVAL-G5840-FINITE-CHECKER-006",
+      "candidate_sentence": "An independent checker validated 20 bounded property applications over four true-OptiX modes and rejected 15 unique mutations.",
+      "scope": "Exactly the finite Goal5840 route groups, modes, properties, and mutations.",
+      "source_evidence": [
+        {"path": "history/internal_docs/goal5840_independent_lowering_refinement_20260903/FINAL_AUTHORITY.json", "sha256": "80fae4ccd065316b195fd1435534dd4fdf7343572525ecd57604da28dee7865e"}
+      ],
+      "validation_phase": "Independent bounded structural check and mutation rejection.",
+      "limitations": "Not a general compiler-soundness theorem, semantic proof for arbitrary callbacks, or application-correctness proof.",
+      "paper_destination": "Validation evaluation",
+      "disposition": "RETAIN_FINITE_COUNTS_ONLY",
+      "claim_authorized": false,
+      "reviewer": "Codex internal R1 v1; external final-bytes review pending"
+    },
+    {
+      "claim_id": "PERF-AD-ADA-TRIANGLE-007",
+      "candidate_sentence": "On the frozen Ada triangle workload, the median of eight within-block prepared RTDL/Direct ratios was 1.175066x; the maximum block ratio was 1.211025x and was not a registered gate.",
+      "scope": "Ada RTX 4090, frozen triangle task, prepared public Arm A versus Direct Arm D, eight blocks, 128 steady samples per worker.",
+      "source_evidence": [
+        {"root": "/Users/rl2025/RTDL_evidence/goal5848/goal5851_successor_ada_d653fe4_pass", "authority_recount_sha256": "191e85ea19a2af2186cddf873d19483753197f258b5afddba06abd57cc0a66b7"},
+        {"archive_sha256": "c9128bae15da7ed3262c0bad96799e8cc56d1292c14f9af8713ea174cfc2cced"}
+      ],
+      "validation_phase": "Formal Goal5851 transaction plus R2 raw-to-projection independent recount.",
+      "limitations": "Exact path/workload/hardware observation; not intrinsic language overhead, universal parity, or a worst-block pass claim.",
+      "paper_destination": "Prepared-performance main table",
+      "disposition": "RETAIN_VERIFIED_R2__PENDING_R4_R7",
+      "claim_authorized": false,
+      "reviewer": "Codex internal R1/R2 v1; external final-bytes review pending"
+    },
+    {
+      "claim_id": "PERF-AD-ADA-RELATION-008",
+      "candidate_sentence": "On the frozen Ada relation workload, the median of eight within-block prepared RTDL/Direct ratios was 1.076852x; the maximum block ratio was 1.092253x.",
+      "scope": "Ada RTX 4090, frozen owner-grouped relation task, prepared public Arm A versus Direct Arm D, eight blocks, 128 steady samples per worker.",
+      "source_evidence": [
+        {"root": "/Users/rl2025/RTDL_evidence/goal5848/goal5851_successor_ada_d653fe4_pass", "authority_recount_sha256": "191e85ea19a2af2186cddf873d19483753197f258b5afddba06abd57cc0a66b7"},
+        {"archive_sha256": "c9128bae15da7ed3262c0bad96799e8cc56d1292c14f9af8713ea174cfc2cced"}
+      ],
+      "validation_phase": "Formal Goal5851 transaction plus R2 raw-to-projection independent recount.",
+      "limitations": "Exact path/workload/hardware observation; Direct need not pay DSL admission costs and implementations are contract-equivalent rather than operation-identical.",
+      "paper_destination": "Prepared-performance main table",
+      "disposition": "RETAIN_VERIFIED_R2__PENDING_R4_R7",
+      "claim_authorized": false,
+      "reviewer": "Codex internal R1/R2 v1; external final-bytes review pending"
+    },
+    {
+      "claim_id": "PERF-AD-AMPERE-TRIANGLE-009",
+      "candidate_sentence": "On the frozen Ampere triangle workload, the median of eight within-block prepared RTDL/Direct ratios was 1.133636x; the maximum block ratio was 1.142675x.",
+      "scope": "Ampere RTX 3090, frozen triangle task, prepared public Arm A versus Direct Arm D, eight blocks, 128 steady samples per worker.",
+      "source_evidence": [
+        {"root": "/Users/rl2025/RTDL_evidence/goal5848/goal5851_successor_ampere_d653fe4_pass", "authority_recount_sha256": "35049de227c9c251314615039f07aaf6af71dd26bf24e8c6f5e1c74fb8ceadb3"},
+        {"archive_sha256": "7bbabfc8d1d9dfd3cc9bd701bd7f40e9f50c8ccfcbbac9504db43e9e42b7c2a2"}
+      ],
+      "validation_phase": "Formal Goal5851 transaction plus R2 raw-to-projection independent recount.",
+      "limitations": "Exact path/workload/hardware observation; not a cross-machine raw-time comparison.",
+      "paper_destination": "Prepared-performance main table",
+      "disposition": "RETAIN_VERIFIED_R2__PENDING_R4_R7",
+      "claim_authorized": false,
+      "reviewer": "Codex internal R1/R2 v1; external final-bytes review pending"
+    },
+    {
+      "claim_id": "PERF-AD-AMPERE-RELATION-010",
+      "candidate_sentence": "On the frozen Ampere relation workload, the median of eight within-block prepared RTDL/Direct ratios was 1.094795x; the maximum block ratio was 1.118811x.",
+      "scope": "Ampere RTX 3090, frozen owner-grouped relation task, prepared public Arm A versus Direct Arm D, eight blocks, 128 steady samples per worker.",
+      "source_evidence": [
+        {"root": "/Users/rl2025/RTDL_evidence/goal5848/goal5851_successor_ampere_d653fe4_pass", "authority_recount_sha256": "35049de227c9c251314615039f07aaf6af71dd26bf24e8c6f5e1c74fb8ceadb3"},
+        {"archive_sha256": "7bbabfc8d1d9dfd3cc9bd701bd7f40e9f50c8ccfcbbac9504db43e9e42b7c2a2"}
+      ],
+      "validation_phase": "Formal Goal5851 transaction plus R2 raw-to-projection independent recount.",
+      "limitations": "Exact path/workload/hardware observation; not intrinsic language overhead or universal parity.",
+      "paper_destination": "Prepared-performance main table",
+      "disposition": "RETAIN_VERIFIED_R2__PENDING_R4_R7",
+      "claim_authorized": false,
+      "reviewer": "Codex internal R1/R2 v1; external final-bytes review pending"
+    },
+    {
+      "claim_id": "PERF-AC-DUAL-ENDPOINT-011",
+      "candidate_sentence": "Against the strong PyOptix Arm C, RTDL's implementation-entry median ratios were 0.642180x, 0.653826x, 0.618362x, and 0.681393x, while the older post-import medians were adverse at 1.559788x, 1.749327x, 1.637468x, and 1.837415x; the maximum formal post-import diagnostic block was 2.377129x.",
+      "scope": "Two frozen tasks on Ada and Ampere; A/C implementation-entry and historical post-import lifecycle endpoints.",
+      "source_evidence": [
+        {"root": "/Users/rl2025/RTDL_evidence/goal5848/goal5851_successor_ada_d653fe4_pass", "authority_recount_sha256": "191e85ea19a2af2186cddf873d19483753197f258b5afddba06abd57cc0a66b7"},
+        {"root": "/Users/rl2025/RTDL_evidence/goal5848/goal5851_successor_ampere_d653fe4_pass", "authority_recount_sha256": "35049de227c9c251314615039f07aaf6af71dd26bf24e8c6f5e1c74fb8ceadb3"}
+      ],
+      "validation_phase": "Formal lifecycle evidence plus R2 projection and independent endpoint recount.",
+      "limitations": "The endpoint was revised after an adverse result. Both endpoints are lifecycle/import-confounded; PyOptix import initializes substantial CUDA state while RTDL import is lazy. No positive implementation-entry performance claim is authorized.",
+      "paper_destination": "Adjacent lifecycle diagnostic table; main-text adverse disclosure",
+      "disposition": "RETAIN_BOTH_ENDPOINTS_AS_DIAGNOSTIC__NO_POSITIVE_ENTRY_CLAIM",
+      "claim_authorized": false,
+      "reviewer": "Codex internal R1/R2 v1; external final-bytes review pending"
+    },
+    {
+      "claim_id": "PERF-AE-STEADY-AND-FIRST-RESULT-012",
+      "candidate_sentence": "Relative to predecessor E, successor M improved prepared steady execution on all four rows (0.903016x, 0.584438x, 0.922388x, and 0.608228x) but regressed every first-result row: about 16%-31% post-import and 8%-22% at implementation entry.",
+      "scope": "A/E comparison for the same two tasks and two GPU generations.",
+      "source_evidence": [
+        {"root": "/Users/rl2025/RTDL_evidence/goal5848/goal5851_successor_ada_d653fe4_pass", "authority_recount_sha256": "191e85ea19a2af2186cddf873d19483753197f258b5afddba06abd57cc0a66b7"},
+        {"root": "/Users/rl2025/RTDL_evidence/goal5848/goal5851_successor_ampere_d653fe4_pass", "authority_recount_sha256": "35049de227c9c251314615039f07aaf6af71dd26bf24e8c6f5e1c74fb8ceadb3"}
+      ],
+      "validation_phase": "Formal steady regression gate plus R2 post hoc non-gating lifecycle recount.",
+      "limitations": "Only steady A/E was preregistered as a gate. First-result A/E values are mandatory adverse descriptive observations, not gate failures or confirmatory tests.",
+      "paper_destination": "Performance discussion and threats to validity",
+      "disposition": "RETAIN_STEADY_AND_MANDATORY_ADVERSE_FIRST_RESULT",
+      "claim_authorized": false,
+      "reviewer": "Codex internal R1/R2 v1; external final-bytes review pending"
+    },
+    {
+      "claim_id": "PERF-CB-COMPETENCE-013",
+      "candidate_sentence": "The pinned strong PyOptix Arm C outperformed weak Arm B on all four frozen rows, with C/B steady ratios 0.602851x, 0.220775x, 0.654279x, and 0.226921x.",
+      "scope": "Pinned implementations and exact tasks used in Goal5851.",
+      "source_evidence": [
+        {"root": "/Users/rl2025/RTDL_evidence/goal5848/goal5851_cross_generation_d653fe4_complete", "authority_recount_sha256": "99e1eab6f33e609a8739caecb26dc05e5c8d669b3ad67f58fd0540d781151692"}
+      ],
+      "validation_phase": "Formal competence gate plus R2 raw-to-projection independent recount.",
+      "limitations": "Establishes a stronger baseline than B for these tasks, not global PyOptix optimality or operation-identical implementation.",
+      "paper_destination": "Baseline methodology",
+      "disposition": "RETAIN_COMPETENCE_NOT_OPTIMALITY",
+      "claim_authorized": false,
+      "reviewer": "Codex internal R1/R2 v1; external final-bytes review pending"
+    },
+    {
+      "claim_id": "METHOD-INSTRUMENTATION-A-ONLY-014",
+      "candidate_sentence": "Paired instrumentation qualification covered only RTDL Arm A and measured 2,349, 2,781, 0, and 2,431 ppm overhead across the four generation/task rows.",
+      "scope": "1,024 Arm-A instrumentation workers across two GPU generations; formal arms share an instrumentation policy but B/C lack paired qualification evidence.",
+      "source_evidence": [
+        {"path": "experiments/goal5848_strong_baseline/contracts.py", "sha256": "58eaa97abacb43fdb05884b02f72cc6dd2d5729851a70ff3890dc07c9a5dc942"},
+        {"root": "/Users/rl2025/RTDL_evidence/goal5848/goal5851_cross_generation_d653fe4_complete", "authority_recount_sha256": "99e1eab6f33e609a8739caecb26dc05e5c8d669b3ad67f58fd0540d781151692"}
+      ],
+      "validation_phase": "R2 recount of all 1,024 A-only instrumentation workers.",
+      "limitations": "Cannot be described as paired overhead qualification of all Python arms.",
+      "paper_destination": "Methodology and limitations",
+      "disposition": "RETAIN_A_ONLY_QUALIFIER",
+      "claim_authorized": false,
+      "reviewer": "Codex internal R1/R2 v1; external final-bytes review pending"
+    },
+    {
+      "claim_id": "METHOD-RECEIPT-SCOPE-015",
+      "candidate_sentence": "The measured public prepared path synchronously rejects native and compact-status failures and the experiment checks every returned output against its oracle, but detailed operation-receipt validation is deferred and each formal A worker retains one separate diagnostic receipt rather than one complete physical receipt per timed invocation.",
+      "scope": "Goal5851 public prepared Arm A and its formal worker/archive behavior.",
+      "source_evidence": [
+        {"path": "src/rtdsl/v4_rtdlexe.py", "sha256": "99fdc5c0f4462fe153e9659ba5f2d541e9876be76e11cebbf46ede8fa8cc6a34"},
+        {"path": "src/native/optix/rtdl_optix_v4_callback_poc.cpp", "sha256": "4e9c05bdc227c48ccc998b10ec382d84e041a8c268c1dff9ca04d987455045a7"},
+        {"path": "experiments/goal5848_strong_baseline/worker.py", "sha256": "353faec5a4dd46ad00c0979f2bb544eb278460d8b55fdf054127853a03ca11e4"}
+      ],
+      "validation_phase": "Synchronous checks before public return; per-call oracle after timer; one separate post-loop diagnostic receipt.",
+      "limitations": "The original written per-execution detailed-receipt requirement was not fulfilled. No wrong final GPU output was observed, but that does not repair literal protocol compliance.",
+      "paper_destination": "Lifecycle design; Evaluation methodology; Threats to validity",
+      "disposition": "MANDATORY_SCOPE_CORRECTION",
+      "claim_authorized": false,
+      "reviewer": "Codex internal R1 v1; external final-bytes review pending"
+    },
+    {
+      "claim_id": "METHOD-ADAPTIVITY-TWO-TASKS-016",
+      "candidate_sentence": "The implementation was tuned using the same two frozen workloads later evaluated under frozen gates on two GPU generations.",
+      "scope": "Goal5848/Goal5851 repair and evaluation lineage.",
+      "source_evidence": [
+        {"path": "history/internal_docs/goal5848_strong_baseline_post_import_20260905/GOAL5848.md", "sha256": "e4f08161e1c146918368e562c3057895ed3054331fd3fad9f2c35088a5ab3403"},
+        {"root": "/Users/rl2025/RTDL_evidence/goal5848/goal5851_cross_generation_d653fe4_complete", "authority_recount_sha256": "99e1eab6f33e609a8739caecb26dc05e5c8d669b3ad67f58fd0540d781151692"}
+      ],
+      "validation_phase": "Historical lineage and final transaction review.",
+      "limitations": "Not confirmatory unseen-workload evidence and not an unbiased application sample; 128 repetitions are not 128 independent systems.",
+      "paper_destination": "Evaluation setup and threats to validity",
+      "disposition": "MANDATORY_ADAPTIVITY_DISCLOSURE",
+      "claim_authorized": false,
+      "reviewer": "Codex internal R1 v1; external final-bytes review pending"
+    },
+    {
+      "claim_id": "METHOD-AOT-DEPLOYMENT-017",
+      "candidate_sentence": "Across the four generation/task rows, fresh AOT cache-hit medians were 76,826,501 ns, 78,176,935 ns, 58,513,283 ns, and 58,279,761 ns, with hit/cold ratios of 20,166, 11,171, 19,626, and 10,431 ppm.",
+      "scope": "Ten fresh-hit workers per generation for exact prebuilt artifacts and manifests.",
+      "source_evidence": [
+        {"root": "/Users/rl2025/RTDL_evidence/goal5848/goal5851_cross_generation_d653fe4_complete", "authority_recount_sha256": "99e1eab6f33e609a8739caecb26dc05e5c8d669b3ad67f58fd0540d781151692"}
+      ],
+      "validation_phase": "R2 recount of all 20 AOT fresh-hit durations and four cold denominators.",
+      "limitations": "A cache hit is not first-ever source compilation, signing, cache fill, deployment, or arbitrary-environment startup.",
+      "paper_destination": "Deployment/AOT evaluation and limitations",
+      "disposition": "RETAIN_VERIFIED_R2__PENDING_R4_R7",
+      "claim_authorized": false,
+      "reviewer": "Codex internal R1/R2 v1; external final-bytes review pending"
+    },
+    {
+      "claim_id": "LIMIT-PROVIDER-DOUBLE-FAULT-018",
+      "candidate_sentence": "A secondary provider release or close failure can replace the primary bind exception and clear retry ownership on the double-fault path.",
+      "scope": "Provider bind cleanup at the current M source identity.",
+      "source_evidence": [
+        {"path": "src/rtdsl/v4_rtdlexe.py", "sha256": "99fdc5c0f4462fe153e9659ba5f2d541e9876be76e11cebbf46ede8fa8cc6a34"}
+      ],
+      "validation_phase": "Hostile source review and focused mock lifecycle reproduction.",
+      "limitations": "No public output is produced and the path did not occur in retained successful workers; universal cleanup/root-cause preservation is unsupported.",
+      "paper_destination": "Threats to validity / failure-semantics limitation",
+      "disposition": "MANDATORY_LIMITATION__DO_NOT_CLAIM_UNIVERSAL_CLEANUP",
+      "claim_authorized": false,
+      "reviewer": "Codex internal R1 v1; external final-bytes review pending"
+    },
+    {
+      "claim_id": "LIMIT-SUPPORTED-PROCESS-FORK-019",
+      "candidate_sentence": "The process-ownership guard covers Python-managed fork lifecycle through the registered at-fork hook and cached-PID checks.",
+      "scope": "Python-managed process creation paths that execute the registered hook.",
+      "source_evidence": [
+        {"path": "src/rtdsl/v4_rtdlexe.py", "sha256": "99fdc5c0f4462fe153e9659ba5f2d541e9876be76e11cebbf46ede8fa8cc6a34"}
+      ],
+      "validation_phase": "Source review plus supported Python lifecycle tests.",
+      "limitations": "A native fork that bypasses Python's hook is outside the supported contract; no claim may say all process forks fail before native entry.",
+      "paper_destination": "Lifecycle contract and limitations",
+      "disposition": "RETAIN_PYTHON_MANAGED_SCOPE_ONLY",
+      "claim_authorized": false,
+      "reviewer": "Codex internal R1 v1; external final-bytes review pending"
+    },
+    {
+      "claim_id": "ARTIFACT-PORTABILITY-020",
+      "candidate_sentence": "The anonymous package supports standard-library offline recount of the retained projection in a foreign directory.",
+      "scope": "Future R2/R5/R6 generated package only, not existing historical full-authority replay.",
+      "source_evidence": [
+        {"root": "/Users/rl2025/RTDL_evidence/goal5848/goal5851_successor_ada_d653fe4_pass", "manifest_sha256": "e71f98c713ee9c7c0bb5733d5ff1921d11eea5bc819ec3fea217961f9a690f6f"},
+        {"root": "/Users/rl2025/RTDL_evidence/goal5848/goal5851_successor_ampere_d653fe4_pass", "manifest_sha256": "9f1031c4fc07bf23635904f7f93e075a0a3c1a0ed5aaa21f6dc48e47d92b9340"}
+      ],
+      "validation_phase": "R2 pre-F foreign-path replay passed; final committed-F replay and final artifact replay remain pending R5/R6.",
+      "limitations": "Current archive sidecars contain absolute /workspace paths. Offline recount is not a GPU rerun, product install, or arbitrary relocation of historical full authorities.",
+      "paper_destination": "Artifact appendix and README",
+      "disposition": "BLOCKED_PENDING_R5_R6",
+      "claim_authorized": false,
+      "reviewer": "Codex internal R1 v1; external final-bytes review pending"
+    },
+    {
+      "claim_id": "LIMIT-HUMAN-AUTHORING-PREVALENCE-021",
+      "candidate_sentence": "The evaluation includes zero independent external human authoring sessions and zero representative prevalence measurements.",
+      "scope": "Current project evidence through Goal5851.",
+      "source_evidence": [
+        {"path": "history/internal_docs/goal5838_generic_core_exam_20260902/FINAL_AUTHORITY.json", "sha256": "dafea025d8f9583cd186e914f6e2974b6aab2fdd59781a6d2a39087e0def7ce8"},
+        {"root": "/Users/rl2025/RTDL_evidence/goal5848/goal5851_cross_generation_d653fe4_complete", "authority_recount_sha256": "99e1eab6f33e609a8739caecb26dc05e5c8d669b3ad67f58fd0540d781151692"}
+      ],
+      "validation_phase": "Evidence inventory and review audit.",
+      "limitations": "No ease-of-use, productivity-superiority, external-developer success-rate, or workload-prevalence claim is supported.",
+      "paper_destination": "Evaluation scope and limitations",
+      "disposition": "DELETE_USABILITY_AND_PREVALENCE_CLAIMS__DISCLOSE_ZERO",
+      "claim_authorized": false,
+      "reviewer": "Codex internal R1 v1; external final-bytes review pending"
+    }
+  ]
+}

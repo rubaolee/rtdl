@@ -1,0 +1,2853 @@
+**
+(main.tex
+LaTeX2e <2021-11-15> patch level 1
+L3 programming layer <2022-02-24> (acmart.cls
+Document Class: acmart 2022/02/19 v1.83 Typesetting articles for the Associatio
+n for Computing Machinery
+(xkeyval.sty
+Package: xkeyval 2020/11/20 v2.8 package option processing (HA)
+ (xkeyval (xkvutils
+\XKV@toks=\toks16
+\XKV@tempa@toks=\toks17
+ (keyval))
+\XKV@depth=\count181
+File: xkeyval.tex 2014/12/03 v2.7a key=value parser (HA)
+)) (xstring.sty (xstring.tex
+\integerpart=\count182
+\decimalpart=\count183
+)
+Package: xstring 2021/07/21 v1.84 String manipulations (CT)
+)
+(iftex.sty
+Package: iftex 2022/02/03 v1.0f TeX engine tests
+)
+Package acmart Info: Not using screen mode on input line 73.
+Package acmart Info: Using breaking urls on hyphens on input line 81.
+Package acmart Info: Requiring acmthm on input line 89.
+Package acmart Info: Not using review mode on input line 98.
+Package acmart Info: Not using authorversion mode on input line 106.
+Package acmart Info: Not using nonacm mode on input line 118.
+Package acmart Info: Explicitly selecting natbib mode on input line 134.
+Package acmart Info: Not using anonymous mode on input line 142.
+Package acmart Info: Not using timestamp mode on input line 150.
+Package acmart Info: Not using authordraft mode on input line 160.
+Package acmart Info: Using screen mode on input line 174.
+Package acmart Info: Using review mode on input line 174.
+Package acmart Info: Using anonymous mode on input line 174.
+Class acmart Info: Using format sigplan, number 6 on input line 174.
+Class acmart Info: Using fontsize 10pt on input line 258.
+ (amsart.cls
+Document Class: amsart 2020/05/29 v2.20.6
+\linespacing=\dimen138
+\normalparindent=\dimen139
+\normaltopskip=\skip47
+(amsmath.sty
+Package: amsmath 2021/10/15 v2.17l AMS math features
+\@mathmargin=\skip48
+
+For additional information on amsmath, use the `?' option.
+(amstext.sty
+Package: amstext 2021/08/26 v2.01 AMS text
+ (amsgen.sty
+File: amsgen.sty 1999/11/30 v2.0 generic functions
+\@emptytoks=\toks18
+\ex@=\dimen140
+)) (amsbsy.sty
+Package: amsbsy 1999/11/29 v1.2d Bold Symbols
+\pmbraise@=\dimen141
+) (amsopn.sty
+Package: amsopn 2021/08/26 v2.02 operator names
+)
+\inf@bad=\count184
+LaTeX Info: Redefining \frac on input line 234.
+\uproot@=\count185
+\leftroot@=\count186
+LaTeX Info: Redefining \overline on input line 399.
+\classnum@=\count187
+\DOTSCASE@=\count188
+LaTeX Info: Redefining \ldots on input line 496.
+LaTeX Info: Redefining \dots on input line 499.
+LaTeX Info: Redefining \cdots on input line 620.
+\Mathstrutbox@=\box50
+\strutbox@=\box51
+\big@size=\dimen142
+LaTeX Font Info:    Redeclaring font encoding OML on input line 743.
+LaTeX Font Info:    Redeclaring font encoding OMS on input line 744.
+\macc@depth=\count189
+\c@MaxMatrixCols=\count190
+\dotsspace@=\muskip16
+\c@parentequation=\count191
+\dspbrk@lvl=\count192
+\tag@help=\toks19
+\row@=\count193
+\column@=\count194
+\maxfields@=\count195
+\andhelp@=\toks20
+\eqnshift@=\dimen143
+\alignsep@=\dimen144
+\tagshift@=\dimen145
+\tagwidth@=\dimen146
+\totwidth@=\dimen147
+\lineht@=\dimen148
+\@envbody=\toks21
+\multlinegap=\skip49
+\multlinetaggap=\skip50
+\mathdisplay@stack=\toks22
+LaTeX Info: Redefining \[ on input line 2938.
+LaTeX Info: Redefining \] on input line 2939.
+)
+LaTeX Font Info:    Trying to load font information for U+msa on input line 397
+.
+ (umsa.fd
+File: umsa.fd 2013/01/14 v3.01 AMS symbols A
+) (amsfonts.sty
+Package: amsfonts 2013/01/14 v3.01 Basic AMSFonts support
+\symAMSa=\mathgroup4
+\symAMSb=\mathgroup5
+LaTeX Font Info:    Redeclaring math symbol \hbar on input line 98.
+LaTeX Font Info:    Overwriting math alphabet `\mathfrak' in version `bold'
+(Font)                  U/euf/m/n --> U/euf/b/n on input line 106.
+)
+\copyins=\insert199
+\abstractbox=\box52
+\listisep=\skip51
+\c@part=\count196
+\c@section=\count197
+\c@subsection=\count198
+\c@subsubsection=\count266
+\c@paragraph=\count267
+\c@subparagraph=\count268
+\c@figure=\count269
+\c@table=\count270
+\abovecaptionskip=\skip52
+\belowcaptionskip=\skip53
+\captionindent=\dimen149
+\thm@style=\toks23
+\thm@bodyfont=\toks24
+\thm@headfont=\toks25
+\thm@notefont=\toks26
+\thm@headpunct=\toks27
+\thm@preskip=\skip54
+\thm@postskip=\skip55
+\thm@headsep=\skip56
+\dth@everypar=\toks28
+) (microtype.sty
+Package: microtype 2022/03/14 v3.0d Micro-typographical refinements (RS)
+ (etoolbox.sty
+Package: etoolbox 2020/10/05 v2.5k e-TeX tools for LaTeX (JAW)
+\etb@tempcnta=\count271
+)
+\MT@toks=\toks29
+\MT@tempbox=\box53
+\MT@count=\count272
+LaTeX Info: Redefining \noprotrusionifhmode on input line 1027.
+LaTeX Info: Redefining \leftprotrusion on input line 1028.
+LaTeX Info: Redefining \rightprotrusion on input line 1036.
+LaTeX Info: Redefining \textls on input line 1195.
+\MT@outer@kern=\dimen150
+LaTeX Info: Redefining \textmicrotypecontext on input line 1781.
+\MT@listname@count=\count273
+ (microtype-xetex.def
+File: microtype-xetex.def 2022/03/14 v3.0d Definitions specific to xetex (RS)
+LaTeX Info: Redefining \lsstyle on input line 236.
+)
+Package microtype Info: Loading configuration file microtype.cfg.
+ (microtype.cfg
+File: microtype.cfg 2022/03/14 v3.0d microtype main configuration file (RS)
+))
+(booktabs.sty
+Package: booktabs 2020/01/12 v1.61803398 Publication quality tables
+\heavyrulewidth=\dimen151
+\lightrulewidth=\dimen152
+\cmidrulewidth=\dimen153
+\belowrulesep=\dimen154
+\belowbottomsep=\dimen155
+\aboverulesep=\dimen156
+\abovetopsep=\dimen157
+\cmidrulesep=\dimen158
+\cmidrulekern=\dimen159
+\defaultaddspace=\dimen160
+\@cmidla=\count274
+\@cmidlb=\count275
+\@aboverulesep=\dimen161
+\@belowrulesep=\dimen162
+\@thisruleclass=\count276
+\@lastruleclass=\count277
+\@thisrulewidth=\dimen163
+) (refcount.sty
+Package: refcount 2019/12/15 v3.6 Data extraction from label references (HO)
+ (ltxcmds.sty
+Package: ltxcmds 2020-05-10 v1.25 LaTeX kernel commands for general use (HO)
+) (infwarerr.sty
+Package: infwarerr 2019/12/03 v1.5 Providing info/warning/error messages (HO)
+)) (totpages.sty
+Package: totpages 2005/09/19 v2.00 Totpages Package (muewi)
+
+(everyshi.sty
+Package: everyshi 2020/11/18 v4.00 EveryShipout Package
+)) (environ.sty
+Package: environ 2014/05/04 v0.3 A new way to define environments
+ (trimspaces.sty
+Package: trimspaces 2009/09/17 v1.1 Trim spaces around a token list
+)) (textcase.sty
+Package: textcase 2019/09/14 v1.00 Text only upper/lower case changing (DPC)
+) (natbib.sty
+Package: natbib 2010/09/13 8.31b (PWD, AO)
+\bibhang=\skip57
+\bibsep=\skip58
+LaTeX Info: Redefining \cite on input line 694.
+\c@NAT@ctr=\count278
+)
+(hyperxmp.sty
+Package: hyperxmp 2020/11/22 v5.9 Store hyperref metadata in XMP format
+\hyxmp@aep@toks=\toks30
+ (kvoptions.sty
+Package: kvoptions 2020-10-07 v3.14 Key value format for package options (HO)
+ (kvsetkeys.sty
+Package: kvsetkeys 2019/12/15 v1.18 Key value parser (HO)
+)) (pdfescape.sty
+Package: pdfescape 2019/12/09 v1.15 Implements pdfTeX's escape features (HO)
+ (pdftexcmds.sty
+Package: pdftexcmds 2020-06-27 v0.33 Utility functions of pdfTeX for LuaTeX (HO
+)
+Package pdftexcmds Info: \pdf@primitive is available.
+Package pdftexcmds Info: \pdf@ifprimitive is available.
+Package pdftexcmds Info: \pdfdraftmode not found.
+))
+(stringenc.sty
+Package: stringenc 2019/11/29 v1.12 Convert strings between diff. encodings (HO
+)
+) (intcalc.sty
+Package: intcalc 2019/12/15 v1.3 Expandable calculations with integers (HO)
+) (ifmtarg.sty
+Package: ifmtarg 2018/04/16 v1.2b check for an empty argument
+) (ifthen.sty
+Package: ifthen 2020/11/24 v1.1c Standard LaTeX ifthen package (DPC)
+) (ifdraft.sty
+Package: ifdraft 2016/05/16 v1.4 Detect class options draft and final (HO)
+)
+(ifluatex.sty
+Package: ifluatex 2019/10/25 v1.5 ifluatex legacy package. Use iftex instead.
+)) (hyperref.sty
+Package: hyperref 2022-02-21 v7.00n Hypertext links for LaTeX
+ (kvdefinekeys.sty
+Package: kvdefinekeys 2019-12-19 v1.6 Define keys (HO)
+) (hycolor.sty
+Package: hycolor 2020-01-27 v1.10 Color options for hyperref/bookmark (HO)
+) (letltxmacro.sty
+Package: letltxmacro 2019/12/03 v1.6 Let assignment for LaTeX macros (HO)
+) (auxhook.sty
+Package: auxhook 2019-12-17 v1.6 Hooks for auxiliary files (HO)
+)
+\@linkdim=\dimen164
+\Hy@linkcounter=\count279
+\Hy@pagecounter=\count280
+ (pd1enc.def
+File: pd1enc.def 2022-02-21 v7.00n Hyperref: PDFDocEncoding definition (HO)
+) (etexcmds.sty
+Package: etexcmds 2019/12/15 v1.7 Avoid name clashes with e-TeX commands (HO)
+)
+\Hy@SavedSpaceFactor=\count281
+ (puenc.def
+File: puenc.def 2022-02-21 v7.00n Hyperref: PDF Unicode definition (HO)
+)
+Package hyperref Info: Option `bookmarksnumbered' set `true' on input line 4018
+.
+Package hyperref Info: Option `unicode' set `true' on input line 4018.
+Package hyperref Info: Hyper figures OFF on input line 4137.
+Package hyperref Info: Link nesting OFF on input line 4142.
+Package hyperref Info: Hyper index ON on input line 4145.
+Package hyperref Info: Plain pages OFF on input line 4152.
+Package hyperref Info: Backreferencing OFF on input line 4157.
+Package hyperref Info: Implicit mode ON; LaTeX internals redefined.
+Package hyperref Info: Bookmarks ON on input line 4390.
+\c@Hy@tempcnt=\count282
+ (url.sty
+\Urlmuskip=\muskip17
+Package: url 2013/09/16  ver 3.4  Verb mode for urls, etc.
+)
+LaTeX Info: Redefining \url on input line 4749.
+\XeTeXLinkMargin=\dimen165
+ (bitset.sty
+Package: bitset 2019/12/09 v1.3 Handle bit-vector datatype (HO)
+
+(bigintcalc.sty
+Package: bigintcalc 2019/12/15 v1.5 Expandable calculations on big integers (HO
+)
+))
+\Fld@menulength=\count283
+\Field@Width=\dimen166
+\Fld@charsize=\dimen167
+Package hyperref Info: Hyper figures OFF on input line 6027.
+Package hyperref Info: Link nesting OFF on input line 6032.
+Package hyperref Info: Hyper index ON on input line 6035.
+Package hyperref Info: backreferencing OFF on input line 6042.
+Package hyperref Info: Link coloring OFF on input line 6047.
+Package hyperref Info: Link coloring with OCG OFF on input line 6052.
+Package hyperref Info: PDF/A mode OFF on input line 6057.
+LaTeX Info: Redefining \ref on input line 6097.
+LaTeX Info: Redefining \pageref on input line 6101.
+ (atbegshi-ltx.sty
+Package: atbegshi-ltx 2021/01/10 v1.0c Emulation of the original atbegshi
+package with kernel methods
+)
+\Hy@abspage=\count284
+\c@Item=\count285
+\c@Hfootnote=\count286
+)
+Package hyperref Info: Driver (autodetected): hxetex.
+ (hxetex.def
+File: hxetex.def 2022-02-21 v7.00n Hyperref driver for XeTeX
+\pdfm@box=\box54
+\c@Hy@AnnotLevel=\count287
+\HyField@AnnotCount=\count288
+\Fld@listcount=\count289
+\c@bookmark@seq@number=\count290
+ (rerunfilecheck.sty
+Package: rerunfilecheck 2019/12/05 v1.9 Rerun checks for auxiliary files (HO)
+
+(atveryend-ltx.sty
+Package: atveryend-ltx 2020/08/19 v1.0a Emulation of the original atveryend pac
+kage
+with kernel methods
+) (uniquecounter.sty
+Package: uniquecounter 2019/12/15 v1.4 Provide unlimited unique counter (HO)
+)
+Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 2
+86.
+)
+\Hy@SectionHShift=\skip59
+) (graphicx.sty
+Package: graphicx 2021/09/16 v1.2d Enhanced LaTeX Graphics (DPC,SPQR)
+ (graphics.sty
+Package: graphics 2021/03/04 v1.4d Standard LaTeX Graphics (DPC,SPQR)
+ (trig.sty
+Package: trig 2021/08/11 v1.11 sin cos tan (DPC)
+) (graphics.cfg
+File: graphics.cfg 2016/06/04 v1.11 sample graphics configuration
+)
+Package graphics Info: Driver file: xetex.def on input line 107.
+ (xetex.def
+File: xetex.def 2021/03/18 v5.0k Graphics/color driver for xetex
+))
+\Gin@req@height=\dimen168
+\Gin@req@width=\dimen169
+) (xcolor.sty
+Package: xcolor 2021/10/31 v2.13 LaTeX color extensions (UK)
+ (color.cfg
+File: color.cfg 2016/01/02 v1.6 sample color configuration
+)
+Package xcolor Info: Driver file: xetex.def on input line 227.
+Package xcolor Info: Model `cmy' substituted by `cmy0' on input line 1352.
+Package xcolor Info: Model `RGB' extended on input line 1368.
+Package xcolor Info: Model `HTML' substituted by `rgb' on input line 1370.
+Package xcolor Info: Model `Hsb' substituted by `hsb' on input line 1371.
+Package xcolor Info: Model `tHsb' substituted by `hsb' on input line 1372.
+Package xcolor Info: Model `HSB' substituted by `hsb' on input line 1373.
+Package xcolor Info: Model `Gray' substituted by `gray' on input line 1374.
+Package xcolor Info: Model `wave' substituted by `hsb' on input line 1375.
+) (geometry.sty
+Package: geometry 2020/01/02 v5.9 Page Geometry
+
+(ifvtex.sty
+Package: ifvtex 2019/10/25 v1.7 ifvtex legacy package. Use iftex instead.
+)
+\Gm@cnth=\count291
+\Gm@cntv=\count292
+\c@Gm@tempcnt=\count293
+\Gm@bindingoffset=\dimen170
+\Gm@wd@mp=\dimen171
+\Gm@odd@mp=\dimen172
+\Gm@even@mp=\dimen173
+\Gm@layoutwidth=\dimen174
+\Gm@layoutheight=\dimen175
+\Gm@layouthoffset=\dimen176
+\Gm@layoutvoffset=\dimen177
+\Gm@dimlist=\toks31
+) (manyfoot.sty
+Package: manyfoot 2019/08/03 v1.11 Many Footnote Levels Package (NCC)
+ (nccfoots.sty
+Package: nccfoots 2005/02/03 v1.2 NCC Footnotes Package (NCC)
+)
+\MFL@columnwidth=\dimen178
+)
+\footinsauthorsaddresses=\insert252
+\c@footnoteauthorsaddresses=\count294
+\footinscopyrightpermission=\insert251
+\c@footnotecopyrightpermission=\count295
+ (fontenc.sty
+Package: fontenc 2021/04/29 v2.0v Standard LaTeX package
+LaTeX Font Info:    Trying to load font information for T1+lmr on input line 11
+2.
+ (t1lmr.fd
+File: t1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
+))
+(newtxmath.sty
+Package: newtxmath 2022/01/16 v1.71
+
+`newtxmath' v1.71, 2022/01/16 Math macros based originally on txfonts (msharpe)
+(ifxetex.sty
+Package: ifxetex 2019/10/25 v0.7 ifxetex legacy package. Use iftex instead.
+) (centernot.sty
+Package: centernot 2016/05/16 v1.4 Centers the not symbol horizontally (HO)
+)
+\tx@cntz=\count296
+ (binhex)
+\tx@Isdigit=\count297
+\tx@IsAlNum=\count298
+\tx@tA=\toks32
+\tx@tB=\toks33
+\tx@su=\read2
+
+amsthm NOT loaded
+LaTeX Font Info:    Redeclaring symbol font `operators' on input line 376.
+LaTeX Font Info:    Overwriting symbol font `operators' in version `normal'
+(Font)                  OT1/cmr/m/n --> OT1/minlibertine/m/n on input line 376.
+
+LaTeX Font Info:    Overwriting symbol font `operators' in version `bold'
+(Font)                  OT1/cmr/bx/n --> OT1/minlibertine/m/n on input line 376
+.
+LaTeX Font Info:    Overwriting symbol font `operators' in version `bold'
+(Font)                  OT1/minlibertine/m/n --> OT1/minlibertine/b/n on input 
+line 377.
+LaTeX Font Info:    Redeclaring math alphabet \mathsf on input line 383.
+LaTeX Font Info:    Overwriting math alphabet `\mathsf' in version `normal'
+(Font)                  OT1/cmss/m/n --> T1/lmss/m/n on input line 383.
+LaTeX Font Info:    Overwriting math alphabet `\mathsf' in version `bold'
+(Font)                  OT1/cmss/bx/n --> T1/lmss/m/n on input line 383.
+LaTeX Font Info:    Redeclaring math alphabet \mathit on input line 384.
+LaTeX Font Info:    Overwriting math alphabet `\mathit' in version `normal'
+(Font)                  OT1/cmr/m/it --> OT1/minlibertine/m/it on input line 38
+4.
+LaTeX Font Info:    Overwriting math alphabet `\mathit' in version `bold'
+(Font)                  OT1/cmr/bx/it --> OT1/minlibertine/m/it on input line 3
+84.
+LaTeX Font Info:    Redeclaring math alphabet \mathtt on input line 385.
+LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `normal'
+(Font)                  OT1/cmtt/m/n --> T1/lmtt/m/n on input line 385.
+LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `bold'
+(Font)                  OT1/cmtt/m/n --> T1/lmtt/m/n on input line 385.
+LaTeX Font Info:    Redeclaring math alphabet \mathbf on input line 387.
+LaTeX Font Info:    Overwriting math alphabet `\mathbf' in version `normal'
+(Font)                  OT1/cmr/bx/n --> OT1/minlibertine/b/n on input line 387
+.
+LaTeX Font Info:    Overwriting math alphabet `\mathbf' in version `bold'
+(Font)                  OT1/cmr/bx/n --> OT1/minlibertine/b/n on input line 387
+.
+LaTeX Font Info:    Overwriting math alphabet `\mathit' in version `bold'
+(Font)                  OT1/minlibertine/m/it --> OT1/minlibertine/b/it on inpu
+t line 388.
+LaTeX Font Info:    Overwriting math alphabet `\mathsf' in version `bold'
+(Font)                  T1/lmss/m/n --> T1/lmss/b/n on input line 389.
+LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `bold'
+(Font)                  T1/lmtt/m/n --> T1/lmtt/b/n on input line 390.
+LaTeX Font Info:    Redeclaring symbol font `letters' on input line 407.
+LaTeX Font Info:    Overwriting symbol font `letters' in version `normal'
+(Font)                  OML/cmm/m/it --> OML/nxlmi/m/it on input line 407.
+LaTeX Font Info:    Overwriting symbol font `letters' in version `bold'
+(Font)                  OML/cmm/b/it --> OML/nxlmi/m/it on input line 407.
+LaTeX Font Info:    Overwriting symbol font `letters' in version `bold'
+(Font)                  OML/nxlmi/m/it --> OML/nxlmi/b/it on input line 408.
+\symlettersA=\mathgroup6
+LaTeX Font Info:    Overwriting symbol font `lettersA' in version `bold'
+(Font)                  U/ntxmia/m/it --> U/ntxmia/b/it on input line 547.
+LaTeX Font Info:    Redeclaring math alphabet \mathfrak on input line 549.
+LaTeX Font Info:    Redeclaring symbol font `symbols' on input line 568.
+LaTeX Font Info:    Encoding `OMS' has changed to `LMS' for symbol font
+(Font)              `symbols' in the math version `normal' on input line 568.
+LaTeX Font Info:    Overwriting symbol font `symbols' in version `normal'
+(Font)                  OMS/cmsy/m/n --> LMS/ntxsy/m/n on input line 568.
+LaTeX Font Info:    Encoding `OMS' has changed to `LMS' for symbol font
+(Font)              `symbols' in the math version `bold' on input line 568.
+LaTeX Font Info:    Overwriting symbol font `symbols' in version `bold'
+(Font)                  OMS/cmsy/b/n --> LMS/ntxsy/m/n on input line 568.
+LaTeX Font Info:    Overwriting symbol font `symbols' in version `bold'
+(Font)                  LMS/ntxsy/m/n --> LMS/ntxsy/b/n on input line 569.
+\symAMSm=\mathgroup7
+LaTeX Font Info:    Overwriting symbol font `AMSm' in version `bold'
+(Font)                  U/ntxsym/m/n --> U/ntxsym/b/n on input line 594.
+\symsymbolsC=\mathgroup8
+LaTeX Font Info:    Overwriting symbol font `symbolsC' in version `bold'
+(Font)                  U/ntxsyc/m/n --> U/ntxsyc/b/n on input line 615.
+LaTeX Font Info:    Redeclaring symbol font `largesymbols' on input line 628.
+LaTeX Font Info:    Encoding `OMX' has changed to `LMX' for symbol font
+(Font)              `largesymbols' in the math version `normal' on input line 6
+28.
+LaTeX Font Info:    Overwriting symbol font `largesymbols' in version `normal'
+(Font)                  OMX/cmex/m/n --> LMX/ntxexx/m/n on input line 628.
+LaTeX Font Info:    Encoding `OMX' has changed to `LMX' for symbol font
+(Font)              `largesymbols' in the math version `bold' on input line 628
+.
+LaTeX Font Info:    Overwriting symbol font `largesymbols' in version `bold'
+(Font)                  OMX/cmex/m/n --> LMX/ntxexx/m/n on input line 628.
+LaTeX Font Info:    Overwriting symbol font `largesymbols' in version `bold'
+(Font)                  LMX/ntxexx/m/n --> LMX/ntxexx/b/n on input line 629.
+\symlargesymbolsTXA=\mathgroup9
+LaTeX Font Info:    Overwriting symbol font `largesymbolsTXA' in version `bold'
+
+(Font)                  U/ntxexa/m/n --> U/ntxexa/b/n on input line 643.
+\tx@sbptoks=\toks34
+LaTeX Font Info:    Redeclaring math delimiter \lfloor on input line 866.
+LaTeX Font Info:    Redeclaring math delimiter \rfloor on input line 867.
+LaTeX Font Info:    Redeclaring math delimiter \lceil on input line 868.
+LaTeX Font Info:    Redeclaring math delimiter \rceil on input line 869.
+LaTeX Font Info:    Redeclaring math delimiter \lbrace on input line 870.
+LaTeX Font Info:    Redeclaring math delimiter \rbrace on input line 871.
+LaTeX Font Info:    Redeclaring math delimiter \langle on input line 872.
+LaTeX Font Info:    Redeclaring math delimiter \rangle on input line 874.
+LaTeX Font Info:    Redeclaring math delimiter \arrowvert on input line 878.
+LaTeX Font Info:    Redeclaring math delimiter \vert on input line 879.
+LaTeX Font Info:    Redeclaring math accent \dot on input line 950.
+LaTeX Font Info:    Redeclaring math accent \ddot on input line 951.
+LaTeX Font Info:    Redeclaring math accent \vec on input line 2020.
+LaTeX Info: Redefining \Bbbk on input line 2810.
+LaTeX Info: Redefining \not on input line 2959.
+LaTeX Info: Redefining \textsquare on input line 2989.
+LaTeX Info: Redefining \openbox on input line 2991.
+) (libertine.sty
+Package: libertine 2020/03/26 (Bob Tennent) Supports Libertine and Biolinum fon
+ts for all LaTeX engines.
+ (textcomp.sty
+Package: textcomp 2020/02/02 v2.0n Standard LaTeX package
+) (fontspec.sty (xparse.sty (expl3.sty
+Package: expl3 2022-02-24 L3 programming layer (loader) 
+
+(l3backend-xetex.def
+File: l3backend-xetex.def 2022-02-07 L3 backend support: XeTeX
+\c__kernel_sys_dvipdfmx_version_int=\count299
+\l__color_backend_stack_int=\count300
+\g__color_backend_stack_int=\count301
+\g__graphics_track_int=\count302
+\l__pdf_internal_box=\box55
+\g__pdf_backend_object_int=\count303
+\g__pdf_backend_annotation_int=\count304
+\g__pdf_backend_link_int=\count305
+))
+Package: xparse 2022-01-12 L3 Experimental document command parser
+)
+Package: fontspec 2022/01/15 v2.8a Font selection for XeLaTeX and LuaLaTeX
+ (fontspec-xetex.sty
+Package: fontspec-xetex 2022/01/15 v2.8a Font selection for XeLaTeX and LuaLaTe
+X
+\l__fontspec_script_int=\count306
+\l__fontspec_language_int=\count307
+\l__fontspec_strnum_int=\count308
+\l__fontspec_tmp_int=\count309
+\l__fontspec_tmpa_int=\count310
+\l__fontspec_tmpb_int=\count311
+\l__fontspec_tmpc_int=\count312
+\l__fontspec_em_int=\count313
+\l__fontspec_emdef_int=\count314
+\l__fontspec_strong_int=\count315
+\l__fontspec_strongdef_int=\count316
+\l__fontspec_tmpa_dim=\dimen179
+\l__fontspec_tmpb_dim=\dimen180
+\l__fontspec_tmpc_dim=\dimen181
+ (fontenc.sty
+Package: fontenc 2021/04/29 v2.0v Standard LaTeX package
+) (fontspec.cfg)))
+Requested font "[LinLibertine_R.otf]/OT" at 9.99997pt
+ -> LinLibertine_R.otf
+Requested font "[LinLibertine_R.otf]/OT" at 10.00003pt
+ -> LinLibertine_R.otf
+Requested font "[LinLibertine_R.otf]/OT:script=latn;language=dflt;" at 10.00003
+pt
+ -> LinLibertine_R.otf
+Requested font "[LinLibertine_RB.otf]/OT:script=latn;language=dflt;" at 10.0000
+3pt
+ -> LinLibertine_RB.otf
+Requested font "[LinLibertine_RI.otf]/OT:script=latn;language=dflt;" at 10.0000
+3pt
+ -> LinLibertine_RI.otf
+Requested font "[LinLibertine_RBI.otf]/OT:script=latn;language=dflt;" at 10.000
+03pt
+ -> LinLibertine_RBI.otf
+
+Package fontspec Info: Font family 'LinLibertine(0)' created for font
+(fontspec)             'LinLibertine' with options [Ligatures = TeX,Extension
+(fontspec)             =
+(fontspec)             .otf,SmallCapsFeatures={Letters=SmallCaps},Ligatures=TeX
+,Numbers
+(fontspec)             = {Monospaced,Lining},Scale = 1,UprightFont =
+(fontspec)             *_R,ItalicFont = *_RI,BoldFont = *_RB,BoldItalicFont =
+(fontspec)             *_RBI].
+(fontspec)              
+(fontspec)              This font family consists of the following NFSS
+(fontspec)             series/shapes:
+(fontspec)              
+(fontspec)             - 'normal' (m/n) with NFSS spec.:
+(fontspec)             <->s*[1]"[LinLibertine_R.otf]/OT:script=latn;language=df
+lt;+tnum;+lnum;mapping=tex-text;"
+(fontspec)             - 'small caps'  (m/sc) with NFSS spec.:
+(fontspec)             <->s*[1]"[LinLibertine_R.otf]/OT:script=latn;language=df
+lt;+tnum;+lnum;+smcp;mapping=tex-text;"
+(fontspec)             - 'bold' (b/n) with NFSS spec.:
+(fontspec)             <->s*[1]"[LinLibertine_RB.otf]/OT:script=latn;language=d
+flt;+tnum;+lnum;mapping=tex-text;"
+(fontspec)             - 'bold small caps'  (b/sc) with NFSS spec.:
+(fontspec)             <->s*[1]"[LinLibertine_RB.otf]/OT:script=latn;language=d
+flt;+tnum;+lnum;+smcp;mapping=tex-text;"
+(fontspec)             - 'italic' (m/it) with NFSS spec.:
+(fontspec)             <->s*[1]"[LinLibertine_RI.otf]/OT:script=latn;language=d
+flt;+tnum;+lnum;mapping=tex-text;"
+(fontspec)             - 'italic small caps'  (m/scit) with NFSS spec.:
+(fontspec)             <->s*[1]"[LinLibertine_RI.otf]/OT:script=latn;language=d
+flt;+tnum;+lnum;+smcp;mapping=tex-text;"
+(fontspec)             - 'bold italic' (b/it) with NFSS spec.:
+(fontspec)             <->s*[1]"[LinLibertine_RBI.otf]/OT:script=latn;language=
+dflt;+tnum;+lnum;mapping=tex-text;"
+(fontspec)             - 'bold italic small caps'  (b/scit) with NFSS spec.:
+(fontspec)             <->s*[1]"[LinLibertine_RBI.otf]/OT:script=latn;language=
+dflt;+tnum;+lnum;+smcp;mapping=tex-text;"
+
+LaTeX Font Info:    Font shape `TU/LinLibertine(0)/m/n' will be
+(Font)              scaled to size 10.0pt on input line 308.
+Requested font "[LinLibertine_R.otf]/OT:script=latn;language=dflt;+tnum;+lnum;m
+apping=tex-text;" at 10.0pt
+ -> LinLibertine_R.otf
+Requested font "[LinBiolinum_R.otf]/OT" at 9.99997pt
+ -> LinBiolinum_R.otf
+Requested font "[LinBiolinum_R.otf]/OT" at 10.00003pt
+ -> LinBiolinum_R.otf
+Requested font "[LinBiolinum_R.otf]/OT:script=latn;language=dflt;" at 10.00003p
+t
+ -> LinBiolinum_R.otf
+Requested font "[LinBiolinum_RB.otf]/OT:script=latn;language=dflt;" at 10.00003
+pt
+ -> LinBiolinum_RB.otf
+Requested font "[LinBiolinum_RI.otf]/OT:script=latn;language=dflt;" at 10.00003
+pt
+ -> LinBiolinum_RI.otf
+Requested font "[LinBiolinum_RBO.otf]/OT:script=latn;language=dflt;" at 10.0000
+3pt
+ -> LinBiolinum_RBO.otf
+
+Package fontspec Info: Font family 'LinBiolinum(0)' created for font
+(fontspec)             'LinBiolinum' with options [Ligatures = TeX,Extension =
+(fontspec)             .otf,SmallCapsFeatures={Letters=SmallCaps},Ligatures=TeX
+,Numbers
+(fontspec)             = {Monospaced, Lining},Scale = 1,UprightFont =
+(fontspec)             *_R,ItalicFont = *_RI,BoldFont = *_RB,BoldItalicFont =
+(fontspec)             *_RBO].
+(fontspec)              
+(fontspec)              This font family consists of the following NFSS
+(fontspec)             series/shapes:
+(fontspec)              
+(fontspec)             - 'normal' (m/n) with NFSS spec.:
+(fontspec)             <->s*[1]"[LinBiolinum_R.otf]/OT:script=latn;language=dfl
+t;+tnum;+lnum;mapping=tex-text;"
+(fontspec)             - 'small caps'  (m/sc) with NFSS spec.:
+(fontspec)             <->s*[1]"[LinBiolinum_R.otf]/OT:script=latn;language=dfl
+t;+tnum;+lnum;+smcp;mapping=tex-text;"
+(fontspec)             - 'bold' (b/n) with NFSS spec.:
+(fontspec)             <->s*[1]"[LinBiolinum_RB.otf]/OT:script=latn;language=df
+lt;+tnum;+lnum;mapping=tex-text;"
+(fontspec)             - 'bold small caps'  (b/sc) with NFSS spec.:
+(fontspec)             <->s*[1]"[LinBiolinum_RB.otf]/OT:script=latn;language=df
+lt;+tnum;+lnum;+smcp;mapping=tex-text;"
+(fontspec)             - 'italic' (m/it) with NFSS spec.:
+(fontspec)             <->s*[1]"[LinBiolinum_RI.otf]/OT:script=latn;language=df
+lt;+tnum;+lnum;mapping=tex-text;"
+(fontspec)             - 'italic small caps'  (m/scit) with NFSS spec.:
+(fontspec)             <->s*[1]"[LinBiolinum_RI.otf]/OT:script=latn;language=df
+lt;+tnum;+lnum;+smcp;mapping=tex-text;"
+(fontspec)             - 'bold italic' (b/it) with NFSS spec.:
+(fontspec)             <->s*[1]"[LinBiolinum_RBO.otf]/OT:script=latn;language=d
+flt;+tnum;+lnum;mapping=tex-text;"
+(fontspec)             - 'bold italic small caps'  (b/scit) with NFSS spec.:
+(fontspec)             <->s*[1]"[LinBiolinum_RBO.otf]/OT:script=latn;language=d
+flt;+tnum;+lnum;+smcp;mapping=tex-text;"
+
+
+Package fontspec Info: Font family 'LinLibertine(1)' created for font
+(fontspec)             'LinLibertine' with options [Ligatures = TeX,Extension
+(fontspec)             = .otf,SmallCapsFeatures={Letters=SmallCaps},Numbers =
+(fontspec)             {Monospaced,Lining},Scale = 1,UprightFont =
+(fontspec)             *_R,ItalicFont = *_RI,BoldFont = *_RB,BoldItalicFont =
+(fontspec)             *_RBI].
+(fontspec)              
+(fontspec)              This font family consists of the following NFSS
+(fontspec)             series/shapes:
+(fontspec)              
+(fontspec)             - 'normal' (m/n) with NFSS spec.:
+(fontspec)             <->s*[1]"[LinLibertine_R.otf]/OT:script=latn;language=df
+lt;+tnum;+lnum;mapping=tex-text;"
+(fontspec)             - 'small caps'  (m/sc) with NFSS spec.:
+(fontspec)             <->s*[1]"[LinLibertine_R.otf]/OT:script=latn;language=df
+lt;+tnum;+lnum;+smcp;mapping=tex-text;"
+(fontspec)             - 'bold' (b/n) with NFSS spec.:
+(fontspec)             <->s*[1]"[LinLibertine_RB.otf]/OT:script=latn;language=d
+flt;+tnum;+lnum;mapping=tex-text;"
+(fontspec)             - 'bold small caps'  (b/sc) with NFSS spec.:
+(fontspec)             <->s*[1]"[LinLibertine_RB.otf]/OT:script=latn;language=d
+flt;+tnum;+lnum;+smcp;mapping=tex-text;"
+(fontspec)             - 'italic' (m/it) with NFSS spec.:
+(fontspec)             <->s*[1]"[LinLibertine_RI.otf]/OT:script=latn;language=d
+flt;+tnum;+lnum;mapping=tex-text;"
+(fontspec)             - 'italic small caps'  (m/scit) with NFSS spec.:
+(fontspec)             <->s*[1]"[LinLibertine_RI.otf]/OT:script=latn;language=d
+flt;+tnum;+lnum;+smcp;mapping=tex-text;"
+(fontspec)             - 'bold italic' (b/it) with NFSS spec.:
+(fontspec)             <->s*[1]"[LinLibertine_RBI.otf]/OT:script=latn;language=
+dflt;+tnum;+lnum;mapping=tex-text;"
+(fontspec)             - 'bold italic small caps'  (b/scit) with NFSS spec.:
+(fontspec)             <->s*[1]"[LinLibertine_RBI.otf]/OT:script=latn;language=
+dflt;+tnum;+lnum;+smcp;mapping=tex-text;"
+
+Requested font "[LinLibertine_RZ.otf]/OT" at 9.99997pt
+ -> LinLibertine_RZ.otf
+Requested font "[LinLibertine_RZ.otf]/OT" at 10.00003pt
+ -> LinLibertine_RZ.otf
+Requested font "[LinLibertine_RZ.otf]/OT:script=latn;language=dflt;" at 10.0000
+3pt
+ -> LinLibertine_RZ.otf
+Requested font "[LinLibertine_RZI.otf]/OT:script=latn;language=dflt;" at 10.000
+03pt
+ -> LinLibertine_RZI.otf
+
+Package fontspec Info: Font family 'LinLibertine(2)' created for font
+(fontspec)             'LinLibertine' with options [Ligatures = TeX,Extension
+(fontspec)             = .otf,SmallCapsFeatures={Letters=SmallCaps},Numbers =
+(fontspec)             { Monospaced, Lining},Scale = 1,UprightFont =
+(fontspec)             *_RZ,ItalicFont = *_RZI,BoldFont = *_RB,BoldItalicFont
+(fontspec)             = *_RBI].
+(fontspec)              
+(fontspec)              This font family consists of the following NFSS
+(fontspec)             series/shapes:
+(fontspec)              
+(fontspec)             - 'normal' (m/n) with NFSS spec.:
+(fontspec)             <->s*[1]"[LinLibertine_RZ.otf]/OT:script=latn;language=d
+flt;+tnum;+lnum;mapping=tex-text;"
+(fontspec)             - 'small caps'  (m/sc) with NFSS spec.:
+(fontspec)             <->s*[1]"[LinLibertine_RZ.otf]/OT:script=latn;language=d
+flt;+tnum;+lnum;+smcp;mapping=tex-text;"
+(fontspec)             - 'bold' (b/n) with NFSS spec.:
+(fontspec)             <->s*[1]"[LinLibertine_RB.otf]/OT:script=latn;language=d
+flt;+tnum;+lnum;mapping=tex-text;"
+(fontspec)             - 'bold small caps'  (b/sc) with NFSS spec.:
+(fontspec)             <->s*[1]"[LinLibertine_RB.otf]/OT:script=latn;language=d
+flt;+tnum;+lnum;+smcp;mapping=tex-text;"
+(fontspec)             - 'italic' (m/it) with NFSS spec.:
+(fontspec)             <->s*[1]"[LinLibertine_RZI.otf]/OT:script=latn;language=
+dflt;+tnum;+lnum;mapping=tex-text;"
+(fontspec)             - 'italic small caps'  (m/scit) with NFSS spec.:
+(fontspec)             <->s*[1]"[LinLibertine_RZI.otf]/OT:script=latn;language=
+dflt;+tnum;+lnum;+smcp;mapping=tex-text;"
+(fontspec)             - 'bold italic' (b/it) with NFSS spec.:
+(fontspec)             <->s*[1]"[LinLibertine_RBI.otf]/OT:script=latn;language=
+dflt;+tnum;+lnum;mapping=tex-text;"
+(fontspec)             - 'bold italic small caps'  (b/scit) with NFSS spec.:
+(fontspec)             <->s*[1]"[LinLibertine_RBI.otf]/OT:script=latn;language=
+dflt;+tnum;+lnum;+smcp;mapping=tex-text;"
+
+
+Package fontspec Info: Font family 'LinLibertine(3)' created for font
+(fontspec)             'LinLibertine' with options [Ligatures = TeX,Extension
+(fontspec)             = .otf,SmallCapsFeatures={Letters=SmallCaps},Numbers =
+(fontspec)             {Monospaced,OldStyle},Scale = 1,UprightFont =
+(fontspec)             *_R,ItalicFont = *_RI,BoldFont = *_RB,BoldItalicFont =
+(fontspec)             *_RBI].
+(fontspec)              
+(fontspec)              This font family consists of the following NFSS
+(fontspec)             series/shapes:
+(fontspec)              
+(fontspec)             - 'normal' (m/n) with NFSS spec.:
+(fontspec)             <->s*[1]"[LinLibertine_R.otf]/OT:script=latn;language=df
+lt;+tnum;+onum;mapping=tex-text;"
+(fontspec)             - 'small caps'  (m/sc) with NFSS spec.:
+(fontspec)             <->s*[1]"[LinLibertine_R.otf]/OT:script=latn;language=df
+lt;+tnum;+onum;+smcp;mapping=tex-text;"
+(fontspec)             - 'bold' (b/n) with NFSS spec.:
+(fontspec)             <->s*[1]"[LinLibertine_RB.otf]/OT:script=latn;language=d
+flt;+tnum;+onum;mapping=tex-text;"
+(fontspec)             - 'bold small caps'  (b/sc) with NFSS spec.:
+(fontspec)             <->s*[1]"[LinLibertine_RB.otf]/OT:script=latn;language=d
+flt;+tnum;+onum;+smcp;mapping=tex-text;"
+(fontspec)             - 'italic' (m/it) with NFSS spec.:
+(fontspec)             <->s*[1]"[LinLibertine_RI.otf]/OT:script=latn;language=d
+flt;+tnum;+onum;mapping=tex-text;"
+(fontspec)             - 'italic small caps'  (m/scit) with NFSS spec.:
+(fontspec)             <->s*[1]"[LinLibertine_RI.otf]/OT:script=latn;language=d
+flt;+tnum;+onum;+smcp;mapping=tex-text;"
+(fontspec)             - 'bold italic' (b/it) with NFSS spec.:
+(fontspec)             <->s*[1]"[LinLibertine_RBI.otf]/OT:script=latn;language=
+dflt;+tnum;+onum;mapping=tex-text;"
+(fontspec)             - 'bold italic small caps'  (b/scit) with NFSS spec.:
+(fontspec)             <->s*[1]"[LinLibertine_RBI.otf]/OT:script=latn;language=
+dflt;+tnum;+onum;+smcp;mapping=tex-text;"
+
+Requested font "[LinLibertine_DR.otf]/OT" at 9.99997pt
+ -> LinLibertine_DR.otf
+Requested font "[LinLibertine_DR.otf]/OT" at 10.00003pt
+ -> LinLibertine_DR.otf
+Requested font "[LinLibertine_DR.otf]/OT:script=latn;language=dflt;" at 10.0000
+3pt
+ -> LinLibertine_DR.otf
+
+Package fontspec Info: Font family 'LinLibertine(4)' created for font
+(fontspec)             'LinLibertine' with options [Ligatures = TeX,Extension
+(fontspec)             = .otf,SmallCapsFeatures={Letters=SmallCaps},Numbers =
+(fontspec)             {Monospaced,Lining},UprightFont = *_DR,ItalicFont =
+(fontspec)             *_RI,BoldFont = *_RB,BoldItalicFont = *_RBI].
+(fontspec)              
+(fontspec)              This font family consists of the following NFSS
+(fontspec)             series/shapes:
+(fontspec)              
+(fontspec)             - 'normal' (m/n) with NFSS spec.:
+(fontspec)             <->"[LinLibertine_DR.otf]/OT:script=latn;language=dflt;+
+tnum;+lnum;mapping=tex-text;"
+(fontspec)             - 'small caps'  (m/sc) with NFSS spec.: 
+(fontspec)             - 'bold' (b/n) with NFSS spec.:
+(fontspec)             <->"[LinLibertine_RB.otf]/OT:script=latn;language=dflt;+
+tnum;+lnum;mapping=tex-text;"
+(fontspec)             - 'bold small caps'  (b/sc) with NFSS spec.:
+(fontspec)             <->"[LinLibertine_RB.otf]/OT:script=latn;language=dflt;+
+tnum;+lnum;+smcp;mapping=tex-text;"
+(fontspec)             - 'italic' (m/it) with NFSS spec.:
+(fontspec)             <->"[LinLibertine_RI.otf]/OT:script=latn;language=dflt;+
+tnum;+lnum;mapping=tex-text;"
+(fontspec)             - 'italic small caps'  (m/scit) with NFSS spec.:
+(fontspec)             <->"[LinLibertine_RI.otf]/OT:script=latn;language=dflt;+
+tnum;+lnum;+smcp;mapping=tex-text;"
+(fontspec)             - 'bold italic' (b/it) with NFSS spec.:
+(fontspec)             <->"[LinLibertine_RBI.otf]/OT:script=latn;language=dflt;
++tnum;+lnum;mapping=tex-text;"
+(fontspec)             - 'bold italic small caps'  (b/scit) with NFSS spec.:
+(fontspec)             <->"[LinLibertine_RBI.otf]/OT:script=latn;language=dflt;
++tnum;+lnum;+smcp;mapping=tex-text;"
+
+
+Package fontspec Info: Font family 'LinBiolinum(1)' created for font
+(fontspec)             'LinBiolinum' with options [Ligatures = TeX,Extension =
+(fontspec)             .otf,SmallCapsFeatures={Letters=SmallCaps},Numbers =
+(fontspec)             {Monospaced, Lining},Scale = 1,UprightFont =
+(fontspec)             *_R,ItalicFont = *_RI,BoldFont = *_RB,BoldItalicFont =
+(fontspec)             *_RBO].
+(fontspec)              
+(fontspec)              This font family consists of the following NFSS
+(fontspec)             series/shapes:
+(fontspec)              
+(fontspec)             - 'normal' (m/n) with NFSS spec.:
+(fontspec)             <->s*[1]"[LinBiolinum_R.otf]/OT:script=latn;language=dfl
+t;+tnum;+lnum;mapping=tex-text;"
+(fontspec)             - 'small caps'  (m/sc) with NFSS spec.:
+(fontspec)             <->s*[1]"[LinBiolinum_R.otf]/OT:script=latn;language=dfl
+t;+tnum;+lnum;+smcp;mapping=tex-text;"
+(fontspec)             - 'bold' (b/n) with NFSS spec.:
+(fontspec)             <->s*[1]"[LinBiolinum_RB.otf]/OT:script=latn;language=df
+lt;+tnum;+lnum;mapping=tex-text;"
+(fontspec)             - 'bold small caps'  (b/sc) with NFSS spec.:
+(fontspec)             <->s*[1]"[LinBiolinum_RB.otf]/OT:script=latn;language=df
+lt;+tnum;+lnum;+smcp;mapping=tex-text;"
+(fontspec)             - 'italic' (m/it) with NFSS spec.:
+(fontspec)             <->s*[1]"[LinBiolinum_RI.otf]/OT:script=latn;language=df
+lt;+tnum;+lnum;mapping=tex-text;"
+(fontspec)             - 'italic small caps'  (m/scit) with NFSS spec.:
+(fontspec)             <->s*[1]"[LinBiolinum_RI.otf]/OT:script=latn;language=df
+lt;+tnum;+lnum;+smcp;mapping=tex-text;"
+(fontspec)             - 'bold italic' (b/it) with NFSS spec.:
+(fontspec)             <->s*[1]"[LinBiolinum_RBO.otf]/OT:script=latn;language=d
+flt;+tnum;+lnum;mapping=tex-text;"
+(fontspec)             - 'bold italic small caps'  (b/scit) with NFSS spec.:
+(fontspec)             <->s*[1]"[LinBiolinum_RBO.otf]/OT:script=latn;language=d
+flt;+tnum;+lnum;+smcp;mapping=tex-text;"
+
+
+Package fontspec Info: Font family 'LinBiolinum(2)' created for font
+(fontspec)             'LinBiolinum' with options [Ligatures = TeX,Extension =
+(fontspec)             .otf,SmallCapsFeatures={Letters=SmallCaps},Numbers =
+(fontspec)             {Monospaced, OldStyle},Scale = 1,UprightFont =
+(fontspec)             *_R,ItalicFont = *_RI,BoldFont = *_RB,BoldItalicFont =
+(fontspec)             *_RBO].
+(fontspec)              
+(fontspec)              This font family consists of the following NFSS
+(fontspec)             series/shapes:
+(fontspec)              
+(fontspec)             - 'normal' (m/n) with NFSS spec.:
+(fontspec)             <->s*[1]"[LinBiolinum_R.otf]/OT:script=latn;language=dfl
+t;+tnum;+onum;mapping=tex-text;"
+(fontspec)             - 'small caps'  (m/sc) with NFSS spec.:
+(fontspec)             <->s*[1]"[LinBiolinum_R.otf]/OT:script=latn;language=dfl
+t;+tnum;+onum;+smcp;mapping=tex-text;"
+(fontspec)             - 'bold' (b/n) with NFSS spec.:
+(fontspec)             <->s*[1]"[LinBiolinum_RB.otf]/OT:script=latn;language=df
+lt;+tnum;+onum;mapping=tex-text;"
+(fontspec)             - 'bold small caps'  (b/sc) with NFSS spec.:
+(fontspec)             <->s*[1]"[LinBiolinum_RB.otf]/OT:script=latn;language=df
+lt;+tnum;+onum;+smcp;mapping=tex-text;"
+(fontspec)             - 'italic' (m/it) with NFSS spec.:
+(fontspec)             <->s*[1]"[LinBiolinum_RI.otf]/OT:script=latn;language=df
+lt;+tnum;+onum;mapping=tex-text;"
+(fontspec)             - 'italic small caps'  (m/scit) with NFSS spec.:
+(fontspec)             <->s*[1]"[LinBiolinum_RI.otf]/OT:script=latn;language=df
+lt;+tnum;+onum;+smcp;mapping=tex-text;"
+(fontspec)             - 'bold italic' (b/it) with NFSS spec.:
+(fontspec)             <->s*[1]"[LinBiolinum_RBO.otf]/OT:script=latn;language=d
+flt;+tnum;+onum;mapping=tex-text;"
+(fontspec)             - 'bold italic small caps'  (b/scit) with NFSS spec.:
+(fontspec)             <->s*[1]"[LinBiolinum_RBO.otf]/OT:script=latn;language=d
+flt;+tnum;+onum;+smcp;mapping=tex-text;"
+
+Requested font "[LinLibertine_M.otf]/OT" at 9.99997pt
+ -> LinLibertine_M.otf
+Requested font "[LinLibertine_M.otf]/OT" at 10.00003pt
+ -> LinLibertine_M.otf
+Requested font "[LinLibertine_M.otf]/OT:script=latn;language=dflt;" at 10.00003
+pt
+ -> LinLibertine_M.otf
+Requested font "[LinLibertine_MB.otf]/OT:script=latn;language=dflt;" at 10.0000
+3pt
+ -> LinLibertine_MB.otf
+Requested font "[LinLibertine_MO.otf]/OT:script=latn;language=dflt;" at 10.0000
+3pt
+ -> LinLibertine_MO.otf
+Requested font "[LinLibertine_MBO.otf]/OT:script=latn;language=dflt;" at 10.000
+03pt
+ -> LinLibertine_MBO.otf
+
+Package fontspec Info: Font family 'LinLibertine(5)' created for font
+(fontspec)             'LinLibertine' with options [Extension =
+(fontspec)             .otf,HyphenChar=None,Scale = 1,UprightFont =
+(fontspec)             *_M,ItalicFont = *_MO,BoldFont = *_MB,BoldItalicFont =
+(fontspec)             *_MBO].
+(fontspec)              
+(fontspec)              This font family consists of the following NFSS
+(fontspec)             series/shapes:
+(fontspec)              
+(fontspec)             - 'normal' (m/n) with NFSS spec.:
+(fontspec)             <->s*[1]"[LinLibertine_M.otf]/OT:script=latn;language=df
+lt;"
+(fontspec)             - 'small caps'  (m/sc) with NFSS spec.: 
+(fontspec)             and font adjustment code:
+(fontspec)             \tex_hyphenchar:D \font =-1\scan_stop: 
+(fontspec)             - 'bold' (b/n) with NFSS spec.:
+(fontspec)             <->s*[1]"[LinLibertine_MB.otf]/OT:script=latn;language=d
+flt;"
+(fontspec)             - 'bold small caps'  (b/sc) with NFSS spec.: 
+(fontspec)             and font adjustment code:
+(fontspec)             \tex_hyphenchar:D \font =-1\scan_stop: 
+(fontspec)             - 'italic' (m/it) with NFSS spec.:
+(fontspec)             <->s*[1]"[LinLibertine_MO.otf]/OT:script=latn;language=d
+flt;"
+(fontspec)             - 'italic small caps'  (m/scit) with NFSS spec.: 
+(fontspec)             and font adjustment code:
+(fontspec)             \tex_hyphenchar:D \font =-1\scan_stop: 
+(fontspec)             - 'bold italic' (b/it) with NFSS spec.:
+(fontspec)             <->s*[1]"[LinLibertine_MBO.otf]/OT:script=latn;language=
+dflt;"
+(fontspec)             - 'bold italic small caps'  (b/scit) with NFSS spec.: 
+(fontspec)             and font adjustment code:
+(fontspec)             \tex_hyphenchar:D \font =-1\scan_stop: 
+
+Requested font "[LinBiolinum_K.otf]/OT" at 9.99997pt
+ -> LinBiolinum_K.otf
+Requested font "[LinBiolinum_K.otf]/OT" at 10.00003pt
+ -> LinBiolinum_K.otf
+Requested font "[LinBiolinum_K.otf]/OT:script=latn;language=dflt;" at 10.00003p
+t
+ -> LinBiolinum_K.otf
+
+Package fontspec Info: Font family 'LinBiolinum_K(0)' created for font
+(fontspec)             'LinBiolinum_K' with options [Extension =
+(fontspec)             .otf,HyphenChar=None,BoldFont={},ItalicFont={},SmallCaps
+Font={}].
+(fontspec)              
+(fontspec)              This font family consists of the following NFSS
+(fontspec)             series/shapes:
+(fontspec)              
+(fontspec)             - 'normal' (m/n) with NFSS spec.:
+(fontspec)             <->"[LinBiolinum_K.otf]/OT:script=latn;language=dflt;"
+(fontspec)             - 'small caps'  (m/sc) with NFSS spec.: 
+(fontspec)             and font adjustment code:
+(fontspec)             \tex_hyphenchar:D \font =-1\scan_stop: 
+
+Requested font "[LinLibertine_I.otf]/OT" at 9.99997pt
+ -> LinLibertine_I.otf
+Requested font "[LinLibertine_I.otf]/OT" at 10.00003pt
+ -> LinLibertine_I.otf
+Requested font "[LinLibertine_I.otf]/OT:script=latn;language=dflt;" at 10.00003
+pt
+ -> LinLibertine_I.otf
+
+Package fontspec Info: Font family 'LinLibertine_I(0)' created for font
+(fontspec)             'LinLibertine_I' with options [Extension =
+(fontspec)             .otf,HyphenChar=None,BoldFont={},ItalicFont={},SmallCaps
+Font={}].
+(fontspec)              
+(fontspec)              This font family consists of the following NFSS
+(fontspec)             series/shapes:
+(fontspec)              
+(fontspec)             - 'normal' (m/n) with NFSS spec.:
+(fontspec)             <->"[LinLibertine_I.otf]/OT:script=latn;language=dflt;"
+(fontspec)             - 'small caps'  (m/sc) with NFSS spec.: 
+(fontspec)             and font adjustment code:
+(fontspec)             \tex_hyphenchar:D \font =-1\scan_stop: 
+
+LaTeX Info: Redefining \oldstylenums on input line 474.
+LaTeX Info: Redefining \liningnums on input line 475.
+
+(LinLibertine_R) (LinBiolinum_R) (LinBiolinum_K) (LinLibertine_I) (LKey))
+(inconsolata.fontspec)
+Requested font "[Inconsolatazi4-Regular.otf]/OT" at 9.99997pt
+ -> Inconsolatazi4-Regular.otf
+Requested font "[Inconsolatazi4-Regular.otf]/OT" at 10.00003pt
+ -> Inconsolatazi4-Regular.otf
+Requested font "[Inconsolatazi4-Regular.otf]/OT:script=latn;language=dflt;" at 
+10.00003pt
+ -> Inconsolatazi4-Regular.otf
+Requested font "[Inconsolatazi4-Bold.otf]/OT:script=latn;language=dflt;" at 10.
+00003pt
+ -> Inconsolatazi4-Bold.otf
+
+Package fontspec Info: Font family 'inconsolata(0)' created for font
+(fontspec)             'inconsolata' with options
+(fontspec)             [WordSpace={1,0,0},HyphenChar=None,PunctuationSpace=Word
+Space,Extension
+(fontspec)             = .otf,UprightFont = Inconsolatazi4-Regular,BoldFont =
+(fontspec)             Inconsolatazi4-Bold,StylisticSet=3].
+(fontspec)              
+(fontspec)              This font family consists of the following NFSS
+(fontspec)             series/shapes:
+(fontspec)              
+(fontspec)             - 'normal' (m/n) with NFSS spec.:
+(fontspec)             <->"[Inconsolatazi4-Regular.otf]/OT:script=latn;language
+=dflt;+ss03;"
+(fontspec)             - 'small caps'  (m/sc) with NFSS spec.: 
+(fontspec)             and font adjustment code:
+(fontspec)             \fontdimen 2\font =1\fontdimen 2\font \fontdimen 3\font
+(fontspec)             =0\fontdimen 3\font \fontdimen 4\font =0\fontdimen
+(fontspec)             4\font \fontdimen 7\font =0\fontdimen 2\font
+(fontspec)             \tex_hyphenchar:D \font =-1\scan_stop: 
+(fontspec)             - 'bold' (b/n) with NFSS spec.:
+(fontspec)             <->"[Inconsolatazi4-Bold.otf]/OT:script=latn;language=df
+lt;+ss03;"
+(fontspec)             - 'bold small caps'  (b/sc) with NFSS spec.: 
+(fontspec)             and font adjustment code:
+(fontspec)             \fontdimen 2\font =1\fontdimen 2\font \fontdimen 3\font
+(fontspec)             =0\fontdimen 3\font \fontdimen 4\font =0\fontdimen
+(fontspec)             4\font \fontdimen 7\font =0\fontdimen 2\font
+(fontspec)             \tex_hyphenchar:D \font =-1\scan_stop: 
+
+ (caption.sty
+Package: caption 2022/03/01 v3.6b Customizing captions (AR)
+ (caption3.sty
+Package: caption3 2022/03/17 v2.3b caption3 kernel (AR)
+\caption@tempdima=\dimen182
+\captionmargin=\dimen183
+\caption@leftmargin=\dimen184
+\caption@rightmargin=\dimen185
+\caption@width=\dimen186
+\caption@indent=\dimen187
+\caption@parindent=\dimen188
+\caption@hangindent=\dimen189
+Package caption Info: AMS or SMF document class detected.
+ (caption-ams-smf.sto
+File: caption-ams-smf.sto 2020/08/22 v2.0 Adaption of the caption package to th
+e AMS and SMF document classes (AR)
+))
+\c@caption@flags=\count317
+\c@continuedfloat=\count318
+Package caption Info: hyperref package is loaded.
+)
+(float.sty
+Package: float 2001/11/08 v1.3d Float enhancements (AL)
+\c@float@type=\count319
+\float@exts=\toks35
+\float@box=\box56
+\@float@everytoks=\toks36
+\@floatcapt=\box57
+)
+\@float@every@sidebar=\toks37
+\c@sidebar=\count320
+\fulltextwidth=\dimen190
+\@ACM@labelwidth=\dimen191
+\listisep=\skip60
+\num@authorgroups=\count321
+\num@authors=\count322
+\@ACM@badge@width=\skip61
+\@ACM@title@width=\skip62
+\@ACM@badge@skip=\skip63
+Class acmart Info: Printing CCS on input line 1608.
+Class acmart Info: Printing bibformat on input line 1608.
+Class acmart Info: Suppressing folios on input line 1615.
+Class acmart Info: Setting authorsperrow to 0 on input line 1618.
+ (comment.sty
+\CommentStream=\write3
+ Excluding comment 'comment')
+Excluding comment 'CCSXML'
+\c@@concepts=\count323
+\mktitle@bx=\box58
+\@ACM@commabox=\box59
+\author@bx=\box60
+\author@bx@wd=\dimen192
+\author@bx@sep=\skip64
+ (fancyhdr.sty
+Package: fancyhdr 2021/01/28 v4.0.1 Extensive control of page headers and foote
+rs
+\f@nch@headwidth=\skip65
+\f@nch@O@elh=\skip66
+\f@nch@O@erh=\skip67
+\f@nch@O@olh=\skip68
+\f@nch@O@orh=\skip69
+\f@nch@O@elf=\skip70
+\f@nch@O@erf=\skip71
+\f@nch@O@olf=\skip72
+\f@nch@O@orf=\skip73
+)
+\ACM@linecount@bx=\box61
+\ACM@linecount@bxht=\skip74
+\ACM@linecount=\count324
+\@folio@wd=\dimen193
+\@folio@ht=\dimen194
+\@folio@voffset=\dimen195
+ Special comment 'acks') (tabularx.sty
+Package: tabularx 2020/01/15 v2.11c `tabularx' package (DPC)
+(array.sty
+Package: array 2021/10/04 v2.5f Tabular extension package (FMi)
+\col@sep=\dimen196
+\ar@mcellbox=\box62
+\extrarowheight=\dimen197
+\NC@list=\toks38
+\extratabsurround=\skip75
+\backup@length=\skip76
+\ar@cellbox=\box63
+)
+\TX@col@width=\dimen198
+\TX@old@table=\dimen256
+\TX@old@col=\dimen257
+\TX@target=\dimen258
+\TX@delta=\dimen259
+\TX@cols=\count325
+\TX@ftn=\toks39
+) (xspace.sty
+Package: xspace 2014/10/28 v1.13 Space after command names (DPC,MH)
+) (balance.sty
+Package: balance 1999/02/23 4.3 (PWD)
+\oldvsize=\dimen260
+) (tikz.sty (pgf.sty (pgfrcs.sty
+(pgfutil-common.tex
+\pgfutil@everybye=\toks40
+\pgfutil@tempdima=\dimen261
+\pgfutil@tempdimb=\dimen262
+ (pgfutil-common-lists.tex)) (pgfutil-latex.def
+\pgfutil@abb=\box64
+)
+(pgfrcs.code.tex (pgf.revision.tex)
+Package: pgfrcs 2021/05/15 v3.1.9a (3.1.9a)
+))
+Package: pgf 2021/05/15 v3.1.9a (3.1.9a)
+ (pgfcore.sty (pgfsys.sty (pgfsys.code.tex
+Package: pgfsys 2021/05/15 v3.1.9a (3.1.9a)
+(pgfkeys.code.tex
+\pgfkeys@pathtoks=\toks41
+\pgfkeys@temptoks=\toks42
+ (pgfkeysfiltered.code.tex
+\pgfkeys@tmptoks=\toks43
+))
+\pgf@x=\dimen263
+\pgf@y=\dimen264
+\pgf@xa=\dimen265
+\pgf@ya=\dimen266
+\pgf@xb=\dimen267
+\pgf@yb=\dimen268
+\pgf@xc=\dimen269
+\pgf@yc=\dimen270
+\pgf@xd=\dimen271
+\pgf@yd=\dimen272
+\w@pgf@writea=\write4
+\r@pgf@reada=\read3
+\c@pgf@counta=\count326
+\c@pgf@countb=\count327
+\c@pgf@countc=\count328
+\c@pgf@countd=\count329
+\t@pgf@toka=\toks44
+\t@pgf@tokb=\toks45
+\t@pgf@tokc=\toks46
+\pgf@sys@id@count=\count330
+ (pgf.cfg
+File: pgf.cfg 2021/05/15 v3.1.9a (3.1.9a)
+)
+Driver file for pgf: pgfsys-xetex.def
+ (pgfsys-xetex.def
+File: pgfsys-xetex.def 2021/05/15 v3.1.9a (3.1.9a)
+
+(pgfsys-dvipdfmx.def
+File: pgfsys-dvipdfmx.def 2021/05/15 v3.1.9a (3.1.9a)
+ (pgfsys-common-pdf.def
+File: pgfsys-common-pdf.def 2021/05/15 v3.1.9a (3.1.9a)
+)
+\pgfsys@objnum=\count331
+))) (pgfsyssoftpath.code.tex
+File: pgfsyssoftpath.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+\pgfsyssoftpath@smallbuffer@items=\count332
+\pgfsyssoftpath@bigbuffer@items=\count333
+)
+(pgfsysprotocol.code.tex
+File: pgfsysprotocol.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+)) (pgfcore.code.tex
+Package: pgfcore 2021/05/15 v3.1.9a (3.1.9a)
+ (pgfmath.code.tex
+(pgfmathcalc.code.tex (pgfmathutil.code.tex) (pgfmathparser.code.tex
+\pgfmath@dimen=\dimen273
+\pgfmath@count=\count334
+\pgfmath@box=\box65
+\pgfmath@toks=\toks47
+\pgfmath@stack@operand=\toks48
+\pgfmath@stack@operation=\toks49
+)
+(pgfmathfunctions.code.tex (pgfmathfunctions.basic.code.tex)
+(pgfmathfunctions.trigonometric.code.tex) (pgfmathfunctions.random.code.tex)
+(pgfmathfunctions.comparison.code.tex) (pgfmathfunctions.base.code.tex)
+(pgfmathfunctions.round.code.tex) (pgfmathfunctions.misc.code.tex)
+(pgfmathfunctions.integerarithmetics.code.tex))) (pgfmathfloat.code.tex
+\c@pgfmathroundto@lastzeros=\count335
+))
+(pgfint.code.tex) (pgfcorepoints.code.tex
+File: pgfcorepoints.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+\pgf@picminx=\dimen274
+\pgf@picmaxx=\dimen275
+\pgf@picminy=\dimen276
+\pgf@picmaxy=\dimen277
+\pgf@pathminx=\dimen278
+\pgf@pathmaxx=\dimen279
+\pgf@pathminy=\dimen280
+\pgf@pathmaxy=\dimen281
+\pgf@xx=\dimen282
+\pgf@xy=\dimen283
+\pgf@yx=\dimen284
+\pgf@yy=\dimen285
+\pgf@zx=\dimen286
+\pgf@zy=\dimen287
+) (pgfcorepathconstruct.code.tex
+File: pgfcorepathconstruct.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+\pgf@path@lastx=\dimen288
+\pgf@path@lasty=\dimen289
+)
+(pgfcorepathusage.code.tex
+File: pgfcorepathusage.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+\pgf@shorten@end@additional=\dimen290
+\pgf@shorten@start@additional=\dimen291
+) (pgfcorescopes.code.tex
+File: pgfcorescopes.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+\pgfpic=\box66
+\pgf@hbox=\box67
+\pgf@layerbox@main=\box68
+\pgf@picture@serial@count=\count336
+)
+(pgfcoregraphicstate.code.tex
+File: pgfcoregraphicstate.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+\pgflinewidth=\dimen292
+) (pgfcoretransformations.code.tex
+File: pgfcoretransformations.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+\pgf@pt@x=\dimen293
+\pgf@pt@y=\dimen294
+\pgf@pt@temp=\dimen295
+)
+(pgfcorequick.code.tex
+File: pgfcorequick.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+) (pgfcoreobjects.code.tex
+File: pgfcoreobjects.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+)
+(pgfcorepathprocessing.code.tex
+File: pgfcorepathprocessing.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+) (pgfcorearrows.code.tex
+File: pgfcorearrows.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+\pgfarrowsep=\dimen296
+)
+(pgfcoreshade.code.tex
+File: pgfcoreshade.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+\pgf@max=\dimen297
+\pgf@sys@shading@range@num=\count337
+\pgf@shadingcount=\count338
+) (pgfcoreimage.code.tex
+File: pgfcoreimage.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+ (pgfcoreexternal.code.tex
+File: pgfcoreexternal.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+\pgfexternal@startupbox=\box69
+))
+(pgfcorelayers.code.tex
+File: pgfcorelayers.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+) (pgfcoretransparency.code.tex
+File: pgfcoretransparency.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+)
+(pgfcorepatterns.code.tex
+File: pgfcorepatterns.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+) (pgfcorerdf.code.tex
+File: pgfcorerdf.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+))) (pgfmoduleshapes.code.tex
+File: pgfmoduleshapes.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+\pgfnodeparttextbox=\box70
+)
+(pgfmoduleplot.code.tex
+File: pgfmoduleplot.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+) (pgfcomp-version-0-65.sty
+Package: pgfcomp-version-0-65 2021/05/15 v3.1.9a (3.1.9a)
+\pgf@nodesepstart=\dimen298
+\pgf@nodesepend=\dimen299
+) (pgfcomp-version-1-18.sty
+Package: pgfcomp-version-1-18 2021/05/15 v3.1.9a (3.1.9a)
+)) (pgffor.sty (pgfkeys.sty (pgfkeys.code.tex)) (pgfmath.sty (pgfmath.code.tex)
+)
+(pgffor.code.tex
+Package: pgffor 2021/05/15 v3.1.9a (3.1.9a)
+ (pgfmath.code.tex)
+\pgffor@iter=\dimen300
+\pgffor@skip=\dimen301
+\pgffor@stack=\toks50
+\pgffor@toks=\toks51
+)) (tikz.code.tex
+Package: tikz 2021/05/15 v3.1.9a (3.1.9a)
+
+(pgflibraryplothandlers.code.tex
+File: pgflibraryplothandlers.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+\pgf@plot@mark@count=\count339
+\pgfplotmarksize=\dimen302
+)
+\tikz@lastx=\dimen303
+\tikz@lasty=\dimen304
+\tikz@lastxsaved=\dimen305
+\tikz@lastysaved=\dimen306
+\tikz@lastmovetox=\dimen307
+\tikz@lastmovetoy=\dimen308
+\tikzleveldistance=\dimen309
+\tikzsiblingdistance=\dimen310
+\tikz@figbox=\box71
+\tikz@figbox@bg=\box72
+\tikz@tempbox=\box73
+\tikz@tempbox@bg=\box74
+\tikztreelevel=\count340
+\tikznumberofchildren=\count341
+\tikznumberofcurrentchild=\count342
+\tikz@fig@count=\count343
+ (pgfmodulematrix.code.tex
+File: pgfmodulematrix.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+\pgfmatrixcurrentrow=\count344
+\pgfmatrixcurrentcolumn=\count345
+\pgf@matrix@numberofcolumns=\count346
+)
+\tikz@expandcount=\count347
+
+(tikzlibrarytopaths.code.tex
+File: tikzlibrarytopaths.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+))) (pgflibraryarrows.meta.code.tex
+File: pgflibraryarrows.meta.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+\pgfarrowinset=\dimen311
+\pgfarrowlength=\dimen312
+\pgfarrowwidth=\dimen313
+\pgfarrowlinewidth=\dimen314
+)
+(tikzlibrarypositioning.code.tex
+File: tikzlibrarypositioning.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+) (tikzlibraryfit.code.tex
+File: tikzlibraryfit.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+)
+Class acmart Info: Printing bibformat on input line 26.
+Package hyperref Info: Option `colorlinks' set `true' on input line 83.
+Package hyperref Info: Option `pdfdisplaydoctitle' set `true' on input line 83.
+
+\c@theorem=\count348
+
+Include comment 'screenonly' Excluding comment 'printonly'
+Excluding comment 'anonsuppress' Excluding comment 'acks' (main.aux)
+\openout1 = `main.aux'.
+
+LaTeX Font Info:    Checking defaults for OML/nxlmi/m/it on input line 83.
+LaTeX Font Info:    Trying to load font information for OML+nxlmi on input line
+ 83.
+
+(omlnxlmi.fd
+File: omlnxlmi.fd 2013/11/19 Fontinst v1.933 font definitions for OML/nxlmi.
+)
+LaTeX Font Info:    ... okay on input line 83.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 83.
+LaTeX Font Info:    ... okay on input line 83.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 83.
+LaTeX Font Info:    ... okay on input line 83.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 83.
+LaTeX Font Info:    ... okay on input line 83.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 83.
+LaTeX Font Info:    Trying to load font information for TS1+cmr on input line 8
+3.
+ (ts1cmr.fd
+File: ts1cmr.fd 2019/12/16 v2.5j Standard LaTeX font definitions
+)
+LaTeX Font Info:    ... okay on input line 83.
+LaTeX Font Info:    Checking defaults for TU/lmr/m/n on input line 83.
+LaTeX Font Info:    ... okay on input line 83.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 83.
+LaTeX Font Info:    ... okay on input line 83.
+LaTeX Font Info:    Checking defaults for U/ntxexa/m/n on input line 83.
+LaTeX Font Info:    Trying to load font information for U+ntxexa on input line 
+83.
+ (untxexa.fd
+File: untxexa.fd 2012/04/16 Fontinst v1.933 font definitions for U/ntxexa.
+)
+LaTeX Font Info:    ... okay on input line 83.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 83.
+LaTeX Font Info:    ... okay on input line 83.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 83.
+LaTeX Font Info:    ... okay on input line 83.
+LaTeX Font Info:    Checking defaults for LMS/ntxsy/m/n on input line 83.
+LaTeX Font Info:    Trying to load font information for LMS+ntxsy on input line
+ 83.
+ (lmsntxsy.fd
+File: lmsntxsy.fd 2016/07/02 Fontinst v1.933 font definitions for LMS/ntxsy.
+)
+LaTeX Font Info:    ... okay on input line 83.
+LaTeX Font Info:    Checking defaults for LMX/ntxexx/m/n on input line 83.
+LaTeX Font Info:    Trying to load font information for LMX+ntxexx on input lin
+e 83.
+ (lmxntxexx.fd
+File: lmxntxexx.fd 2016/07/03 Fontinst v1.933 font definitions for LMX/ntxexx.
+)
+LaTeX Font Info:    ... okay on input line 83.
+LaTeX Font Info:    Font shape `TU/LinLibertine(0)/m/n' will be
+(Font)              scaled to size 8.0pt on input line 83.
+Requested font "[LinLibertine_R.otf]/OT:script=latn;language=dflt;+tnum;+lnum;m
+apping=tex-text;" at 8.0pt
+ -> LinLibertine_R.otf
+LaTeX Font Info:    Trying to load font information for OT1+minlibertine on inp
+ut line 83.
+
+(ot1minlibertine.fd
+File: ot1minlibertine.fd 2013/10/12 v1.0
+)
+Requested font "MinLibReg-ot1" at 8.0pt
+ -> MinLibReg-ot1
+Requested font "MinLibReg-ot1" at 6.2pt
+ -> MinLibReg-ot1
+Requested font "MinLibReg-ot1" at 5.5pt
+ -> MinLibReg-ot1
+Requested font "nxlmi7" at 8.0pt
+ -> nxlmi7
+Requested font "nxlmi5" at 6.2pt
+ -> nxlmi5
+Requested font "nxlmi5" at 5.5pt
+ -> nxlmi5
+Requested font "ntxsy7" at 8.0pt
+ -> ntxsy7
+Requested font "ntxsy5" at 6.2pt
+ -> ntxsy5
+Requested font "ntxsy5" at 5.5pt
+ -> ntxsy5
+Requested font "ntxexx" at 8.0pt
+ -> ntxexx
+Requested font "ntxexx" at 6.2pt
+ -> ntxexx
+Requested font "ntxexx" at 5.5pt
+ -> ntxexx
+LaTeX Font Info:    Trying to load font information for U+msa on input line 83.
+
+ (umsa.fd
+File: umsa.fd 2013/01/14 v3.01 AMS symbols A
+)
+Requested font "msam10" at 8.0pt
+ -> msam10
+Requested font "msam7" at 6.2pt
+ -> msam7
+Requested font "msam5" at 5.5pt
+ -> msam5
+LaTeX Font Info:    Trying to load font information for U+msb on input line 83.
+
+ (umsb.fd
+File: umsb.fd 2013/01/14 v3.01 AMS symbols B
+)
+Requested font "msbm10" at 8.0pt
+ -> msbm10
+Requested font "msbm7" at 6.2pt
+ -> msbm7
+Requested font "msbm5" at 5.5pt
+ -> msbm5
+LaTeX Font Info:    Trying to load font information for U+ntxmia on input line 
+83.
+ (untxmia.fd
+File: untxmia.fd 2018/04/14 Fontinst v1.933 font definitions for U/ntxmia.
+)
+Requested font "nxlmia" at 8.0pt
+ -> nxlmia
+Requested font "nxlmia" at 6.2pt
+ -> nxlmia
+Requested font "nxlmia" at 5.5pt
+ -> nxlmia
+LaTeX Font Info:    Trying to load font information for U+ntxsym on input line 
+83.
+ (untxsym.fd
+File: untxsym.fd 2015/03/20 Fontinst v1.933 font definitions for U/ntxsym.
+)
+Requested font "ntxsym" at 8.0pt
+ -> ntxsym
+Requested font "ntxsym" at 6.2pt
+ -> ntxsym
+Requested font "ntxsym" at 5.5pt
+ -> ntxsym
+LaTeX Font Info:    Trying to load font information for U+ntxsyc on input line 
+83.
+ (untxsyc.fd
+File: untxsyc.fd 2012/04/12 Fontinst v1.933 font definitions for U/ntxsyc.
+)
+Requested font "ntxsyc" at 8.0pt
+ -> ntxsyc
+Requested font "ntxsyc" at 6.2pt
+ -> ntxsyc
+Requested font "ntxsyc" at 5.5pt
+ -> ntxsyc
+Requested font "ntxexa" at 8.0pt
+ -> ntxexa
+Requested font "ntxexa" at 6.2pt
+ -> ntxexa
+Requested font "ntxexa" at 5.5pt
+ -> ntxexa
+LaTeX Info: Redefining \microtypecontext on input line 83.
+Package microtype Info: Applying patch `item' on input line 83.
+Package microtype Info: Applying patch `toc' on input line 83.
+Package microtype Info: Applying patch `eqnum' on input line 83.
+Package microtype Info: Applying patch `footnote' on input line 83.
+Package microtype Info: Character protrusion enabled (level 2).
+Package microtype Info: Using default protrusion set `alltext'.
+Package microtype Info: No adjustment of tracking.
+Package microtype Info: No adjustment of spacing.
+Package microtype Info: No adjustment of kerning.
+Package microtype Info: Loading generic protrusion settings for font family
+(microtype)             `LinLibertine' (encoding: TU).
+(microtype)             For optimal results, create family-specific settings.
+(microtype)             See the microtype manual for details.
+Package hyperref Info: Link coloring ON on input line 83.
+(nameref.sty
+Package: nameref 2021-04-02 v2.47 Cross-referencing by name of section
+ (gettitlestring.sty
+Package: gettitlestring 2019/12/15 v1.6 Cleanup title references (HO)
+)
+\c@section@level=\count349
+)
+LaTeX Info: Redefining \ref on input line 83.
+LaTeX Info: Redefining \pageref on input line 83.
+LaTeX Info: Redefining \nameref on input line 83.
+ (main.out) (main.out)
+\@outlinefile=\write5
+\openout5 = `main.out'.
+
+
+*geometry* driver: auto-detecting
+*geometry* detected driver: xetex
+*geometry* verbose mode - [ preamble ] result:
+* driver: xetex
+* paper: custom
+* layout: <same size as paper>
+* layoutoffset:(h,v)=(0.0pt,0.0pt)
+* modes: twoside heightrounded 
+* h-part:(L,W,R)=(54.2025pt, 505.89pt, 54.2025pt)
+* v-part:(T,H,B)=(72.26999pt, 650.43001pt, 72.26999pt)
+* \paperwidth=614.295pt
+* \paperheight=794.96999pt
+* \textwidth=505.89pt
+* \textheight=646.0pt
+* \oddsidemargin=-18.06749pt
+* \evensidemargin=-18.06749pt
+* \topmargin=-27.0pt
+* \headheight=13.0pt
+* \headsep=14.0pt
+* \topskip=10.0pt
+* \footskip=12.0pt
+* \marginparwidth=24.0pt
+* \marginparsep=11.0pt
+* \columnsep=24.0pt
+* \skip\footins=7.0pt plus 11.0pt
+* \hoffset=0.0pt
+* \voffset=0.0pt
+* \mag=1000
+* \@twocolumnfalse
+* \@twosidetrue
+* \@mparswitchtrue
+* \@reversemarginfalse
+* (1in=72.27pt=25.4mm, 1cm=28.453pt)
+
+Package caption Info: Begin \AtBeginDocument code.
+Package caption Info: float package is loaded.
+Package caption Info: End \AtBeginDocument code.
+LaTeX Font Info:    Font shape `TU/LinLibertine(0)/m/n' will be
+(Font)              scaled to size 20.74pt on input line 84.
+Requested font "[LinLibertine_R.otf]/OT:script=latn;language=dflt;+tnum;+lnum;m
+apping=tex-text;" at 20.74pt
+ -> LinLibertine_R.otf
+LaTeX Font Info:    Font shape `TU/LinLibertine(0)/b/n' will be
+(Font)              scaled to size 20.74pt on input line 84.
+Requested font "[LinLibertine_RB.otf]/OT:script=latn;language=dflt;+tnum;+lnum;
+mapping=tex-text;" at 20.74pt
+ -> LinLibertine_RB.otf
+LaTeX Font Info:    Font shape `TU/LinLibertine(0)/m/n' will be
+(Font)              scaled to size 12.0pt on input line 84.
+Requested font "[LinLibertine_R.otf]/OT:script=latn;language=dflt;+tnum;+lnum;m
+apping=tex-text;" at 12.0pt
+ -> LinLibertine_R.otf
+LaTeX Font Info:    Font shape `TU/LinLibertine(0)/m/it' will be
+(Font)              scaled to size 8.0pt on input line 84.
+Requested font "[LinLibertine_RI.otf]/OT:script=latn;language=dflt;+tnum;+lnum;
+mapping=tex-text;" at 8.0pt
+ -> LinLibertine_RI.otf
+LaTeX Font Info:    Font shape `TU/LinLibertine(0)/b/n' will be
+(Font)              scaled to size 10.0pt on input line 84.
+Requested font "[LinLibertine_RB.otf]/OT:script=latn;language=dflt;+tnum;+lnum;
+mapping=tex-text;" at 10.0pt
+ -> LinLibertine_RB.otf
+LaTeX Font Info:    Font shape `TU/LinLibertine(0)/b/n' will be
+(Font)              scaled to size 12.0pt on input line 84.
+Requested font "[LinLibertine_RB.otf]/OT:script=latn;language=dflt;+tnum;+lnum;
+mapping=tex-text;" at 12.0pt
+ -> LinLibertine_RB.otf
+
+Overfull \hbox (10.28671pt too wide) in paragraph at lines 84--84
+\TU/LinLibertine(0)/m/n/10 mately launched. We present RTDL, a bounded whole-pr
+otocol
+ []
+
+
+Overfull \hbox (2.40092pt too wide) in paragraph at lines 84--84
+\TU/LinLibertine(0)/m/n/10 compilation and admission model for repurposed OptiX
+ com-
+ []
+
+
+Overfull \hbox (19.89673pt too wide) in paragraph at lines 84--84
+\TU/LinLibertine(0)/m/n/10 resents typed callback computation and effects; fixe
+d-constructor
+ []
+
+
+Overfull \hbox (9.28342pt too wide) in paragraph at lines 84--84
+\TU/LinLibertine(0)/m/n/10 role effects, semantic ABI ownership, physical bindi
+ngs, status-
+ []
+
+
+Overfull \hbox (20.92091pt too wide) in paragraph at lines 84--84
+\TU/LinLibertine(0)/m/n/10 all 19 populated contract leaves are decision-bearin
+g: 7 role/effect,
+ []
+
+
+Overfull \hbox (20.5892pt too wide) in paragraph at lines 84--84
+\TU/LinLibertine(0)/m/n/10 1 semantic-ABI, 7 physical-binding, 2 continuation/c
+ompleteness,
+ []
+
+
+Overfull \hbox (1.0334pt too wide) in paragraph at lines 84--84
+\TU/LinLibertine(0)/m/n/10 for these two contracts, not vocabulary completeness
+, target-
+ []
+
+
+Overfull \hbox (27.69254pt too wide) in paragraph at lines 84--84
+\TU/LinLibertine(0)/m/n/10 gated continuation/completeness residual, and checke
+d-executable
+ []
+
+Requested font "[Inconsolatazi4-Regular.otf]/OT:script=latn;language=dflt;+ss03
+;" at 10.0pt
+ -> Inconsolatazi4-Regular.otf
+Package microtype Info: Loading generic protrusion settings for font family
+(microtype)             `inconsolata' (encoding: TU).
+(microtype)             For optimal results, create family-specific settings.
+(microtype)             See the microtype manual for details.
+Requested font "MinLibReg-ot1" at 10.0pt
+ -> MinLibReg-ot1
+Package microtype Info: Loading generic protrusion settings for font family
+(microtype)             `minlibertine' (encoding: OT1).
+(microtype)             For optimal results, create family-specific settings.
+(microtype)             See the microtype manual for details.
+Package microtype Info: Character `AE ' is missing
+(microtype)             in font `OT1/minlibertine/m/n/10'.
+(microtype)             Ignoring protrusion settings for this character.
+Requested font "MinLibReg-ot1" at 7.3pt
+ -> MinLibReg-ot1
+Package microtype Info: Character `AE ' is missing
+(microtype)             in font `OT1/minlibertine/m/n/7.3'.
+(microtype)             Ignoring protrusion settings for this character.
+Package microtype Info: Character `AE ' is missing
+(microtype)             in font `OT1/minlibertine/m/n/5.5'.
+(microtype)             Ignoring protrusion settings for this character.
+Requested font "nxlmi" at 10.0pt
+ -> nxlmi
+Requested font "nxlmi7" at 7.3pt
+ -> nxlmi7
+Requested font "ntxsy" at 10.0pt
+ -> ntxsy
+Requested font "ntxsy7" at 7.3pt
+ -> ntxsy7
+Requested font "ntxexx" at 10.0pt
+ -> ntxexx
+Requested font "ntxexx" at 7.3pt
+ -> ntxexx
+Requested font "msam10" at 10.0pt
+ -> msam10
+(mt-msa.cfg
+File: mt-msa.cfg 2006/02/04 v1.1 microtype config. file: AMS symbols (a) (RS)
+)
+Requested font "msam7" at 7.3pt
+ -> msam7
+Requested font "msbm10" at 10.0pt
+ -> msbm10
+ (mt-msb.cfg
+File: mt-msb.cfg 2005/06/01 v1.0 microtype config. file: AMS symbols (b) (RS)
+)
+Requested font "msbm7" at 7.3pt
+ -> msbm7
+Requested font "nxlmia" at 10.0pt
+ -> nxlmia
+Requested font "nxlmia" at 7.3pt
+ -> nxlmia
+Requested font "ntxsym" at 10.0pt
+ -> ntxsym
+Requested font "ntxsym" at 7.3pt
+ -> ntxsym
+Requested font "ntxsyc" at 10.0pt
+ -> ntxsyc
+Requested font "ntxsyc" at 7.3pt
+ -> ntxsyc
+Requested font "ntxexa" at 10.0pt
+ -> ntxexa
+Requested font "ntxexa" at 7.3pt
+ -> ntxexa
+
+Overfull \hbox (6.90506pt too wide) in paragraph at lines 84--84
+\TU/LinLibertine(0)/m/n/10 callback path and six application-neutral compositio
+n batches.
+ []
+
+
+Overfull \hbox (10.49007pt too wide) in paragraph at lines 84--84
+\TU/LinLibertine(0)/m/n/10 compare current RTDL with Direct CUDA/OptiX and PyOp
+tiX-
+ []
+
+
+Overfull \hbox (21.9959pt too wide) in paragraph at lines 84--84
+\TU/LinLibertine(0)/m/n/10 mappings, execute arbitrary Callback IR, prove accep
+ted-program
+ []
+
+
+Underfull \vbox (badness 1354) has occurred while \output is active []
+
+LaTeX Font Info:    Font shape `TU/LinLibertine(0)/b/it' will be
+(Font)              scaled to size 10.0pt on input line 84.
+Requested font "[LinLibertine_RBI.otf]/OT:script=latn;language=dflt;+tnum;+lnum
+;mapping=tex-text;" at 10.0pt
+ -> LinLibertine_RBI.otf
+LaTeX Font Info:    Font shape `TU/LinLibertine(0)/m/it' will be
+(Font)              scaled to size 10.0pt on input line 84.
+Requested font "[LinLibertine_RI.otf]/OT:script=latn;language=dflt;+tnum;+lnum;
+mapping=tex-text;" at 10.0pt
+ -> LinLibertine_RI.otf
+LaTeX Font Info:    Font shape `TU/LinLibertine(0)/m/n' will be
+(Font)              scaled to size 9.0pt on input line 84.
+Requested font "[LinLibertine_R.otf]/OT:script=latn;language=dflt;+tnum;+lnum;m
+apping=tex-text;" at 9.0pt
+ -> LinLibertine_R.otf
+LaTeX Font Info:    Font shape `TU/LinLibertine(0)/b/n' will be
+(Font)              scaled to size 9.0pt on input line 84.
+Requested font "[LinLibertine_RB.otf]/OT:script=latn;language=dflt;+tnum;+lnum;
+mapping=tex-text;" at 9.0pt
+ -> LinLibertine_RB.otf
+LaTeX Font Info:    Font shape `TU/LinLibertine(0)/m/it' will be
+(Font)              scaled to size 9.0pt on input line 84.
+Requested font "[LinLibertine_RI.otf]/OT:script=latn;language=dflt;+tnum;+lnum;
+mapping=tex-text;" at 9.0pt
+ -> LinLibertine_RI.otf
+LaTeX Font Info:    Font shape `TU/LinLibertine(0)/m/n' will be
+(Font)              scaled to size 7.0pt on input line 123.
+Requested font "[LinLibertine_R.otf]/OT:script=latn;language=dflt;+tnum;+lnum;m
+apping=tex-text;" at 7.0pt
+ -> LinLibertine_R.otf
+ [1.1
+
+]
+Overfull \hbox (3.93925pt too wide) in paragraph at lines 148--156
+\TU/LinLibertine(0)/m/n/10 mantic ABI ownership, physical bindings, status-gate
+d
+ []
+
+
+Overfull \hbox (11.38255pt too wide) in paragraph at lines 148--156
+\TU/LinLibertine(0)/m/n/10 continuation and completeness, and checked-executabl
+e
+ []
+
+
+Overfull \hbox (7.48509pt too wide) in paragraph at lines 156--164
+\TU/LinLibertine(0)/m/n/10 cal/ABI shape, exercised by nine project-authored po
+rts
+ []
+
+
+Overfull \hbox (32.19171pt too wide) in paragraph at lines 156--164
+\TU/LinLibertine(0)/m/n/10 over thirteen selected paper-derived lanes and six a
+pplication-
+ []
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+
+Overfull \hbox (1.2434pt too wide) in paragraph at lines 164--174
+\TU/LinLibertine(0)/m/n/10 in two contracts are decision-bearing, with seven, o
+ne,
+ []
+
+
+Overfull \hbox (15.2017pt too wide) in paragraph at lines 164--174
+\TU/LinLibertine(0)/m/n/10 one partial status-gated continuation/completeness r
+esid-
+ []
+
+
+Overfull \hbox (14.90091pt too wide) in paragraph at lines 164--174
+\TU/LinLibertine(0)/m/n/10 ual, and executable-binding support; one project-sel
+ected
+ []
+
+
+Overfull \hbox (4.22676pt too wide) in paragraph at lines 164--174
+\TU/LinLibertine(0)/m/n/10 reuse and one failed transfer are preserved; and a s
+ame-
+ []
+
+
+Overfull \hbox (11.16504pt too wide) in paragraph at lines 164--174
+\TU/LinLibertine(0)/m/n/10 steady and failing setup results against PyOptiX-com
+pat,
+ []
+
+Requested font "MinLibReg-ot1" at 9.0pt
+ -> MinLibReg-ot1
+Package microtype Info: Character `AE ' is missing
+(microtype)             in font `OT1/minlibertine/m/n/9'.
+(microtype)             Ignoring protrusion settings for this character.
+Requested font "nxlmi" at 9.0pt
+ -> nxlmi
+Requested font "ntxsy" at 9.0pt
+ -> ntxsy
+Requested font "ntxexx" at 9.0pt
+ -> ntxexx
+Requested font "msam10" at 9.0pt
+ -> msam10
+Requested font "msbm10" at 9.0pt
+ -> msbm10
+Requested font "nxlmia" at 9.0pt
+ -> nxlmia
+Requested font "ntxsym" at 9.0pt
+ -> ntxsym
+Requested font "ntxsyc" at 9.0pt
+ -> ntxsyc
+Requested font "ntxexa" at 9.0pt
+ -> ntxexa
+Requested font "[Inconsolatazi4-Regular.otf]/OT:script=latn;language=dflt;+ss03
+;" at 9.0pt
+ -> Inconsolatazi4-Regular.otf
+
+Overfull \hbox (12.37758pt too wide) in paragraph at lines 253--258
+\TU/LinLibertine(0)/m/n/10 producer, consumer, physical binding, and launched e
+xecutable.
+ []
+
+LaTeX Font Info:    Font shape `TU/LinBiolinum(0)/m/n' will be
+(Font)              scaled to size 10.0pt on input line 266.
+Requested font "[LinBiolinum_R.otf]/OT:script=latn;language=dflt;+tnum;+lnum;ma
+pping=tex-text;" at 10.0pt
+ -> LinBiolinum_R.otf
+Package microtype Info: Loading generic protrusion settings for font family
+(microtype)             `LinBiolinum' (encoding: TU).
+(microtype)             For optimal results, create family-specific settings.
+(microtype)             See the microtype manual for details.
+LaTeX Font Info:    Font shape `TU/LinBiolinum(0)/m/n' will be
+(Font)              scaled to size 8.0pt on input line 266.
+Requested font "[LinBiolinum_R.otf]/OT:script=latn;language=dflt;+tnum;+lnum;ma
+pping=tex-text;" at 8.0pt
+ -> LinBiolinum_R.otf
+[2.2]
+Overfull \hbox (4.12425pt too wide) in paragraph at lines 277--285
+\TU/LinLibertine(0)/m/n/10 RTDL does not treat callback entry points as unrelat
+ed shader
+ []
+
+
+Overfull \hbox (5.52673pt too wide) in paragraph at lines 277--285
+\TU/LinLibertine(0)/m/n/10 functions. It first lowers a complete callback unit 
+to a backend-
+ []
+
+
+Underfull \hbox (badness 3623) in paragraph at lines 341--341
+\TU/LinLibertine(0)/m/n/9 read-only views; and built-ins including \TU/inconsol
+ata(0)/m/n/9 Ray3f\TU/LinLibertine(0)/m/n/9 , \TU/inconsolata(0)/m/n/9 Hit\TU/L
+inLibertine(0)/m/n/9 ,
+ []
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+
+Overfull \hbox (14.92757pt too wide) in paragraph at lines 355--362
+\TU/LinLibertine(0)/m/n/10 tiX entry points. \TU/inconsolata(0)/m/n/10 bounds \
+TU/LinLibertine(0)/m/n/10 executes during preparation; \TU/inconsolata(0)/m/n/1
+0 make_ray
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 388--388
+[]|\TU/inconsolata(0)/m/n/9 TRACE_REQUEST(origin, direction, tmin,
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 388--388
+[]|\TU/inconsolata(0)/m/n/9 ACCEPT_CONTINUE(payload)\TU/LinLibertine(0)/m/n/9 ,
+ \TU/inconsolata(0)/m/n/9 IGNORE(payload)\TU/LinLibertine(0)/m/n/9 ,
+ []
+
+
+Overfull \hbox (11.59254pt too wide) in paragraph at lines 391--400
+\TU/LinLibertine(0)/m/n/10 correspond one-to-one with an OptiX program. For the
+ custom-
+ []
+
+
+Overfull \hbox (1.58757pt too wide) in paragraph at lines 391--400
+\TU/LinLibertine(0)/m/n/10 AABB topology, bounds, ray construction, intersectio
+n, miss,
+ []
+
+
+Overfull \hbox (3.92256pt too wide) in paragraph at lines 407--410
+\TU/LinLibertine(0)/m/n/10 every path has returned, a conservative static-itera
+tion count,
+ []
+
+
+Overfull \hbox (1.75504pt too wide) in paragraph at lines 413--418
+\TU/LinLibertine(0)/m/n/10 Names are single-assignment except for type-preservi
+ng mu-
+ []
+
+
+Overfull \hbox (6.87006pt too wide) in paragraph at lines 413--418
+\TU/LinLibertine(0)/m/n/10 tation inside static loops. Both sides of a non-retu
+rning branch
+ []
+
+LaTeX Font Info:    Font shape `TU/LinLibertine(0)/m/n' will be
+(Font)              scaled to size 7.3pt on input line 420.
+Requested font "[LinLibertine_R.otf]/OT:script=latn;language=dflt;+tnum;+lnum;m
+apping=tex-text;" at 7.3pt
+ -> LinLibertine_R.otf
+LaTeX Font Info:    Font shape `TU/LinLibertine(0)/m/n' will be
+(Font)              scaled to size 5.5pt on input line 420.
+Requested font "[LinLibertine_R.otf]/OT:script=latn;language=dflt;+tnum;+lnum;m
+apping=tex-text;" at 5.5pt
+ -> LinLibertine_R.otf
+LaTeX Font Info:    Trying to load font information for T1+lmss on input line 4
+21.
+(t1lmss.fd
+File: t1lmss.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
+)
+Requested font "ec-lmss10" at 10.0pt
+ -> ec-lmss10
+Package microtype Info: Loading generic protrusion settings for font family
+(microtype)             `lmss' (encoding: T1).
+(microtype)             For optimal results, create family-specific settings.
+(microtype)             See the microtype manual for details.
+Requested font "ec-lmss8" at 7.3pt
+ -> ec-lmss8
+Requested font "ec-lmss8" at 5.5pt
+ -> ec-lmss8
+ [3.3]
+Requested font "ec-lmss9" at 9.0pt
+ -> ec-lmss9
+
+Underfull \hbox (badness 10000) in paragraph at lines 487--487
+[]|\TU/LinLibertine(0)/m/n/9 reverified compiled callback ABI
+ []
+
+
+Underfull \hbox (badness 3525) in paragraph at lines 487--487
+[]|\TU/LinLibertine(0)/m/n/9 both derivations remain in one TCB;
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 487--487
+[]|\TU/LinLibertine(0)/m/n/9 fixed-constructor nominal
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 487--487
+\TU/LinLibertine(0)/m/n/9 slot/row-source contract, plus
+ []
+
+
+Underfull \hbox (badness 3029) in paragraph at lines 487--487
+[]|\TU/LinLibertine(0)/m/n/9 public physical plan and typed
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 487--487
+[]|\TU/LinLibertine(0)/m/n/9 reverified geometry family, GAS,
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 487--487
+\TU/LinLibertine(0)/m/n/9 buffer/hit-channel, output, reducer,
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 487--487
+[]|\TU/LinLibertine(0)/m/n/9 fixed-constructor completeness
+ []
+
+
+Underfull \hbox (badness 2591) in paragraph at lines 487--487
+[]|\TU/LinLibertine(0)/m/n/9 ABI status vocabulary, compiled over-
+ []
+
+
+Underfull \hbox (badness 8151) in paragraph at lines 487--487
+\TU/LinLibertine(0)/m/n/9 flow/completeness facts, and runtime
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 487--487
+[]|\TU/LinLibertine(0)/m/n/9 materializer-selected executable
+ []
+
+
+Underfull \hbox (badness 1009) in paragraph at lines 487--487
+[]|\TU/LinLibertine(0)/m/n/9 generated source/PTX, native, provider,
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 487--487
+\TU/LinLibertine(0)/m/n/9 target, and execution-receipt identity
+ []
+
+
+Underfull \hbox (badness 4353) in paragraph at lines 487--487
+[]|\TU/LinLibertine(0)/m/n/9 identity and chain-of-custody, not se-
+ []
+
+
+Overfull \hbox (4.96837pt too wide) in paragraph at lines 490--498
+\TU/LinLibertine(0)/m/n/10 relation contract assigns attribute slot zero the no
+minal mean-
+ []
+
+
+Overfull \hbox (3.0067pt too wide) in paragraph at lines 490--498
+\TU/LinLibertine(0)/m/n/10 tract supplies the corresponding target-side row sou
+rce. Thus
+ []
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [4.4]
+Requested font "[Inconsolatazi4-Regular.otf]/OT:script=latn;language=dflt;+ss03
+;" at 7.3pt
+ -> Inconsolatazi4-Regular.otf
+Requested font "[Inconsolatazi4-Regular.otf]/OT:script=latn;language=dflt;+ss03
+;" at 5.5pt
+ -> Inconsolatazi4-Regular.otf
+
+Underfull \hbox (badness 10000) in paragraph at lines 524--524
+[]|\TU/LinLibertine(0)/m/n/9 Restricted
+ []
+
+
+Underfull \hbox (badness 7777) in paragraph at lines 524--524
+[]|\TU/LinLibertine(0)/m/n/9 the restricted callback expression
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 524--524
+\TU/LinLibertine(0)/m/n/9 (compiler-owned in this fixed-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 524--524
+[]|\TU/inconsolata(0)/m/n/9 return_effect HIT{t:f32, hit_kind:u32,
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 524--524
+[]|\TU/LinLibertine(0)/m/n/9 Target projec-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 524--524
+[]|$\OML/nxlmi/m/it/9 A \U/ntxmia/m/it/9 = \OML/nxlmi/m/it/9 A[]$ \TU/LinLibert
+ine(0)/m/n/9 accepts; $\OML/nxlmi/m/it/9 A \U/ntxmia/m/it/9 < \OML/nxlmi/m/it/9
+ A[]$ \TU/LinLibertine(0)/m/n/9 emits
+ []
+
+
+Overfull \hbox (7.19pt too wide) in paragraph at lines 538--546
+[]\TU/LinLibertine(0)/m/n/10 This distinction also bounds expressiveness. The s
+tandalone
+ []
+
+
+Overfull \hbox (1.47421pt too wide) in paragraph at lines 538--546
+\TU/LinLibertine(0)/m/n/10 frontend verifies and interprets Callback IR determi
+nistically
+ []
+
+
+Overfull \hbox (13.70671pt too wide) in paragraph at lines 538--546
+\TU/LinLibertine(0)/m/n/10 in-triangle, three-\TU/inconsolata(0)/m/n/10 u32\TU/
+LinLibertine(0)/m/n/10 -payload/output, two-metadata-view tem-
+ []
+
+
+Overfull \hbox (8.43587pt too wide) in paragraph at lines 558--566
+\TU/LinLibertine(0)/m/n/10 the physical/ABI template remains fixed. Other verif
+ied source
+ []
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+
+Overfull \hbox (1.14256pt too wide) in paragraph at lines 570--574
+\TU/LinLibertine(0)/m/n/10 declaration records the role/effect topology it requ
+ires, while
+ []
+
+
+Overfull \hbox (17.56837pt too wide) in paragraph at lines 583--586
+ []\TU/LinLibertine(0)/b/it/10 Physical binding.[] \TU/LinLibertine(0)/m/n/10 C
+allback assumptions are checked against
+ []
+
+[5.5]
+Overfull \hbox (1.26837pt too wide) in paragraph at lines 595--600
+ []\TU/LinLibertine(0)/b/it/10 Checked executable identity.[] \TU/LinLibertine(
+0)/m/n/10 In the current materializer,
+ []
+
+
+Overfull \hbox (3.04922pt too wide) in paragraph at lines 632--639
+\TU/LinLibertine(0)/m/n/10 These are capability limits, not future features imp
+licitly cred-
+ []
+
+
+Overfull \hbox (3.53255pt too wide) in paragraph at lines 642--657
+\TU/LinLibertine(0)/m/n/10 form enum. A \TU/LinLibertine(0)/m/it/10 leaf-primit
+ive kind \TU/LinLibertine(0)/m/n/10 is a geometry-bearing mem-
+ []
+
+
+Overfull \hbox (5.72087pt too wide) in paragraph at lines 642--657
+\TU/LinLibertine(0)/m/n/10 ther kind. Its constructor enum has two members, its
+ bounded
+ []
+
+
+Overfull \hbox (20.64256pt too wide) in paragraph at lines 642--657
+\TU/LinLibertine(0)/m/n/10 user-source template count is one, and the open set 
+of application-
+ []
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [6.6]
+LaTeX Font Info:    Font shape `TU/LinLibertine(0)/m/sc' will be
+(Font)              scaled to size 10.0pt on input line 670.
+Requested font "[LinLibertine_R.otf]/OT:script=latn;language=dflt;+tnum;+lnum;+
+smcp;mapping=tex-text;" at 10.0pt
+ -> LinLibertine_R.otf
+
+Overfull \hbox (42.31006pt too wide) in paragraph at lines 658--674
+\TU/LinLibertine(0)/m/n/10 result-commit automaton $\OML/nxlmi/m/it/10 C$\TU/Li
+nLibertine(0)/m/n/10 ; identity bind-set $\OML/nxlmi/m/it/10 X$\TU/LinLibertine
+(0)/m/n/10 ; and numeric/resource
+ []
+
+
+Overfull \hbox (8.43842pt too wide) in paragraph at lines 675--679
+\TU/LinLibertine(0)/m/n/10 OptiX and custom-primitive hits produced by a callba
+ck, while
+ []
+
+
+Overfull \hbox (1.71379pt too wide) in paragraph at lines 682--694
+\LMS/ntxsy/m/n/10 h\OML/nxlmi/m/it/10 f; t; E; A; B; C; X\LMS/ntxsy/m/n/10 i$ \
+TU/LinLibertine(0)/m/n/10 contains fixed-constructor identity $\OML/nxlmi/m/it/
+10 f$\TU/LinLibertine(0)/m/n/10 , task-
+ []
+
+
+Overfull \hbox (2.52257pt too wide) in paragraph at lines 682--694
+\TU/LinLibertine(0)/m/n/10 attribute-slot ownership map $\OML/nxlmi/m/it/10 A$\
+TU/LinLibertine(0)/m/n/10 , visible physical binding map
+ []
+
+
+Overfull \hbox (3.92836pt too wide) in paragraph at lines 682--694
+\TU/LinLibertine(0)/m/n/10 projections receive the same materializer-selected e
+xecutable
+ []
+
+
+Overfull \hbox (1.15007pt too wide) in paragraph at lines 682--694
+\TU/LinLibertine(0)/m/n/10 digest. Maps are sorted and all structures use canon
+ical JSON
+ []
+
+
+Overfull \hbox (17.30669pt too wide) in paragraph at lines 682--694
+\TU/LinLibertine(0)/m/n/10 serialization before hashing. Neither projection is 
+an application-
+ []
+
+
+Overfull \hbox (3.69171pt too wide) in paragraph at lines 695--696
+[]\TU/LinLibertine(0)/m/n/10 The admission relation is deliberately simple and 
+auditable: 
+ []
+
+
+Overfull \hbox (5.60922pt too wide) in paragraph at lines 703--709
+\TU/LinLibertine(0)/m/n/10 tion. A failed conjunct emits a stable reason identi
+fier (CP001–
+ []
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+
+Overfull \hbox (14.85172pt too wide) in paragraph at lines 710--722
+\TU/LinLibertine(0)/m/n/10 tablishes consistency among represented facts under 
+the trusted
+ []
+
+Package microtype Info: Character `AE ' is missing
+(microtype)             in font `OT1/minlibertine/m/n/8'.
+(microtype)             Ignoring protrusion settings for this character.
+Package microtype Info: Character `AE ' is missing
+(microtype)             in font `OT1/minlibertine/m/n/6.2'.
+(microtype)             Ignoring protrusion settings for this character.
+Requested font "ec-lmss8" at 8.0pt
+ -> ec-lmss8
+Requested font "ec-lmss8" at 6.2pt
+ -> ec-lmss8
+Requested font "[Inconsolatazi4-Regular.otf]/OT:script=latn;language=dflt;+ss03
+;" at 8.0pt
+ -> Inconsolatazi4-Regular.otf
+
+Overfull \hbox (4.78006pt too wide) in paragraph at lines 802--811
+\TU/LinLibertine(0)/m/n/10 routes all reach launch; the fault returns primitive
+-index rows
+ []
+
+
+Overfull \hbox (5.96255pt too wide) in paragraph at lines 802--811
+\TU/LinLibertine(0)/m/n/10 machine representation and target projection bytes, 
+yet RTDL
+ []
+
+
+Overfull \hbox (11.07672pt too wide) in paragraph at lines 821--827
+\TU/LinLibertine(0)/m/n/10 triangle reductions, bounded relation emission, prep
+ared multi-
+ []
+
+
+Overfull \hbox (10.76674pt too wide) in paragraph at lines 821--827
+\TU/LinLibertine(0)/m/n/10 composition, grouped event reduction, and bounded hi
+erarchy-
+ []
+
+
+Underfull \vbox (badness 1558) has occurred while \output is active []
+
+ [7.7]
+Overfull \hbox (5.83588pt too wide) in paragraph at lines 829--838
+ []\TU/LinLibertine(0)/b/it/10 Architecture and trust boundary.[] \TU/LinLibert
+ine(0)/m/n/10 The parser, typed Call-
+ []
+
+
+Overfull \hbox (1.96924pt too wide) in paragraph at lines 829--838
+\TU/LinLibertine(0)/m/n/10 tent addressing, and lifecycle state discipline serv
+e both fixed
+ []
+
+
+Overfull \hbox (2.79675pt too wide) in paragraph at lines 829--838
+\TU/LinLibertine(0)/m/n/10 policy, semantic/physical projectors, wrapper and en
+try sym-
+ []
+
+
+Overfull \hbox (1.53426pt too wide) in paragraph at lines 829--838
+\TU/LinLibertine(0)/m/n/10 out, launch path, status reduction, and input/output
+ schemas
+ []
+
+
+Overfull \hbox (4.59254pt too wide) in paragraph at lines 829--838
+\TU/LinLibertine(0)/m/n/10 routes, not parametricity or soundness for an unimpl
+emented
+ []
+
+
+Overfull \hbox (2.29507pt too wide) in paragraph at lines 839--848
+[]\TU/LinLibertine(0)/m/n/10 An accepted materialized object can be frozen as a
+ content-
+ []
+
+
+Overfull \hbox (8.05756pt too wide) in paragraph at lines 839--848
+\TU/LinLibertine(0)/m/n/10 the loader rechecks protocol, target, provider, nati
+ve-producer,
+ []
+
+
+Overfull \hbox (1.72675pt too wide) in paragraph at lines 849--858
+\TU/LinLibertine(0)/m/n/10 verifier, current-route providers and physical proje
+ctors, ABI
+ []
+
+
+Overfull \hbox (42.56673pt too wide) in paragraph at lines 849--858
+\TU/LinLibertine(0)/m/n/10 administrator-installed trust state, exact native pr
+oducer, CUDA/OptiX
+ []
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+
+Overfull \hbox (9.1234pt too wide) in paragraph at lines 859--867
+\TU/LinLibertine(0)/m/n/10 source/proof policy, both projectors, target compile
+r and wrap-
+ []
+
+
+Overfull \hbox (3.80672pt too wide) in paragraph at lines 890--901
+\TU/LinLibertine(0)/m/n/10 contribute one each [[], [], []]; RayJoin contribute
+s three [[]],
+ []
+
+
+Overfull \hbox (3.87589pt too wide) in paragraph at lines 890--901
+\TU/LinLibertine(0)/m/n/10 while exercising OptiX traversal. They are neither t
+hird-party
+ []
+
+Requested font "[Inconsolatazi4-Regular.otf]/OT:script=latn;language=dflt;+ss03
+;" at 7.0pt
+ -> Inconsolatazi4-Regular.otf
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [8.8]
+Overfull \hbox (5.22339pt too wide) in paragraph at lines 955--968
+\TU/LinLibertine(0)/m/n/10 output materialization, status-before-output orderin
+g, launch
+ []
+
+
+Overfull \hbox (8.1684pt too wide) in paragraph at lines 969--980
+\TU/LinLibertine(0)/m/n/10 or claims is reused. The successor fixed its arms, t
+asks, regimes,
+ []
+
+
+Underfull \hbox (badness 2644) in paragraph at lines 1012--1012
+\TU/LinLibertine(0)/m/n/9 are decision-bearing; vocabulary
+ []
+
+
+Underfull \hbox (badness 2150) in paragraph at lines 1012--1012
+[]|\TU/LinLibertine(0)/m/n/9 Residual over ma-
+ []
+
+
+Underfull \hbox (badness 1286) in paragraph at lines 1012--1012
+\TU/LinLibertine(0)/m/n/9 one partial status-gated continu-
+ []
+
+
+Underfull \hbox (badness 2189) in paragraph at lines 1012--1012
+\TU/LinLibertine(0)/m/n/9 ation/completeness residual, and
+ []
+
+
+Underfull \hbox (badness 1571) in paragraph at lines 1012--1012
+[]|\TU/LinLibertine(0)/m/n/9 current-route diversity, not arbi-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1012--1012
+[]|\TU/LinLibertine(0)/m/n/9 Existing-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1012--1012
+[]|\TU/LinLibertine(0)/m/n/9 selected cross-domain task
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1012--1012
+\TU/LinLibertine(0)/m/n/9 needs another shape/core
+ []
+
+
+Underfull \hbox (badness 1509) in paragraph at lines 1012--1012
+[]|\TU/LinLibertine(0)/m/n/9 SQL bag equijoin reuses bounded relation
+ []
+
+
+Underfull \hbox (badness 1189) in paragraph at lines 1012--1012
+[]|\TU/LinLibertine(0)/m/n/9 one constructive project-selected
+ []
+
+
+Overfull \hbox (1.99086pt too wide) in paragraph at lines 1032--1043
+\TU/LinLibertine(0)/m/n/10 receive credit: \TU/inconsolata(0)/m/n/10 OptixPaylo
+adType \TU/LinLibertine(0)/m/n/10 assigns read/write seman-
+ []
+
+
+Overfull \hbox (1.45418pt too wide) in paragraph at lines 1032--1043
+\TU/LinLibertine(0)/m/n/10 tive. Nevertheless, the preregistered typed-route re
+alizations
+ []
+
+
+Overfull \hbox (6.5034pt too wide) in paragraph at lines 1032--1043
+\TU/LinLibertine(0)/m/n/10 of all five counterexample mechanisms built, linked,
+ launched,
+ []
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [9.9]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+
+Underfull \hbox (badness 5417) in paragraph at lines 1082--1082
+[]|\TU/LinLibertine(0)/m/n/9 wrong weighted re-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1082--1082
+[]|\TU/LinLibertine(0)/m/n/9 swapped relation
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1082--1082
+[]|\TU/LinLibertine(0)/m/n/9 overflow observed
+ []
+
+
+Underfull \hbox (badness 1314) in paragraph at lines 1082--1082
+\TU/LinLibertine(0)/m/n/9 before copy, yet 7/8
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1082--1082
+[]|\TU/LinLibertine(0)/m/n/9 partial enforcement
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1082--1082
+[]|\TU/LinLibertine(0)/m/n/9 different executable
+ []
+
+
+Overfull \hbox (13.40926pt too wide) in paragraph at lines 1085--1095
+\TU/LinLibertine(0)/m/n/10 OWL overlay, which records only error/fatal levels, 
+also records
+ []
+
+
+Overfull \hbox (6.49252pt too wide) in paragraph at lines 1085--1095
+\TU/LinLibertine(0)/m/n/10 pre-launch, input-coverage-independent rejection of 
+declared
+ []
+
+
+Overfull \hbox (4.01836pt too wide) in paragraph at lines 1085--1095
+\TU/LinLibertine(0)/m/n/10 strongest-native execution covers two project-design
+ed tasks
+ []
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [10.10]
+Overfull \hbox (22.17589pt too wide) in paragraph at lines 1098--1105
+\TU/LinLibertine(0)/m/n/10 plication reuses the frozen bounded-relation constru
+ctor, matches
+ []
+
+
+Underfull \vbox (badness 1082) has occurred while \output is active []
+
+
+Overfull \hbox (27.13503pt too wide) in paragraph at lines 1124--1134
+\TU/LinLibertine(0)/m/n/10 timing observations across matched Direct CUDA/OptiX
+, PyOptiX-
+ []
+
+
+Overfull \hbox (2.7567pt too wide) in paragraph at lines 1178--1190
+[]\TU/LinLibertine(0)/m/n/10 The result supports a lifecycle-specific statement
+. On these
+ []
+
+
+Overfull \hbox (2.9084pt too wide) in paragraph at lines 1178--1190
+\TU/LinLibertine(0)/m/n/10 ment measures complete arm boundaries and has no che
+cker-
+ []
+
+
+Overfull \hbox (12.79753pt too wide) in paragraph at lines 1198--1208
+\TU/LinLibertine(0)/m/n/10 route. Each arm constructs its context/module, progr
+am groups,
+ []
+
+
+Overfull \hbox (5.31255pt too wide) in paragraph at lines 1198--1208
+\TU/LinLibertine(0)/m/n/10 side its prepare boundary, although the implementati
+on paths
+ []
+
+
+Overfull \hbox (1.89006pt too wide) in paragraph at lines 1198--1208
+\TU/LinLibertine(0)/m/n/10 main descriptive; the current evidence does not iden
+tify their
+ []
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [11.11]
+Overfull \hbox (4.5559pt too wide) in paragraph at lines 1218--1224
+\TU/LinLibertine(0)/m/n/10 have no human usability study, developer-time measur
+ement,
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1259--1259
+[]|\TU/LinLibertine(0)/m/n/7 How are modules, acceleration
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1259--1259
+\TU/LinLibertine(0)/m/n/7 structures, pipelines, SBTs, re-
+ []
+
+
+Underfull \hbox (badness 1048) in paragraph at lines 1259--1259
+[]|\TU/LinLibertine(0)/m/n/7 How is a high-level computation
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1259--1259
+[]|\TU/LinLibertine(0)/m/n/7 Dr.Jit; LuisaRender and LuisaCompute;
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1259--1259
+[]|\TU/LinLibertine(0)/m/n/7 Proposed responsibil-
+ []
+
+
+Overfull \hbox (2.03839pt too wide) in paragraph at lines 1278--1305
+\TU/LinLibertine(0)/m/n/10 vide per-field access contracts and require each dec
+lared read
+ []
+
+
+Overfull \hbox (51.70836pt too wide) in paragraph at lines 1278--1305
+\TU/LinLibertine(0)/m/n/10 trol semantics from \TU/inconsolata(0)/m/n/10 optixI
+gnoreIntersection \TU/LinLibertine(0)/m/n/10 to \TU/inconsolata(0)/m/n/10 optix
+TerminateRay\TU/LinLibertine(0)/m/n/10 ;
+ []
+
+
+Overfull \hbox (1.82pt too wide) in paragraph at lines 1278--1305
+\TU/LinLibertine(0)/m/n/10 mechanisms. Slang’s capability system likewise valid
+ates tar-
+ []
+
+[12.12]
+Overfull \hbox (22.05676pt too wide) in paragraph at lines 1318--1329
+\TU/LinLibertine(0)/m/n/10 tion, resources, and launch into a managed compositi
+on layer [[]].
+ []
+
+
+Overfull \hbox (8.81674pt too wide) in paragraph at lines 1318--1329
+\TU/LinLibertine(0)/m/n/10 quired cross-role effects, semantic geometry project
+ion, status-
+ []
+
+
+Underfull \vbox (badness 6032) has occurred while \output is active []
+
+
+Overfull \hbox (1.86174pt too wide) in paragraph at lines 1338--1349
+\TU/LinLibertine(0)/m/n/10 that authority and checks a bounded implementation a
+gainst
+ []
+
+
+Overfull \hbox (5.21425pt too wide) in paragraph at lines 1350--1358
+\TU/LinLibertine(0)/m/n/10 whereas RTDL rejects each corresponding declared mis
+match
+ []
+
+
+Underfull \vbox (badness 6032) has occurred while \output is active []
+
+ [13.13]
+Overfull \hbox (22.04173pt too wide) in paragraph at lines 1374--1386
+\TU/LinLibertine(0)/m/n/10 stantiates a bounded admission relation over concret
+e host/device
+ []
+
+
+Overfull \hbox (1.82669pt too wide) in paragraph at lines 1388--1408
+\TU/LinLibertine(0)/m/n/10 mechanically enforce these obligations or contain fa
+ults. Our
+ []
+
+
+Overfull \hbox (2.6584pt too wide) in paragraph at lines 1388--1408
+\TU/LinLibertine(0)/m/n/10 can be moved into pre-launch admission for current b
+ounded
+ []
+
+
+Underfull \hbox (badness 1831) in paragraph at lines 1452--1452
+[]|\TU/LinLibertine(0)/m/n/7 Data, indexing, and graph
+ []
+
+
+Underfull \hbox (badness 1253) in paragraph at lines 1452--1452
+[]|\TU/LinLibertine(0)/m/n/7 SpMM; BFS; Triangle Counting; Set Intersection; Bi
+nary
+ []
+
+
+Underfull \hbox (badness 1147) in paragraph at lines 1452--1452
+\TU/LinLibertine(0)/m/n/7 Buck(et); RTXRMQ; Arkade; JUNO; RTOD; RTScan; RT-kNNS
+ Unbound; RT-
+ []
+
+
+Underfull \hbox (badness 2856) in paragraph at lines 1452--1452
+[]|\TU/LinLibertine(0)/m/n/7 Penetration Depth; Discrete CD; Continuous CD; Lin
+e-
+ []
+
+
+Underfull \hbox (badness 2005) in paragraph at lines 1452--1452
+[]|\TU/LinLibertine(0)/m/n/7 RTPD; hardware-accelerated discrete/continuous col
+lision detection; RayJoin;
+ []
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+
+Overfull \hbox (5.21756pt too wide) in paragraph at lines 1470--1480
+[]\TU/LinLibertine(0)/m/n/10 A standard-library-only verifier rehashes every ma
+nifested
+ []
+
+
+Overfull \hbox (4.36923pt too wide) in paragraph at lines 1481--1489
+\TU/LinLibertine(0)/m/n/10 driver and GPU, the pinned residual-route sources, t
+he source
+ []
+
+
+Overfull \hbox (8.4184pt too wide) in paragraph at lines 1492--1504
+\TU/LinLibertine(0)/m/n/10 The three most consequential evidence gaps are order
+ed rather
+ []
+
+
+Overfull \hbox (1.72008pt too wide) in paragraph at lines 1492--1504
+\TU/LinLibertine(0)/m/n/10 so external authoring and learnability are unknown; 
+the next
+ []
+
+
+Overfull \hbox (5.07173pt too wide) in paragraph at lines 1506--1516
+\TU/LinLibertine(0)/m/n/10 new geometry or callback topology currently requires
+ shared-
+ []
+
+
+Underfull \vbox (badness 4279) has occurred while \output is active []
+
+ [14.14]
+Overfull \hbox (7.35175pt too wide) in paragraph at lines 1518--1522
+\TU/LinLibertine(0)/m/n/10 the vocabulary is complete or that every future leaf
+ is decision-
+ []
+
+
+Overfull \hbox (9.62506pt too wide) in paragraph at lines 1518--1522
+\TU/LinLibertine(0)/m/n/10 independent theoretical contributions from five reje
+ction rows. 
+ []
+
+
+Overfull \hbox (3.28506pt too wide) in paragraph at lines 1544--1554
+\TU/LinLibertine(0)/m/n/10 Existing RT systems principally validate interfaces,
+ construct
+ []
+
+
+Overfull \hbox (3.2884pt too wide) in paragraph at lines 1544--1554
+\TU/LinLibertine(0)/m/n/10 program as one declared bounded whole protocol rathe
+r than
+ []
+
+
+Overfull \hbox (1.95255pt too wide) in paragraph at lines 1544--1554
+\TU/LinLibertine(0)/m/n/10 continuation/completeness, and 2 executable-identity
+ leaves.
+ []
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+
+Overfull \hbox (5.63255pt too wide) in paragraph at lines 1555--1563
+\TU/LinLibertine(0)/m/n/10 residuals, one partial status-gated continuation/com
+pleteness
+ []
+
+
+Overfull \hbox (15.45506pt too wide) in paragraph at lines 1555--1563
+\TU/LinLibertine(0)/m/n/10 jected the corresponding declared inconsistencies be
+fore launch. 
+ []
+
+
+Overfull \hbox (4.99088pt too wide) in paragraph at lines 1564--1574
+\TU/LinLibertine(0)/m/n/10 physical geometry kinds, and project-authored ports.
+ Against
+ []
+
+(main.bbl
+Underfull \hbox (badness 1067) in paragraph at lines 42--50
+[]\TU/LinLibertine(0)/m/n/8 Academy Software Foundation. 2026.  Open Shading La
+nguage
+ []
+
+
+Package balance Warning: You have called \balance in second column
+(balance)                Columns might not be balanced.
+
+[15.15]
+LaTeX Info: Redefining \tempurl on input line 113.
+LaTeX Info: Redefining \tempurl on input line 129.
+
+Underfull \hbox (badness 10000) in paragraph at lines 121--131
+[]\TU/LinLibertine(0)/m/n/8 Vladimir Frolov, Vadim Sanzharov, Garifullin Albert
+, Maxim
+ []
+
+LaTeX Info: Redefining \tempurl on input line 142.
+LaTeX Info: Redefining \tempurl on input line 155.
+LaTeX Info: Redefining \tempurl on input line 169.
+LaTeX Info: Redefining \tempurl on input line 183.
+LaTeX Info: Redefining \tempurl on input line 212.
+LaTeX Info: Redefining \tempurl on input line 228.
+LaTeX Info: Redefining \tempurl on input line 268.
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+LaTeX Info: Redefining \tempurl on input line 283.
+LaTeX Info: Redefining \tempurl on input line 374.
+LaTeX Info: Redefining \tempurl on input line 391.
+LaTeX Info: Redefining \tempurl on input line 445.
+LaTeX Info: Redefining \tempurl on input line 458.
+LaTeX Info: Redefining \tempurl on input line 480.
+
+Underfull \hbox (badness 10000) in paragraph at lines 476--485
+[][][][][][][][][][] [][] [][][][] [] [][][][][][] [] [][][] [] [][][][][][] []
+ [][][][][] [] [][][][][] [] [][][][][] [] [][][][][][] [] [][] [] [][][]$[][]
+ []
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [16.16]
+Underfull \hbox (badness 10000) in paragraph at lines 515--523
+[]\TU/LinLibertine(0)/m/n/8 NVIDIA, Ingo Wald, Stefan Zellmann, and contributor
+s.
+ []
+
+
+Underfull \hbox (badness 3668) in paragraph at lines 515--523
+\TU/LinLibertine(0)/m/n/8 2026.  OWL: The OptiX Wrappers Library.  [][]$[][][][
+][] [] [] [] [][][][][][] []
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 515--523
+[][][] [] [][][][][][] [] [][][]$[][]\TU/LinLibertine(0)/m/n/8 .   Experiment p
+ins upstream commit
+ []
+
+LaTeX Info: Redefining \tempurl on input line 539.
+LaTeX Info: Redefining \tempurl on input line 554.
+LaTeX Info: Redefining \tempurl on input line 568.
+
+Underfull \hbox (badness 3713) in paragraph at lines 585--592
+[]\TU/LinLibertine(0)/m/n/8 Justin Salmon and Simon McIntosh-Smith. 2019.  Expl
+oiting
+ []
+
+
+Underfull \hbox (badness 1496) in paragraph at lines 585--592
+\TU/LinLibertine(0)/m/it/8 marking and Simulation of High Performance Computer 
+Systems
+ []
+
+LaTeX Info: Redefining \tempurl on input line 617.
+LaTeX Info: Redefining \tempurl on input line 656.
+
+Underfull \hbox (badness 2050) in paragraph at lines 663--670
+[]\TU/LinLibertine(0)/m/n/8 Sizhe Sui, Luis Sentis, and Andrew Bylard. 2024.  H
+ardware-
+ []
+
+LaTeX Info: Redefining \tempurl on input line 695.
+LaTeX Info: Redefining \tempurl on input line 728.
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+LaTeX Info: Redefining \tempurl on input line 780.
+LaTeX Info: Redefining \tempurl on input line 794.
+)
+(se-pdfdoc.def
+File: se-pdfdoc.def 2019/11/29 v1.12 stringenc: PDFDocEncoding
+) (se-utf32be.def
+File: se-utf32be.def 2019/11/29 v1.12 stringenc: UTF-32BE
+) [17.17] (main.aux)
+Package rerunfilecheck Info: File `main.out' has not changed.
+(rerunfilecheck)             Checksum: 28428A2E5D6C6AEA9102B0070327721B;6160.
+ )
+Output written on main.xdv (17 pages, 1138496 bytes).

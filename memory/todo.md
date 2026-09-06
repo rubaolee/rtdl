@@ -12044,3 +12044,48 @@ author-artifact parity work.
       manuscript statement; keep current authority claim flags false.
 - [ ] Impose Goal5852's irreversible code/evidence freeze by 2026-09-08 00:00
       America/New_York.
+
+## Current continuation: execute the post-Goal5851 remediation plan (2026-09-06)
+
+Plan: `history/internal_docs/cgo2027_post_goal5851_remediation_execution_plan_20260906.md`.
+The earlier external-review TODO is not a claim that no review now exists:
+Claude and Codex reports have arrived, but the rewritten manuscript and actual
+new artifact still require final-version review. Do not mark those gates closed.
+
+- [x] Produce the detailed R0--R8 execution plan and preserve review differences.
+- [x] R0/R1: snapshot current state; explicitly adjudicate the receipt protocol
+      difference and create a sentence-level claim ledger.
+- [x] R2/R3: reconcile raw-derived tables, current guidance and custody limits;
+      implement the minimal offline tooling and complete a pre-F detached
+      anonymous-package rehearsal.
+- [ ] R5: commit final tooling snapshot F and repeat the complete package replay
+      from its clean checkout before the irreversible freeze.
+- [ ] R4/R6: rewrite the manuscript and deliver/replay the corresponding anonymous
+      artifact; retain first-result regressions and other adverse observations.
+- [ ] R7/R8: obtain actual final-byte reviews, close each retained-claim finding,
+      complete PDF/anonymity/hash checks, and record submission only when executed.
+
+## Latest lead instruction (2026-09-06)
+
+- [x] Issue `history/internal_docs/lead_execution_directive_post_goal5851_20260906.md`
+      under the user's explicit lead delegation and link it from AGENTS.md.
+- [x] Apply its four targeted action-plan corrections; retain the reviewed
+      version and record the revised hash. Do not mark later execution gates done.
+- [x] Execute R0/R1, then the inherited remaining stages, and return actual
+      files, command outputs, hashes and pending items instead of another plan.
+
+## Post-Goal5851 active submission gates (2026-09-06)
+
+- [x] Complete R2 pre-F raw projection, deterministic twin build, foreign-path
+      offline replay, mutation tests, and focused regression validation.
+- [x] Reconcile current control documents and add Goal5837/Goal5843 exact-
+      snapshot custody plus additive review/measurement errata under R3.
+- [ ] Commit candidate tooling snapshot F with an explicit staged-path inventory
+      and no production/native/experiment changes.
+- [ ] From a clean checkout of F, repeat the indivisible export, twin package,
+      foreign-path normal/optimized replay, identity scan, and hash binding.
+- [ ] Rewrite and render the complete bounded manuscript from the frozen R2
+      projection. Keep all mandatory adverse disclosures in main text.
+- [ ] Build/replay the final anonymous package, obtain review of the actual final
+      PDF/package bytes, complete submission gates, and record upload only after
+      it actually occurs.

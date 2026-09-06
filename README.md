@@ -3,11 +3,12 @@
 **Restricted Python callbacks compiled into verified NVIDIA OptiX programs.**
 
 RTDL V4 lets a user express callback-local ray-tracing behavior in a closed,
-typed Python subset.  The source is parsed as data—never imported or executed—
-then lowered through verified Callback IR, a deterministic ABI, isolated Numba
-device-leaf compilation and a trusted OptiX wrapper.  Runtime faults use an
-explicit status envelope and successful runs require exact output plus
-behavioral OptiX traversal evidence.
+typed Python subset. The source is parsed as data—never imported or executed—
+then admitted through shared schema, identity, and lifecycle checks. Supported
+families use topology-specific trusted lowerers, a deterministic ABI, isolated
+Numba device-leaf compilation, and a trusted OptiX wrapper. This is a bounded
+compiler architecture, not arbitrary Python, arbitrary Callback IR, or
+topology-generic native lowering.
 
 ```text
 restricted Python callback text
@@ -58,33 +59,51 @@ native output.
 
 ## What is implemented
 
-- seven restricted callback roles plus built-in-triangle execution;
-- typed records/views, closed effects, strict numeric/resource budgets;
-- compiler-derived any-hit confluence proof and external custom-geometry proof
-  authority;
-- explicit deterministic C/device ABI and race-safe status reporting;
-- IR-derived trusted code generation, isolated Numba compilation and exact PTX
-  composition;
-- prepared partner lifecycle for Numba/CUDA continuation;
-- M1–M6 compositions covering triangle reduction, bounded relation emission,
-  multiround spatial search, exact predicate/global witness, grouped-event
-  reduction and hierarchy frontier; and
-- representative semantics from nine Paper Apps / thirteen paper lanes exact
-  and behaviorally true-OptiX in one Home functional identity; and
-- thirteen complete application performance frontdoors measured in one
-  312-worker RTX 4000 Ada V2/V3/V4 cohort.
+- a finite restricted callback language with typed records/views, closed
+  effects, numeric/resource budgets, and supported callback roles;
+- shared admission, semantic ABI, provider/executable identity, lifecycle, and
+  fail-closed status machinery for supported families;
+- two stable public fixed constructors plus separately classified successor
+  routes and topology-specific lowerers;
+- deterministic C/device ABI, isolated Numba leaf compilation, exact PTX
+  composition, and prepared Numba/CUDA continuation;
+- one author-defined ten-candidate prospective composition exam, selecting
+  `builtin_sphere::any_hit_count_continue_u64_per_query`; and
+- a separately implemented finite Goal5840 checker over its registered routes,
+  modes, properties, and mutations.
+
+The prospective composition count is one. The unbiased new-application and
+external-human authoring counts are both zero. These implementation facts do
+not establish automatic lowering for an unseen topology or broad usability.
 
 ## Evidence boundary
 
-RTDL V4 is currently a **research release candidate**.  Its nine-app / thirteen-
-lane implementation is exact and behaviorally true-OptiX on Home and modern
-RTX.  The frozen default **cold** application frontdoors are not performance-
-viable: the RTX 4000 Ada cohort is 1 pass / 25 fail across 26 independent
-V2/V4 and V3/V4 rows.  A later internal precompiled-AOT path closes this debt
-for one exact bounded-relation contract, but it is not yet portfolio-wide or
-externally reviewed.  This evidence does not establish universal
-expressiveness, production security, author superiority or hardware RT-core
-utilization.
+RTDL V4 is currently a **research release candidate**, not a finished CGO
+artifact or an authorized public performance result. Earlier nine-app/thirteen-
+lane functional and 26-row cold-frontdoor studies remain historical evidence;
+they were not rerun or converted into the current two-task experiment.
+
+At measured implementation M (`d653fe4...`), one frozen triangle task and one
+owner-grouped relation task passed the machine numerical contract independently
+on RTX 4090 Ada and RTX 3090 Ampere. Prepared public RTDL/Direct medians were
+`1.175066x` and `1.076852x` on Ada, and `1.133636x` and `1.094795x` on Ampere.
+These are exact-path overhead observations, not intrinsic language speedups or
+universal parity. There is no registered A/D worst-block gate.
+
+The original written requirement for a detailed retained receipt on every
+timed execution was not fulfilled: 4,096 timed Arm-A calls have 32 separate
+diagnostic receipts. Synchronous native/compact status and explicit output
+oracles remained active, and no wrong output was observed in the retained final
+GPU samples. Post-import diagnostics are adverse on all four rows and reach
+`2.377129x`; both first-result endpoints are lifecycle/import-confounded.
+Relative to predecessor E, first-result medians regress about 8%--22% at entry
+and 16%--31% post-import; those comparisons are post hoc and non-gating.
+
+R2 has produced a deterministic anonymous projection and successful pre-F
+offline rehearsal. Final candidate-F clean-checkout replay, manuscript rewrite,
+anonymous final package, final-byte review, and submission remain open. Current
+state and exact claim boundaries are in
+`history/internal_docs/post_goal5851_submission_remediation_20260906/`.
 
 ## Documentation
 

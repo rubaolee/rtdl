@@ -19202,3 +19202,58 @@ are byte-identical with SHA-256 `99e1eab6...151692` and status
 `PASS__GOAL5848_INTERNAL_TECHNICAL_COMPLETE__EXTERNAL_REVIEW_PENDING`.
 Goal5848/Goal5851 are internally technically complete; external review and
 public/manuscript claim authorization remain pending.
+
+## Post-Goal5851 review and remediation-plan handoff (2026-09-06)
+
+The current Claude review, Codex independent review and absorption record now
+exist under `history/internal_docs/`. The numerical two-generation result was
+recounted, but review identified a difference between the written per-execution
+receipt requirements and the public fast path/formal-worker evidence. A/E
+first-result regressions are also retained post-hoc observations. These findings
+qualify the earlier broad completion wording; no historical authority was changed.
+
+The requested detailed execution plan is
+`history/internal_docs/cgo2027_post_goal5851_remediation_execution_plan_20260906.md`.
+It specifies R0--R8 files, commands, deadlines and acceptance criteria, including
+a successful anonymous-package replay before the code freeze. Only the plan and
+this handoff have been produced: protocol adjudication, manuscript rewrite,
+new artifact tooling/package and final-version review remain unexecuted.
+
+## Lead execution directive issued by explicit user request (2026-09-06)
+
+The user designated the reviewing AI as lead and required concrete instructions
+for the main implementation AI. The unified directive is
+`history/internal_docs/lead_execution_directive_post_goal5851_20260906.md`,
+now linked at the top of AGENTS.md. It requires four targeted plan corrections
+followed by actual R0--R8 execution and evidence-based reporting. Issuing this
+directive is complete; applying the corrections and performing remediation are
+still pending. No runtime, experiment, raw evidence or authority was changed.
+
+## Post-Goal5851 remediation R0--R3 checkpoint (2026-09-06)
+
+The four mandatory action-plan corrections are applied. R0 verified both raw
+2,405-member evidence roots, archives, authority/recount pairs, and the old
+manuscript build environment. R1 completed field-level receipt adjudication and
+a 21-row claim ledger: numerical/output observations are retained, but the
+original detailed per-execution receipt requirement is explicitly false.
+
+R2 implemented the minimal raw-to-anonymous exporter and standard-library-only
+offline verifier. It reconstructed 160 formal cells, 20,480 steady samples,
+1,024 Arm-A instrumentation endpoints, 20 AOT durations, and eight competence
+workers. Two external-root builds were byte-identical; a foreign-path normal
+and `python -O` replay passed without project imports. The final pre-F
+nine-member archive was 179,978 bytes with SHA-256
+`963acc1c543df70609fccc06e0fa79f63b886be75b46699b9a2a51c662092639`.
+Its public schema and predecessor arm use neutral names, any internal
+`Goal<digits>` token is rejected, and the template loader leaves no generated
+bytecode under the source-only template root.
+This remains pre-F evidence until repeated from a clean committed F checkout.
+
+R3 reproduced Goal5837 and Goal5843 current-tree fail-closed checks and then
+verified each successfully at its exact historical commit in fresh clones.
+Current README, paper README, sprint state, custody guide, and additive
+correction ledger now distinguish receipt scope, A-only instrumentation,
+selected/candidate topology, finite Goal5840 checking, and historical review
+errors. Production/native/experiment bytes remain unchanged from M. Candidate
+F, final clean replay, manuscript rewrite, final package/review, and submission
+remain open.

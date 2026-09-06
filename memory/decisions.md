@@ -8512,3 +8512,51 @@ earlier adverse evidence and prohibit pooling across source commits.
 Do not equate internal technical completion with public claim authorization.
 External review remains unavailable; usability, arbitrary-callback, all-app,
 cold-start and hardware-independent claims remain outside this evidence.
+
+## Post-Goal5851 remediation plan proposed, not a new experimental verdict (2026-09-06)
+
+Read `history/internal_docs/cgo2027_post_goal5851_remediation_execution_plan_20260906.md`
+before continuing submission preparation. The proposed route preserves measured
+source `d653fe4...`, acknowledges the written receipt/evidence difference, and
+narrows claims rather than repairing runtime code and reusing old timings.
+Numerical PASS, protocol compliance, manuscript readiness and public authorization
+must remain separate. The plan does not modify D247's historical authority or
+authorize claims by itself; its R1 scope adjudication still must be carried out.
+
+Any necessary new offline export/recount/package tools must be tested end to end
+and committed before 2026-09-08 00:00 America/New_York. Measured source M and
+submission tooling F are different recorded identities. Do not treat old
+Goal5817 validators or the absent old artifact directory as current readiness.
+
+## Owner-delegated lead directive controls next execution (2026-09-06)
+
+The user's explicit instruction makes
+`history/internal_docs/lead_execution_directive_post_goal5851_20260906.md`
+the unified entrypoint for this remediation. The main AI must implement the
+four P2 corrections, then carry out the inherited R0--R8 plan without another
+macro-plan or repeated start confirmation. Final-F clean-checkout rehearsal,
+template/output separation, main-text adverse disclosure and the exact selected
+sphere topology are mandatory. This is an execution direction, not a declaration
+that the changes, artifact, review or submission gates have already passed.
+
+## D248: preserve bounded numerical evidence and narrow the receipt claim (2026-09-06)
+
+Accept the R1 scope adjudication as the controlling submission decision. The
+same-source Ada/Ampere machine numerical contract passed and no wrong output was
+observed in the retained final GPU samples, but the original written requirement
+for a detailed retained receipt on every timed execution was not fulfilled.
+Keep the prepared public A/D observations at exact task/hardware scope; do not
+claim complete original-protocol compliance, intrinsic language speedup, or a
+positive implementation-entry result.
+
+Treat entry and post-import as lifecycle diagnostics. Preserve the adverse
+post-import direction and maximum `2.377129x` block, the post hoc E first-result
+regressions, and the endpoint-revision/confounding disclosure. Instrumentation
+qualification measured Arm A only. Native-fork and provider double-fault defects
+remain narrowed out rather than repaired.
+
+Accept R2 only as a pre-F artifact rehearsal. Final tooling snapshot F must be
+committed, checked out cleanly, and used for the complete external-root export,
+twin deterministic package build, foreign-path offline replay, and exact hash
+binding. Reviews already received are pre-final inputs, not final-byte review;
+external human authoring evidence remains zero.
