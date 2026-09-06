@@ -153,6 +153,17 @@ _COMPACT_TRAVERSAL_SCHEMA = (
 _COMPACT_STAMP_LENGTH = 19
 
 
+def rtdl_program_bundles(task: str) -> tuple[str, ...]:
+    """Return the one physical bundle authorized for a frozen task."""
+
+    try:
+        return (_RTDL_PROGRAM_BUNDLES[task],)
+    except KeyError as error:
+        raise ValueError(
+            f"Goal5848 task has no RTDL program bundle: {task}"
+        ) from error
+
+
 def build_instrumentation_schedule() -> tuple[dict[str, object], ...]:
     """Build the frozen paired fresh-process instrumentation schedule."""
 
@@ -1103,6 +1114,7 @@ __all__ = [
     "integer_median",
     "ratio_ppm",
     "require_formal_cache_policy",
+    "rtdl_program_bundles",
     "strict_json_loads",
     "validate_component_diagnostics",
     "validate_phase_partition",

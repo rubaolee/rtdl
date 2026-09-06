@@ -29,6 +29,7 @@ from .contracts import (
     WORKER_SCHEMA,
     digest,
     require_formal_cache_policy,
+    rtdl_program_bundles,
     strict_json_loads,
     validate_component_diagnostics,
     validate_phase_partition,
@@ -466,11 +467,7 @@ def _run_rtdl(
             provider_library_sha256=_sha256_file(native),
             route_identity=route_identity,
             output_digest=TASK_CONTRACTS[args.task]["public_output_sha256"],
-            expected_program_bundles=(
-                "v4_custom_aabb_bounded_relation_composed"
-                if args.task == RELATION_TASK
-                else "v4_builtin_triangle_checked_reduction_composed",
-            ),
+            expected_program_bundles=rtdl_program_bundles(args.task),
             expected_successful_launch_count=expected_launches,
             expected_raygen_invocation_count=expected_invocations,
         )

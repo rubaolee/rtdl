@@ -107,6 +107,37 @@ class Goal5848PreflightAuthorityTest(unittest.TestCase):
                 value, arm=contracts.RTDL_ARM, task=contracts.RELATION_TASK
             )
 
+    def test_rtdl_program_bundle_selection_is_always_a_singleton_tuple(self):
+        self.assertEqual(
+            contracts.rtdl_program_bundles(contracts.RELATION_TASK),
+            ("v4_custom_aabb_bounded_relation_composed",),
+        )
+        self.assertEqual(
+            contracts.rtdl_program_bundles(contracts.TRIANGLE_TASK),
+            ("v4_builtin_triangle_checked_reduction_composed",),
+        )
+        with self.assertRaisesRegex(ValueError, "no RTDL program bundle"):
+            contracts.rtdl_program_bundles("unknown")
+
+    def test_process_streams_are_preserved_byte_exact_without_overwrite(self):
+        completed = subprocess.CompletedProcess(
+            args=["worker"],
+            returncode=1,
+            stdout=b"partial-output\n",
+            stderr=b"diagnostic\x00bytes\n",
+        )
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            preflight._preserve_process_streams(root, "G5848_TEST", completed)
+            self.assertEqual(
+                (root / "G5848_TEST.stdout").read_bytes(), completed.stdout
+            )
+            self.assertEqual(
+                (root / "G5848_TEST.stderr").read_bytes(), completed.stderr
+            )
+            with self.assertRaises(FileExistsError):
+                preflight._preserve_process_streams(root, "G5848_TEST", completed)
+
     def test_finalizer_binds_all_three_authorities_and_preregistration(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)

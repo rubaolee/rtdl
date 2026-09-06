@@ -30,6 +30,36 @@ from experiments.goal5848_strong_baseline.controller import (
 from experiments.goal5848_strong_baseline.worker import ROOT, _write_create
 
 
+def _write_process_stream(path: Path, payload: bytes) -> None:
+    if type(payload) is not bytes:
+        raise TypeError("Goal5848 process stream must be bytes")
+    descriptor = os.open(
+        path,
+        os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_NOFOLLOW", 0),
+        0o400,
+    )
+    try:
+        with os.fdopen(descriptor, "wb", closefd=True) as stream:
+            descriptor = -1
+            stream.write(payload)
+            stream.flush()
+            os.fsync(stream.fileno())
+    finally:
+        if descriptor >= 0:
+            os.close(descriptor)
+
+
+def _preserve_process_streams(
+    root: Path,
+    worker_id: str,
+    completed: subprocess.CompletedProcess[bytes],
+) -> None:
+    if not worker_id or Path(worker_id).name != worker_id or "\0" in worker_id:
+        raise ValueError("Goal5848 worker identity is not a safe file name")
+    _write_process_stream(root / f"{worker_id}.stdout", completed.stdout)
+    _write_process_stream(root / f"{worker_id}.stderr", completed.stderr)
+
+
 def _read_json(path: Path) -> dict[str, object]:
     value = strict_json_loads(
         path.resolve(strict=True).read_text(encoding="utf-8"),
@@ -159,7 +189,9 @@ def main() -> None:
     output_root = _new_output_root(args.output_root)
     output_root.mkdir(parents=True)
     workers = output_root / "workers"
+    process_streams = output_root / "processes"
     workers.mkdir()
+    process_streams.mkdir()
     processes = []
     receipts = []
     stage = "START"
@@ -180,6 +212,7 @@ def main() -> None:
                     check=False,
                     timeout=args.worker_timeout_seconds,
                 )
+                _preserve_process_streams(process_streams, worker_id, completed)
                 process = {
                     "worker_id": worker_id,
                     "command": command,

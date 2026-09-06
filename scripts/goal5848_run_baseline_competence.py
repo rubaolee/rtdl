@@ -30,7 +30,10 @@ from experiments.goal5848_strong_baseline.controller import (
     _validate_preregistration,
 )
 from experiments.goal5848_strong_baseline.worker import ROOT, _write_create
-from scripts.goal5848_run_timer_free_preflight import _add_common_arguments
+from scripts.goal5848_run_timer_free_preflight import (
+    _add_common_arguments,
+    _preserve_process_streams,
+)
 
 
 def _read(path: Path) -> dict[str, object]:
@@ -108,7 +111,9 @@ def main() -> None:
     output_root = _new_output_root(args.output_root)
     output_root.mkdir(parents=True)
     workers = output_root / "workers"
+    process_streams = output_root / "processes"
     workers.mkdir()
+    process_streams.mkdir()
     process_rows = []
     receipts = []
     stage = "START"
@@ -169,6 +174,7 @@ def main() -> None:
                     check=False,
                     timeout=args.worker_timeout_seconds,
                 )
+                _preserve_process_streams(process_streams, worker_id, completed)
                 process_rows.append({
                     "worker_id": worker_id,
                     "command": command,

@@ -22,6 +22,7 @@ from .contracts import (
     TASKS,
     digest,
     require_formal_cache_policy,
+    rtdl_program_bundles,
     strict_json_loads,
 )
 from .worker import (
@@ -111,11 +112,7 @@ def _rtdl(args: argparse.Namespace) -> dict[str, object]:
             provider_library_sha256=hashlib.sha256(native.read_bytes()).hexdigest(),
             route_identity=_RTDL_ROUTE_IDENTITIES[args.task],
             output_digest=TASK_CONTRACTS[args.task]["public_output_sha256"],
-            expected_program_bundles=(
-                "v4_custom_aabb_bounded_relation_composed"
-                if args.task == RELATION_TASK
-                else "v4_builtin_triangle_checked_reduction_composed"
-            ),
+            expected_program_bundles=rtdl_program_bundles(args.task),
             expected_successful_launch_count=int(
                 TASK_CONTRACTS[args.task]["required_optix_launch_count"]
             ),

@@ -36,6 +36,7 @@ from experiments.goal5848_strong_baseline.controller import (
     _validate_preregistration,
 )
 from experiments.goal5848_strong_baseline.worker import ROOT, _write_create
+from scripts.goal5848_run_timer_free_preflight import _preserve_process_streams
 
 _NATIVE_PHASE = re.compile(
     r"RTDL_GOAL5807_NATIVE_PHASE\|([^|\n]+)\|([^|\n]+)\|([0-9]+)"
@@ -284,6 +285,7 @@ def main() -> None:
                 check=False,
                 timeout=args.worker_timeout_seconds,
             )
+            _preserve_process_streams(processes, worker_id, completed)
             native = _parse_native_phases(completed.stderr, mode=str(row["mode"]))
             if completed.returncode != 0 or not output.is_file():
                 raise RuntimeError(f"Goal5848 instrumentation worker failed: {worker_id}")
