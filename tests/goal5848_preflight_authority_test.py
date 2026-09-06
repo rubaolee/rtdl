@@ -304,7 +304,8 @@ class Goal5848PreflightAuthorityTest(unittest.TestCase):
             self.assertEqual(result["untimed_witness_worker_count"], 8)
             self.assertEqual(result["nonformal_competence_worker_count"], 4)
             self.assertEqual(
-                result["nonformal_instrumentation_worker_count"], 32
+                result["nonformal_instrumentation_worker_count"],
+                contracts.instrumentation_protocol()["worker_count"],
             )
             instrumentation["tasks"][contracts.RELATION_TASK][
                 "instrumentation_overhead_ppm"

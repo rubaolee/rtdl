@@ -18,6 +18,7 @@ from experiments.goal5848_strong_baseline.contracts import (
     INSTRUMENTATION_AUTHORITY_STATUS,
     INSTRUMENTATION_BLOCKS,
     INSTRUMENTATION_OVERHEAD_LIMIT_PPM,
+    INSTRUMENTATION_REPLICATES_PER_MODE,
     RELATION_TASK,
     RTDL_ARM,
     TASK_CONTRACTS,
@@ -175,7 +176,10 @@ def _evaluate(
     native_phases: Mapping[str, list[dict[str, object]]],
 ) -> dict[str, object]:
     indexed = {
-        (str(row["task"]), int(row["block"]), str(row["mode"])): row
+        (
+            str(row["task"]), int(row["block"]), str(row["mode"]),
+            int(row["replicate"]),
+        ): row
         for row in receipts
     }
     result = {}
@@ -184,19 +188,27 @@ def _evaluate(
         blocks = []
         paired_ratios_ppm = []
         for block in range(INSTRUMENTATION_BLOCKS):
-            off = indexed[(task, block, "off")]
-            on = indexed[(task, block, "on")]
-            off_ns = int(off["endpoint_ns"])
-            on_ns = int(on["endpoint_ns"])
+            off_values = [
+                int(indexed[(task, block, "off", replicate)]["endpoint_ns"])
+                for replicate in range(INSTRUMENTATION_REPLICATES_PER_MODE)
+            ]
+            on_values = [
+                int(indexed[(task, block, "on", replicate)]["endpoint_ns"])
+                for replicate in range(INSTRUMENTATION_REPLICATES_PER_MODE)
+            ]
+            off_ns = integer_median(off_values)
+            on_ns = integer_median(on_values)
             paired_ratio_ppm = ratio_ppm(on_ns, off_ns)
-            values["off"].append(off_ns)
-            values["on"].append(on_ns)
+            values["off"].extend(off_values)
+            values["on"].extend(on_values)
             paired_ratios_ppm.append(paired_ratio_ppm)
             blocks.append({
                 "block": block,
-                "off_ns": off_ns,
-                "on_ns": on_ns,
-                "signed_difference_ns": on_ns - off_ns,
+                "off_endpoint_ns_by_replicate": off_values,
+                "on_endpoint_ns_by_replicate": on_values,
+                "off_endpoint_median_ns": off_ns,
+                "on_endpoint_median_ns": on_ns,
+                "signed_median_difference_ns": on_ns - off_ns,
                 "on_over_off_ppm": paired_ratio_ppm,
             })
         off_median = integer_median(values["off"])
@@ -232,7 +244,7 @@ def _evaluate(
             "measured_instrumentation_overhead_ns": overhead,
             "instrumentation_overhead_ppm": overhead_ppm,
             "estimator": (
-                "max_zero_median_of_within_block_on_over_off_ratios_minus_one"
+                "max_zero_median_of_within_block_mode_median_ratios_minus_one"
             ),
             "limit_ppm": INSTRUMENTATION_OVERHEAD_LIMIT_PPM,
             "native_phase_names": observed_phase_names,
@@ -316,6 +328,7 @@ def main() -> None:
                 "task": row["task"],
                 "block": row["block"],
                 "mode": row["mode"],
+                "replicate": row["replicate"],
                 "endpoint_ns": endpoint,
                 "worker_receipt_sha256": receipt["result_sha256"],
                 "worker_file_sha256": hashlib.sha256(

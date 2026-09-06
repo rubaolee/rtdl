@@ -87,7 +87,7 @@ def _is_sha256(value: object) -> bool:
 def _validate_instrumentation_summary(
     value: Mapping[str, object],
 ) -> None:
-    """Recompute the v2 pair-first estimator from authority-bound rows."""
+    """Recompute the v3 replicated estimator from authority-bound rows."""
 
     expected_authority_keys = {
         "schema", "status", "source_commit", "predecessor_commit",
@@ -114,15 +114,16 @@ def _validate_instrumentation_summary(
     ):
         raise RuntimeError("Goal5848 instrumentation evidence rows differ")
 
-    indexed: dict[tuple[str, int, str], int] = {}
+    indexed: dict[tuple[str, int, str, int], int] = {}
     phases_by_worker: dict[str, list[Mapping[str, object]]] = {}
     for scheduled, worker, process in zip(schedule, workers, processes):
         if (
             not isinstance(scheduled, Mapping)
             or not isinstance(worker, Mapping)
             or set(worker) != {
-                "worker_id", "task", "block", "mode", "endpoint_ns",
-                "worker_receipt_sha256", "worker_file_sha256",
+                "worker_id", "task", "block", "mode", "replicate",
+                "endpoint_ns", "worker_receipt_sha256",
+                "worker_file_sha256",
             }
             or not isinstance(process, Mapping)
             or set(process) != {
@@ -134,6 +135,7 @@ def _validate_instrumentation_summary(
             or worker.get("task") != scheduled.get("task")
             or worker.get("block") != scheduled.get("block")
             or worker.get("mode") != scheduled.get("mode")
+            or worker.get("replicate") != scheduled.get("replicate")
             or type(worker.get("endpoint_ns")) is not int
             or worker["endpoint_ns"] <= 0
             or not _is_sha256(worker.get("worker_receipt_sha256"))
@@ -167,6 +169,7 @@ def _validate_instrumentation_summary(
             str(scheduled["task"]),
             int(scheduled["block"]),
             str(scheduled["mode"]),
+            int(scheduled["replicate"]),
         )
         if key in indexed:
             raise RuntimeError("Goal5848 instrumentation pair is duplicated")
@@ -183,26 +186,37 @@ def _validate_instrumentation_summary(
         "native_phase_names", "pass",
     }
     for task in TASKS:
-        off_values = []
-        on_values = []
+        all_off_values = []
+        all_on_values = []
         ratios = []
         blocks = []
         for block in range(int(protocol["blocks"])):
-            off_ns = indexed[(task, block, "off")]
-            on_ns = indexed[(task, block, "on")]
+            replicate_count = int(protocol["replicates_per_mode_per_block"])
+            block_off_values = [
+                indexed[(task, block, "off", replicate)]
+                for replicate in range(replicate_count)
+            ]
+            block_on_values = [
+                indexed[(task, block, "on", replicate)]
+                for replicate in range(replicate_count)
+            ]
+            off_ns = integer_median(block_off_values)
+            on_ns = integer_median(block_on_values)
             paired_ratio = ratio_ppm(on_ns, off_ns)
-            off_values.append(off_ns)
-            on_values.append(on_ns)
+            all_off_values.extend(block_off_values)
+            all_on_values.extend(block_on_values)
             ratios.append(paired_ratio)
             blocks.append({
                 "block": block,
-                "off_ns": off_ns,
-                "on_ns": on_ns,
-                "signed_difference_ns": on_ns - off_ns,
+                "off_endpoint_ns_by_replicate": block_off_values,
+                "on_endpoint_ns_by_replicate": block_on_values,
+                "off_endpoint_median_ns": off_ns,
+                "on_endpoint_median_ns": on_ns,
+                "signed_median_difference_ns": on_ns - off_ns,
                 "on_over_off_ppm": paired_ratio,
             })
-        off_median = integer_median(off_values)
-        on_median = integer_median(on_values)
+        off_median = integer_median(all_off_values)
+        on_median = integer_median(all_on_values)
         ratio_median = integer_median(ratios)
         overhead_ppm = max(0, ratio_median - 1_000_000)
         overhead_ns = (off_median * overhead_ppm + 500_000) // 1_000_000

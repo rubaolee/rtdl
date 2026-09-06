@@ -68,6 +68,7 @@ class Goal5848InstrumentationOverheadTest(unittest.TestCase):
                 "task": row["task"],
                 "block": row["block"],
                 "mode": row["mode"],
+                "replicate": row["replicate"],
                 "endpoint_ns": endpoint,
             })
             family = (
@@ -84,9 +85,15 @@ class Goal5848InstrumentationOverheadTest(unittest.TestCase):
     def test_schedule_is_frozen_balanced_and_fresh_process_sized(self):
         rows = contracts.build_instrumentation_schedule()
         self.assertEqual(rows, contracts.build_instrumentation_schedule())
-        self.assertEqual(len(rows), 32)
         self.assertEqual(
-            {row["sequence_index"] for row in rows}, set(range(32))
+            len(rows),
+            2
+            * len(contracts.TASKS)
+            * contracts.INSTRUMENTATION_BLOCKS
+            * contracts.INSTRUMENTATION_REPLICATES_PER_MODE,
+        )
+        self.assertEqual(
+            {row["sequence_index"] for row in rows}, set(range(len(rows)))
         )
         for task in contracts.TASKS:
             for block in range(contracts.INSTRUMENTATION_BLOCKS):
@@ -97,6 +104,30 @@ class Goal5848InstrumentationOverheadTest(unittest.TestCase):
                 self.assertEqual(
                     {row["mode"] for row in selected}, {"off", "on"}
                 )
+                for mode in contracts.INSTRUMENTATION_MODES:
+                    mode_rows = [
+                        row for row in selected if row["mode"] == mode
+                    ]
+                    self.assertEqual(
+                        {row["replicate"] for row in mode_rows},
+                        set(range(
+                            contracts.INSTRUMENTATION_REPLICATES_PER_MODE
+                        )),
+                    )
+                first_modes = []
+                for replicate in range(
+                    contracts.INSTRUMENTATION_REPLICATES_PER_MODE
+                ):
+                    pair = sorted(
+                        (
+                            row for row in selected
+                            if row["replicate"] == replicate
+                        ),
+                        key=lambda row: row["sequence_index"],
+                    )
+                    first_modes.append(pair[0]["mode"])
+                self.assertEqual(first_modes.count("off"), len(first_modes) // 2)
+                self.assertEqual(first_modes.count("on"), len(first_modes) // 2)
 
     def test_worker_validator_distinguishes_instrumented_and_plain_paths(self):
         for mode in ("off", "on"):
@@ -173,6 +204,20 @@ class Goal5848InstrumentationOverheadTest(unittest.TestCase):
             self.assertGreater(
                 row["instrumented_endpoint_median_ns"],
                 row["uninstrumented_endpoint_median_ns"] * 105 // 100,
+            )
+
+    def test_block_mode_medians_resist_one_cold_process_outlier(self):
+        receipts, phases = self._evaluation_inputs(100)
+        for row in receipts:
+            if row["mode"] == "on" and row["replicate"] == 0:
+                row["endpoint_ns"] = 10_000
+        result = instrumentation._evaluate(receipts, phases)
+        for task in contracts.TASKS:
+            observed = result[task]
+            self.assertEqual(observed["instrumentation_overhead_ppm"], 0)
+            self.assertEqual(
+                len(observed["blocks"][0]["on_endpoint_ns_by_replicate"]),
+                contracts.INSTRUMENTATION_REPLICATES_PER_MODE,
             )
 
     def test_worker_validator_rejects_source_or_off_mode_probe_mutation(self):

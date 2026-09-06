@@ -36,6 +36,7 @@ def write_instrumentation_fixture(
         task = str(scheduled["task"])
         block = int(scheduled["block"])
         mode = str(scheduled["mode"])
+        replicate = int(scheduled["replicate"])
         enabled = mode == "on"
         endpoint = 104 if enabled else 100
         partition = {name: 0 for name in contracts.PARTITION_KEYS}
@@ -147,6 +148,7 @@ def write_instrumentation_fixture(
             "task": task,
             "block": block,
             "mode": mode,
+            "replicate": replicate,
             "endpoint_ns": endpoint,
             "worker_receipt_sha256": worker["result_sha256"],
             "worker_file_sha256": hashlib.sha256(

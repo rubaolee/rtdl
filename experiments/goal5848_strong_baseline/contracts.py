@@ -32,7 +32,7 @@ PREFLIGHT_PASS_STATUS = (
     "PASS__ALL_FOUR_PRIMARY_ARMS_EXACT_AND_BASELINES_COMPETENT"
 )
 INSTRUMENTATION_AUTHORITY_SCHEMA = (
-    "rtdl.goal5848.instrumentation_overhead_authority.v2"
+    "rtdl.goal5848.instrumentation_overhead_authority.v3"
 )
 INSTRUMENTATION_AUTHORITY_STATUS = (
     "PASS__PAIRED_FRESH_PROCESS_INSTRUMENTATION_OVERHEAD_WITHIN_FIVE_PERCENT"
@@ -68,6 +68,7 @@ TASKS = (RELATION_TASK, TRIANGLE_TASK)
 BLOCKS = 8
 INSTRUMENTATION_BLOCKS = 8
 INSTRUMENTATION_MODES = ("off", "on")
+INSTRUMENTATION_REPLICATES_PER_MODE = 16
 STEADY_WARMUPS = 16
 STEADY_REPETITIONS = 128
 POST_IMPORT_RATIO_LIMIT_PPM = 1_200_000
@@ -176,30 +177,41 @@ def direct_worker_task(task: str) -> str:
 
 
 def build_instrumentation_schedule() -> tuple[dict[str, object], ...]:
-    """Build the frozen paired fresh-process instrumentation schedule."""
+    """Build the replicated paired fresh-process instrumentation schedule."""
 
     rows: list[dict[str, object]] = []
     sequence = 0
-    for block in range(INSTRUMENTATION_BLOCKS):
-        task_order = TASKS if block % 2 == 0 else tuple(reversed(TASKS))
-        for task in task_order:
-            mode_order = (
-                INSTRUMENTATION_MODES
-                if (block + TASKS.index(task)) % 2 == 0
-                else tuple(reversed(INSTRUMENTATION_MODES))
+    for replicate in range(INSTRUMENTATION_REPLICATES_PER_MODE):
+        blocks = (
+            range(INSTRUMENTATION_BLOCKS)
+            if replicate % 2 == 0
+            else reversed(range(INSTRUMENTATION_BLOCKS))
+        )
+        for block in blocks:
+            task_order = (
+                TASKS
+                if (block + replicate) % 2 == 0
+                else tuple(reversed(TASKS))
             )
-            for mode in mode_order:
-                rows.append({
-                    "sequence_index": sequence,
-                    "block": block,
-                    "task": task,
-                    "mode": mode,
-                    "worker_id": (
-                        f"G5848_INSTRUMENTATION_B{block:02d}_{task}_"
-                        f"{mode.upper()}"
-                    ),
-                })
-                sequence += 1
+            for task in task_order:
+                mode_order = (
+                    INSTRUMENTATION_MODES
+                    if (block + TASKS.index(task) + replicate) % 2 == 0
+                    else tuple(reversed(INSTRUMENTATION_MODES))
+                )
+                for mode in mode_order:
+                    rows.append({
+                        "sequence_index": sequence,
+                        "replicate": replicate,
+                        "block": block,
+                        "task": task,
+                        "mode": mode,
+                        "worker_id": (
+                            f"G5848_INSTRUMENTATION_R{replicate:02d}_"
+                            f"B{block:02d}_{task}_{mode.upper()}"
+                        ),
+                    })
+                    sequence += 1
     return tuple(rows)
 
 
@@ -210,12 +222,15 @@ def instrumentation_protocol() -> dict[str, object]:
     return {
         "blocks": INSTRUMENTATION_BLOCKS,
         "modes": list(INSTRUMENTATION_MODES),
+        "replicates_per_mode_per_block": (
+            INSTRUMENTATION_REPLICATES_PER_MODE
+        ),
         "worker_count": len(schedule),
         "schedule": schedule,
         "schedule_sha256": digest(schedule),
         "endpoint": "rtdl_post_import_to_first_exact_public_result",
         "estimator": (
-            "max_zero_median_of_within_block_on_over_off_ratios_minus_one"
+            "max_zero_median_of_within_block_mode_median_ratios_minus_one"
         ),
         "limit_ppm": INSTRUMENTATION_OVERHEAD_LIMIT_PPM,
         "formal_estimator_inclusion": False,
@@ -1092,6 +1107,7 @@ __all__ = [
     "INSTRUMENTATION_BLOCKS",
     "INSTRUMENTATION_MODES",
     "INSTRUMENTATION_OVERHEAD_LIMIT_PPM",
+    "INSTRUMENTATION_REPLICATES_PER_MODE",
     "PARTITION_ABSOLUTE_TOLERANCE_NS",
     "PARTITION_KEYS",
     "PARTITION_RELATIVE_TOLERANCE_PPM",

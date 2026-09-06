@@ -469,7 +469,7 @@ def _validate_instrumentation_evidence(
         raise TypeError("Goal5848 instrumentation command inputs differ")
     candidate_manifest = _artifact_path(artifacts, "candidate_manifest")
     expected_source_commit = str(preregistration["source_commit"])
-    indexed: dict[tuple[str, int, str], int] = {}
+    indexed: dict[tuple[str, int, str, int], int] = {}
     phases_by_worker: dict[str, list[dict[str, object]]] = {}
     empty_sha256 = hashlib.sha256(b"").hexdigest()
 
@@ -485,6 +485,7 @@ def _validate_instrumentation_evidence(
         task = str(scheduled["task"])
         block = int(scheduled["block"])
         mode = str(scheduled["mode"])
+        replicate = int(scheduled["replicate"])
         worker_path = workers_root / f"{worker_id}.json"
         process_path = processes_root / f"{worker_id}.json"
         stdout_path = processes_root / f"{worker_id}.stdout"
@@ -520,6 +521,7 @@ def _validate_instrumentation_evidence(
             "task": task,
             "block": block,
             "mode": mode,
+            "replicate": replicate,
             "endpoint_ns": endpoint,
             "worker_receipt_sha256": worker.get("result_sha256"),
             "worker_file_sha256": _sha256(worker_path),
@@ -640,7 +642,7 @@ def _validate_instrumentation_evidence(
             raise RuntimeError(
                 f"Goal5848 instrumentation process differs: {worker_id}"
             )
-        indexed[(task, block, mode)] = int(endpoint)
+        indexed[(task, block, mode, replicate)] = int(endpoint)
         phases_by_worker[worker_id] = native_phases
 
     expected_task_keys = {
@@ -657,17 +659,28 @@ def _validate_instrumentation_evidence(
         ratios = []
         blocks = []
         for block in range(int(protocol["blocks"])):
-            off_ns = indexed[(task, block, "off")]
-            on_ns = indexed[(task, block, "on")]
+            replicate_count = int(protocol["replicates_per_mode_per_block"])
+            block_off_values = [
+                indexed[(task, block, "off", replicate)]
+                for replicate in range(replicate_count)
+            ]
+            block_on_values = [
+                indexed[(task, block, "on", replicate)]
+                for replicate in range(replicate_count)
+            ]
+            off_ns = integer_median(block_off_values)
+            on_ns = integer_median(block_on_values)
             paired_ratio = ratio_ppm(on_ns, off_ns)
-            values["off"].append(off_ns)
-            values["on"].append(on_ns)
+            values["off"].extend(block_off_values)
+            values["on"].extend(block_on_values)
             ratios.append(paired_ratio)
             blocks.append({
                 "block": block,
-                "off_ns": off_ns,
-                "on_ns": on_ns,
-                "signed_difference_ns": on_ns - off_ns,
+                "off_endpoint_ns_by_replicate": block_off_values,
+                "on_endpoint_ns_by_replicate": block_on_values,
+                "off_endpoint_median_ns": off_ns,
+                "on_endpoint_median_ns": on_ns,
+                "signed_median_difference_ns": on_ns - off_ns,
                 "on_over_off_ppm": paired_ratio,
             })
         off_median = integer_median(values["off"])
