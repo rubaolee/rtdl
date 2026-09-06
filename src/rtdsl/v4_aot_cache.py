@@ -26,7 +26,7 @@ except ImportError:  # pragma: no cover - Linux formal evidence is mandatory.
 
 
 REQUEST_SCHEMA = "rtdl.v4.exact_aot_build_request.v1"
-CACHE_ENTRY_SCHEMA = "rtdl.v4.exact_aot_cache_entry.v1"
+CACHE_ENTRY_SCHEMA = "rtdl.v4.exact_aot_cache_entry.v2"
 REQUIRED_OUTPUT_ROLES = (
     "artifact",
     "authority",
@@ -235,6 +235,14 @@ def _manifest_payload(
     return _canonical(value) + b"\n"
 
 
+def _payload_name(role: str, sha256: str) -> str:
+    """Preserve the executable format's mandatory content-addressed name."""
+
+    if role == "artifact":
+        return f"{sha256}.rtdlexe"
+    return f"{role}.bin"
+
+
 def _validate_entry(
     entry: Path,
     request: ExactAOTBuildRequest,
@@ -274,11 +282,11 @@ def _validate_entry(
         row = outputs[role]
         if not isinstance(row, dict) or set(row) != {"path", "bytes", "sha256"}:
             raise ExactAOTCacheError(f"AOT cache output row differs: {role}")
-        expected_name = f"{role}.bin"
+        expected_sha = _require_sha(row["sha256"], f"cache output {role}")
+        expected_name = _payload_name(role, expected_sha)
         if row["path"] != f"payloads/{expected_name}":
             raise ExactAOTCacheError(f"AOT cache output path differs: {role}")
         path = _regular_file(payload_root / expected_name, f"cache output {role}")
-        expected_sha = _require_sha(row["sha256"], f"cache output {role}")
         if (
             type(row["bytes"]) is not int
             or row["bytes"] < 0
@@ -288,9 +296,10 @@ def _validate_entry(
             raise ExactAOTCacheError(f"AOT cache output bytes differ: {role}")
         paths[role] = path
         hashes[role] = expected_sha
-    if {path.name for path in payload_root.iterdir()} != {
-        f"{role}.bin" for role in REQUIRED_OUTPUT_ROLES
-    }:
+    expected_payload_names = {
+        _payload_name(role, hashes[role]) for role in REQUIRED_OUTPUT_ROLES
+    }
+    if {path.name for path in payload_root.iterdir()} != expected_payload_names:
         raise ExactAOTCacheError("AOT cache contains unexpected payloads")
     return paths, hashes
 
@@ -308,12 +317,14 @@ def _publish_entry(
     for role in REQUIRED_OUTPUT_ROLES:
         source = _regular_file(Path(produced[role]), f"producer output {role}")
         payload = source.read_bytes()
-        destination = payload_root / f"{role}.bin"
+        payload_sha256 = _sha256_bytes(payload)
+        destination_name = _payload_name(role, payload_sha256)
+        destination = payload_root / destination_name
         _write_create(destination, payload)
         rows[role] = {
-            "path": f"payloads/{role}.bin",
+            "path": f"payloads/{destination_name}",
             "bytes": len(payload),
-            "sha256": _sha256_bytes(payload),
+            "sha256": payload_sha256,
         }
     _write_create(staging / "manifest.json", _manifest_payload(request, rows))
 

@@ -12,6 +12,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 from rtdsl.v4_aot_cache import (
+    CACHE_ENTRY_SCHEMA,
     REQUIRED_OUTPUT_ROLES,
     ExactAOTBuildRequest,
     ExactAOTCacheError,
@@ -82,6 +83,18 @@ class Goal5848ExactAOTCacheTest(unittest.TestCase):
             self.assertFalse(second.producer_invoked)
             self.assertEqual(calls, {"producer": 1, "verifier": 2})
             self.assertEqual(first.output_sha256, second.output_sha256)
+            artifact_sha256 = first.output_sha256["artifact"]
+            expected_name = f"{artifact_sha256}.rtdlexe"
+            self.assertEqual(first.output_paths["artifact"].name, expected_name)
+            self.assertEqual(second.output_paths["artifact"].name, expected_name)
+            manifest = json.loads(
+                (first.entry_path / "manifest.json").read_text(encoding="ascii")
+            )
+            self.assertEqual(manifest["schema"], CACHE_ENTRY_SCHEMA)
+            self.assertEqual(
+                manifest["outputs"]["artifact"]["path"],
+                f"payloads/{expected_name}",
+            )
 
     def test_request_identity_change_is_a_miss(self):
         with tempfile.TemporaryDirectory() as temporary:
@@ -174,6 +187,61 @@ class Goal5848ExactAOTCacheTest(unittest.TestCase):
                     verifier=lambda paths: tuple(paths),
                 )
             self.assertEqual(calls, 1)
+
+    def test_resealed_role_named_artifact_fails_content_address_contract(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            def producer(root):
+                root.mkdir()
+                outputs = {}
+                for role in REQUIRED_OUTPUT_ROLES:
+                    path = root / role
+                    path.write_bytes(self._payload(role, role.encode()))
+                    outputs[role] = path
+                return outputs
+
+            first = resolve_exact_aot(
+                self._request(),
+                cache_root=temporary,
+                producer=producer,
+                verifier=lambda paths: tuple(paths),
+            )
+            entry = first.entry_path
+            payloads = entry / "payloads"
+            manifest_path = entry / "manifest.json"
+            entry.chmod(0o700)
+            payloads.chmod(0o700)
+            manifest_path.chmod(0o600)
+            artifact = first.output_paths["artifact"]
+            artifact.chmod(0o600)
+            artifact.rename(payloads / "artifact.bin")
+
+            manifest = json.loads(manifest_path.read_bytes())
+            manifest["outputs"]["artifact"]["path"] = "payloads/artifact.bin"
+            unsigned = dict(manifest)
+            unsigned.pop("entry_sha256")
+            canonical = json.dumps(
+                unsigned,
+                sort_keys=True,
+                separators=(",", ":"),
+                ensure_ascii=True,
+                allow_nan=False,
+            ).encode("ascii")
+            manifest["entry_sha256"] = hashlib.sha256(canonical).hexdigest()
+            manifest_path.write_bytes(json.dumps(
+                manifest,
+                sort_keys=True,
+                separators=(",", ":"),
+                ensure_ascii=True,
+                allow_nan=False,
+            ).encode("ascii") + b"\n")
+
+            with self.assertRaisesRegex(ExactAOTCacheError, "output path differs"):
+                resolve_exact_aot(
+                    self._request(),
+                    cache_root=temporary,
+                    producer=lambda _: self.fail("producer called"),
+                    verifier=lambda paths: tuple(paths),
+                )
 
     def test_incomplete_producer_never_publishes_entry(self):
         with tempfile.TemporaryDirectory() as temporary:
