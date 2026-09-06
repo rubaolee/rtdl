@@ -19254,6 +19254,19 @@ verified each successfully at its exact historical commit in fresh clones.
 Current README, paper README, sprint state, custody guide, and additive
 correction ledger now distinguish receipt scope, A-only instrumentation,
 selected/candidate topology, finite Goal5840 checking, and historical review
-errors. Production/native/experiment bytes remain unchanged from M. Candidate
-F, final clean replay, manuscript rewrite, final package/review, and submission
-remain open.
+errors. Production/native/experiment bytes remained unchanged from M. At this
+checkpoint, candidate F, final clean replay, manuscript rewrite, final
+package/review, and submission were still open.
+
+## Candidate F and final clean-checkout rehearsal (2026-09-06)
+
+Tool snapshot F is commit `61190073428fbe487721262cfe1f4a77d4cb5d2f`,
+tree `2f2aa13221d2e1f7777b03e0ef3b1fd9feefcf6f`, pushed to
+`origin/codex/cgo-goal5836-handoff`. A fresh remote-backed checkout of F passed
+the 65-test focused suite, two repository-external deterministic exports, an
+existing-root rejection, and isolated normal plus `python -O` replay from a
+foreign path. The packaged verifier is byte-identical to F. The final R5
+archive is 179,978 bytes with SHA-256
+`963acc1c543df70609fccc06e0fa79f63b886be75b46699b9a2a51c662092639`.
+R5 is closed; R4 manuscript rewrite, R6 final pairing, R7 final-bytes review,
+and R8 submission checks remain open. No public/manuscript claim is authorized.

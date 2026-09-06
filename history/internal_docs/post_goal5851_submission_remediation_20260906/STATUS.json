@@ -1,7 +1,7 @@
 {
   "schema": "rtdl.cgo2027.post_goal5851_submission_remediation.status.v1",
-  "updated_at_utc": "2026-09-06T21:17:36Z",
-  "updated_at_et": "2026-09-06T17:17:36-0400",
+  "updated_at_utc": "2026-09-06T21:23:52Z",
+  "updated_at_et": "2026-09-06T17:23:52-0400",
   "overall_status": "REMEDIATION_IN_PROGRESS__NOT_SUBMISSION_READY__NO_NEW_PERFORMANCE_DEVELOPMENT",
   "controlling_directive": {
     "path": "history/internal_docs/lead_execution_directive_post_goal5851_20260906.md",
@@ -26,7 +26,11 @@
     "measured_successor_commit_M": "d653fe4ad170c5b51fee309d653c9565944dcf2e",
     "measured_successor_tree": "d53af23a2599f9d6adb4ac0bfff39cd0ab31860b",
     "predecessor_commit_E": "12ab1bc0a8ebbcefe42e93c677a151c04c3ba3c8",
-    "tool_snapshot_F": null,
+    "tool_snapshot_F": {
+      "commit": "61190073428fbe487721262cfe1f4a77d4cb5d2f",
+      "tree": "2f2aa13221d2e1f7777b03e0ef3b1fd9feefcf6f",
+      "pushed_remote": "origin/codex/cgo-goal5836-handoff"
+    },
     "paper_snapshot_P": null
   },
   "r0_snapshot": {
@@ -58,14 +62,14 @@
     },
     "claim_ledger": {
       "path": "CLAIM_LEDGER.json",
-      "sha256": "c1ecbd56b2c6d0f4fd157770b38e404247f066d7d00cdf0e09aad1f31a3d44ca",
+      "sha256": "f148027baa49756bdd22d24d7c5c77058a951653dd73edf9308a97cb412370d8",
       "claim_count": 21,
       "all_claims_authorized": false,
       "external_final_bytes_review": "PENDING_R7"
     }
   },
   "r2_submission_evidence": {
-    "status": "CLOSED_WITH_EVIDENCE_PRE_F__FINAL_F_REHEARSAL_REQUIRED_R5",
+    "status": "CLOSED_WITH_EVIDENCE__FINAL_F_REHEARSAL_PASSED",
     "report": {
       "path": "R2_SUBMISSION_EVIDENCE_REPORT.md",
       "sha256": "3f5585470558c9e0ab47ee1ea93cedaebdc08eb7531a0283ce5d9b7494acd439"
@@ -108,7 +112,16 @@
       "packaged_verifier_matches_template": true,
       "focused_regression_tests": 65,
       "focused_regression_failures": 0,
-      "final_clean_F_rehearsal": "PENDING_R5"
+      "final_clean_F_rehearsal": {
+        "status": "PASS__CLOSED_WITH_EVIDENCE",
+        "report_path": "R5_FINAL_F_REHEARSAL_REPORT.md",
+        "report_sha256": "249a012cf7435c2dc40f998dc657173201ea773cfe015c02a88c67fb5e4f734c",
+        "external_root_a": "/tmp/rtdl-cgo2027-R5-F611900734-build-a-20260906-1722",
+        "external_root_b": "/tmp/rtdl-cgo2027-R5-F611900734-build-b-20260906-1722",
+        "foreign_replay_root": "/tmp/RTDL CGO final F replay 611900734/rtdl-cgo2027-artifact",
+        "clean_checkout_before_and_after": true,
+        "remote_branch_matches_f": true
+      }
     }
   },
   "r3_control_and_custody": {
@@ -125,7 +138,7 @@
       "paper/cgo2027/README.md": "53e3fe4667347cc5e013fde88d818756a6f40ed50610446828162af50765a31d",
       "history/internal_docs/cgo2027_final_sprint_goals_20260905.md": "dd4b7676b7c93af04bdc7373a3a1a57bbc2469782c07030acfa41938a18eabe6",
       "memory/decisions.md": "cc62cf08052988ec8eb37fa0a3f078c187c7d84af55ba99ad36a46708e2afd7c",
-      "memory/progress.md": "00c3da70989f34e3dd76d75af2e12a71352c74426fffb250234e97544e897645",
+      "memory/progress.md": "0ee3675a5d396f07d76d2b02dbb6966d9c4f11706f73925a16d289b30252a1fc",
       "memory/todo.md": "d55252812fd01dae1379a3e3b878cf9cedf06960ad805e277c8417329134944b"
     },
     "custody_replay": {
@@ -140,7 +153,7 @@
     "changed_control_missing_links": 0,
     "production_native_experiment_diff_from_M": []
   },
-  "dirty_path_ownership": [
+  "candidate_f_precommit_path_ownership": [
     {
       "paths": [
         "AGENTS.md",
@@ -181,10 +194,10 @@
     "four_plan_corrections": "CLOSED_WITH_EVIDENCE",
     "R0": "CLOSED_WITH_EVIDENCE",
     "R1": "CLOSED_WITH_EVIDENCE",
-    "R2": "CLOSED_WITH_EVIDENCE_PRE_F",
+    "R2": "CLOSED_WITH_EVIDENCE__FINAL_F_REHEARSAL_PASSED",
     "R3": "CLOSED_WITH_EVIDENCE",
     "R4": "OPEN",
-    "R5": "IN_PROGRESS__CANDIDATE_F_NOT_COMMITTED",
+    "R5": "CLOSED_WITH_EVIDENCE",
     "R6": "OPEN",
     "R7": "OPEN",
     "R8": "OPEN"

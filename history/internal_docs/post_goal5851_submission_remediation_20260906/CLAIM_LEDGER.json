@@ -66,7 +66,13 @@
       "summary_sha256": "54ecfddf642cfbd00dfba8af343392524143781744c698e2bc72a3c1b3843105",
       "report_path": "history/internal_docs/post_goal5851_submission_remediation_20260906/R2_SUBMISSION_EVIDENCE_REPORT.md",
       "report_sha256": "3f5585470558c9e0ab47ee1ea93cedaebdc08eb7531a0283ce5d9b7494acd439",
-      "final_f_rehearsal": "PENDING_R5"
+      "final_f_rehearsal": {
+        "status": "PASS__CLOSED_WITH_EVIDENCE",
+        "tool_snapshot_commit": "61190073428fbe487721262cfe1f4a77d4cb5d2f",
+        "tool_snapshot_tree": "2f2aa13221d2e1f7777b03e0ef3b1fd9feefcf6f",
+        "report_path": "history/internal_docs/post_goal5851_submission_remediation_20260906/R5_FINAL_F_REHEARSAL_REPORT.md",
+        "report_sha256": "249a012cf7435c2dc40f998dc657173201ea773cfe015c02a88c67fb5e4f734c"
+      }
     }
   },
   "claims": [

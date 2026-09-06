@@ -441,3 +441,51 @@ memory/progress.md=00c3da70989f34e3dd76d75af2e12a71352c74426fffb250234e97544e897
 This closes the corrected pre-F R2 rehearsal only. Candidate F remains
 uncommitted, its required clean-checkout replay remains pending under R5, and
 public/manuscript claim authorization remains false.
+
+## R5 committed-F clean-checkout rehearsal
+
+Candidate F was committed and pushed:
+
+```text
+commit=61190073428fbe487721262cfe1f4a77d4cb5d2f
+tree=2f2aa13221d2e1f7777b03e0ef3b1fd9feefcf6f
+remote=origin/codex/cgo-goal5836-handoff
+remote ref after push=61190073428fbe487721262cfe1f4a77d4cb5d2f
+```
+
+The first remote clone command exceeded its command window and left no
+resolvable `HEAD`; no output from that state was used. The new repository was
+completed with an exact remote fetch and detached switch to F. Its status was
+clean before and after all operations. From that checkout, the 65-test focused
+suite and Ruff passed, then the complete exporter ran successfully into two
+new external roots:
+
+```text
+/tmp/rtdl-cgo2027-R5-F611900734-build-a-20260906-1722
+/tmp/rtdl-cgo2027-R5-F611900734-build-b-20260906-1722
+```
+
+The complete roots were byte-identical. Both reproduced the pre-F projection,
+summary, manifest, private provenance, receipt, and archive identities. Reuse
+of root A returned exit 1 with overwrite refused. The archive was extracted to
+`/tmp/RTDL CGO final F replay 611900734/rtdl-cgo2027-artifact`; isolated normal
+and optimized Python replay both returned exit 0 and
+`PASS__OFFLINE_PROJECTION_RECOUNT`. The public identity scan returned no match,
+and the packaged verifier was byte-identical to F.
+
+```text
+projection=fa30b906b0d5a6edfdcc3267f24cea8274c9c9450a79edeef0058e89f6d252ca
+summary=54ecfddf642cfbd00dfba8af343392524143781744c698e2bc72a3c1b3843105
+manifest=b0a26d5630815f65035f6c58e9429d865d47a52fd13ec7117eb3d2d0bbfa653a
+archive=963acc1c543df70609fccc06e0fa79f63b886be75b46699b9a2a51c662092639
+archive_bytes=179978
+archive_members=9
+R5_FINAL_F_REHEARSAL_REPORT.md=249a012cf7435c2dc40f998dc657173201ea773cfe015c02a88c67fb5e4f734c
+CLAIM_LEDGER.json=f148027baa49756bdd22d24d7c5c77058a951653dd73edf9308a97cb412370d8
+EVIDENCE_INDEX.json=dcb2202f9a572d302606057b81dcd66eadddd06cba469a071b34f5e548ba5be4
+STATUS.json=fd29698dd296b6d3a54e9160be6913ebcdecb30f2f3ba4e8d135d0b80aae8e03
+memory/progress.md=0ee3675a5d396f07d76d2b02dbb6966d9c4f11706f73925a16d289b30252a1fc
+```
+
+`R5=CLOSED_WITH_EVIDENCE`. R4, R6, R7, and R8 remain open, and claim
+authorization remains false.
