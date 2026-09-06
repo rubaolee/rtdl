@@ -114,13 +114,46 @@ class Goal5848DirectBridgeTest(unittest.TestCase):
     def test_direct_build_receipt_requires_internal_seal(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
+            source = root / "source/goal5802_premeasurement/direct_worker.cpp"
+            dependency = root / "source/goal5796_matched/direct_optix.cpp"
+            source.parent.mkdir(parents=True)
+            dependency.parent.mkdir(parents=True)
+            source.write_bytes(b"source")
+            dependency.write_bytes(
+                (
+                    Path(__file__).resolve().parents[1]
+                    / "experiments/goal5796_matched/direct_optix.cpp"
+                ).read_bytes()
+            )
             binary = root / "direct"
             binary.write_bytes(b"binary")
             derivation = {
-                "schema": "rtdl.goal5848.direct_source_derivation.v1",
-                "status": "PASS__EXACT_TWO_CONSTANT_DERIVATION",
-                "derived_sha256": "a" * 64,
+                "schema": "rtdl.goal5848.direct_source_derivation.v2",
+                "status": (
+                    "PASS__PINNED_INCLUDE_BUNDLE_AND_EXACT_TWO_CONSTANT_DERIVATION"
+                ),
+                "derived_sha256": direct_bridge._sha256_file(source),
+                "derived_source_bundle_relative_path": (
+                    "source/goal5802_premeasurement/direct_worker.cpp"
+                ),
                 "parent_sha256": "b" * 64,
+                "include_dependency": {
+                    "directive_utf8": (
+                        '#include "../goal5796_matched/direct_optix.cpp"'
+                    ),
+                    "source_relative_path": (
+                        "experiments/goal5796_matched/direct_optix.cpp"
+                    ),
+                    "bundle_relative_path": (
+                        "source/goal5796_matched/direct_optix.cpp"
+                    ),
+                    "bytes": 25148,
+                    "sha256": (
+                        "2533a14152e441f97690e8e427e97f1be5f1747ee8faa0f181cd05b438a01383"
+                    ),
+                    "regular_file_required": True,
+                    "semantic_change": False,
+                },
                 "optix_cuda_or_output_logic_changed": False,
             }
             derivation["receipt_sha256"] = digest(derivation)
@@ -131,7 +164,8 @@ class Goal5848DirectBridgeTest(unittest.TestCase):
                     "rtdl.goal5802.direct_worker_untimed_build_receipt.v2"
                 ),
                 "status": "PASS__SOURCE_TO_DIRECT_WORKER__UNTIMED",
-                "direct_source_sha256": "a" * 64,
+                "direct_source_sha256": direct_bridge._sha256_file(source),
+                "command": [str(source.resolve(strict=True))],
                 "output_bytes": len(b"binary"),
                 "output_sha256": direct_bridge._sha256_file(binary),
             }
@@ -144,6 +178,15 @@ class Goal5848DirectBridgeTest(unittest.TestCase):
                 direct_worker=binary,
             )
             direct_bridge._validate_derivation_and_build(args)
+            dependency.write_bytes(dependency.read_bytes() + b"\n")
+            with self.assertRaisesRegex(RuntimeError, "identity differs"):
+                direct_bridge._validate_derivation_and_build(args)
+            dependency.write_bytes(
+                (
+                    Path(__file__).resolve().parents[1]
+                    / "experiments/goal5796_matched/direct_optix.cpp"
+                ).read_bytes()
+            )
             build["output_bytes"] += 1
             build_path.write_text(json.dumps(build))
             with self.assertRaisesRegex(RuntimeError, "identity differs"):

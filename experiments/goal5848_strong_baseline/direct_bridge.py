@@ -101,19 +101,69 @@ def _validate_derivation_and_build(args: argparse.Namespace) -> dict[str, object
     derivation_seal = derivation_unsigned.pop("receipt_sha256", None)
     build_unsigned = dict(build)
     build_seal = build_unsigned.pop("receipt_sha256", None)
+    bundle_root = args.derivation_receipt.resolve(strict=True).parent
+    source_candidate = (
+        bundle_root / "source/goal5802_premeasurement/direct_worker.cpp"
+    )
+    dependency_candidate = (
+        bundle_root / "source/goal5796_matched/direct_optix.cpp"
+    )
+    if (
+        source_candidate.is_symlink()
+        or dependency_candidate.is_symlink()
+        or source_candidate.parent.is_symlink()
+        or dependency_candidate.parent.is_symlink()
+    ):
+        raise RuntimeError("Goal5848 Direct source bundle contains a symlink")
+    expected_source = source_candidate.resolve(strict=True)
+    expected_dependency = dependency_candidate.resolve(strict=True)
+    include_dependency = derivation.get("include_dependency")
+    expected_include_dependency = {
+        "directive_utf8": '#include "../goal5796_matched/direct_optix.cpp"',
+        "source_relative_path": (
+            "experiments/goal5796_matched/direct_optix.cpp"
+        ),
+        "bundle_relative_path": (
+            "source/goal5796_matched/direct_optix.cpp"
+        ),
+        "bytes": 25148,
+        "sha256": (
+            "2533a14152e441f97690e8e427e97f1be5f1747ee8faa0f181cd05b438a01383"
+        ),
+        "regular_file_required": True,
+        "semantic_change": False,
+    }
+    build_command = build.get("command")
     if (
         derivation_seal != digest(derivation_unsigned)
         or build_seal != digest(build_unsigned)
         or
         derivation.get("schema")
-        != "rtdl.goal5848.direct_source_derivation.v1"
+        != "rtdl.goal5848.direct_source_derivation.v2"
         or derivation.get("status")
-        != "PASS__EXACT_TWO_CONSTANT_DERIVATION"
+        != "PASS__PINNED_INCLUDE_BUNDLE_AND_EXACT_TWO_CONSTANT_DERIVATION"
         or derivation.get("optix_cuda_or_output_logic_changed") is not False
+        or derivation.get("derived_source_bundle_relative_path")
+        != "source/goal5802_premeasurement/direct_worker.cpp"
+        or include_dependency != expected_include_dependency
+        or not expected_source.is_file()
+        or not expected_dependency.is_file()
+        or _sha256_file(expected_source) != derivation.get("derived_sha256")
+        or expected_dependency.stat().st_size
+        != expected_include_dependency["bytes"]
+        or _sha256_file(expected_dependency)
+        != expected_include_dependency["sha256"]
+        or (
+            expected_source.parent
+            / "../goal5796_matched/direct_optix.cpp"
+        ).resolve(strict=True)
+        != expected_dependency
         or build.get("schema")
         != "rtdl.goal5802.direct_worker_untimed_build_receipt.v2"
         or build.get("status") != "PASS__SOURCE_TO_DIRECT_WORKER__UNTIMED"
         or build.get("direct_source_sha256") != derivation.get("derived_sha256")
+        or not isinstance(build_command, list)
+        or build_command.count(str(expected_source)) != 1
         or build.get("output_bytes") != binary.stat().st_size
         or build.get("output_sha256") != _sha256_file(binary)
     ):

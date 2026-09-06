@@ -389,9 +389,12 @@ build_native "$PREDECESSOR_ROOT" "$PREDECESSOR_NATIVE_ROOT" "$PREDECESSOR_COMMIT
 
 stage "build_direct_optix_lower_bound"
 DIRECT_ROOT="$OUTPUT_ROOT/direct"
-mkdir -p "$DIRECT_ROOT"
+DIRECT_SOURCE="$DIRECT_ROOT/source/goal5802_premeasurement/direct_worker.cpp"
+DIRECT_INCLUDE_DEPENDENCY="$DIRECT_ROOT/source/goal5796_matched/direct_optix.cpp"
+mkdir -p "$(dirname "$DIRECT_SOURCE")" "$(dirname "$DIRECT_INCLUDE_DEPENDENCY")"
 "$PYTHON" "$REPO_ROOT/scripts/goal5848_render_direct_worker.py" \
-  --output "$DIRECT_ROOT/direct_worker.cpp" \
+  --output "$DIRECT_SOURCE" \
+  --include-dependency-output "$DIRECT_INCLUDE_DEPENDENCY" \
   --receipt "$DIRECT_ROOT/derivation_receipt.json" \
   > "$OUTPUT_ROOT/logs/direct_render.stdout" \
   2> "$OUTPUT_ROOT/logs/direct_render.stderr"
@@ -411,7 +414,7 @@ fi
 "$PYTHON" "$REPO_ROOT/scripts/goal5802_build_direct_worker_untimed.py" \
   --recipe "$DIRECT_ROOT/build_recipe.json" \
   --cxx "$(command -v g++)" \
-  --direct-source "$DIRECT_ROOT/direct_worker.cpp" \
+  --direct-source "$DIRECT_SOURCE" \
   --optix-include "$OPTIX_HEADERS/include" \
   --cuda-include "$CUDA_ROOT/include" \
   --output "$DIRECT_ROOT/direct_worker" \

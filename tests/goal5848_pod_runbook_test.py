@@ -80,6 +80,8 @@ class Goal5848PodRunbookTest(unittest.TestCase):
         )
         self.assertIn("--device-artifact-build-receipt", text)
         self.assertIn("--aot-cache-authority", text)
+        self.assertIn("--include-dependency-output", text)
+        self.assertIn("source/goal5796_matched/direct_optix.cpp", text)
         self.assertIn("--unlink-signing-private-after-build", text)
         self.assertIn("--require-cold-first", text)
         self.assertIn("retry_count=0", text)
