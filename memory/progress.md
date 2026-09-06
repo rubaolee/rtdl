@@ -19293,5 +19293,29 @@ The projection and recount identities remain unchanged. The package now has an
 explicit project-authored component/distribution inventory and excludes all
 third-party source, CUDA/OptiX components, drivers, proprietary headers,
 measured binaries, and keys. `FREEZE_RECORD.md` and
-`R5_FINAL_F2_REHEARSAL_REPORT.md` are the current R5 records. R4, R6, R7, and
-R8 remain open; no public/manuscript claim is authorized.
+`R5_FINAL_F2_REHEARSAL_REPORT.md` are the current R5 records. At that
+checkpoint R4, R6, R7, and R8 remained open; no public/manuscript claim was
+authorized.
+
+## R4 manuscript and R6 final delivery candidate complete (2026-09-06)
+
+The obsolete 17-page draft was replaced with an eight-page anonymous CGO 2027
+candidate centered on bounded whole-protocol admission. It keeps the
+topology-specific lowerer inside the TCB, limits the prospective-composition
+evidence to its actual author-defined domain, preserves the receipt deviation
+and every mandatory adverse lifecycle/predecessor result, and does not claim
+arbitrary Python, arbitrary Callback IR, topology-generic lowering, intrinsic
+speedup, broad usability, or prevalence. Tectonic built the exact PDF with no
+horizontal overfull boxes or unresolved references. Its one 1.90399pt
+end-of-document output-routine overfull vbox has no visible clipping or overlap;
+every rendered page was inspected. The PDF SHA-256 is `4529946f...453`.
+
+R6 paired those bytes with the exact final F2 nine-member anonymous archive,
+180,308 bytes with SHA-256 `916cedbb...38b8`. The archive copy is byte-identical
+to the clean-F2 rehearsal output. Normal and optimized isolated Python replay
+passed from each of two fresh extraction roots, including one with spaces;
+all four JSON outputs were byte-identical and reconstructed 160 formal cells,
+20,480 steady samples, 1,024 Arm-A instrumentation workers, 20 AOT records and
+eight competence records. No GPU or project import was performed. R4 and R6
+are internally closed with evidence; R7 final-byte review and R8 submission
+gate remain open. No upload or claim authorization has occurred.

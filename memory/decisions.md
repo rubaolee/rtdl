@@ -8560,3 +8560,35 @@ committed, checked out cleanly, and used for the complete external-root export,
 twin deterministic package build, foreign-path offline replay, and exact hash
 binding. Reviews already received are pre-final inputs, not final-byte review;
 external human authoring evidence remains zero.
+
+## D249: bind R4/R6 to exact final candidate bytes without authorizing claims (2026-09-06)
+
+Accept the rewritten eight-page manuscript as the R4 candidate and the exact
+PDF/archive pair as the R6 candidate only at their recorded SHA-256 identities.
+The manuscript must retain the topology-specific TCB, finite authored-domain
+limits, receipt deviation, adverse lifecycle rows and predecessor regressions.
+The anonymous archive remains an offline evidence-recount package, not a GPU
+rerun, product installation or full private-authority reconstruction.
+
+R4/R6 internal mechanical closure does not close R7 or R8. Review must target
+the actual PDF and archive bytes; every material finding must be closed or the
+affected claim removed. No upload, submission record or public/manuscript claim
+authorization exists until the remaining gates actually pass. A later byte
+change invalidates the corresponding final-byte review and requires a new
+identity rather than silent substitution.
+
+## D250: supersede the pre-hostile-review PDF identity before R7 (2026-09-06)
+
+Replace the earlier R4/R6 PDF candidate with the post-hostile-review bytes at
+SHA-256 `4529946fff21edd2e5634792397d5e3af0213f6c2ab2c4ebdf001b9246f73453`
+and 138,969 bytes. The changes correct the anonymous-package description,
+disambiguate 20 checker instances from applications, add ACM accessibility and
+classification metadata, and remove bibliography warnings; they do not change
+measured code or evidence. The artifact archive remains byte-identical at
+SHA-256 `916cedbb7001c7aa43e66df3f992b543b7b3ca5a013f0f997790113a2e3738b8`.
+
+Record the exact build's single 1.90399pt end-of-document output-routine
+overfull vbox rather than claiming zero overfull boxes. All eight rendered pages
+show no clipping or overlap. Because the PDF bytes changed before R7, any review
+of the superseded identity is non-final; R7 remains open against only the new
+identity.

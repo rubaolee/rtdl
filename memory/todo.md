@@ -12060,8 +12060,9 @@ new artifact still require final-version review. Do not mark those gates closed.
       anonymous-package rehearsal.
 - [x] R5: commit final tooling snapshot F2 and repeat the complete package replay
       from its clean remote checkout before the irreversible freeze.
-- [ ] R4/R6: rewrite the manuscript and deliver/replay the corresponding anonymous
-      artifact; retain first-result regressions and other adverse observations.
+- [x] R4/R6: rewrite and render the manuscript, pair it with the exact anonymous
+      artifact, and replay that package from two isolated extraction roots;
+      retain first-result regressions and other adverse observations.
 - [ ] R7/R8: obtain actual final-byte reviews, close each retained-claim finding,
       complete PDF/anonymity/hash checks, and record submission only when executed.
 
@@ -12085,8 +12086,10 @@ new artifact still require final-version review. Do not mark those gates closed.
 - [x] From a clean remote checkout of F2, repeat the complete regressions,
       indivisible export, twin package, overwrite rejection, foreign-path
       normal/optimized replay, identity scan, component inventory, and hash binding.
-- [ ] Rewrite and render the complete bounded manuscript from the frozen R2
+- [x] Rewrite and render the complete bounded manuscript from the frozen R2
       projection. Keep all mandatory adverse disclosures in main text.
-- [ ] Build/replay the final anonymous package, obtain review of the actual final
-      PDF/package bytes, complete submission gates, and record upload only after
+- [x] Pair and replay the exact final anonymous package with the final PDF in two
+      isolated extraction roots, including one path with spaces.
+- [ ] Obtain review of the actual final PDF/package bytes, close or descope every
+      material finding, complete submission gates, and record upload only after
       it actually occurs.

@@ -1,8 +1,8 @@
 {
   "schema": "rtdl.cgo2027.post_goal5851_submission_remediation.status.v1",
-  "updated_at_utc": "2026-09-06T21:38:06Z",
-  "updated_at_et": "2026-09-06T17:38:06-0400",
-  "overall_status": "REMEDIATION_IN_PROGRESS__NOT_SUBMISSION_READY__NO_NEW_PERFORMANCE_DEVELOPMENT",
+  "updated_at_utc": "2026-09-06T22:25:01Z",
+  "updated_at_et": "2026-09-06T18:25:01-0400",
+  "overall_status": "FINAL_CANDIDATE_BYTES_READY__PENDING_R7_R8__NOT_SUBMITTED",
   "controlling_directive": {
     "path": "history/internal_docs/lead_execution_directive_post_goal5851_20260906.md",
     "sha256": "da018cd17013252f2bcc10d5cbca7723008f7aaf8a224d85b02b85f89ce6827d"
@@ -63,7 +63,7 @@
     },
     "claim_ledger": {
       "path": "CLAIM_LEDGER.json",
-      "sha256": "f148027baa49756bdd22d24d7c5c77058a951653dd73edf9308a97cb412370d8",
+      "sha256": "476b623eecb92bdf30432623b95966c884ee13523ea57b88398f3369ab863006",
       "claim_count": 21,
       "all_claims_authorized": false,
       "external_final_bytes_review": "PENDING_R7"
@@ -141,14 +141,14 @@
       "errata_count": 14
     },
     "current_control_hashes": {
-      "AGENTS.md": "a4b0938d225668d6d3ef870aa748d4a82d22e3d3d3eb7d07e54e35ebd1833cc5",
+      "AGENTS.md": "8417a8ee819e1ca6ba94e80127c9ae108bf80d24a0e793be39895172c8e42807",
       "KNOWN_STALE_CUSTODY_CHECKS.md": "9fa769bf587dc27db4bf772557d38e4697f049d6aa78178d37802b91762ae991",
-      "README.md": "c52eb28a97bdd34d5c286a08a620c1042ce135939a35ea5e4a034a26c27ff98d",
-      "paper/cgo2027/README.md": "a3993532b611661d14836871e8fbea5f149b3d51737617d8c4b0e45a4c4c3f84",
+      "README.md": "227b30e2d5e513907ece1a17f5ec9f8c7f43509a2fa620fa3ea72c04af01b420",
+      "paper/cgo2027/README.md": "1989d14f351d7dbcf864a6ed5d95566c0fd288133fbd59314791bf3727f8a692",
       "history/internal_docs/cgo2027_final_sprint_goals_20260905.md": "dd4b7676b7c93af04bdc7373a3a1a57bbc2469782c07030acfa41938a18eabe6",
-      "memory/decisions.md": "cc62cf08052988ec8eb37fa0a3f078c187c7d84af55ba99ad36a46708e2afd7c",
-      "memory/progress.md": "4e1283c2bdac2d73eaf6fe3b2fe80b9980eabeabf31d83b93f0bb8be97233454",
-      "memory/todo.md": "c3d887626803510bb780e597c8521b147a5a5fc7a222e74f36e2f0a272127b74"
+      "memory/decisions.md": "61f40275d229a7fa9bf3a706ebe960266bfec8e8f8c448165f1b2475e58188b4",
+      "memory/progress.md": "571dd226705753f0d7249fe147bb1b1bcd184f7dcbb1ef249ac15c8a18524ce5",
+      "memory/todo.md": "612258cbf54e8bc5eea3c2fa7ec0f8d46838f888c16508a66f69cce8b15dbdfb"
     },
     "custody_replay": {
       "goal5837_current_tree_exit": 1,
@@ -161,6 +161,83 @@
     "changed_control_relative_links_checked": 7,
     "changed_control_missing_links": 0,
     "production_native_experiment_diff_from_M": []
+  },
+  "r4_manuscript": {
+    "status": "CLOSED_WITH_EVIDENCE__FINAL_BYTES_PENDING_R7_REVIEW",
+    "report": {
+      "path": "R4_MANUSCRIPT_REWRITE_AND_RENDER_REPORT.md",
+      "sha256": "2e534bbd2986bba0a7838889e43ecce705381c2b76925f7cfd1cdddf55447af2"
+    },
+    "source": {
+      "path": "paper/cgo2027/main.tex",
+      "sha256": "612a10d0da5a919626b67401cf2c887bf6d39207e367c5cf663e6cf9f5248601"
+    },
+    "bibliography": {
+      "path": "paper/cgo2027/references.bib",
+      "sha256": "7eda90e69e190c3cbd545f86fbf964fa252b75265bc523a1d8dc06c9c9310c66",
+      "bibtex_warnings": 0
+    },
+    "pdf": {
+      "path": "paper/cgo2027/main.pdf",
+      "sha256": "4529946fff21edd2e5634792397d5e3af0213f6c2ab2c4ebdf001b9246f73453",
+      "bytes": 138969,
+      "pages": 8,
+      "page_size": "US Letter",
+      "all_pages_rendered_and_inspected": true,
+      "horizontal_overfull_boxes": 0,
+      "vertical_overfull_boxes": 1,
+      "vertical_overfull_detail": "1.90399pt at end-of-document output routine; no visible clipping or overlap",
+      "acm_class_warnings": 0,
+      "unresolved_citations_or_references": 0,
+      "anonymity_scan_passed": true
+    },
+    "submission_evidence_tests": {
+      "passed": 14,
+      "failed": 0
+    },
+    "legacy_public_doc_tests": {
+      "candidate_errors": 13,
+      "candidate_failures": 1,
+      "same_failure_reproduced_at_pre_candidate_head": "63f738f82aaf84ad1be28531f970ff9ca1affe5b",
+      "classification": "preexisting_out_of_scope_restricted_repository_documentation_debt"
+    },
+    "public_or_manuscript_claim_authorized": false
+  },
+  "r6_final_delivery": {
+    "status": "CLOSED_WITH_EVIDENCE__PENDING_R7_R8",
+    "report": {
+      "path": "R6_FINAL_DELIVERY_PAIR_AND_REPLAY_REPORT.md",
+      "sha256": "35945caded4ee4223498ca88574c6680bd6292203a349c4c4e840b402f2b7f4d"
+    },
+    "delivery_pdf": {
+      "path": "output/pdf/rtdl_cgo2027_submission_candidate.pdf",
+      "sha256": "4529946fff21edd2e5634792397d5e3af0213f6c2ab2c4ebdf001b9246f73453",
+      "bytes": 138969,
+      "byte_identical_to_paper_pdf": true
+    },
+    "delivery_artifact": {
+      "path": "output/artifact/rtdl-cgo2027-artifact.tar.gz",
+      "sha256": "916cedbb7001c7aa43e66df3f992b543b7b3ca5a013f0f997790113a2e3738b8",
+      "bytes": 180308,
+      "members": 9,
+      "byte_identical_to_clean_F2_rehearsal_archive": true
+    },
+    "isolated_replay": {
+      "roots": [
+        "/tmp/rtdl-cgo-r6-a.fBH925/rtdl-cgo2027-artifact",
+        "/tmp/RTDL CGO R6 b.ZRgGFz/rtdl-cgo2027-artifact"
+      ],
+      "normal_runs": 2,
+      "optimized_runs": 2,
+      "all_exit_zero": true,
+      "all_outputs_byte_identical": true,
+      "output_sha256": "c47aaee24bea18be6b30eaae45a856e30c7a2a74bd5b50fe7daf0f741bdf0ee8",
+      "gpu_execution_performed": false,
+      "project_import_performed": false
+    },
+    "anonymous_payload_forbidden_identity_matches": 0,
+    "verifier_contains_generic_split_deny_list_tokens": true,
+    "public_or_manuscript_claim_authorized": false
   },
   "candidate_f_precommit_path_ownership": [
     {
@@ -205,9 +282,9 @@
     "R1": "CLOSED_WITH_EVIDENCE",
     "R2": "CLOSED_WITH_EVIDENCE__FINAL_F2_REHEARSAL_PASSED",
     "R3": "CLOSED_WITH_EVIDENCE",
-    "R4": "OPEN",
+    "R4": "CLOSED_WITH_EVIDENCE__FINAL_BYTES_PENDING_R7_REVIEW",
     "R5": "CLOSED_WITH_EVIDENCE__FINAL_F2_FROZEN",
-    "R6": "OPEN",
+    "R6": "CLOSED_WITH_EVIDENCE__PENDING_R7_R8",
     "R7": "OPEN",
     "R8": "OPEN"
   },

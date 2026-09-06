@@ -1,1578 +1,715 @@
 \documentclass[sigplan,screen,review,anonymous]{acmart}
 
-% Suppress pdfTeX info dates/IDs; the final review build also strips acmart XMP.
-\ifdefined\pdfinfoomitdate\pdfinfoomitdate=1\fi
-\ifdefined\pdftrailerid\pdftrailerid{}\fi
-\ifdefined\pdfsuppressptexinfo\pdfsuppressptexinfo=15\fi
-
 \usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{microtype}
 \usepackage{tabularx}
 \usepackage{xspace}
-\usepackage{balance}
-\usepackage{tikz}
-\usetikzlibrary{arrows.meta,positioning,fit}
 
-\newcommand{\rtdl}{RTDL\xspace}
-\newcommand{\pyoptix}{PyOptiX\xspace}
-\newcommand{\pyoptixcompat}{PyOptiX-compat\xspace}
-\newcommand{\owl}{OWL\xspace}
-
-\title{Whole-Protocol Admission for Repurposed Ray-Tracing Programs}
-
-\author{Anonymous Author(s)}
-\affiliation{\institution{Anonymous Institution}}
-
+\settopmatter{printfolios=true}
 \setcopyright{none}
-\settopmatter{printacmref=true}
+\renewcommand\footnotetextcopyrightpermission[1]{}
+\setlength{\emergencystretch}{0.75em}
+
+\newcommand{\rtdl}{\textsc{RTDL}\xspace}
+
+\title{Whole-Protocol Admission for Restricted Python on RT Hardware}
 \acmConference[CGO '27]{IEEE/ACM International Symposium on Code Generation
-and Optimization}{March 20--24, 2027}{Salt Lake City, UT, USA}
+and Optimization}{March 20--24, 2027}{Salt Lake City, Utah, USA}
 \acmYear{2027}
-\acmISBN{}
-\acmDOI{}
-
-\ccsdesc[500]{Software and its engineering~Domain specific languages}
-\ccsdesc[500]{Software and its engineering~Software verification}
-\ccsdesc[300]{Computing methodologies~Ray tracing}
-
-\keywords{ray tracing, domain-specific languages, protocol admission,
-application-semantic contracts, OptiX}
-
-\begin{abstract}
-Ray-tracing APIs validate program and platform legality but leave application
-meaning distributed across host composition, multiple device callbacks,
-payload and attribute conventions, continuation code, and the executable that
-is ultimately launched. We present \rtdl, a bounded whole-protocol compilation
-and admission model for repurposed OptiX computations. A backend-neutral,
-role-indexed Callback IR represents typed callback computation and effects;
-fixed-constructor semantic, physical, continuation, and identity authorities extend
-that IR into one admission unit. \rtdl checks cross-role effects, semantic ABI
-ownership, physical bindings, status-gated continuation and completeness, and
-executable identity. Its public GPU surface has two fixed protocol constructors
-over two physical geometry kinds and one bounded user-authored built-in-triangle
-Callback-IR template; arbitrary IR and new protocol topologies remain unsupported.
-
-On two project-designed non-rendering tasks, single-leaf mutations holding
-compiler projection bytes fixed show that all 19 populated contract leaves are
-decision-bearing: 7 role/effect, 1 semantic-ABI, 7 physical-binding,
-2 continuation/completeness, and 2 executable-identity leaves. This establishes
-liveness for these two contracts, not vocabulary completeness, target-projection
-correctness, or a soundness theorem. In a disclosed two-line repaired PyOptiX
-FFI route with OptiX~9 typed-payload semantics active, all five preregistered
-fault realizations reach launch; a separate pinned NVIDIA \owl route also
-launches all five. The supported responsibility result is three full wrong-output
-residuals, one partial status-gated continuation/completeness residual, and
-checked-executable binding support; \rtdl rejects the corresponding
-declarations before launch.
-
-Across nine project-authored ports of published RT mappings,
-13 selected lanes execute exactly through the base callback path and six
-application-neutral composition batches. One project-selected SQL bag equijoin
-reuses an existing fixed constructor without a core change, but prospective unbiased
-new-application exams, third-party authors, and human usability studies remain
-zero. For performance, we compare current \rtdl with Direct CUDA/OptiX and
-\pyoptixcompat, a pinned NVIDIA \texttt{otk-pyoptix}~9.1.0 source build using
-the OptiX~9.0 compatibility API. On two matched tasks on one RTX~4000 Ada,
-steady RTDL/\pyoptixcompat passes the registered 1.05 noninferiority gate,
-with median differences of $-17\,\mu$s and $+1.22\,\mu$s, while post-import
-deployment-cold and prepare show setup deltas of 162--223\,ms. The Direct arm
-is descriptive. \rtdl does not discover ray-tracing mappings, execute arbitrary
-Callback IR, prove accepted-program correctness, or establish usability
-superiority or universal performance parity.
-\end{abstract}
+\copyrightyear{2027}
 
 \begin{document}
+
+\begin{abstract}
+Ray-tracing APIs expose fast traversal hardware through a callback protocol whose
+correctness depends on more than callback types: build-input topology, payload
+layout, lifecycle order, continuation rules, and the identity of the executable
+code must agree. Existing Python interfaces make the protocol accessible, but
+do not establish that a restricted user program and all of its generated native
+components form one admitted execution.
+
+We present \rtdl, a bounded whole-protocol admission design for Python-authored
+ray-tracing computations. A typed callback schema, topology-specific trusted
+lowerers, executable-identity checks, and lifecycle gates jointly admit a small
+set of complete routes rather than accepting callbacks in isolation. The
+current artifact supports two stable public constructors and a bounded route
+corpus covering triangle, custom-AABB, round-linear-curve, and sphere leaves;
+this is not arbitrary Python or topology-generic lowering. A prospective
+sealed-snapshot exam selected a sphere any-hit counting composition and produced
+two real OptiX launches with 12/12 oracle checks. A separate checker, which does
+not import the compiler, validates five generated-code property classes in 20
+registered instances, but remains a finite target-structure checker.
+
+Across two NVIDIA GPU generations, we evaluate 160 registered cells containing
+20,480 timed samples. At the prepared endpoint, public ahead-of-time \rtdl
+median latency is 1.077--1.175$\times$ a direct CUDA/OptiX implementation.
+First-result measurements are adverse: post-import \rtdl is
+1.560--1.837$\times$ a strong PyOptiX device-continuation baseline by median,
+with a 2.377$\times$ worst block. These results delimit the contribution:
+bounded protocol admission with near-direct prepared latency on two tasks, not
+intrinsic speedup, general lowering, or demonstrated usability.
+\end{abstract}
+
+\begin{CCSXML}
+<ccs2012>
+<concept>
+<concept_id>10011007.10011006.10011041</concept_id>
+<concept_desc>Software and its engineering~Compilers</concept_desc>
+<concept_significance>500</concept_significance>
+</concept>
+</ccs2012>
+\end{CCSXML}
+
+\ccsdesc[500]{Software and its engineering~Compilers}
+\keywords{ray tracing, restricted Python, protocol admission, GPU compilation}
+
 \maketitle
 
 \section{Introduction}
 
-Hardware ray-tracing APIs are increasingly repurposed for non-rendering
-computations such as spatial queries, graph processing, databases, and
-simulation. A recent review identifies 59 papers and systematically analyzes
-35 proposed RT solutions spanning 32 distinct problems, while also observing
-that profitable mappings remain irregular and difficult to
-predict~\cite{meneses2026rtcoresurvey}.
+Modern ray-tracing systems expose programmable stages around fixed-function
+traversal. OptiX, Vulkan ray tracing, and DirectX Raytracing let programs choose
+geometry representations, payload conventions, hit behavior, and launch
+topology~\cite{parker2010optix,nvidiaOptix9Guide,khronosVulkanInterfaces,microsoftDXRPAQ}.
+This flexibility has enabled non-rendering workloads to use RT cores, but it also
+creates an unusual language boundary. A callback can be locally well typed and
+still be unsafe or semantically wrong because it is paired with the wrong
+build-input kind, stale generated code, an incompatible payload, or an invalid
+lifecycle transition.
 
-For the application-to-RT correspondence studied here, we organize relevant
-systems by three established responsibilities.
-\emph{Interface systems} validate shader-stage interfaces, access contracts,
-and target legality~\cite{parker2010optix,nvidiaOptix9Guide,microsoftDXRPAQ,
-khronosVulkanInterfaces,slangCapabilities}. \emph{Construction systems}
-expose or organize host bindings, shader modules, acceleration structures,
-pipelines, shader binding tables (SBTs), resources, and
-launches~\cite{nvidiaPyOptix,nvidiaOWL,he2017shaderComponents,he2018slang}.
-\emph{Mapping systems} trace, specialize, or translate higher-level
-computations to RT-capable backends
-~\cite{jakob2022drjit,zheng2022luisa,frolov2024crossrt}. Systems may span
-classes; these labels identify their primary responsibility rather than their
-implementation form.
+Python bindings reduce API friction, but they do not eliminate this protocol
+problem. A Python user may assemble modules, program groups, shader-binding
+records, acceleration structures, streams, and buffers whose compatibility is
+represented only by convention. Conversely, a compiler that validates a
+restricted callback body but delegates the surrounding protocol to hand-written
+wrappers has proved only local compilation. The research question in this work
+is therefore:
 
-Even when one system spans these responsibilities, the documented checking
-units above do not jointly admit a repurposed computation as one
-application-semantic protocol. Its
-meaning is distributed across multiple device roles, payload and attribute
-slots, geometry construction, pipeline and SBT bindings, device status, host
-continuation, and the executable bytes that finally launch. Each piece may be
-legal while the complete protocol is wrong. A hit program can
-interpret an attribute as a primitive index although the intersection program
-wrote an application item identifier; a callback can omit state required by a
-downstream role; a host can consume a capacity-truncated output despite an
-overflow status; or a reviewed declaration can be paired with a different
-executable. Such faults are particularly dangerous in non-rendering workloads,
-where application-level exactness and completeness invariants are not
-represented by the RT API contract.
+\begin{quote}
+Can a restricted Python system admit an entire bounded ray-tracing protocol,
+including generated native code, executable identity, and lifecycle state,
+while retaining prepared-execution latency close to direct CUDA and OptiX?
+\end{quote}
 
-This paper studies a fourth responsibility, \emph{protocol admission}, and
-asks a deliberately narrower question than automatic mapping:
-\emph{after a developer has chosen a traversal formulation, can the complete
-callback protocol become the unit of compilation and admission?} We present
-\rtdl, which implements two fixed protocol constructors over two physical
-geometry kinds plus one bounded user-authored built-in-triangle template. The source and
-physical plan are checked as one obligation set; an accepted program is bound
-to generated code, target and native identities; and execution is exposed
-through a typed materialize--prepare--execute--close lifecycle. The application
-continues to own its algorithm, semantic oracle, and the decision to use ray
-tracing.
+We answer for a deliberately narrow domain. \rtdl accepts a typed, restricted
+callback representation and maps admitted programs to compiler-owned,
+topology-specific lowerers. It records the source, PTX, ABI, and native symbols
+that constitute an executable route; checks lifecycle transitions before
+launch; exposes status before output; and supplies an independent offline
+checker for selected generated-code properties. The canonical plan is a
+non-executable specification. Executable lowering remains in the trusted
+topology-specific implementation. This distinction is central: our evidence
+does not establish an arbitrary callback compiler.
 
-This bounded framing is important. \rtdl is not OptiX-equivalent, does not
-execute arbitrary verified Callback IR on the public GPU path, and does not
-establish prospective or third-party generalization. Its value proposition is
-instead analogous to a protocol IDL: it does not simplify the application
-algorithm, but it makes selected cross-component mismatches unrepresentable or
-rejectable before launch.
+This paper makes four contributions:
+\begin{enumerate}[leftmargin=*,itemsep=1pt,topsep=2pt]
+  \item A \emph{whole-protocol admission model} that binds callback effects,
+  topology, ABI, executable identity, and lifecycle state into one bounded
+  route decision.
+  \item A concrete Python-to-OptiX implementation with two stable public
+  constructors, four leaf kinds in the bounded route corpus, and explicit
+  topology-specific lowerers in the trusted computing base (TCB).
+  \item A finite, compiler-independent checker and mutation evidence that expose
+  what is checked, what remains trusted, and where the current guarantees stop.
+  \item A preregistered two-generation evaluation of two tasks: prepared public
+  latency is 1.077--1.175$\times$ Direct, while adverse first-result and
+  incomplete-receipt results constrain the claim.
+\end{enumerate}
 
-This paper contributes:
-\begin{itemize}
-  \item a backend-neutral Callback IR with typed records and views, bounded
-  control flow, role-indexed effects, numeric and resource contracts,
-  deterministic identity, and a fail-closed verifier;
-  \item a protocol-admission compilation unit, distinct from interface
-  checking, construction, and mapping, that combines the verified IR with
-  separate authorities for fixed-constructor semantics, physical bindings, continuation,
-  and identity to check
-  cross-role effects, semantic ABI ownership, physical bindings,
-  status-gated continuation and completeness, and checked-executable identity as
-  one unit, and carries acceptance through a typed
-  materialize--prepare--execute--close lifecycle;
-  \item a bounded OptiX implementation with two fixed public GPU protocol
-  constructors and one user-authored template inside a fixed static-triangle
-  \texttt{u32x3} physical/ABI shape, exercised by nine project-authored ports over thirteen
-  selected paper-derived lanes and six application-neutral composition
-  batches. These routes instantiate two of six OptiX~9 build-input enum kinds
-  (two of four leaf kinds). The counts report kind presence rather than
-  complete category support. The routes do not form an arbitrary
-  Callback-IR-to-GPU compiler; and
-  \item a claim-calibrated evaluation: all 19 populated leaves in two contracts
-  are decision-bearing, with seven, one, seven, two, and two leaves for
-  CP001--CP005, respectively; active
-  OptiX typed-payload and pinned \owl executions support three full
-  wrong-output residuals, one partial status-gated continuation/completeness
-  residual, and
-  executable-binding support; one project-selected reuse and one failed
-  transfer are preserved; and a same-target three-arm successor reports both
-  the passing steady and failing setup results against \pyoptixcompat, with
-  Direct CUDA/OptiX descriptive.
-\end{itemize}
+\section{The Protocol Mismatch}
 
-The leaf sweep is liveness evidence for two populated contracts. It does not
-establish vocabulary completeness, target-projection correctness, semantic
-soundness, or correctness of arbitrary accepted applications.
+\subsection{Why callback typing is insufficient}
 
-\section{Motivating Failure: Asking ``Which Item?'' and Getting ``Which Shelf?''}
+A ray callback runs inside a protocol distributed across host and device code.
+Its legal effects depend on its role: an any-hit callback may ignore or
+terminate an intersection, whereas a miss callback cannot. Its payload fields
+must agree with every producer and consumer. Its program group must match the
+acceleration-structure leaf kind. The launch must occur only after module,
+pipeline, shader-binding-table, geometry, and output state have been prepared.
+Finally, the code checked by the compiler must be the code loaded by the runtime.
 
-\noindent\textbf{One-sentence version.} \rtdl prevents a repurposed RT program
-from silently returning \emph{where an object is stored} when the application
-asked \emph{which object it is}.
+These are related to typestate, interface automata, and session-style protocol
+reasoning~\cite{strom1986typestate,deAlfaro2001interfaceAutomata,honda2016multiparty},
+but the FFI and generated-code boundary adds an identity problem familiar from
+linking and foreign interfaces~\cite{furr2005ffi,patterson2017linkingTypes}.
+Table~\ref{tab:obligations} summarizes the obligations used here.
 
-Imagine a warehouse with shelf 0 holding item 10 and shelf 1 holding item 20.
-Lookup 100 should return item 10, and lookup 101 should return item 20. A buggy
-worker instead returns the shelf numbers 0 and 1. Nothing crashes: 0, 1, 10,
-and 20 are all valid integers. The answers have the right machine type but the
-wrong meaning. Figure~\ref{fig:semantic-abi-example} shows this exact failure.
+\begin{table}[t]
+  \caption{Whole-protocol obligations in the current system.}
+  \label{tab:obligations}
+  \small
+  \begin{tabular}{@{}p{.25\columnwidth}p{.67\columnwidth}@{}}
+    \toprule
+    Obligation & Admission question \\
+    \midrule
+    Role/effect & Is each operation legal in this callback role? \\
+    Semantic ABI & Do payload and result meanings agree end to end? \\
+    Physical ABI & Do widths, alignments, slots, and row layouts agree? \\
+    Topology & Does the callback set match the build-input and leaf kind? \\
+    Identity/state & Is the checked executable the loaded executable, and is every state transition legal? \\
+    \bottomrule
+  \end{tabular}
+\end{table}
 
-\begin{figure*}[t]
-\centering
-\begin{tikzpicture}[
-  >=Latex,
-  node distance=6mm,
-  panel/.style={draw,rounded corners,align=left,inner sep=7pt,
-                text width=0.275\textwidth,font=\small},
-  intent/.style={panel,fill=blue!6},
-  wrong/.style={panel,fill=red!6},
-  gate/.style={panel,fill=green!7},
-  flow/.style={->,thick}
-]
-\node[intent] (intent) {
-  \textbf{1. What the application asks}\\[2pt]
-  shelf $0$ holds item $10$\\
-  shelf $1$ holds item $20$\\[2pt]
-  ``Which items matched?''\\
-  expected: $\{(100,10),(101,20)\}$
-};
-\node[wrong,right=of intent] (wrong) {
-  \textbf{2. The silent mix-up}\\[2pt]
-  the program returns shelf numbers\\
-  instead of item identifiers\\[2pt]
-  observed: $\{(100,0),(101,1)\}$\\[2pt]
-  every value is a valid integer;\\
-  the RT system reports success
-};
-\node[gate,right=of wrong] (gate) {
-  \textbf{3. What \rtdl checks}\\[2pt]
-  promised meaning: \emph{item ID}\\
-  generated program writes: \emph{shelf position}\\[2pt]
-  the meanings disagree\\
-  $\Rightarrow$ refuse before launch\\[2pt]
-  \texttt{CP002: semantic-ABI mismatch}
-};
-\draw[flow] (intent) -- (wrong);
-\draw[flow] (wrong) -- (gate);
-\end{tikzpicture}
-\caption{Everyday view of the executed counterexample. In the actual RT
-program, a shelf number is an OptiX primitive position, an item label is an
-application item identifier, and the handoff is attribute slot zero. The exact
-correct and defective rows are preserved by the evaluation. \rtdl does not
-decide which objects match; it checks that the callbacks agree on what the
-handoff number means. The figure isolates CP002, not all five obligations.}
-\Description{Three panels show shelves zero and one holding items ten and
-twenty; a program silently returns shelf numbers instead of item identifiers;
-and RTDL refuses to launch because the promised and implemented meanings of the
-number disagree.}
-\label{fig:semantic-abi-example}
-\end{figure*}
+\subsection{A concrete semantic-ABI failure}
 
-The executed RT program has exactly this shape. Primitive positions 0 and 1 are
-the shelves; application object identifiers 10 and 20 are the item labels. The
-intersection callback produces attribute slot zero and any-hit consumes it to
-emit a pair. The defective producer writes the primitive position rather than
-the application identifier. The slot is still a valid \texttt{u32}; native
-access validation, GAS, program groups, pipeline, SBT, and launch all remain
-legal. The evaluated PyOptiX, active typed-OptiX, and OWL routes therefore reach
-launch and return $(100,0)$ and $(101,1)$. \rtdl instead compares the promised
-meaning with the regenerated callback and rejects before launch.
+Consider two acceleration-structure primitives at physical positions 0 and 1
+whose application identifiers are 10 and 20. Queries 100 and 101 should emit
+the pairs $(100,10)$ and $(101,20)$. In an executed defective route, the
+intersection callback instead placed the primitive position in attribute slot
+zero. The any-hit callback consumed that slot as an application identifier and
+returned $(100,0)$ and $(101,1)$. Every value remained a valid \texttt{u32};
+the acceleration structure, module, program groups, pipeline, shader binding
+table, and launch were legal. Typed OptiX and construction routes reached
+launch and returned the wrong rows.
 
-The error is not a bad number; it is a broken agreement about what the number
-means. We call that agreement a cross-role semantic ABI. Checking it requires
-relating the producer, consumer, physical binding, and launched executable.
-The same whole-program view is needed for effects, capacity status, and
-continuation.
+The defect is not a machine-type error but a disagreement over what the bits
+mean. In \rtdl, a fixed route contract says that attribute slot zero denotes an
+application identifier, while the compiled target description records the
+actual row source. Admission compares these authorities and rejects the
+disagreement before launch. The system does not infer which objects should
+match, and an application oracle is still necessary. Admission instead rejects
+the broken producer--consumer agreement independently of whether a test input
+happens to make primitive positions and identifiers differ.
 
-The failure does not depend on spatial expertise. In a database join it is the
-difference between a row identifier and a storage position; in sorting it is
-the difference between a persistent record identifier and its current array
-position. We use the spatial instance because it is the actual executed
-counterexample. Sorting is intuition only: \rtdl neither discovers a sorting
-mapping nor proves a comparator, rank computation, or scatter correct.
+\subsection{Failure model}
 
-An application test catches this particular input because item IDs 10 and 20
-differ from shelf positions 0 and 1. If the numbers happened to coincide, that
-test could hide the bug. More generally, tests sample inputs; they do not reject
-the broken agreement itself. \rtdl therefore complements rather than replaces
-testing: the oracle checks observed answers, while admission checks the declared
-protocol before any answer is produced.
+We distinguish four outcomes. \emph{Reject} means admission fails before a
+launch. \emph{Status failure} means execution reports failure and output is not
+published. \emph{Wrong output} means a worker reports success but an independent
+oracle disagrees. \emph{Unverified output} means a value exists without the
+required receipt or oracle evidence. The distinction prevents a status gate
+from being described as numerical correctness and prevents a generated plan
+from being described as an executable lowering.
 
+The implementation has a double-fault caveat: teardown failure while a provider
+releases retry ownership can replace a primary exception. No
+public output is then released, and we did not observe this event, but the
+diagnostic provenance can be degraded. Similarly, the fork guard is enforced
+for Python-managed use; bypassing the public layer and invoking native state
+after a fork is outside the admitted contract.
 
-\section{Callback Protocol IR}
-\label{sec:callback-ir}
+\section{Bounded Language and Admission}
 
-\rtdl does not treat callback entry points as unrelated shader functions. It
-first lowers a complete callback unit to a backend-neutral, typed
-\emph{Callback IR}. The IR is the semantic nucleus of protocol admission: it
-represents callback computation, role topology, machine-visible records, and
-role-indexed effects without embedding Python, CUDA, PTX, or OptiX source
-syntax. It is not, however, another name for the entire protocol. Nominal task
-meaning, physical bindings, host continuation, and executable identity enter
-through separate authorities described below.
+\subsection{Callback representation}
 
-\subsection{Program model}
-
-Restricted Python arrives as UTF-8 text. An AST allowlist parses it; the module
-is never imported or executed for discovery. The frontend resolves only
-declared records, frozen constants, same-unit bounded helpers, and selected
-intrinsics, then emits the forms summarized in
-Table~\ref{tab:callback-ir-model}. Serialized IR is not trusted. Reading its
-canonical JSON reconstructs typed objects and reruns the complete verifier.
+The source language is restricted Python, not arbitrary Python. Source is
+parsed through an AST allowlist and is not imported or executed for discovery.
+The front end resolves declared immutable records, frozen constants,
+same-unit acyclic helpers, and selected intrinsics, then produces canonical
+typed IR. Deserialization reconstructs typed objects and reruns verification;
+serialized IR is not itself an authority. Table~\ref{tab:ir} summarizes the
+representation.
 
 \begin{table*}[t]
-\caption{Implemented Callback IR data model. The notation is compact; these
-rows correspond to concrete immutable IR objects rather than surface-Python
-objects.}
-\label{tab:callback-ir-model}
-\small
-\begin{tabularx}{\textwidth}{@{}p{0.13\textwidth}p{0.42\textwidth}X@{}}
-\toprule
-Form & Implemented alternatives & Rejected boundary \\
-\midrule
-Type $\tau$ &
-\texttt{bool}; signed/unsigned 32/64-bit integers; \texttt{f32}/\texttt{f64};
-2--4-lane vectors; tuples; acyclic immutable records; checked read-only views;
-and built-ins including \texttt{Ray3f}, \texttt{Hit}, \texttt{TriangleHit},
-and \texttt{Aabb3f} &
-raw pointers, mutable containers, opaque Python objects, and recursive records
-\\
-Expression $e$ &
-typed literals and names, record fields, checked view indexing, arithmetic,
-comparisons, bit operations, construction, selected pure intrinsics, and calls
-to bounded acyclic helpers &
-foreign calls, reflection, dynamic dispatch, allocation, raw intrinsics, and
-unknown attributes \\
-Statement $s$ &
-\texttt{let}, type-preserving loop-local \texttt{set}, typed \texttt{if} with
-an explicit else branch, statically bounded \texttt{for}, role-effect return,
-or helper-value return &
-dynamic loops, recursion, exceptions, generators, asynchronous control, and
-unreachable statements \\
-Function $F$ &
-one role function or one same-unit helper; roles return typed effects and
-helpers return typed values &
-duplicate roles, unbounded call graphs, default/variadic arguments, and
-not-all-paths-return \\
-Manifest $M$ &
-payload/output records, machine attribute types, frozen constants, numeric
-policy, resource budget, geometry admission tier, any-hit delivery contract,
-and linkage choice &
-self-minted proof authority, unreviewed production linkage, or budgets outside
-the admitted target \\
-Program $Q$ &
-schema, manifest, records, functions, normalized-source identity, canonical IR
-identity; successful verification separately produces the effect digest &
-unknown fields, malformed schemas, stale source digests, or unverified
-deserialization \\
-\bottomrule
-\end{tabularx}
+  \caption{Implemented bounded representation. Rejected forms have no fallback
+  lowering.}
+  \label{tab:ir}
+  \small
+  \begin{tabularx}{\textwidth}{@{}p{.16\textwidth}p{.40\textwidth}X@{}}
+    \toprule
+    Form & Accepted subset & Rejected boundary \\
+    \midrule
+    Types & Booleans; fixed-width integers and floats; 2--4-lane vectors;
+    tuples; acyclic immutable records; checked read-only views & Raw pointers,
+    mutable containers, opaque objects, and recursive records \\
+    Expressions & Typed names and literals, record fields, checked indexing,
+    arithmetic, comparisons, bit operations, constructors, selected pure
+    intrinsics, and bounded helper calls & Reflection, dynamic dispatch,
+    allocation, foreign calls, and unknown attributes \\
+    Statements & Typed binding, loop-local type-preserving update, two-sided
+    conditionals, statically bounded loops, role-effect return, and helper-value
+    return & Dynamic loops, recursion, exceptions, generators, async control,
+    and not-all-paths-return \\
+    Manifest & Payload/output records, machine attributes, constants, numeric
+    policy, resource budget, topology, continuation, and linkage & Self-minted
+    physical authority, unreviewed production linkage, and unsupported budgets \\
+    Program & Canonical source and IR identities, records, functions, manifest,
+    and separately derived effect digest & Unknown fields, malformed schema,
+    stale identities, or unverified deserialization \\
+    \bottomrule
+  \end{tabularx}
 \end{table*}
 
-The manifest makes otherwise implicit machine limits explicit. Payload and
-attribute layouts are counted in 32-bit slots; the current ceilings are 32
-payload slots, eight attribute slots, trace depth one, callable depth zero,
-bounded static iterations, and bounded helper depth. Numeric policy requires
-strict binary32 behavior, disables implicit fast math, and makes integer
-overflow and nonfinite input/effects explicit fail-closed statuses. These are
-language and resource guarantees, not a proof that a user-selected RT mapping
-computes the intended mathematical function.
+The current resource contract admits at most 32 payload slots and eight
+attribute slots, trace depth one, callable depth zero, bounded helper depth, and
+statically bounded iteration. The numeric policy requires explicit binary32
+behavior and fail-closed handling of prohibited integer overflow and nonfinite
+effects. These are language and resource checks; they do not prove that a
+chosen ray encoding computes the intended application function.
 
 \subsection{Role-indexed effects}
 
-The IR distinguishes seven language roles from physical OptiX entry points.
-\texttt{bounds} executes during preparation; \texttt{make\_ray} and
-\texttt{finalize} are language leaves invoked by a trusted ray-generation
-wrapper; and intersection, hit, and miss roles become OptiX entry behavior.
-A role cannot call a raw traversal intrinsic. Instead it returns exactly one
-typed effect that the trusted wrapper realizes, as shown in
-Table~\ref{tab:callback-ir-roles}.
+Seven language roles participate in an admitted unit. \texttt{bounds} runs
+during preparation; \texttt{make\_ray} and \texttt{finalize} are language
+leaves invoked by a trusted ray-generation wrapper; and \texttt{intersection},
+\texttt{any\_hit}, \texttt{closest\_hit}, and \texttt{miss} map to target-stage
+behavior. User code cannot invoke raw traversal. Instead, each role returns one
+typed effect from a role-specific set: bounds returns an AABB, ray construction
+returns a trace request, intersection returns hit or no-hit, hit callbacks
+return payload plus continue/ignore/terminate control, miss returns payload,
+and finalize returns an output.
 
-\begin{table*}[t]
-\caption{Role signatures and legal returned effects. A compiler-owned physical
-role contract chooses the required and forbidden roles for a geometry family.}
-\label{tab:callback-ir-roles}
-\small
-\begin{tabularx}{\textwidth}{@{}p{0.12\textwidth}p{0.14\textwidth}p{0.31\textwidth}X@{}}
-\toprule
-Role & Stage & Abstract inputs & Only permitted effect(s) \\
-\midrule
-\texttt{bounds} & preparation & primitive record &
-\texttt{AABB(lower, upper)} \\
-\texttt{make\_ray} & language leaf & launch index; typed records/views/scalars &
-\texttt{TRACE\_REQUEST(origin, direction, tmin, tmax, payload)} \\
-\texttt{intersection} & OptiX entry & \texttt{Ray3f}; primitive record &
-\texttt{HIT(t, hit\_kind, attributes)} or \texttt{NO\_HIT} \\
-\texttt{any\_hit} & OptiX entry & hit; payload; admitted read-only metadata &
-\texttt{ACCEPT\_CONTINUE(payload)}, \texttt{IGNORE(payload)}, or
-\texttt{TERMINATE(payload)} \\
-\texttt{closest\_hit} & OptiX entry & hit; payload; admitted read-only metadata &
-\texttt{PAYLOAD(payload)} \\
-\texttt{miss} & OptiX entry & \texttt{Ray3f}; payload &
-\texttt{PAYLOAD(payload)} \\
-\texttt{finalize} & language leaf & final payload &
-\texttt{OUTPUT(value)} \\
-\bottomrule
-\end{tabularx}
-\end{table*}
+Topology makes these requirements relational. Custom AABBs require bounds,
+ray construction, intersection, miss, finalize, and at least one hit role.
+Built-in triangles forbid bounds and intersection because hardware owns them,
+but retain ray construction, miss, finalize, and at least one hit role. An
+any-hit role also requires an explicit delivery and continuation contract; the
+presence of that declaration does not prove order independence for arbitrary
+callback logic.
 
-This distinction matters because a language role need not correspond one-to-one
-with an OptiX program. For the custom-AABB topology, bounds, ray construction,
-intersection, miss, and finalization are required, together with at least one
-hit role. For the built-in-triangle topology, bounds and intersection are
-forbidden because the hardware owns them, while ray construction, miss,
-finalization, and at least one hit role remain. Every required role has exactly
-one function. Supplying an \texttt{any\_hit} role also requires an explicit
-delivery contract; the existence of that enum does not prove confluence or
-order independence for arbitrary logic.
+\subsection{Fail-closed judgments}
 
-\subsection{Fail-closed verification}
-
-The following judgments summarize implemented checks; they are explanatory
-notation, not a mechanized soundness theorem. Expression checking derives
+Expression checking derives $\Gamma \vdash e : \tau$. Statement checking also
+returns the output environment, all-paths-return bit, conservative static work,
+and observed effects:
 \begin{equation}
-  \Gamma \vdash e : \tau .
+  \Gamma;r \vdash s \Rightarrow \langle \Gamma',q,n,\epsilon\rangle .
 \end{equation}
-Statement checking returns a typed environment, whether every path has
-returned, a conservative static-iteration count, and the effects observed:
-\begin{equation}
-  \Gamma;r \vdash s
-  \Rightarrow \langle \Gamma',q,n,\epsilon\rangle .
-\end{equation}
-Names are single-assignment except for type-preserving mutation inside static
-loops. Both sides of a non-returning branch must define the same typed names;
-loop locals cannot escape; and every role/helper path must return. For each
-role $r$, the verifier enforces its exact signature and
+For each role $r$, verification enforces its exact signature and
 \begin{equation}
   M \vdash F_r : \epsilon
-  \quad\text{where}\quad
+  \quad\text{with}\quad
   \epsilon \subseteq \mathsf{AllowedEffects}(r).
 \end{equation}
-Whole-program checking then verifies schema and source identity, record and
-helper acyclicity, numeric policy, payload/attribute slot counts, role
-cardinality, control-flow and call-depth budgets, production linkage, and any
-required external geometry authority:
+Names are single-assignment except for type-preserving updates inside static
+loops; loop locals cannot escape; both non-returning branches define the same
+typed names; and every role/helper path returns. Whole-unit checking validates
+schema/source identity, acyclic records and helpers, numeric and resource
+budgets, role cardinality, topology, linkage, and required external physical
+authority:
 \begin{equation}
-  \mathcal{G};\mathcal{R} \vdash Q
-  \Downarrow
-  \mathsf{VerifiedCallbackProgram}(h_{\mathrm{IR}},h_{\mathrm{effects}}).
+  \mathcal{G};\mathcal{R} \vdash Q \Downarrow
+  \mathsf{Verified}(h_{\mathrm{IR}},h_{\mathrm{effects}}).
 \end{equation}
 Here $\mathcal{G}$ is an out-of-program geometry authority and $\mathcal{R}$ is
-the compiler-owned role topology. A manifest may name a verified geometry
-contract but cannot mint its authority. The result is typed, bounded,
-role/effect-closed IR with deterministic identity; it is not physical execution
-authority and does not prove application-level correctness.
+the compiler-owned role topology. The judgment is explanatory notation for
+implemented checks, not a mechanized soundness theorem.
 
-The same verified IR also has a deterministic CPU interpretation with explicit
-runtime status. This supplies a reference semantics for the restricted
-computation. It does not establish GPU lowering correctness by itself: the
-target path is separately regenerated and compared through the layered
-admission mechanism below.
+Admission is conjunctive. A route is accepted only if its schema is valid, its
+roles permit all effects, its semantic and physical ABIs agree, a trusted
+lowerer exists for its topology, the generated executable identity is bound,
+and the runtime lifecycle can reach the prepared state. Failure of any one
+predicate rejects the route; there is no ``best effort'' projection into a
+nearby executable.
 
-\subsection{From IR to a whole protocol}
+\subsection{Layered whole-protocol admission}
 
-Table~\ref{tab:protocol-layer-provenance} makes the central separation
-explicit. Only CP001 is rooted primarily in Callback IR role/effect structure.
-The other obligations combine the IR with authorities that cannot be recovered
-from machine types alone.
+Table~\ref{tab:admission} identifies where each obligation originates. This
+separation matters because target evidence is regenerated within one trusted
+implementation; it is not an independent proof of compiler correctness.
 
 \begin{table*}[t]
-\caption{Provenance of the whole-protocol admission fields. ``Target evidence''
-is separately regenerated inside one trusted implementation; it is not an
-independent proof implementation.}
-\label{tab:protocol-layer-provenance}
-\small
-\begin{tabularx}{\textwidth}{@{}p{0.09\textwidth}p{0.25\textwidth}p{0.30\textwidth}X@{}}
-\toprule
-Gate & Declaration-side authority & Target/runtime evidence & Exact boundary \\
-\midrule
-CP001 & verified IR role topology and returned effects &
-reverified compiled callback ABI role/effect variants &
-both derivations remain in one TCB; generic role legality alone does not prove
-that a fixed constructor chose every semantically necessary effect \\
-CP002 & fixed-constructor nominal slot/row-source contract, plus IR machine types &
-compiled route contract and generated callback ABI path &
-the evaluated live leaf is attribute slot zero; nominal payload ownership is
-not demonstrated, and the generic IR's \texttt{u32} type alone carries no
-application meaning \\
-CP003 & public physical plan and typed physical schema &
-reverified geometry family, GAS, buffer/hit-channel, output, reducer, and target
-facts &
-fixed-route exact-plan admission, not arbitrary IR-to-OptiX physical synthesis
-\\
-CP004 & fixed-constructor completeness policy and required status-before-consume
-continuation &
-ABI status vocabulary, compiled overflow/completeness facts, and runtime
-status-first output exposure &
-joint IR/ABI, route-contract, and lifecycle property; evaluated evidence is
-partial rather than a general continuation theorem \\
-CP005 & materializer-selected executable identity &
-generated source/PTX, native, provider, target, and execution-receipt identity
-checks &
-identity and chain-of-custody, not semantic correctness; the top-level
-declaration/projection comparison has common materializer origin \\
-\bottomrule
-\end{tabularx}
+  \caption{Authorities compared by whole-protocol admission.}
+  \label{tab:admission}
+  \small
+  \begin{tabularx}{\textwidth}{@{}p{.15\textwidth}p{.28\textwidth}p{.28\textwidth}X@{}}
+    \toprule
+    Obligation & Declaration authority & Target/runtime evidence & Exact limit \\
+    \midrule
+    Role/effect & Verified role topology and returned effects & Reverified
+    compiled callback ABI variants & Common compiler TCB; no arbitrary effect
+    inference \\
+    Semantic ABI & Fixed-route nominal slot and row-source contract plus machine
+    types & Generated route row sources and callback ABI & Evaluated attribute
+    slot zero; generic \texttt{u32} has no nominal meaning \\
+    Physical ABI & Typed plan for geometry, buffers, hit channel, result, and
+    reducer & Rebuilt target facts and bound storage & Exact-plan admission,
+    not arbitrary physical synthesis \\
+    Continuation & Completeness/capacity policy and required status-before-use
+    order & Status vocabulary, compiled continuation, runtime status gate &
+    Bounded supported modes; not a confluence theorem \\
+    Identity/lifecycle & Materializer-selected source/PTX/provider identity and
+    state machine & Loaded symbols, prepared objects, execution status, and
+    optional receipt & Identity binding is not semantic correctness \\
+    \bottomrule
+  \end{tabularx}
 \end{table*}
 
-Figure~\ref{fig:ir-warehouse} traces the motivating CP002 example through
-these layers. Both values have machine type \texttt{u32}. The IR records that
-intersection returns a typed \texttt{HIT} whose attribute expression is
-\texttt{primitive.item\_id}; the separate bounded-relation contract assigns
-attribute slot zero the nominal meaning ``application item identifier.'' The
-compiled route contract supplies the corresponding target-side row source.
-Thus substituting a primitive position for the required item identifier cannot
-be justified merely because the bits still fit.
+\subsection{Plan versus executable lowering}
 
-\begin{figure*}[t]
-\centering
+The canonical planner normalizes the admitted schema and emits a declarative
+plan. That plan is intentionally marked non-executable. It does not synthesize
+arbitrary CUDA or OptiX callbacks. Instead, an accepted route names a
+compiler-owned, topology-specific lowerer and wrapper. The lowerer emits source
+and PTX, binds native symbols, constructs the program groups and shader-binding
+table, and records their identities. This design supplies a common admission
+surface while keeping concrete backend knowledge visible in the TCB.
+
+The distinction addresses a common overclaim. Sharing schema validation and
+lifecycle machinery does not imply that the device implementation is generic.
+In the prospective composition described in Section~\ref{sec:prospective}, the
+new sphere route required approximately 2,635 lines of topology-specific code
+and 28 modified compiler lines. That is evidence that the framework can admit
+a new trusted route without changing three sealed shared files, not evidence
+that a new topology is lowered automatically.
+
+\subsection{Executable identity and lifecycle}
+\label{sec:lifecycle}
+
+The system binds hashes and shape metadata for generated source, PTX, ABI,
+native provider symbols, and the public route. Runtime preparation checks the
+binding before execution. The admitted lifecycle is:
+
+\begin{center}
 \small
-\begin{tabularx}{0.96\textwidth}{@{}p{0.12\textwidth}Xp{0.27\textwidth}@{}}
-\toprule
-Layer & Abbreviated representation & What it establishes \\
-\midrule
-Restricted source &
-\texttt{return optix.hit(..., attributes=(primitive.item\_id,))} &
-the restricted callback expression (compiler-owned in this fixed-constructor route) \\
-Callback IR &
-\texttt{return\_effect HIT\{t:f32, hit\_kind:u32,}
-\texttt{ attributes:(field(primitive,item\_id):u32)\}} &
-typed intersection effect and machine attribute layout \\
-Route contract &
-$A[\texttt{attr0}]=\texttt{verified\_intersection\_attribute0\_item\_id}$ &
-the nominal application meaning absent from \texttt{u32} \\
-Target projection &
-$A'[\texttt{attr0}]=\texttt{compiled row\_sources[1]}$ &
-the row source re-derived from the compiled route contract \\
-Admission &
-$A=A'$ accepts; $A\ne A'$ emits
-\texttt{CP002\_ATTRIBUTE\_ABI\_OWNERSHIP\_MISMATCH} &
-the declared and compiled meanings must agree before launch \\
-\bottomrule
-\end{tabularx}
-\caption{Source-to-IR-to-admission path for the running attribute example. The
-single-leaf liveness experiment mutates $A$ while preserving target projection
-bytes; the separate PyOptiX/OWL consequence executions replace the produced
-item identifier with a primitive position and observe the wrong rows. These are
-complementary experiments, not one conflated run. The target-side projection is
-trusted compiler evidence rather than a proof recovered from arbitrary PTX.}
-\Description{A restricted callback source lowers to a typed hit effect. A
-separate fixed-constructor contract says attribute zero denotes an application item
-identifier. Admission compares that meaning with the compiled route row
-source and rejects disagreement before launch.}
-\label{fig:ir-warehouse}
-\end{figure*}
+static verify $\rightarrow$ materialize/bind $\rightarrow$ prepare
+$\rightarrow$ execute/status gate $\rightarrow$ output $\rightarrow$ receipt.
+\end{center}
 
-This distinction also bounds expressiveness. The standalone frontend verifies
-and interprets Callback IR deterministically on the CPU. The two fixed GPU
-constructors regenerate compiler-owned IR. A separate public route accepts
-caller-authored restricted source, but only inside one static built-in-triangle,
-three-\texttt{u32}-payload/output, two-metadata-view template. Arbitrary verified
-IR, new physical geometry kinds, and new role or continuation topologies are
-not GPU extension points. We therefore do not claim general Callback-IR-to-GPU
-support.
-
-\section{Whole-Protocol Admission}
-
-\subsection{Compilation unit after IR verification}
-
-Whole-protocol admission begins after Callback IR verification. ABI compilation
-re-verifies the IR and derives deterministic role inputs, effect variants,
-symbols, and status codes. The fixed-constructor specification adds nominal task
-and slot meaning; the physical authority adds geometry and storage bindings;
-and the lifecycle adds continuation and executable identity. Admission compares
-these layered facts as one compilation unit before any GPU state exists.
-
-The public GPU interface is narrower than that frontend. On the fixed route, a
-caller selects one of two protocol specifications, supplies its parameters,
-the sole standard physical plan, an external proof identity, and
-constructor-specific inputs; the compiler re-derives its source and manifest.
-On the bounded authoring route, the caller instead supplies restricted source,
-a manifest, names and expressions, while the physical/ABI template remains
-fixed. Other verified source remains available for verification and CPU
-interpretation but has no general GPU lowering authority.
-
-\subsection{Five admission obligations}
-
-\paragraph{Cross-role effects.}
-The IR verifier restricts every role to a closed set of typed returned effects.
-The fixed-constructor declaration records the role/effect topology it requires,
-while the target projection re-derives effect variants from the compiled ABI.
-Admission rejects an omitted required effect or an effect outside that topology.
-
-\paragraph{Semantic ABI ownership.}
-The generic IR records machine payload/attribute types but does not make a
-\texttt{u32} denote an application item identifier. That nominal meaning comes
-from the fixed-constructor contract and is compared with the compiled row source.
-The evaluated CP002 leaf is attribute slot zero; nominal payload ownership is
-not demonstrated. Matching bit widths are therefore insufficient.
-
-\paragraph{Physical binding.}
-Callback assumptions are checked against the typed custom-AABB or built-in
-triangle physical plan, including field-to-geometry bindings. This prevents a
-coherently typed but semantically permuted geometry layout.
-
-\paragraph{Status-gated continuation and completeness.}
-IR/ABI status vocabulary, the fixed-constructor completeness contract, and lifecycle
-sequencing jointly form this obligation. Host continuation must observe status,
-and a failed or truncated execution cannot expose an application result. Merely
-reading status before copying output is insufficient when a non-OK capacity
-condition does not suppress that output.
-
-\paragraph{Checked executable identity.}
-In the current materializer, the two CP005 fields carry the same selected
-executable digest. Their comparison is identity-binding instrumentation, not
-independent extraction. The later content-addressed deployment and execution
-checks rehash source/PTX, proof and physical authorities, target, provider, and
-native identities to establish the executable chain of custody.
-
-These categories are related rather than five independent theorems. Effect
-closure and status are hierarchical, while semantic ABI and physical binding
-form a shared schema layer. Executable identity carries the other decisions to
-the launched bytes and is treated as identity-binding support, not as a fifth
-independent novelty count.
-
-\subsection{Public lifecycle and scope}
-
-The stable public GPU surface exposes two compiler-owned fixed protocol
-constructors:
-\begin{enumerate}
-  \item a custom-AABB bounded relation that emits canonical pairs with an
-  explicit capacity; and
-  \item a built-in-triangle all-hit computation followed by a checked unsigned
-  64-bit reducer.
-\end{enumerate}
-
-The same stable module also exposes one bounded, caller-authored triangle
-template. Its fixed shape is one static GAS, a three-\texttt{u32} payload/output
-record, and two \texttt{u32} metadata views. It is not a third fixed constructor
-and adds no physical geometry kind. A public Particle strict-interior frontdoor
-is an application specialization of this capability, not another general
-template.
-
-Materialization creates no GPU state. It re-derives a fixed constructor's
-callback or compiles the bounded template's source, compares projections, and
-binds the result to a target. Preparation creates an owner local to one process
-and thread. Execution returns output only after status and identity checks;
-close destroys the owner. PTX, entry points, program groups, SBT records,
-pipelines, and native handles are never user inputs.
-
-The implementation supports trace depth one and callable depth zero. The
-public surface excludes arbitrary recursion, dynamic dispatch, raw pointers,
-arbitrary atomics, nested \texttt{optixTrace}, user callables, curves, spheres,
-motion, instancing, micromaps, arbitrary multi-report intersections, new
-geometry families, and new role or continuation topologies. These are
-capability limits, not future features implicitly credited to the current
-system.
-
-\subsection{Terminology, denominator, and protocol-shape algebra}
-
-We separate five quantities that a bare word ``family'' would conflate. A
-\emph{build-input kind} is one member of OptiX's platform enum. A
-\emph{leaf-primitive kind} is a geometry-bearing member rather than an
-instance-graph input. A \emph{physical geometry kind} is one geometry choice
-implemented by RTDL. A \emph{fixed protocol constructor} is a closed public
-factory with a prescribed role/result contract. An \emph{application-semantic
-protocol shape} is a structural callback protocol independent of application
-or dataset names. The pinned OptiX~9 header has six build-input kinds---triangle,
-custom primitive, instance, instance pointer, curve and sphere---of which four
-are leaf primitives. Current public physical-schema routes instantiate triangle
-and custom primitive: kind-presence for $2/6$ build-input kinds and $2/4$
-leaf-primitive kinds. This is not feature-complete support for every
-configuration within either kind. Its constructor enum has two members, its
-bounded user-source template count is one, and the open set of
-application-semantic protocol shapes has no finite coverage denominator.
-
-For future extension tests we freeze a structural shape as
-$S=\langle G,R,V,E,H,B,C,X,L\rangle$: build/scene graph $G$; callback-role
-topology $R$; typed views $V$ and role effects $E$; nominal hit-channel
-producer, consumer and ownership relations $H$; buffer/GAS/IAS/SBT bindings
-$B$; continuation, status and result-commit automaton $C$; identity bind-set
-$X$; and numeric/resource limits $L$. Two shapes are equal only when their
-canonical structural forms are byte-equal after alpha-renaming local binders
-and sorting only order-insensitive sets. Role arguments, result operators,
-graph edges and continuation order remain significant. Application
-names, datasets and record spelling do not define a shape. Nominal semantic
-values, verified IR/proof bindings and instance parameters define a separate
-protocol instance; target, provider and executable identities define a
-deployment. An unexpressible protocol is \textsc{unmapped}, not coerced to the
-nearest current constructor. This algebra freezes a falsifiable target for a
-later family-schema compiler; the current implementation is not such a
-compiler, and prospective frozen-core extension exams remain zero.
-
-The two physical kinds were author-selected to span different hit-production
-boundaries: built-in hits produced by OptiX and custom-primitive hits produced
-by a callback, while covering the authored cohort. This is a useful contrast,
-not a representative or prospective sample of the open protocol-shape universe.
-
-\subsection{Admission judgment}
-
-During materialization, the implementation constructs two internal
-projections. The declaration-side projection
-$D=\langle f,t,E,A,B,C,X\rangle$ contains fixed-constructor identity $f$, task-semantics
-identity $t$, IR-side role/effect map $E$, evaluated attribute-slot ownership map $A$,
-visible physical binding map $B$, continuation policy $C$, and the executable
-identity $X$ selected during materialization. The target-side projection $P$
-contains corresponding primed fields plus generated device source $S_d$ and
-host materializer $S_h$. Its CP001--CP004 facts are separately re-derived from
-the regenerated callback ABI, physical authority, and compiled contract. For
-CP005, both projections receive the same materializer-selected executable
-digest. Maps are sorted and all structures use canonical JSON serialization
-before hashing. Neither projection is an application-authored certificate.
-
-The admission relation is deliberately simple and auditable:
-\begin{equation}
-\begin{split}
-\mathsf{admit}(D,P) \iff{}&
-  (f,t,B)=(f',t',B') \land E=E' \land A=A' \\
- &{}\land C=C' \land X=X'.
-\end{split}
-\label{eq:admission}
-\end{equation}
-Malformed or incorrectly sealed inputs fail before this relation. A failed
-conjunct emits a stable reason identifier (CP001--CP005) and no executable
-capability. Family and task identity are included in the physical-binding
-conjunct: changing the semantic domain cannot masquerade as a sixth generic
-mechanism.
-
-Figure~\ref{fig:architecture} shows the important boundary. The semantic and
-physical facts in $D$ are derived from the verified constructor/template specification,
-compiler-owned IR-side effects, and visible physical plan. Their counterparts
-in $P$ come from the regenerated target ABI and compiler-owned physical
-objects, not by serializing $D$ again. For CP001--CP004 these are distinct
-derivation paths inside one implementation, not independent implementations.
-Their agreement
-establishes consistency among represented facts under the trusted computing
-base; it does not prove target-projection correctness or that the application
-computes the right function. CP005 leaf mutation establishes comparator
-sensitivity only; the later content-addressed and runtime checks provide its
-chain-of-custody evidence.
-
-Acceptance records the identities of the program, target, physical schema,
-contract, ABI, executable, PTX, and native library. Execution rechecks the PTX
-and native-library identities, validates device status before returning output,
-verifies the output digest, and binds a traversal receipt to the expected route.
-Executable identity is therefore a chain from admission to observation;
-Eq.~\ref{eq:admission} alone is not a functional correctness proof.
+The final public path checks native and compact status synchronously and the
+experiment checks every returned output against an oracle before declaring a
+worker successful. It does \emph{not} rehash files from disk on every launch.
+Moreover, the original design goal of a detailed receipt for every timed
+execution is not met: 4,096 timed executions in the main \rtdl arm are
+accompanied by 32 separate post-loop detailed diagnostic receipts. We therefore
+claim synchronous status and output gating, not per-execution detailed receipt
+coverage.
 
 \begin{figure*}[t]
 \centering
-\resizebox{0.98\textwidth}{!}{%
-\begin{tikzpicture}[
-  >=Latex,
-  flow/.style={->,thick},
-  shared/.style={draw,rounded corners,align=center,inner sep=4pt,
-                 fill=blue!5,font=\footnotesize},
-  family/.style={draw,dashed,rounded corners,align=center,inner sep=4pt,
-                 fill=orange!8,font=\footnotesize},
-  note/.style={draw,dotted,rounded corners,align=center,inner sep=4pt,
-               font=\footnotesize}
-]
-\node[family] (request) at (0,1.3)
-  {Request\\fixed constructor or bounded source\\plan + proof};
-\node[family] (source) at (0,-0.8)
-  {Restricted source\\compiler or caller};
-\node[shared] (ir) at (2.6,-0.8)
-  {$Q$: verified Callback IR\\types + role effects};
-\node[shared] (decl) at (2.6,1.3)
-  {$D$: declaration\\IR + shape + policy};
-\node[family] (lower) at (5.3,-0.8)
-  {Route contract + ABI\\lowering + PTX/native facts};
-\node[shared] (proj) at (7.8,-0.8)
-  {$P$: target\\projection};
-\node[shared] (gate) at (7.8,1.3)
-  {CP001--CP005\\comparison};
-\node[note] (reject) at (7.8,2.7)
-  {REJECT\\no object};
-\node[shared] (accepted) at (10.6,1.3)
-  {Accepted identity\\no GPU state};
-\node[shared] (artifact) at (10.6,-2.8)
-  {Content-addressed candidate\\\texttt{.rtdlexe}};
-\node[shared] (trust) at (7.8,-4.0)
-  {Installed trust slot\\root/head/package};
-\node[shared] (load) at (13.3,-2.8)
-  {Load + nested\\identity checks};
-\node[family] (runtime) at (16.2,-2.8)
-  {Route-specific OptiX prepare\\status-first execute\\receipt + close};
+\fbox{\begin{minipage}{.95\textwidth}
+\small
+\textbf{Untrusted program and data}
+$\rightarrow$ restricted-Python front end
+$\rightarrow$ shared schema, role/effect, ABI, and topology admission
+$\rightarrow$ non-executable canonical plan
 
-\draw[flow] (request) -- (decl);
-\draw[flow] (source) -- (ir);
-\draw[flow] (ir) -- (decl);
-\draw[flow] (request) -- (lower);
-\draw[flow] (ir) -- (lower);
-\draw[flow] (lower) -- (proj);
-\draw[flow] (decl) -- (gate);
-\draw[flow] (proj) -- (gate);
-\draw[flow] (gate) -- (accepted);
-\draw[flow] (gate) -- (reject);
-\draw[flow] (accepted) -- (artifact);
-\draw[flow] (artifact) -- (load);
-\draw[flow] (trust) -- (load);
-\draw[flow] (load) -- (runtime);
-\end{tikzpicture}}
-\caption{Implemented architecture. $Q$ is the typed callback computation, not
-the complete admission declaration: $D$ also incorporates fixed-constructor
-semantics, the public physical plan, and continuation policy. Solid boxes are
-mechanisms reused by the current routes; dashed boxes are route-specific.
-The public GPU interface does not accept arbitrary Callback IR. CP001--CP004
-facts are separately re-derived inside one trusted implementation; CP005 has
-common origin and is backed by downstream identity checks.}
-\Description{A request selects a fixed constructor or supplies restricted source
-inside the bounded triangle template. Source is verified to Callback IR,
-declaration-side and target-side projections are compared, and an accepted
-identity may be frozen into a candidate artifact authorized only by a separately
-installed slot before OptiX execution.}
+\medskip
+\textbf{Trusted topology route}
+$\rightarrow$ topology-specific lowerer and wrapper
+$\rightarrow$ generated source/PTX and provider symbols
+$\rightarrow$ executable-identity binding
+$\rightarrow$ OptiX build, prepare, and launch
+
+\medskip
+\textbf{Publication boundary}
+$\rightarrow$ native status gate
+$\rightarrow$ compact status gate
+$\rightarrow$ output oracle in the experiment
+$\rightarrow$ public result and optional detailed receipt
+
+\medskip
+\textbf{Separate evidence path}
+$\rightarrow$ offline checker over generated source, PTX, ABI, symbols, and
+receipts; it does not import the \rtdl compiler.
+\end{minipage}}
+\caption{Architecture and trust boundary. Shared admission does not replace the
+topology-specific lowerer; that lowerer remains in the TCB.}
+\Description{Four-stage architecture: untrusted restricted Python enters shared
+admission; a trusted topology-specific lowerer builds the OptiX executable;
+status and oracle gates guard publication; a separate offline checker inspects
+generated evidence without importing the compiler.}
 \label{fig:architecture}
 \end{figure*}
 
-\subsection{What the worked mismatch establishes}
+\section{Implementation Scope}
 
-The rows in Figure~\ref{fig:semantic-abi-example} come from the preserved
-executions rather than a paper-only illustration. The public \rtdl lifecycle
-returns $\{(100,10),(101,20)\}$ through real OptiX traversal. The corresponding
-defective callback is legal OptiX, and the evaluated PyOptiX, active typed-OptiX,
-and OWL routes all reach launch; the fault returns primitive-index rows
-$\{(100,0),(101,1)\}$. Replacing only the nominal contract leaf from
-application-item-ID to primitive-index preserves the machine representation and
-target projection bytes, yet \rtdl changes \textsc{accept} to the sole CP002
-rejection because $A\ne A'$.
+The implementation uses Python for the public authoring surface and C++/CUDA
+with OptiX for trusted lowering and execution. This is a compiler/runtime
+prototype rather than a pure-Python implementation. Table~\ref{tab:scope}
+separates stable public constructors from the broader bounded route corpus.
 
-This establishes a narrower but useful fact: nominal protocol admission can
-make this declared mismatch impossible to launch even though conventional
-machine typing and composition accept it. It does not prove that the overlap
-mapping is the right algorithm, that the declared identifier is truthful, or
-that an accepted result matches an application oracle. Those remain application
-obligations.
+\begin{table}[t]
+  \caption{Implemented scope; presence is not complete feature coverage.}
+  \label{tab:scope}
+  \small
+  \begin{tabular}{@{}p{.34\columnwidth}p{.54\columnwidth}@{}}
+    \toprule
+    Surface & Current evidence \\
+    \midrule
+    Stable facade & Two constructors: custom-AABB bounded canonical relation; built-in triangle checked u64 reduction \\
+    Stable kind presence & 2 of 6 OptiX build-input enum values; 2 of 4 leaf kinds \\
+    Bounded V4 corpus & 4 of 6 build-input enum values; all 4 leaf kinds (triangle, custom, curve, sphere) \\
+    User-authored template & One bounded built-in-triangle template \\
+    Prospective composition & One sealed-snapshot sphere composition \\
+    Human usability & No independent-user study or timing \\
+    \bottomrule
+  \end{tabular}
+\end{table}
 
-\section{Implementation and Application Cohort}
-
-The implementation contains the base callback path and six M1--M6
-application-neutral composition batches: checked triangle reductions, bounded
-relation emission, prepared multi-round spatial composition, exact
-predicate/global witness composition, grouped event reduction, and bounded
-hierarchy-frontier continuation. Selection depends on typed semantics,
-resource/proof inputs, and physical identity rather than application names.
-
-\paragraph{Architecture and trust boundary.}
-The parser, typed Callback IR, canonical ABI, role-leaf generator, PTX
-composer, projection schemas, exact CP001--CP005 comparator, content addressing,
-and lifecycle state discipline serve both fixed constructors; bounded triangle
-authoring also reuses this IR/lowering core.
-Constructor/template source policy, proof policy, semantic/physical projectors,
-wrapper and entry symbols, target compiler, native program bundle, GAS/SBT
-layout, launch path, status reduction, and input/output schemas remain
-route-specific. ``Shared'' means reuse across current routes, not parametricity
-or soundness for an unimplemented protocol shape.
-
-An accepted materialized object can be frozen as a content-addressed
-\texttt{.rtdlexe}. The artifact carries the checked projections and exact
-composed PTX but grants no deployment authority by itself. An installed trust
-root, current signed head, and signed package authorize one exact slot. On a
-cache hit the loader rechecks protocol, target, provider, native-producer, and
-deployment identities without importing the frontend, code generator, Numba,
-or NVRTC; \texttt{prepare} still constructs process-local OptiX objects. The
-trust layer does not resist an administrator rolling both installed trust files
-back to an older valid signed pair.
-
-The trusted computing base includes the parser and IR verifier, current-route
-providers and physical projectors, ABI compiler, code generator and composer,
-both projection producers and their comparator, deployment builder/loader and
-administrator-installed trust state, exact native producer, CUDA/OptiX driver,
-and GPU. The Python interpreter and standard library, OS filesystem and dynamic
-loader, process isolation, signing-key custody, deployment administrator, and
-Python code already controlling the loader process are also trusted. External
-proof objects are checked for form and exact program binding; their truth is an
-assumption, and \rtdl does not prove the theorem denoted by an opaque digest.
-
-Adding a physical kind or role/continuation topology currently changes shared
-core and native backend; it is not user-level registration. It
-requires a protocol type and plan, source/proof policy, both projectors, target
-compiler and wrapper, executable record, lifecycle dispatch, deployment and
-runtime projections, native OptiX construction, and tests. A new callback
-inside the bounded triangle template does not require those changes; that is
-template reuse, not evidence that a new protocol shape can be authorized
-without modifying \rtdl.
-
-\begin{table*}[t]
-\caption{Implementation reuse boundary. ``Shared'' is an observed property of
-the current routes, not a general soundness result.}
-\label{tab:implementation-boundary}
-\scriptsize
-\begin{tabularx}{\textwidth}{@{}lXX@{}}
-\toprule
-Layer & Shared mechanisms & Route-specific policy or code \\
-\midrule
-Frontend/admission & AST-only parser, typed IR, canonical ABI and identities,
-exact CP001--CP005 comparator & source/manifest, role topology, proof policy,
-semantic labels, physical bindings and both projectors \\
-Lowering & verified role-leaf generation and deterministic composition &
-physical schema, wrapper, entry symbols, compiler options and target compiler \\
-Deployment & content addressing, signed slot selection and nested identity
-verification & provider/native bundle, SBT layout, launch and I/O schemas \\
-Execution & lifecycle states plus identity/status/output checks & GAS/program
-groups/SBT construction, launch, status reduction, output and receipt route \\
-\bottomrule
-\end{tabularx}
-\end{table*}
-
-Nine published non-rendering RT systems yield thirteen project-authored lanes.
-Particle Tracking and RayDB contribute one each~\cite{wang2022particle,shi2025raydb}.
-The graph study and LibRTS contribute two each~\cite{xiao2025rtgraph,geng2025librts}.
-RTNN, RT-DBSCAN, and X-HD contribute one each~\cite{zhu2022rtnn,nagarajan2023rtdbscan,geng2026xhd};
-RayJoin contributes three~\cite{geng2024rayjoin}, and RT-BarnesHut one~\cite{nagarajan2025rtbarneshut}.
-All thirteen ports were written
-by the \rtdl authors and are exact on their frozen inputs while exercising
-OptiX traversal. They are neither third-party implementations nor claims of
-complete reproduction of the source systems or their evaluations. This is
-reuse evidence for the two fixed constructors/current physical kinds, not evidence that the public language
-admits thirteen arbitrary protocols or that a new application will transfer.
-
-\begin{table*}[t]
-\caption{Exact scope of the paper-derived cohort.}
-\label{tab:cohort}
-\scriptsize
-\begin{tabularx}{\textwidth}{@{}lXlX@{}}
-\toprule
-Published system & Selected \rtdl lane(s) & Fixed constructor & Not claimed \\
-\midrule
-Particle tracking & \texttt{cell\_transition} & relation & full simulation \\
-RayDB & \texttt{q21} & relation & full query suite or source reproduction \\
-RT graph case study & \texttt{rt\_1a2}, \texttt{rt\_2a1} & triangle & other graph algorithms \\
-LibRTS & \texttt{overlap\_filter}, \texttt{range\_rows} & relation & dynamic indexing/instancing \\
-RTNN & \texttt{ranked\_window} & relation & full scheduling system \\
-RT-DBSCAN & \texttt{components} & relation & full preprocessing/border policy \\
-X-HD & \texttt{global\_witness} & relation & pruning/load balancing \\
-RayJoin & \texttt{segment\_pairs}, \texttt{point\_location},
-\texttt{grouped\_events} & relation & complete system/evaluation \\
-RT-BarnesHut & \texttt{force} & relation & tree construction \\
-\bottomrule
-\end{tabularx}
-\end{table*}
-
-\begin{table*}[t]
-\caption{Capability levels must not be conflated.}
-\label{tab:capability}
-\small
-\begin{tabularx}{\textwidth}{@{}p{0.24\textwidth}Xp{0.14\textwidth}@{}}
-\toprule
-Level & Demonstrated scope & Count \\
-\midrule
-Published-system ports & exact project-authored selected lanes & 9 systems / 13 lanes \\
-Composition layer & application-neutral labels; not protocol shapes & 6 batches \\
-OptiX build inputs & pinned platform enum; RTDL physical coverage & 2 / 6 \\
-Leaf primitives & triangle, custom, curve and sphere; RTDL coverage & 2 / 4 \\
-Fixed constructors & bounded relation; triangle reduction & 2 \\
-User-authored GPU template & bounded built-in-triangle \texttt{u32x3} & 1 \\
-Public specialization & Particle strict-interior on triangle template & 1 \\
-Prospective exam & frozen-core new-shape transfer & 0 \\
-External author & third-party human application authoring & 0 \\
-\bottomrule
-\end{tabularx}
-\end{table*}
+The route corpus is broader than the stable facade but narrower than OptiX.
+Unsupported geometry options, motion modes, callback combinations, and payload
+shapes remain outside the contract. Extension requires adding or auditing a
+trusted lowerer; a matching schema alone is insufficient.
 
 \section{Evaluation}
 
-We ask five questions: (1) are populated declaration leaves decision-bearing;
-(2) do OptiX's typed-payload semantics or \owl already prevent the same
-faults; (3) what capability is actually executable; (4) can an application
-outside the original fixture reuse a frozen fixed constructor without a core change; and
-(5) what lifecycle-separated cost remains relative to \pyoptixcompat?
+We ask four questions: (1) do whole-protocol mutations reach the intended
+gates; (2) can a sealed shared framework admit one selected composition; (3)
+does a separate checker validate concrete generated artifacts without trusting
+the compiler's own projection; and (4) what performance cost does the public
+route impose at registered endpoints?
 
-\subsection{Experimental discipline}
+\subsection{Earlier liveness and residual evidence}
 
-Mechanism experiments use two matched non-rendering tasks, nearby legal
-controls, single-mechanism mutations, frozen expected outputs, and exact
-oracles. The performance experiment uses identical task semantics, input,
-precision, output materialization, status-before-output ordering, launch and
-synchronization meaning, and paired-block statistics. Ratios are
-RTDL/\pyoptixcompat,
-so lower is better. Steady execution has a registered 1.05 noninferiority
-margin; preparation and post-import deployment cold use 1.10. Preparation is
-reported separately and is never treated as free. A gated row passes only when
-both its point estimate and the upper endpoint of its 95\% interval do not
-exceed the margin. Within every task/regime, the 18 blocks contain each of the
-six arm orders three times. Worker medians are integer nanoseconds; half-ns
-midpoints from even steady samples are truncated toward zero before ratios.
+For two accepted fixed contracts, 19 single-leaf mutations exercised 19/19
+expected gates: seven role-and-effect, one semantic-ABI, seven physical-ABI, two
+continuation, and two identity mutations. This denominator is limited to those
+two contracts and those mutations; it is not combined with the later
+composition or checker experiments.
 
-The reported 18-block study is a registered successor experiment, not the
-first outcome-blind performance test. Two relevant predecessor results were
-known before its freeze: a 24-block three-arm RTX~A4500 study whose six
-RTDL-versus-PyOptiX-compat gates all failed, and a 16-block two-arm RTX~4000 Ada study whose
-two steady gates passed and four setup gates failed. An earlier asymmetric
-benchmark was also withdrawn after the baseline's avoidable Python work exceeded
-its apparent advantage; none of its timings or claims is reused. The successor
-fixed its arms, tasks, regimes, thresholds, complete schedule, estimator, and
-unconditional acceptance rule before its own timings. It reran all three arms
-in 324 fresh processes, reused no predecessor worker or timing, and accepted
-every outcome unconditionally.
+We also examined typed residual failures against OptiX and OWL-style execution
+paths~\cite{nvidiaPyOptix,nvidiaOWL}. Three residuals produced complete
+wrong-output witnesses. A fourth supplied only a partial status-gated
+continuation/completeness witness. Checked executable identity adds supporting
+evidence. These are concrete failure observations, not five proved guarantees
+or general soundness theorems.
 
-\begin{table*}[t]
-\caption{Experiment-to-claim map. Each row states both the supported claim and
-the inference that the experiment cannot support.}
-\label{tab:claim-map}
+\subsection{Sealed-snapshot composition exam}
+\label{sec:prospective}
+
+Before revealing a future public randomness pulse, we fixed an author-defined
+challenge table of ten rows: seven built-in four-role rows and three custom
+six-role rows. All rows used already-supported primitive families; the three
+continuation variants all used a per-query count relation. The round-linear-curve
+any-hit-terminate row remained an eligible candidate; it was not selected. The
+pulse selected
+\nolinkurl{builtin_sphere::any_hit_count_continue_u64_per_query}.
+
+The artifact's private custody record identifies the exact sealed historical
+source. Implementation changed no bytes in the three frozen schema, admission,
+and lifecycle files. The resulting route
+performed two true OptiX launches and passed 12/12 rational-oracle rows. The
+result demonstrates framework-level reuse of admission, identity, and lifecycle
+machinery for this selected composition. It does not establish an unbiased new
+application: the authors defined the challenge domain, every row recombined
+known primitives and topologies, and the selected route required substantial
+new topology-specific implementation.
+
+\subsection{Independent finite checker}
+
+The offline checker imports no \rtdl module and rejects compiler-supplied
+projections as authority. It independently reads generated source, PTX/ABI
+metadata, symbols, and receipts. Across three route groups and four modes, it
+applied five property classes 20 times using 15 unique mutations. It also
+partially evaluates generated target structure rather than trusting labels in
+the compiler output.
+
+This checker is finite, not a verifier for arbitrary device control flow.
+During review, an out-of-authority in-memory probe inserted an unconditional
+early return and still passed selected effect/status helper checks. The result
+therefore supports specialized target-structure validation only. General
+control-flow, numerical, and refinement soundness remain open; tools such as
+GPUVerify illustrate the substantially stronger proof obligation~\cite{betts2012gpuverify}.
+
+\subsection{Performance methodology}
+
+We measured two exact tasks. \emph{Relation} uses 4,096 objects and 4,096
+queries, returns 4,096 canonical u32 pair rows, and performs two true OptiX
+traversals. \emph{Triangle} uses 16,384 primitives and 16,384 queries, performs
+one true traversal, and returns the checked scalar 65,530.
+
+Five arms isolate different boundaries:
+\begin{center}
 \small
-\begin{tabularx}{\textwidth}{@{}p{0.14\textwidth}p{0.22\textwidth}Xp{0.25\textwidth}@{}}
-\toprule
-Question & Falsifier & Observation & Claim ceiling \\
-\midrule
-Contract liveness & a populated leaf changes without changing admission &
-19/19 single-leaf mutations change ACCEPT to REJECT; projection bytes fixed &
-populated leaves in two contracts are decision-bearing; vocabulary completeness
-is unproven \\
-Residual over mature APIs & typed OptiX or OWL rejects or diagnoses its
-preregistered realization before launch & typed-route realizations of five
-mechanisms launch under both evaluated routes; a typed-payload negative
-rejects; RTDL rejects all five & three full wrong-output residuals, one partial
-status-gated continuation/completeness residual, and binding support; not five independent
-theorems \\
-Executable scope & a declared public route is inexact or its stated shape is
-misreported & two fixed constructors and one bounded triangle template execute;
-13/13 authored lanes are exact and behavioral OptiX & current-route diversity,
-not arbitrary Callback IR or prospective new-shape generalization \\
-Existing-constructor reuse & selected cross-domain task needs another shape/core
-change & SQL bag equijoin reuses bounded relation without another core change;
-BED failure preserved & one constructive project-selected reuse, not blind or
-unbiased transfer \\
-Lifecycle cost & matched RTDL exceeds registered margins & steady passes 1.05
-on two tasks; cold and prepare fail 1.10; same-target Direct rows reported &
-two tasks/one target; Direct rows descriptive; no OWL timing claim \\
-\bottomrule
+\begin{tabularx}{.95\columnwidth}{@{}lX@{}}
+A & current \rtdl ahead-of-time public path at measured source M; \\
+B & idiomatic pinned PyOptiX-compatible baseline; \\
+C & strong PyOptiX-compatible baseline with device continuation; \\
+D & direct CUDA/OptiX implementation; \\
+E & frozen \rtdl predecessor immediately before M. \\
 \end{tabularx}
-\end{table*}
+\end{center}
 
-\subsection{Every populated contract leaf affects admission}
+We ran the same registered matrix on an RTX~4090 (Ada) and RTX~3090 (Ampere).
+Each generation has eight blocks, two tasks, and five arms: 80 cells, with 128
+steady samples per cell. Across both generations this yields 160 cells and
+20,480 samples. A reported ratio is the median of eight within-block ratios of
+integer nanosecond measurements; lower is better. Raw times are not compared
+across machines.
 
-The two accepted task contracts contain 19 populated semantic leaves. We
-mutate each leaf alone while holding compiler projection bytes unchanged. All
-19 mutations change \textsc{accept} to \textsc{reject}; each produces exactly
-one expected finding, and no leaf is classified as non-decision-bearing. This
-includes the safety-critical \texttt{finalize: require\_status\_ok} leaf. A
-standard-library verifier that imports neither \rtdl nor \pyoptix checks and
-recounts the preserved 19-row projection, including the recorded mutations,
-decisions, and reason identifiers.
+The registered primary criterion was prepared A/D median $\leq1.20$. There was
+no registered A/D maximum-block gate. A registered A/C implementation-entry
+criterion used median $\leq1.20$ and maximum $\leq1.35$, but the endpoint was
+revised after an adverse result and both available first-result endpoints remain
+import/lifecycle-confounded. We therefore make no positive entry-latency claim.
+The registered A/E prepared criterion was $\leq1.05$; C/B competence used
+$\leq1.05$.
 
-This result establishes liveness only for populated leaves in these two
-contracts. It does not establish completeness of the obligation vocabulary or
-semantic correctness of arbitrary accepted applications.
+\subsection{Prepared execution results}
 
-\subsection{Residual under active typed OptiX and OWL}
-
-OptiX~9 exposes an important native mechanism that must receive credit:
-\texttt{OptixPayloadType} assigns read/write semantics per 32-bit payload word
-and shader stage~\cite{nvidiaOptix9Guide}. In a separate strongest-native
-configuration, we enabled that mechanism, selected the type at both trace
-sites and every program group, and enabled validation \texttt{ALL}. A
-source/PTX-identical negative that removed any-hit rights was rejected during
-module creation, establishing that the mechanism was active. Nevertheless,
-the preregistered typed-route realizations of all five counterexample mechanisms
-built, linked, launched, emitted no validation error or
-fatal message, and reproduced their registered consequences. Thus the result
-is not an experiment against an omitted native facility.
-
-The CP002 path is particularly sharp: intersection reports either an
-application item identifier or a primitive index in attribute slot zero;
-any-hit reads that slot and writes the relation row directly. No payload access
-occurs on this defective path. The examined OptiX headers declare the number
-of attribute values and numbered attribute accessors, but expose no per-slot
-nominal-meaning declaration. This is a scoped observation about the inspected
-OptiX~9 headers, not a claim about every NVIDIA interface.
-
-A pinned NVIDIA \owl arm with validation \texttt{ALL} enabled by a
-diagnostic-only overlay separately receives full credit for building acceleration structures,
-programs, pipeline, SBT, and launch, and executes its five preregistered invalid
-protocol realizations.
-The overlay is the sole upstream modification and changes none of those
-objects, the launch, or the output. This is functional GTX1070/Pascal evidence,
-not RT-core or performance evidence. The examined public API at the pinned OWL revision
-exposes payload and attribute counts but not the native payload-type
-declaration; obtaining that facility requires leaving the examined abstraction
-or modifying its implementation. Table~\ref{tab:residual} reports the OWL
-result per mechanism rather than treating five categories as five independent
-novelties.
-
-\begin{table*}[t]
-\caption{Executed residual after crediting \owl for host composition. All
-nearby valid controls are exact and every corresponding \rtdl mutation is
-rejected before launch. A separate active OptiX~9 typed-payload configuration
-also launches preregistered realizations of all five mechanisms.}
-\label{tab:residual}
-\small
-\begin{tabularx}{\textwidth}{@{}lXXXX@{}}
-\toprule
-Obligation & \owl reached launch & Frozen consequence & \rtdl decision & Claim strength \\
-\midrule
-Role/effect closure & yes & wrong weighted result & pre-launch reject & full executed residual \\
-Evaluated attribute-slot semantics & yes & wrong relation pairs & pre-launch reject & full executed residual \\
-Physical geometry binding & yes & swapped relation pairs & pre-launch reject & full executed residual \\
-Status-gated continuation/completeness & yes & overflow observed before copy, yet 7/8 rows consumed & pre-launch reject & partial enforcement residual \\
-Checked executable identity & yes & different executable result & pre-launch reject & binding support \\
-\bottomrule
-\end{tabularx}
-\end{table*}
-
-An exact application oracle detects all five faults on the registered exposing
-inputs. The active typed route emits no validation error or fatal message for
-any of the five. The OWL overlay, which records only error/fatal levels, also
-records none; lower-severity OWL diagnostics were not observed and are not
-claimed absent. The contribution is therefore pre-launch,
-input-coverage-independent rejection of declared inconsistencies, not removal
-of the need for an oracle. The strongest-native execution covers
-two project-designed tasks in one OptiX~9 environment with a GTX~1070 and required a
-disclosed two-line FFI repair to transmit native payload-type declarations; it is neither stock-PyOptiX nor
-modern-RTX evidence.
-
-\subsection{One constructive reuse and one preserved failure}
-
-A SQLite integer bag equijoin over a bounded non-null integer domain maps each
-key $k$ to the exactly representable binary32 AABB $[k,0,k+1,1]$. Equal keys
-overlap with area one and unequal integer keys with area at most zero; row
-identifiers preserve duplicate Cartesian multiplicity. The application reuses
-the frozen bounded-relation constructor, matches independent SQLite and Python
-oracles, and requires no further core, native, physical-geometry, or
-fixed-constructor change.
-
-For a database reader, the CP002 distinction is exactly ``row identifier versus
-physical AABB position.'' We did not rerun the five invalid-control executions
-on the SQL input, so this is evidence of existing-constructor semantic reuse, not a
-second residual experiment.
-
-This task was selected by the project after a BED interval-intersection
-transfer exposed a missing public overflow mapping and required a core repair.
-The SQL result is consequently a constructive, post-failure reuse of a fixed
-constructor, not a blind or prospective exam. We preserve both outcomes and
-report a prospective unbiased new-application exam count of zero.
-
-\subsection{Steady noninferiority passes; setup does not}
-
-The baseline denoted \pyoptixcompat is a pinned NVIDIA
-\texttt{otk-pyoptix}~9.1.0 source build using the OptiX~9.0 compatibility API.
-It is not a stock/current OptiX-9.1-API arm. The same-target study uses current
-\rtdl and Direct source plus this pinned compatibility arm.
-
-This is the registered successor described above; ``registered'' here
-does not mean outcome-blind to the predecessor results. It contains 324 fresh
-workers and 7,128 registered timing observations across matched Direct
-CUDA/OptiX, \pyoptixcompat, and \rtdl arms. An independently implemented raw
-recount reconstructs the schedule from 324 raw receipts and reproduces every
-worker median and all 18 reported comparison rows, each computed from 18
-paired-block ratios, including every confidence interval.
-Table~\ref{tab:perf} shows all three comparisons. Only
-RTDL/\pyoptixcompat carries a registered noninferiority gate; Direct
-comparisons are descriptive.
-
-\begin{table*}[t]
-\caption{Same-target three-arm ratios on RTX 4000 Ada: current \rtdl/Direct
-source and pinned \pyoptixcompat. Every cell is numerator/denominator with a
-95\% CI; lower favors the numerator. Only RTDL/\pyoptixcompat has a gate.}
-\label{tab:perf}
-\scriptsize
-\begin{tabularx}{\textwidth}{@{}llXXXl@{}}
-\toprule
-Task & Regime & RTDL/\pyoptixcompat & \pyoptixcompat/Direct & RTDL/Direct & Gate \\
-\midrule
-Relation & cold & 1.777 [1.735,1.862] & 0.583 [0.553,0.624] & 1.083 [0.993,1.122] & fail 1.10 \\
-Relation & prepare & 1.788 [1.720,1.951] & 0.597 [0.566,0.606] & 1.082 [0.997,1.142] & fail 1.10 \\
-Relation & steady & 0.973 [0.967,0.982] & 2.830 [2.801,2.850] & 2.753 [2.730,2.766] & pass 1.05 \\
-Triangle & cold & 1.488 [1.402,1.544] & 0.731 [0.666,0.770] & 1.061 [1.019,1.103] & fail 1.10 \\
-Triangle & prepare & 1.477 [1.387,1.564] & 0.723 [0.676,0.754] & 1.057 [1.005,1.102] & fail 1.10 \\
-Triangle & steady & 1.018 [1.013,1.026] & 1.360 [1.355,1.368] & 1.387 [1.383,1.393] & pass 1.05 \\
-\bottomrule
-\end{tabularx}
-\end{table*}
+Table~\ref{tab:prepared} reports the main observation. The public AOT path is
+1.077--1.175$\times$ the direct implementation by median. The triangle maximum
+block on Ada is 1.211$\times$; because no maximum A/D gate was registered, it is
+reported as dispersion rather than converted into a pass/fail criterion.
 
 \begin{table}[t]
-\caption{Absolute per-arm medians from the same experiment. Cold and prepare
-workers contribute one observation each; steady workers contribute 64. The
-final column is an observed RTDL--\pyoptixcompat arm difference, not a causal
-allocation to checking or admission. Deltas use unrounded medians, so displayed
-arm values need not subtract exactly.}
-\label{tab:perf-absolute}
-\scriptsize
-\begin{tabular}{@{}llrrrr@{}}
-\toprule
-Task & Regime & Direct & \pyoptixcompat & RTDL & $\Delta$ \\
- & & \multicolumn{4}{c}{milliseconds} \\
-\midrule
-Relation & cold & 472.149 & 275.878 & 498.380 & +222.5 \\
-Relation & prepare & 459.175 & 273.205 & 492.011 & +218.8 \\
-Relation & steady & 0.259 & 0.729 & 0.712 & $-0.017$ \\
-Triangle & cold & 465.241 & 341.094 & 517.583 & +176.5 \\
-Triangle & prepare & 464.681 & 340.006 & 502.438 & +162.4 \\
-Triangle & steady & 0.050 & 0.067 & 0.069 & +0.001 \\
-\bottomrule
-\end{tabular}
+  \caption{Prepared public \rtdl versus direct CUDA/OptiX (A/D). Ratio is
+  lower-is-better; times are medians of worker medians.}
+  \label{tab:prepared}
+  \small
+  \begin{tabular}{@{}llrrr@{}}
+    \toprule
+    GPU & Task & A (ms) & D (ms) & Median / max \\
+    \midrule
+    RTX 4090 & Relation & 0.2810 & 0.2612 & 1.0769 / 1.0923 \\
+    RTX 4090 & Triangle & 0.0598 & 0.0510 & 1.1751 / 1.2110 \\
+    RTX 3090 & Relation & 0.2402 & 0.2198 & 1.0948 / 1.1188 \\
+    RTX 3090 & Triangle & 0.0608 & 0.0536 & 1.1336 / 1.1427 \\
+    \bottomrule
+  \end{tabular}
 \end{table}
 
-The result supports a lifecycle-specific statement. On these two tasks, the
-steady median arm differences are $-17\,\mu$s and approximately
-$+1.22\,\mu$s; both pass the registered 1.05 noninferiority gate. This is not
-evidence of equality or zero execution cost. The observed cold-deployment
-(after imports) and prepare setup differences are instead 162--223\,ms. Direct is
-1.36--2.83$\times$ faster than both Python-host arms at steady state.
-Conversely, the compatibility arm prepares faster than both RTDL and the matched Direct
-implementation. The experiment measures complete arm boundaries and has no
-checker-off RTDL ablation; it therefore cannot allocate the setup difference
-to checking, identity, compilation, loading, or another component. The
-defensible result is lifecycle-specific arm cost, not a causal micro-cost
-attribution.
+Ahead-of-time cache-hit latency was measured separately over 20 observations.
+Median hits were 58.3--78.2~ms and hit/cold ratios were approximately
+1.04--2.02\%. A cache hit still includes cache lookup, validation, and load; it
+is not an initial compilation and is not part of the prepared kernel endpoint.
 
-Each reported ratio is the median of 18 paired block ratios, so ratios from
-different columns are not algebraically composable. Confidence intervals use
-10,000 fixed-seed resamples of the 18 block ratios via repeated
-\texttt{randrange(18)} draws; the sorted draws at indices 249 and 9749 are the
-reported bounds. Cold and prepare therefore have 18 arm observations per row,
-whereas each steady worker first summarizes 64 registered executions.
+\subsection{Adverse lifecycle results}
 
-The surprising Direct setup row is not explained by compilation. Frozen source
-shows that all three arms consume prebuilt device artifacts: the Direct and
-compatibility arms use the same matched PTX, while RTDL uses route-specific embedded
-PTX. Direct invokes no NVRTC on the formal route. Each arm constructs its
-context/module, program groups, pipeline, SBT, task owner, and static
-allocations or GAS inside its prepare boundary, although the implementation
-paths are not byte-identical. Only Direct records matching subphase timers.
-Consequently, Direct's 459--472\,ms setup medians and their difference from the
-compatibility arm remain descriptive; the current evidence does not identify their
-cause.
+Table~\ref{tab:lifecycle} preserves the unfavorable results. Every A/C
+post-import median is adverse, from 1.560$\times$ to 1.837$\times$, and the worst
+formal block is 2.377$\times$. The entry endpoint itself was revised after the
+adverse result, so neither entry nor post-import values support a confirmatory
+claim. Against predecessor E, A also regresses at first result by approximately
+8--22\% at entry and 16--31\% post-import, despite the registered prepared A/E
+comparison being favorable. This is evidence that protocol machinery and
+Python/native lifecycle work remain material before steady state.
 
-\section{Programming Responsibility, Not Usability}
+\begin{table*}[t]
+  \caption{Lifecycle ratios. A/C compares current \rtdl with the strong
+  device-continuation baseline; A/E compares current with the frozen predecessor.
+  Ratios are lower-is-better.}
+  \label{tab:lifecycle}
+  \small
+  \begin{tabular}{@{}llrrrrrr@{}}
+    \toprule
+    GPU & Task & A/C entry & A/C post median & A/C post range & A/E entry & A/E post & A/E prepared \\
+    \midrule
+    RTX 4090 & Relation & 0.654 & 1.749 & 1.725--1.866 & 1.192 & 1.305 & 0.584 \\
+    RTX 4090 & Triangle & 0.642 & 1.560 & 1.527--1.639 & 1.080 & 1.169 & 0.903 \\
+    RTX 3090 & Relation & 0.681 & 1.837 & 1.816--2.377 & 1.217 & 1.262 & 0.608 \\
+    RTX 3090 & Triangle & 0.618 & 1.637 & 1.608--1.653 & 1.138 & 1.163 & 0.922 \\
+    \bottomrule
+  \end{tabular}
+\end{table*}
 
-For the two fixed constructors and bounded triangle template, \rtdl owns
-validation and generation of the
-cross-role contract, physical-plan binding, executable identity, lifecycle,
-and status-gated output boundary. The user does not supply raw PTX, an SBT, a
-pipeline, or a native loader to the public lifecycle. The executed faults show
-that these are real responsibilities rather than a line-count rubric.
+Arm C outperformed B in all four formal steady comparisons (C/B ratios
+0.221--0.654), establishing that B alone would be a weak baseline for this
+experiment. It does not establish C as globally optimal. We also recorded
+1,024 timer-instrumentation endpoints for A only. Those observations quantify
+A's own timer overhead but do not qualify or symmetrically instrument B, C, D,
+or E.
 
-No third party has authored an \rtdl application. We have no human usability
-study, developer-time measurement, or functionally matched productivity
-baseline. We therefore make no claim that \rtdl is easier, shorter, or more
-productive than CUDA/OptiX, \pyoptix, or \owl. The measured contribution is
-responsibility transfer and pre-launch rejection of declared inconsistencies.
-Learnability and authoring efficiency remain open empirical questions.
+No wrong output was observed in the final GPU samples. This statement is not a
+correctness proof and does not repair the detailed-receipt shortfall described
+in Section~\ref{sec:lifecycle}.
+
+\section{Programming Responsibility and Generality}
+
+The design separates three responsibilities. Users provide bounded callback
+intent and application data. Shared \rtdl machinery validates schemas,
+cross-role effects, ABI compatibility, executable identity, and lifecycle.
+Trusted per-topology lowerers remain responsible for concrete CUDA and
+OptiX code generation and binding. The runtime refuses to publish output when its
+status gates fail, while experiments may add application-level oracles.
+
+This decomposition is reusable beyond the present implementation. A system
+crossing from a managed language to an accelerator can adopt whole-protocol
+admission: name roles and effects, make semantic and physical ABI explicit,
+bind checked artifacts to loaded artifacts, and gate state transitions. The
+same principles can inform other Python GPU systems, shader languages, and
+foreign-function interfaces. What does not automatically transfer is the
+topology-specific lowerer or the finite checker vocabulary. Those components
+must be re-established for each backend.
 
 \section{Related Work}
 
-Table~\ref{tab:related-boundary} organizes prior work by primary system
-responsibility rather than implementation form or surface syntax. Systems can
-span classes. Repurposed applications are the workload population to which
-these responsibilities apply, not a fifth programming-system class.
+OptiX established a programmable ray-tracing pipeline~\cite{parker2010optix},
+and current OptiX, Vulkan, and DXR interfaces expose explicit pipeline and
+shader-group contracts~\cite{nvidiaOptix9Guide,khronosVulkanInterfaces,microsoftDXRPAQ}.
+PyOptiX-style bindings and OWL improve host-language access and construction
+ergonomics~\cite{nvidiaPyOptix,nvidiaOWL}; our focus is not replacing those APIs
+but admitting a bounded cross-stage protocol and binding it to executable
+identity.
 
-\begin{table*}[t]
-\caption{Four RT programming-system responsibilities. Placement records the
-primary responsibility relevant here; it does not deny secondary capabilities.}
-\label{tab:related-boundary}
-\scriptsize
-\begin{tabularx}{\textwidth}{@{}p{0.13\textwidth}p{0.20\textwidth}p{0.25\textwidth}X@{}}
-\toprule
-Class & Primary question & Representative systems & Boundary relative to RTDL \\
-\midrule
-Interface systems & Are shader stages, declared interfaces, accesses, and
-target capabilities legal?
-& OptiX typed payloads; DXR PAQ; Vulkan interfaces; Slang capabilities; OptiX
-Utility & Constrain declared structure, access, sequencing, and target legality;
-do not jointly relate the complete application protocol. \\
-Construction systems & How are modules, acceleration structures, pipelines,
-SBTs, resources, and launches assembled? & PyOptiX; OWL; Slang and Shader
-Components & A legal object or module graph can still implement the wrong
-application protocol. \\
-Mapping systems & How is a high-level computation generated, specialized, or
-translated for an RT-capable backend? & Dr.Jit; LuisaRender and LuisaCompute;
-CrossRT & May enforce generated-code invariants, but do not document the joint
-application-semantic admission relation studied here. \\
-Proposed responsibility: protocol admission & Is the assembled executable admitted against one
-declared application protocol before launch? & RTDL & Bounded here to two
-fixed constructors and one static-triangle \texttt{u32x3} authoring template;
-not a general protocol type system or arbitrary Callback-IR backend. \\
-\bottomrule
-\end{tabularx}
-\end{table*}
+Shader and heterogeneous programming systems provide richer compilation
+abstractions. Slang's capability system and modular shader work address
+composition and target restrictions~\cite{slangCapabilities,he2017shaderComponents,he2018slang}.
+Dr.Jit, LuisaRender, and CrossRT explore staged or cross-language generation
+for graphics and simulation~\cite{jakob2022drjit,zheng2022luisa,frolov2024crossrt}.
+\rtdl differs in its narrow emphasis on admitting the surrounding RT protocol,
+but its current topology-specific lowerers are less general than those systems'
+broader compilation ambitions.
 
-\paragraph{Coverage of the taxonomy.}
-The four responsibilities are a problem-scoped organization, not a claim that
-every RT tool is a direct competitor. HLSL/DXR and SPIR-V/Vulkan remain in the
-interface class. Renderer-domain languages such as OSL and MDL define shading
-or material computation inside renderer-owned protocols
-~\cite{openShadingLanguageDocs,nvidiaMDLDocs}, placing them primarily in
-interface/construction rather than repurposed mapping or protocol admission.
-Embree and HIP RT expose ray-traversal kernels or libraries
-~\cite{embreeDocs,hiprtDocs} and likewise fall under interface/construction.
-General parallel DSLs such as Taichi are mapping/generation substrates when
-used to emit accelerator code~\cite{taichiDocs}. These systems are not ignored;
-they are less direct comparisons because they do not document the bounded joint
-admission relation evaluated here. We make no fault-survival claim for systems
-we did not execute.
+The protocol framing draws on typestate and interface theories
+~\cite{strom1986typestate,deAlfaro2001interfaceAutomata,honda2016multiparty} and
+on typed linking and FFI work~\cite{furr2005ffi,patterson2017linkingTypes}. Our
+finite artifact checker is empirical and structural; it should not be confused
+with formal GPU verification such as GPUVerify~\cite{betts2012gpuverify}.
 
-\paragraph{Interface systems.}
-OptiX supplies a programmable ray-tracing engine~\cite{parker2010optix}.
-Its payload types express per-word, per-stage access rights
-~\cite{nvidiaOptix9Guide}; DXR Payload Access Qualifiers provide per-field
-access contracts and require each declared read stage to follow a write and
-each declared write stage to precede a later read~\cite{microsoftDXRPAQ}; and
-Vulkan defines matching ray-payload and hit-attribute shader interfaces
-~\cite{khronosVulkanInterfaces}. These mechanisms are closer prior art than an
-untyped raw-OptiX baseline and are credited explicitly. They constrain access
-and, for DXR payloads, part of producer/consumer stage ordering. CP001's exact
-executed mutation changes callback control semantics from
-\texttt{optixIgnoreIntersection} to \texttt{optixTerminateRay}; it is not a
-missing payload-stage declaration. Even when an interface fixes machine
-representation and access, it need not express nominal application meaning.
-CP002 sharpens this residual for attribute slot zero: the inspected OptiX
-interface exposes the attribute count and numbered accessors, but no per-slot
-nominal declaration. The evaluated RTDL residual otherwise
-concerns nominal attribute meaning and whole host/device protocol obligations
-that survive the active OptiX mechanism. We ran no DXR executable arm and make
-no cross-API survival claim.
-OptiX Utility spans interface and construction through typed payload/attribute
-signatures, automatic packing, usage annotations, and host-side object
-helpers~\cite{optixUtility}. We credit these structural and packing mechanisms;
-we did not execute that library and make no claim about faults it would catch
-beyond its documented mechanisms. Slang's capability system likewise validates
-target, API, stage, and feature requirements~\cite{slangCapabilities}.
-Exposing OptiX payload types through another construction layer would strengthen
-access checking, but it would not by itself supply nominal application intent.
+\section{Artifact}
 
-\paragraph{Construction systems and the OWL boundary.}
-\pyoptix is a broad Python host binding~\cite{nvidiaPyOptix} and can implement
-the same applications manually.
-Shader Components introduced first-class modules that encapsulate shader logic
-with their parameters while retaining static specialization and efficient
-binding~\cite{he2017shaderComponents}. Slang showed that constrained generics,
-interfaces, associated types, parameter blocks, and reflection can implement
-modular and extensible shading systems without a proprietary shader
-DSL~\cite{he2018slang}. Slang could compile individual \rtdl leaves, and
-\rtdl claims none of these language, specialization, or parameter-binding
-mechanisms.
+The candidate artifact is an evidence-only, nine-member archive generated from
+the final frozen tooling snapshot. It contains an anonymous evidence projection,
+summary, manifest, documentation, dependency/component inventory, and a Python
+verifier using only the standard library. Private provenance and export receipts
+remain in the separate custodial record and are not distributed in the anonymous
+archive. The projection records 160 formal cells, 20,480 steady samples, 1,024
+A-only instrumentation endpoints, 20 AOT samples, and eight competence records.
 
-\owl makes an essential step beyond raw OptiX: it lifts acceleration
-structures, programs, pipelines, SBT construction, resources, and launch into a
-managed composition layer~\cite{nvidiaOWL}. We grant it full credit for that
-responsibility. At the pinned revision, however, \owl's public contract carries
-structural composition facts while the application supplies device programs
-and selects callback entries; it requires no explicit application-semantic
-authority for nominal slot meaning, required cross-role effects, semantic
-geometry projection, status-gated consumption, or an admitted identity carried
-to the selected executable. Successful composition therefore establishes that
-an RT object graph is legal, not that it implements the intended application
-protocol.
+Two clean exports were byte-identical. Replays in two fresh directories, one
+with spaces, passed under isolated normal and optimized Python modes. The archive bundles no
+third-party source, binary, dataset, CUDA/OptiX header, driver, key, or raw GPU
+archive. It therefore supports offline verification of the submitted evidence,
+not GPU rerun, product installation, or full reconstruction of private historical
+authorities. CUDA, OptiX, drivers, and GPU hardware are external requirements
+for new execution.
 
-\owl variable names and types can document local intent and enforce host-record
-layout, but \owl does not require those declarations to form a cross-role
-application-semantic authority. This separation does not depend on the pinned
-revision's public omission of \texttt{OptixPayloadType}. Exposing native payload
-access declarations would strengthen interface checking, but would not supply
-the nominal authority, physical obligations, continuation policy, or
-executable-selection contract considered here.
+\section{Threats to Validity}
 
-More fundamentally, the missing information cannot be recovered from
-composition alone. Fix an executable and a legal \owl object graph. That same
-pair can be correct for an application whose attribute-zero contract denotes a
-primitive index, yet incorrect for one whose contract denotes an application
-item identifier. Without a separately supplied or otherwise formalized
-intended protocol, no checker confined to the executable and \owl's structural
-contract can know which interpretation is required. This is not a missing
-validation switch: resolving it requires adding application-semantic authority
-to the abstraction.
-\rtdl does not infer which intent is correct; it requires the application to
-state that authority and checks a bounded implementation against it.
+\paragraph{Construct validity.}
+Prepared A/D measures the public steady path after setup; it does not measure
+interactive authoring, cold compilation, or first use. Direct D is a useful
+lower-bound implementation, not an application framework. Strong C is
+contract-equivalent at the output boundary but is neither byte-identical nor
+operation-identical to A. A-only instrumentation does not qualify other arms.
 
-In our pinned executable route, each invalid realization and its nearby legal
-control use the same \owl composition skeleton and slot layout for that task;
-all build and launch, whereas \rtdl rejects each corresponding declared
-mismatch before launch (Table~\ref{tab:residual}). \rtdl makes the additional
-authority explicit in its two fixed constructors and bounded triangle template,
-and checks it against re-derived implementation facts. \owl could adopt an equivalent abstraction, but doing so
-would extend its responsibility from object construction to whole-protocol
-admission.
+\paragraph{Internal validity.}
+Both tasks were used during system adaptation and tuning; they are not unseen
+confirmatory workloads. The implementation-entry endpoint was revised after an
+adverse observation, and both first-result endpoints include import and lifecycle
+effects. We preserve those outcomes rather than reinterpret them as a pass.
+The provider double-fault and Python-only fork boundary remain documented risks.
 
-\paragraph{Mapping systems.}
-Dr.Jit traces and globally specializes rendering and differentiable
-computation~\cite{jakob2022drjit}; LuisaRender and LuisaCompute provide a
-cross-platform embedded kernel DSL, JIT compilation, and unified resource
-runtime~\cite{zheng2022luisa}; and CrossRT maps portable C++ algorithms to RT
-backends and software fallbacks, including megakernel and wavefront
-modes~\cite{frolov2024crossrt}. These systems address construction,
-specialization, and the upstream algorithm-to-backend mapping problem. \rtdl
-begins after a traversal formulation is selected and checks the resulting
-callback protocol. A translator or JIT could emit the additional protocol
-authority or incorporate an equivalent admission pass; this paper implements
-neither integration and claims no comparable optimization, differentiation, or
-cross-platform translation mechanism.
+\paragraph{External validity.}
+Measurements cover two consumer NVIDIA generations and two exact tasks. We do
+not compare raw latency across machines. The prospective challenge domain was
+author defined, used known primitive and topology ingredients, and selected one
+composition. There is no independent human authoring study, no prevalence
+measurement, and no evidence for arbitrary Python or arbitrary Callback IR.
 
-\paragraph{Protocol admission and foundations.}
-\rtdl is conceptually adjacent to typestate, which restricts operations by
-lifecycle state~\cite{strom1986typestate}, and to interface automata and
-multiparty session types, which model temporal component interfaces and global
-interaction protocols~\cite{deAlfaro2001interfaceAutomata,honda2016multiparty}.
-Static FFI checking and linking types address type safety and reasoning across
-language boundaries~\cite{furr2005ffi,patterson2017linkingTypes}, while
-GPUVerify verifies intra-kernel data races and barrier divergence
-~\cite{betts2012gpuverify}. \rtdl does not contribute a general protocol type
-theory, progress or type-safety theorem, verified FFI, or GPU-kernel verifier.
-It instantiates a bounded admission relation over concrete host/device callback
-artifacts for current fixed/template routes and empirically tests whether each
-populated obligation leaf affects the decision.
+\paragraph{Implementation trust.}
+Approximately 2,635 lines of new topology-specific code were required for the
+selected sphere route. These lowerers and wrappers are in the TCB. The
+independent checker covers finite target structures and missed an
+out-of-authority early-return probe for selected helper checks. Detailed
+per-execution receipts were not produced for the 4,096 timed A executions.
 
-\paragraph{Repurposed-RT application population.}
-Repurposed-RT applications are the workload population to which these
-responsibilities apply, not another class of programming system. Individual works
-may use interface or construction systems, use a mapping system, or themselves
-contribute the algorithm-to-RT mapping. The recent
-review's 59-document bibliometric corpus includes 35 systematically analyzed
-proposed solutions spanning 32 problems~\cite{meneses2026rtcoresurvey}. It
-characterizes a mapping as a coordinated design of geometric data
-representation, query rays, and hit-side action. After that mapping is chosen,
-the surrounding application must establish its correspondence with callbacks,
-payloads and attributes, host bindings, status handling, and the launched
-executable unless an equivalent protocol layer is supplied. The nine systems
-underlying our thirteen author-written lanes demonstrate the breadth of this
-protocol-bearing setting, not prevalence: we have not established how often
-published artifacts mechanically enforce these obligations or contain faults.
-Our narrower result is that selected correspondence obligations can be moved
-into pre-launch admission for current bounded routes; the mapping theorem and
-semantic oracle remain application responsibilities.
-Table~\ref{tab:repurposed-landscape}
-makes the exact frozen survey-table projection inspectable rather than relying
-on selected examples alone.
-
-\begin{table*}[t]
-\caption{Frozen survey-derived application landscape. The public survey
-performance table yields 35 paper--problem rows, 32 distinct problem labels,
-and 29 unique cited works. The four themes are presentation groupings, not a
-new survey taxonomy; this is neither the survey's complete 59-document
-bibliometric corpus nor an enforcement census.}
-\label{tab:repurposed-landscape}
-\scriptsize
-\begin{tabularx}{\textwidth}{@{}p{0.16\textwidth}p{0.34\textwidth}X@{}}
-\toprule
-Application theme & Exact frozen problem labels & Source works \\
-\midrule
-Data, indexing, and graph analytics & SpMM; BFS; Triangle Counting; Set
-Intersection; Binary Search; Point Queries; Range Queries; RMQ; Non-euclidean
-kNN; ANN; Outlier Detection; Index Scan; kNN; DBSCAN; FRNN &
-RTSpMSpM; RT-core graph case study; LibRTS; RTIndeX; More Bang for Your
-Buck(et); RTXRMQ; Arkade; JUNO; RTOD; RTScan; RT-kNNS Unbound; RT-DBSCAN; RTNN
-\cite{Zhang2025RTSpMSpMHR,xiao2025rtgraph,geng2025librts,
-Henneberg2023RTIndeXEH,Henneberg2024MoreBF,Meneses2024RTXRMQ,
-Mandarapu2023ArkadeKN,Liu2023JUNOOH,Wang2024RTODEO,Lv2024RTScanES,
-Nagarajan2023RTkNNSUU,nagarajan2023rtdbscan,zhu2022rtnn} \\
-Geometry and spatial predicates & Penetration Depth; Discrete CD; Continuous
-CD; Line-Segment Intersection; Point in Polygon; Point Location &
-RTPD; hardware-accelerated discrete/continuous collision detection; RayJoin;
-unstructured-mesh point location
-\cite{Kim2025RTPDPD,Sui2024HardwareAcceleratedRT,geng2024rayjoin,
-Morrical2022AcceleratingUM} \\
-Physics and simulation & Barnes-Hut; Particle Simulation; Radio Wave
-Propagation; Particle Tracking; Particle-Mesh Coupling; Infrared Radiation;
-Particle Transport &
-RT-BarnesHut; particle-based simulation; RT radio-wave propagation; particle
-tracking; particle-mesh coupling; RT infrared radiation; RTSRT; OpenMC
-particle transport
-\cite{nagarajan2025rtbarneshut,zhao2023leveraging,
-Hashinoki2023ImplementationOR,wang2022particle,Chan2018ParticlemeshCI,
-Liu2025RayTC,Cui2024RTSRTAM,Salmon2019ExploitingHR} \\
-Visualization and representation & Graph Drawing; Space Skipping; Segmentation;
-Voxelization &
-RT-core graph drawing; hardware-accelerated space skipping; GPU sparse
-ray-traced segmentation; surface/solid voxelization
-\cite{zellmann2020accelerating,Morrical2019EfficientSS,Petrescu2019GPUSR,
-Schwarz2010FastPS} \\
-\bottomrule
-\end{tabularx}
-\end{table*}
-
-\section{Artifact and Reproducibility}
-
-We constructed a compact anonymous evidence projection for the paper's five
-claim layers. It contains all 19 populated-leaf mutation records; the five
-executed observations for preserved PyOptiX and \owl residual routes, plus the
-corresponding \rtdl decisions; the
-five strongest-native typed-payload observations and a source/PTX-identical negative
-control; the capability and transfer ceilings; SQL and separate Python oracle
-rows; and all registered scalar timing observations from 324 same-target
-three-arm workers, including the declared compatibility-arm
-distribution/version/API identity and the
-24/16-to-18-block registration lineage plus the withdrawn asymmetric result.
-Identifying development history, machine paths, process identifiers,
-endpoints, and review records are excluded by construction.
-
-A standard-library-only verifier rehashes every manifested payload, checks and
-recounts the preserved 19-row liveness projection and the $3+1+1$
-PyOptiX/\owl residual classification, checks the preserved five-row
-strongest-native projection and live negative control against frozen values,
-checks the preserved SQL/Python equality projection, and recomputes all 18
-reported comparison rows, each from 18 paired-block ratios, including the
-fixed-seed bootstrap intervals and registered timing count. The performance
-recount starts from 7,128
-scalar observations rather than from Table~\ref{tab:perf}. This supports
-numerical and claim-boundary review without access to our internal history.
-
-The compact projection is not itself a GPU re-execution package: its mutation
-and residual records are preserved execution observations, whereas the
-verifier independently recomputes their stated counts and invariants. A full
-GPU rerun additionally requires an OptiX SDK, compatible NVIDIA driver and
-GPU, the pinned residual-route sources, the source for the compatibility arm,
-and the executable build inputs. We do
-not equate a successful offline recount with independent reproduction of the
-hardware executions.
-
-\section{Threats to Validity and Limitations}
-
-The three most consequential evidence gaps are ordered rather than presented
-as a defensive checklist. First, arbitrary verified Callback IR cannot be
-authorized for GPU execution: caller source reaches GPU only inside one bounded
-triangle template, while new physical or role/continuation shapes still require
-core/backend changes. The falsifying next test is a new protocol shape
-instantiated after a generic core freeze. Second, the five executed faults are
-constructed, so their prevalence in published third-party artifacts is
-unknown; the next test is a preselected, complete-denominator field corpus.
-Third, every application was authored by the project, so external authoring and
-learnability are unknown; the next test is a frozen-interface external-author
-case series. These gaps respectively limit mechanism generality, real-world
-importance, and usability evidence.
-
-\paragraph{Generality.}
-There are two fixed public constructors. Current routes instantiate two of six
-OptiX build-input enum kinds (two of four leaf primitives). This measures kind
-presence, not category completeness. One bounded triangle template accepts
-user source. Semantic protocol shapes form an open set. The thirteen-lane
-cohort is project-authored. A new geometry or callback topology currently
-requires shared-core and native-backend changes. The SQL reuse case was selected
-after a failed transfer. Prospective unbiased new-shape exams and third-party
-authors are both zero. These facts
-limit external validity and are stated in the abstract rather than deferred to
-artifact documentation.
-
-\paragraph{Mechanism scope.}
-The 19-leaf sweep covers populated leaves in two accepted task contracts. It
-does not prove that the vocabulary is complete or that every future leaf is
-decision-bearing. The five categories are related; we do not infer five
-independent theoretical contributions from five rejection rows.
-
-\paragraph{Oracles.}
-Exact task oracles detect all five registered faults on exposing inputs. \rtdl
-does not prove arbitrary output correctness. Its advantage is rejecting the
-declared mismatch before launch and without relying on which inputs were
-sampled.
-
-\paragraph{Performance.}
-The current matched result uses two authored tasks and one RTX 4000 Ada. The cold
-regime starts after Python import/runtime preload and is not full-process cold.
-Preparation fails the registered margin. The baseline is \pyoptixcompat, not a
-stock/current OptiX-9.1-API arm. Same-target Direct rows using current source
-are descriptive and have no performance gate.
-There is no \owl timing arm, checker-off preparation ablation, second target,
-or third task.
-
-\paragraph{Usability.}
-The public lifecycle is executable but has not been used by an external human
-author. We make no ease or productivity claim.
+\paragraph{Artifact scope.}
+The anonymous projection is derived evidence, not the raw private archives. Its
+verifier checks internal identities, counts, registered formulas, and disclosed
+rows, but cannot independently recreate GPU runs or historical custody. Private
+provenance remains available for confidential audit.
 
 \section{Conclusion}
 
-Existing RT systems principally validate interfaces, construct pipelines, or
-map algorithms to backends. \rtdl studies a fourth, bounded responsibility:
-admitting a repurposed RT program as one declared bounded whole protocol rather
-than as isolated shaders. It admits declarations, physical plans, executable identity,
-and lifecycle obligations as one unit. For two accepted
-contracts, all 19 populated leaves are decision-bearing under single-leaf
-mutation with projection bytes fixed: 7 role/effect, 1 semantic-ABI, 7
-physical-binding, 2 continuation/completeness, and 2 executable-identity
-leaves. This is contract liveness evidence, not a soundness theorem or proof
-that the obligation vocabulary is complete.
+\rtdl demonstrates bounded admission for a complete ray-tracing protocol,
+instead of checking callbacks in isolation. Shared schema, identity, and lifecycle machinery
+supports two stable public constructors and a four-leaf bounded corpus, while
+executable lowering remains topology-specific and trusted. Mutation,
+sealed-snapshot composition, and finite-checker evidence exercise this boundary
+without establishing general compiler soundness.
 
-Under active native OptiX typed-payload semantics exposed through a disclosed
-two-line repaired PyOptiX FFI, all five preregistered fault realizations reached
-launch after a source/PTX-identical negative established that native access checking
-was active. A separate pinned \owl arm also built and launched all five. The
-scientific result is deliberately not ``five full guarantees'': it is three
-full wrong-output residuals, one partial status-gated
-continuation/completeness residual, and checked-executable binding support.
-\rtdl rejected the corresponding declared inconsistencies before launch.
+For two exact tasks on Ada and Ampere GPUs, the prepared public route costs
+1.077--1.175$\times$ direct CUDA/OptiX latency by median. First-result results
+are materially worse, with post-import A/C medians up to 1.837$\times$ and a
+2.377$\times$ worst block. The contribution is bounded whole-protocol admission
+with near-direct prepared latency and explicit TCB, receipt, generality, and
+lifecycle limits. Removing those limits is the next research problem.
 
-The implementation remains bounded to two fixed constructors, one restricted
-triangle authoring template, two physical geometry kinds, and project-authored
-ports. Against the pinned \texttt{otk-pyoptix}~9.1.0
-compatibility arm described above, steady RTDL/PyOptiX-compat passed the
-registered 1.05 noninferiority gate
-on two tasks, with median differences of $-17\,\mu$s and $+1.22\,\mu$s;
-post-import deployment-cold and prepare instead showed 162--223\,ms setup
-deltas. The Direct arm is descriptive. Prospective transfer, third-party
-authorship, usability, arbitrary Callback-IR execution, and cross-API survival
-remain unestablished.
-
-\balance
 \bibliographystyle{ACM-Reference-Format}
 \bibliography{references}
 

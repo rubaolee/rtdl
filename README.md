@@ -99,10 +99,12 @@ GPU samples. Post-import diagnostics are adverse on all four rows and reach
 Relative to predecessor E, first-result medians regress about 8%--22% at entry
 and 16%--31% post-import; those comparisons are post hoc and non-gating.
 
-R2 has produced a deterministic anonymous projection and successful pre-F
-offline rehearsal. Final candidate-F clean-checkout replay, manuscript rewrite,
-anonymous final package, final-byte review, and submission remain open. Current
-state and exact claim boundaries are in
+Final tooling snapshot F2 has passed clean-checkout replay. R4 has produced the
+eight-page manuscript candidate, and R6 has paired it with the exact anonymous
+evidence package and replayed that package in two isolated extraction roots.
+Final-byte review, claim adjudication, and submission checks remain open; no
+upload or public/manuscript claim is authorized. Current state and exact claim
+boundaries are in
 `history/internal_docs/post_goal5851_submission_remediation_20260906/`.
 
 ## Documentation

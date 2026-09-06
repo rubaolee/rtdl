@@ -2935,3 +2935,18 @@ load a provider-compatible verified executable without first-use leaf compile,
 retain exact source/provider/ABI/proof identities and fail-closed mutation
 behavior, and compare against a precompiled PyOptiX arm under a new frozen
 same-contract experiment. Do not rewrite or pool Goal5846 evidence.
+
+# Critical current override: post-Goal5851 R4/R6 candidate ready (2026-09-06)
+
+The controlling execution entry is
+`history/internal_docs/lead_execution_directive_post_goal5851_20260906.md`.
+Measured implementation M remains `d653fe4...` and final executable tooling F2
+remains `9771face...`; do not edit production, native, experiment, measured
+evidence, or frozen artifact-tool bytes. The R4 eight-page manuscript and R6
+anonymous delivery pair are internally closed with evidence. Their exact PDF
+and archive SHA-256 values are `4529946f...453` and
+`916cedbb...38b8`. R7 review of those exact bytes and R8 submission checks
+remain open. No upload or public/manuscript claim is authorized. Keep every
+mandatory adverse disclosure and the original per-execution detailed-receipt
+deviation visible; do not upgrade internal self-review into independent or
+external review.
