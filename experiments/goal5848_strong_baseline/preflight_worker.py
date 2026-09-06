@@ -21,6 +21,7 @@ from .contracts import (
     TASK_CONTRACTS,
     TASKS,
     digest,
+    direct_worker_task,
     require_formal_cache_policy,
     rtdl_program_bundles,
     strict_json_loads,
@@ -213,6 +214,39 @@ def _idiomatic_pyoptix(args: argparse.Namespace) -> dict[str, object]:
     }
 
 
+def _strong_untimed_witness(
+    adapter: Any,
+    *,
+    task: str,
+    expected: object,
+) -> tuple[list[dict[str, object]], dict[str, dict[str, object]]]:
+    results = [adapter.execute_with_operation_guard() for _ in range(2)]
+    for result in results:
+        _validate_pyoptix_result(task, result, expected)
+    lifecycle = []
+    evidence_rows = []
+    for result in results:
+        dynamic = result.get("dynamic_input_receipt")
+        guard = result.get("independent_execute_guard")
+        if not isinstance(dynamic, Mapping) or not isinstance(guard, Mapping):
+            raise TypeError("Goal5848 Strong PyOptix guard evidence differs")
+        lifecycle.append(dict(dynamic))
+        evidence_rows.append({
+            "independent_execute_guard": dict(guard),
+            "dynamic_input_receipt": dict(dynamic),
+            "execute_operation_counts": result.get("execute_operation_counts"),
+            "operation_order": result.get("operation_order"),
+            "prepare_operation_counts": result.get("prepare_operation_counts"),
+            "live_execute_guard_inside_timer": result.get(
+                "live_execute_guard_inside_timer"
+            ),
+        })
+    return lifecycle, {
+        "first_execute": evidence_rows[0],
+        "reused_execute": evidence_rows[1],
+    }
+
+
 def _strong_pyoptix(args: argparse.Namespace) -> dict[str, object]:
     from experiments.goal5802_premeasurement import pyoptix_scalar_arm as old_arm
 
@@ -241,13 +275,11 @@ def _strong_pyoptix(args: argparse.Namespace) -> dict[str, object]:
     try:
         adapter.load()
         adapter.prepare()
-        results = [adapter.execute() for _ in range(2)]
-        for result in results:
-            _validate_pyoptix_result(args.task, result, expected)
-        lifecycle = [
-            adapter.measurement_lifecycle_receipt(result) for result in results
-        ]
-        evidence = adapter.finalize_measurement_evidence(results[-1])
+        lifecycle, operation_evidence = _strong_untimed_witness(
+            adapter,
+            task=args.task,
+            expected=expected,
+        )
         deployment = _validate_pyoptix_deployment(baseline, args)
     finally:
         adapter.close()
@@ -256,17 +288,18 @@ def _strong_pyoptix(args: argparse.Namespace) -> dict[str, object]:
         "output_sha256": TASK_CONTRACTS[args.task]["public_output_sha256"],
         "device_continuation": True,
         "lifecycle": lifecycle,
-        "operation_evidence": evidence,
+        "operation_evidence": operation_evidence,
         "deployment": deployment,
     }
 
 
 def _direct(args: argparse.Namespace) -> dict[str, object]:
+    mapped_task = direct_worker_task(args.task)
     command = [
         str(args.direct_worker.resolve(strict=True)),
         "--local-untimed-functional",
         "--task",
-        args.task,
+        mapped_task,
         "--ptx",
         str(args.precompiled_ptx.resolve(strict=True)),
     ]
@@ -283,7 +316,7 @@ def _direct(args: argparse.Namespace) -> dict[str, object]:
         )
     except (UnicodeError, json.JSONDecodeError) as error:
         raise RuntimeError("Goal5848 Direct preflight output differs") from error
-    expected_task = args.task
+    expected_task = mapped_task
     correctness = value.get("correctness") if isinstance(value, dict) else None
     ledger = value.get("operation_ledger") if isinstance(value, dict) else None
     expected = (

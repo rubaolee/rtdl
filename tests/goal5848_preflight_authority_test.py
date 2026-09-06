@@ -32,7 +32,7 @@ class Goal5848PreflightAuthorityTest(unittest.TestCase):
             receipt = {
                 "schema": "rtdl.goal5802.direct_scalar.worker.v1",
                 "status": "PASS",
-                "task": contracts.TRIANGLE_TASK,
+                "task": contracts.direct_worker_task(contracts.TRIANGLE_TASK),
                 "regime": "LOCAL_UNTIMED",
                 "registered_performance_timing_count": 0,
                 "execute_or_regime_durations_ns": [],
@@ -60,8 +60,12 @@ class Goal5848PreflightAuthorityTest(unittest.TestCase):
             )
             with mock.patch.object(
                 preflight_worker.subprocess, "run", return_value=completed
-            ):
+            ) as run:
                 result = preflight_worker._direct(args)
+            self.assertEqual(
+                run.call_args.args[0][run.call_args.args[0].index("--task") + 1],
+                contracts.direct_worker_task(contracts.TRIANGLE_TASK),
+            )
             self.assertEqual(result["output_sha256"], contracts.TASK_CONTRACTS[
                 contracts.TRIANGLE_TASK
             ]["public_output_sha256"])
@@ -118,6 +122,51 @@ class Goal5848PreflightAuthorityTest(unittest.TestCase):
         )
         with self.assertRaisesRegex(ValueError, "no RTDL program bundle"):
             contracts.rtdl_program_bundles("unknown")
+
+    def test_direct_worker_task_selection_is_explicit_and_fail_closed(self):
+        self.assertEqual(
+            contracts.direct_worker_task(contracts.RELATION_TASK),
+            "CUSTOM_AABB_CLOSED_RELATION_COUNT_V2_MATCHED",
+        )
+        self.assertEqual(
+            contracts.direct_worker_task(contracts.TRIANGLE_TASK),
+            "BUILTIN_TRIANGLE_WEIGHTED_SCALAR_V2_MATCHED",
+        )
+        with self.assertRaisesRegex(ValueError, "no Direct worker mapping"):
+            contracts.direct_worker_task("unknown")
+
+    def test_strong_preflight_uses_two_untimed_operation_guards(self):
+        guard = {"scope": "test"}
+        results = [
+            {
+                "weighted_sum": 65530,
+                "dynamic_input_receipt": {
+                    "prepared_input_reused": reused,
+                    "dynamic_input_generation": 1,
+                },
+                "independent_execute_guard": guard,
+                "execute_operation_counts": {"launches": 1},
+                "operation_order": ["launch"],
+                "prepare_operation_counts": {"allocations": 1},
+                "live_execute_guard_inside_timer": True,
+            }
+            for reused in (False, True)
+        ]
+        adapter = mock.Mock()
+        adapter.execute_with_operation_guard.side_effect = results
+        lifecycle, evidence = preflight_worker._strong_untimed_witness(
+            adapter,
+            task=contracts.TRIANGLE_TASK,
+            expected=65530,
+        )
+        self.assertEqual(adapter.execute_with_operation_guard.call_count, 2)
+        self.assertEqual(
+            [row["prepared_input_reused"] for row in lifecycle],
+            [False, True],
+        )
+        self.assertEqual(
+            evidence["reused_execute"]["independent_execute_guard"], guard
+        )
 
     def test_process_streams_are_preserved_byte_exact_without_overwrite(self):
         completed = subprocess.CompletedProcess(

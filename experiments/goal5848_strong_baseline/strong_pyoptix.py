@@ -164,6 +164,11 @@ class StrongPyOptixAdapter:
     def execute(self) -> Any:
         return self.delegate.execute()
 
+    def execute_with_operation_guard(self) -> dict[str, Any]:
+        """Run the operation-evidence path outside every comparative timer."""
+
+        return self.delegate.execute_with_operation_guard()
+
     def measurement_execution_callable(self) -> Any:
         return self.delegate.measurement_execution_callable()
 

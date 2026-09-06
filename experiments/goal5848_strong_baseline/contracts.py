@@ -164,6 +164,17 @@ def rtdl_program_bundles(task: str) -> tuple[str, ...]:
         ) from error
 
 
+def direct_worker_task(task: str) -> str:
+    """Map a Goal5848 task to the frozen Goal5802 Direct worker task."""
+
+    try:
+        return _DIRECT_TASKS[task]
+    except KeyError as error:
+        raise ValueError(
+            f"Goal5848 task has no Direct worker mapping: {task}"
+        ) from error
+
+
 def build_instrumentation_schedule() -> tuple[dict[str, object], ...]:
     """Build the frozen paired fresh-process instrumentation schedule."""
 
@@ -1109,6 +1120,7 @@ __all__ = [
     "build_schedule",
     "canonical_bytes",
     "digest",
+    "direct_worker_task",
     "evaluate_complete_transaction",
     "instrumentation_protocol",
     "integer_median",
