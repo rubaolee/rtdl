@@ -19180,6 +19180,25 @@ median and `1.211025x` worst block; relation is `1.076852x` median and
 `c9128bae...2cced`; authority/recount SHA-256 is `191e85ea...0a66b7`.
 
 After download, the Mac reproduced the archive and authority hashes and
-verified all 2,405 manifest rows with zero mismatch. Goal5851 still needs a
-wholly fresh Ampere CC 8.6 pass at identical source `d653fe4...`, followed by
-the cross-generation authority. No public/manuscript claim is authorized yet.
+verified all 2,405 manifest rows with zero mismatch. At that checkpoint,
+Goal5851 still needed a wholly fresh Ampere CC 8.6 pass at identical source
+`d653fe4...`, followed by the cross-generation authority. No
+public/manuscript claim was authorized.
+
+## Goal5851 cross-generation internal completion (2026-09-06)
+
+The identical final source `d653fe4...` passed a wholly fresh RTX 3090 Ampere
+CC 8.6 transaction with UUID
+`GPU-eda7acdc-0cc5-6c7f-689f-e8c6831f3b63`. All 512 instrumentation workers,
+80 formal cells and 10,240 steady samples were retained with zero
+retry/discard. Triangle public RTDL/Direct is `1.133636x` median and
+`1.142675x` worst block; relation is `1.094795x` median and `1.118811x` worst
+block. Every frozen gate passed.
+
+The Ampere archive SHA-256 is `7bbabfc8...b7c2a2`; its authority/recount
+SHA-256 is `35049de2...eadb3`. Mac-side recount verified all 2,405 manifest
+files with zero mismatch. Two independent cross-generation authority builds
+are byte-identical with SHA-256 `99e1eab6...151692` and status
+`PASS__GOAL5848_INTERNAL_TECHNICAL_COMPLETE__EXTERNAL_REVIEW_PENDING`.
+Goal5848/Goal5851 are internally technically complete; external review and
+public/manuscript claim authorization remain pending.

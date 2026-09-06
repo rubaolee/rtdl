@@ -12034,9 +12034,13 @@ author-artifact parity work.
       with zero retry/discard and every frozen gate passing.
 - [x] Download and independently verify the `d653fe4...` Ada archive,
       authority/recount byte identity and all 2,405 manifest rows.
-- [ ] Run the active Goal5851 packet from exact source `d653fe4...` on one idle
-      Ampere CC 8.6 RTX GPU with a different UUID.
-- [ ] Build the non-pooled cross-generation authority; if this is not complete
-      by the freeze deadline, remove the positive Goal5848 paper claim.
+- [x] Run the Goal5851 packet from exact source `d653fe4...` on one idle Ampere
+      CC 8.6 RTX GPU with a different UUID; preserve all 512 instrumentation
+      workers, 80 formal cells and 10,240 samples with zero retry/discard.
+- [x] Build the non-pooled cross-generation authority twice and require byte
+      identity, two distinct architectures/UUIDs, all gates passing and no
+      cross-machine raw-time ratio.
+- [ ] Obtain deferred external review before authorizing the bounded Goal5848
+      manuscript statement; keep current authority claim flags false.
 - [ ] Impose Goal5852's irreversible code/evidence freeze by 2026-09-08 00:00
       America/New_York.

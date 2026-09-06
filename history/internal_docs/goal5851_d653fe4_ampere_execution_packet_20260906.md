@@ -2,7 +2,10 @@
 
 Date: 2026-09-06
 
-Status: `READY__AMPERE_GPU_REQUIRED`
+Status: `EXECUTED__AMPERE_PASS__CROSS_GENERATION_AUTHORITY_COMPLETE`
+
+This packet was executed on an RTX 3090 with the exact source below. The final
+result is recorded in `goal5851_cross_generation_final_report_20260906.md`.
 
 This packet executes the frozen Goal5848 protocol. It does not change source,
 workload, arms, timers, estimators, thresholds or claim gates.

@@ -43,11 +43,23 @@ gate. Authority and independent recount are byte-identical with SHA-256
 the complete archive SHA-256 is
 `c9128bae15da7ed3262c0bad96799e8cc56d1292c14f9af8713ea174cfc2cced`.
 
-This is generation 1 of 2 for the final source. Goal5851 and Goal5848 remain
-incomplete, and no positive public/manuscript claim is authorized. The second
-generation must use exact source `d653fe4...`, not a later documentation
-commit, on an Ampere CC 8.6 GPU with a different UUID. The historical RTX 3090
-pass at source `a4dd1d5d...` cannot be paired with this changed source.
+The identical final source also passed a wholly fresh RTX 3090 Ampere (CC 8.6,
+UUID `GPU-eda7acdc-0cc5-6c7f-689f-e8c6831f3b63`, driver 580.159.03)
+transaction. Triangle public RTDL/Direct was `1.133636x` median with
+`1.142675x` worst block; relation was `1.094795x` median with `1.118811x` worst
+block. It also retained all 512 instrumentation workers, 80 formal cells and
+10,240 steady samples with zero retry/discard. Its archive SHA-256 is
+`7bbabfc8d1d9dfd3cc9bd701bd7f40e9f50c8ccfcbbac9504db43e9e42b7c2a2`.
+
+The independently rebuilt cross-generation authorities are byte-identical with
+file SHA-256
+`99e1eab6f33e609a8739caecb26dc05e5c8d669b3ad67f58fd0540d781151692`
+and status
+`PASS__GOAL5848_INTERNAL_TECHNICAL_COMPLETE__EXTERNAL_REVIEW_PENDING`.
+They compare only within-machine gate direction and report
+`cross_machine_raw_time_ratio_computed: false`. Goal5848/Goal5851 are internally
+technically complete. External review remains unavailable and no positive
+public/manuscript claim is authorized.
 
 Preserve all earlier adverse evidence. In particular, exact source
 `a4dd1d5d...` passed on Ampere but failed the Ada triangle public/Direct gate at
@@ -55,8 +67,10 @@ Preserve all earlier adverse evidence. In particular, exact source
 `76e3c1a01891a66dd7505fde079c4746ee43ce99245a8dbf12c56943e054f885`.
 The full repair and custody record is
 `history/internal_docs/goal5851_triangle_exact_replay_repair_20260906.md`.
-The active Ampere instructions are
+The executed Ampere packet is
 `history/internal_docs/goal5851_d653fe4_ampere_execution_packet_20260906.md`.
+The final result is
+`history/internal_docs/goal5851_cross_generation_final_report_20260906.md`.
 
 ## Critical current override: Goal5850 generation A complete (2026-09-06)
 

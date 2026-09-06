@@ -8495,3 +8495,20 @@ Require Ampere CC 8.6, a different GPU UUID and exact source `d653fe4...` for
 generation 2. Do not weaken the protocol, substitute a documentation commit,
 pool old rows, compute cross-machine raw-time ratios, or authorize manuscript
 performance wording before cross-generation authority and later review.
+
+## D247: close Goal5848/Goal5851 internally at same-source two-generation evidence (2026-09-06)
+
+Accept exact source `d653fe4...` as internally technically complete for the
+frozen Goal5848 scope after independent passes on RTX 4090 Ada CC 8.9 and RTX
+3090 Ampere CC 8.6 with different UUIDs. Each generation retained 512
+instrumentation workers, 80 formal cells and 10,240 steady samples with zero
+retry/discard and passed every unchanged gate.
+
+Accept the independently rebuilt byte-identical cross-generation authority as
+the sole internal closure record. It compares only within-machine gate
+direction and explicitly computes no cross-machine raw-time ratio. Preserve all
+earlier adverse evidence and prohibit pooling across source commits.
+
+Do not equate internal technical completion with public claim authorization.
+External review remains unavailable; usability, arbitrary-callback, all-app,
+cold-start and hardware-independent claims remain outside this evidence.

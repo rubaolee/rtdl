@@ -4,7 +4,7 @@ Date: 2026-09-06
 
 ## Status
 
-`FINAL_SUCCESSOR_ADA_PASS__SAME_COMMIT_AMPERE_REQUIRED`
+`PASS__GOAL5848_INTERNAL_TECHNICAL_COMPLETE__EXTERNAL_REVIEW_PENDING`
 
 This document records a pre-freeze engineering repair. It does not complete
 Goal5851 and does not authorize a public or manuscript performance claim.
@@ -400,9 +400,39 @@ path-relocated replay because preregistration binds pod-absolute
 `/workspace/...` identities; this is recorded as a relocation limitation, not
 claimed as a Mac authority rebuild.
 
-This supplies one passing generation for the final source `d653fe4...`.
-Goal5851 remains incomplete until one wholly fresh Ampere transaction with a
-different GPU UUID independently passes at that identical source, followed by
-the cross-generation authority. The older `a4dd1d5d...` Ampere pass cannot be
-paired with this changed final source. External review is absent and public or
-manuscript performance wording remains unauthorized.
+At that checkpoint this supplied one passing generation for the final source
+`d653fe4...`. Goal5851 remained incomplete until one wholly fresh Ampere
+transaction with a different GPU UUID independently passed at that identical
+source, followed by the cross-generation authority. The older `a4dd1d5d...`
+Ampere pass could not be paired with this changed final source. External review
+was absent and public or manuscript performance wording remained unauthorized.
+
+## Same-Source Cross-Generation Closure
+
+The exact final source `d653fe4...` subsequently passed a wholly fresh RTX 3090
+Ampere transaction (compute capability 8.6, UUID
+`GPU-eda7acdc-0cc5-6c7f-689f-e8c6831f3b63`, driver 580.159.03). It retained all
+512 instrumentation workers, 80 formal cells and 10,240 steady samples with
+zero retry/discard. Triangle public RTDL/Direct was `1.133636x` median and
+`1.142675x` worst block; relation was `1.094795x` median and `1.118811x` worst
+block. Every frozen gate passed.
+
+The Ampere authority/recount file SHA-256 is
+`35049de227c9c251314615039f07aaf6af71dd26bf24e8c6f5e1c74fb8ceadb3`;
+the archive SHA-256 is
+`7bbabfc8d1d9dfd3cc9bd701bd7f40e9f50c8ccfcbbac9504db43e9e42b7c2a2`.
+Mac-side manifest recount verified all 2,405 files with zero mismatch.
+
+The cross-generation builder accepted Ada and Ampere only after independently
+checking source/predecessor identity, different compute capabilities and UUIDs,
+byte-identical per-generation recounts, all task gates and zero retry/discard.
+Two independent builds are byte-identical with SHA-256
+`99e1eab6f33e609a8739caecb26dc05e5c8d669b3ad67f58fd0540d781151692`.
+The authority status is
+`PASS__GOAL5848_INTERNAL_TECHNICAL_COMPLETE__EXTERNAL_REVIEW_PENDING`, and it
+reports `cross_machine_raw_time_ratio_computed: false`.
+
+Goal5848/Goal5851 are internally technically complete. External review remains
+unavailable, and `public_or_manuscript_claim_authorized` remains false. The
+concise final record is
+`goal5851_cross_generation_final_report_20260906.md`.
