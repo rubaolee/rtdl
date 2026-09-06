@@ -8592,3 +8592,16 @@ overfull vbox rather than claiming zero overfull boxes. All eight rendered pages
 show no clipping or overlap. Because the PDF bytes changed before R7, any review
 of the superseded identity is non-final; R7 remains open against only the new
 identity.
+
+## D251: distinguish R7 author precheck from independent review (2026-09-06)
+
+Bind exact paper/package snapshot P to commit
+`c6020fd63097b35b5294778cf54c2fb84c879ad6`, tree
+`dc4b78ba3ec0f7816f87b87fdd74353c806caced`. Use the self-contained
+`R7_FINAL_BYTES_REVIEW_REQUEST.md` for both required independent reviews.
+
+Accept the two-method `R7_INTERNAL_HOSTILE_PRECHECK.md` only as evidence that
+the exact bytes are ready to send. Because both passes were performed by the
+lead authoring context, they count as zero independent reviews. Keep R7 open,
+all claim authorization false, and R8 blocked until two actual responses arrive
+and every material finding is closed or the affected claim is removed.

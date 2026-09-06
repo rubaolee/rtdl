@@ -19319,3 +19319,20 @@ all four JSON outputs were byte-identical and reconstructed 160 formal cells,
 eight competence records. No GPU or project import was performed. R4 and R6
 are internally closed with evidence; R7 final-byte review and R8 submission
 gate remain open. No upload or claim authorization has occurred.
+
+## Exact snapshot P and R7 request prepared (2026-09-06)
+
+The final candidate pair and its controls were committed and pushed as snapshot
+P `c6020fd63097b35b5294778cf54c2fb84c879ad6`, tree
+`dc4b78ba3ec0f7816f87b87fdd74353c806caced`. The PDF remains 138,969 bytes at
+SHA-256 `4529946f...453`; the artifact remains 180,308 bytes at
+`916cedbb...38b8`.
+
+The self-contained `R7_FINAL_BYTES_REVIEW_REQUEST.md` now binds M/E/F2/P,
+the exact delivery hashes, receipt adjudication, numerical matrices, replay
+procedure, source whitelist, known limitations, and required finding format.
+`R7_INTERNAL_HOSTILE_PRECHECK.md` records separate content/numerical and
+bytes/anonymity/replay passes. Both internal passes found no new blocker, but
+they share the authoring context and therefore count as zero of the two required
+independent reviews. R7 and R8 remain open; no claim authorization or upload has
+occurred.

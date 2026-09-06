@@ -27,6 +27,9 @@ authorization.
 - Final tooling snapshot F2:
   `9771facece4ccd807e26c15b21892b9d0a701d32`, tree
   `11c62c28bdebcc7d437f8ab3326635af0832ce48`.
+- Exact candidate paper/package snapshot P:
+  `c6020fd63097b35b5294778cf54c2fb84c879ad6`, tree
+  `dc4b78ba3ec0f7816f87b87fdd74353c806caced`.
 
 Two exact tasks passed the machine numerical contract independently on RTX
 4090 Ada and RTX 3090 Ampere. The main performance observation is prepared
@@ -86,6 +89,11 @@ actual final PDF and archive bytes, with every material finding closed or the
 affected claim narrowed. R8 still requires the final format, anonymity,
 bibliography, link, hash, upload, and submission-receipt checks. No upload has
 occurred, and `public_or_manuscript_claim_authorized` remains false.
+
+The R7 request and author-side precheck are
+`history/internal_docs/post_goal5851_submission_remediation_20260906/R7_FINAL_BYTES_REVIEW_REQUEST.md`
+and `R7_INTERNAL_HOSTILE_PRECHECK.md`. The precheck is not an independent
+review and does not close R7.
 
 The hard executable-code freeze is 2026-09-08 00:00 America/New_York. After
 that point, only frozen-tool execution, manuscript/bibliography edits, claim

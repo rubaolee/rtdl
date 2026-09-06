@@ -2950,3 +2950,10 @@ remain open. No upload or public/manuscript claim is authorized. Keep every
 mandatory adverse disclosure and the original per-execution detailed-receipt
 deviation visible; do not upgrade internal self-review into independent or
 external review.
+
+The exact paper/package snapshot P is commit
+`c6020fd63097b35b5294778cf54c2fb84c879ad6`, tree
+`dc4b78ba3ec0f7816f87b87fdd74353c806caced`, pushed to the active branch.
+`R7_FINAL_BYTES_REVIEW_REQUEST.md` is the controlling independent-review
+request. `R7_INTERNAL_HOSTILE_PRECHECK.md` records an author-side precheck only
+and counts as zero independent reviews.

@@ -12063,8 +12063,12 @@ new artifact still require final-version review. Do not mark those gates closed.
 - [x] R4/R6: rewrite and render the manuscript, pair it with the exact anonymous
       artifact, and replay that package from two isolated extraction roots;
       retain first-result regressions and other adverse observations.
-- [ ] R7/R8: obtain actual final-byte reviews, close each retained-claim finding,
-      complete PDF/anonymity/hash checks, and record submission only when executed.
+- [x] Prepare a self-contained R7 request for exact snapshot P/PDF/artifact and
+      complete an explicitly non-independent internal hostile precheck.
+- [ ] R7: obtain two actual independent final-byte reviews and close or descope
+      every material finding; the internal precheck counts as zero reviews.
+- [ ] R8: complete the final rule/anonymity/hash/upload gate and record
+      submission only when upload and receipt actually exist.
 
 ## Latest lead instruction (2026-09-06)
 
@@ -12090,6 +12094,8 @@ new artifact still require final-version review. Do not mark those gates closed.
       projection. Keep all mandatory adverse disclosures in main text.
 - [x] Pair and replay the exact final anonymous package with the final PDF in two
       isolated extraction roots, including one path with spaces.
-- [ ] Obtain review of the actual final PDF/package bytes, close or descope every
-      material finding, complete submission gates, and record upload only after
-      it actually occurs.
+- [x] Bind exact paper/package snapshot P at `c6020fd6...` and prepare its
+      self-contained final-byte review request plus internal hostile precheck.
+- [ ] Obtain two independent reviews of the exact P PDF/package bytes, close or
+      descope every material finding, complete submission gates, and record
+      upload only after it actually occurs.
