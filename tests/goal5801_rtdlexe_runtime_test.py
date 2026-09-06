@@ -56,7 +56,7 @@ def _native_descriptor(
         "family": family,
         "native_abi": (
             ("rtdl.v4.prepared_bounded_relation_callback.v9" if bounded
-             else "rtdl.v4.prepared_triangle_reduction_callback.v7")
+             else "rtdl.v4.prepared_triangle_reduction_callback.v9")
             if online_monitor else
             ("rtdl.v4.prepared_bounded_relation_callback.v5" if bounded
              else "rtdl.v4.prepared_triangle_reduction_callback.v5")),

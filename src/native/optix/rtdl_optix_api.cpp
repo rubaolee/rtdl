@@ -1096,6 +1096,48 @@ extern "C" int rtdl_optix_v4_execute_prepared_triangle_reduction_callback_v7(
     }, error_out, error_size);
 }
 
+// Exact prepared replay omits host columns that the native owner has already
+// admitted, uploaded and digest-committed.  The shared execution core checks
+// the supplied digest, count and multiplier mode while holding the owner lock.
+extern "C" int rtdl_optix_v4_execute_prepared_triangle_reduction_callback_v9(
+        uint64_t prepared_token,
+        size_t query_count,
+        uint32_t use_product_multipliers,
+        const uint8_t* expected_reuse_digest,
+        size_t expected_reuse_digest_size,
+        uint64_t* output_product_scalar,
+        uint32_t* output_fast_status,
+        RtdlV4FastPathReceipt* output_fast_receipt,
+        char* error_out, size_t error_size) {
+    return handle_native_call([&]() {
+        if (use_product_multipliers > 1u)
+            throw std::runtime_error(
+                "V4 triangle v9 product-multiplier flag is invalid");
+        if (!expected_reuse_digest)
+            throw std::runtime_error(
+                "V4 triangle v9 expected reuse digest is null");
+        if (expected_reuse_digest_size != 32u)
+            throw std::runtime_error(
+                "V4 triangle v9 expected reuse digest size is invalid: " +
+                std::to_string(expected_reuse_digest_size));
+        if (!output_product_scalar)
+            throw std::runtime_error(
+                "V4 triangle v9 product output is null");
+        if (!output_fast_status)
+            throw std::runtime_error(
+                "V4 triangle v9 status output is null");
+        if (!output_fast_receipt)
+            throw std::runtime_error(
+                "V4 triangle v9 receipt output is null");
+        execute_v4_prepared_triangle_reduction_product_fast(
+            prepared_token, nullptr, nullptr, nullptr, query_count, nullptr,
+            output_product_scalar, output_fast_status, output_fast_receipt,
+            true, use_product_multipliers != 0u,
+            use_product_multipliers != 0u,
+            expected_reuse_digest, expected_reuse_digest_size);
+    }, error_out, error_size);
+}
+
 #if !defined(RTDL_OPTIX_RTDLEXE_AOT_RUNTIME)
 
 extern "C" int rtdl_optix_v4_execute_prepared_triangle_reduction_callback_v8(

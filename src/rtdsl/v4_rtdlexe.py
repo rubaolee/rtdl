@@ -1432,7 +1432,7 @@ def _runtime_projection(materialized: object, family: str) -> dict[str, object]:
             _fail("RX005_BUILD_INPUT_INVALID", "protocol.mode", repr(mode))
         return {
             "family": family,
-            "native_abi": "rtdl.v4.prepared_triangle_reduction_callback.v7",
+            "native_abi": "rtdl.v4.prepared_triangle_reduction_callback.v9",
             "capacity": None,
             "minimum_overlap_f32": None,
             "triangle_mode": mode,
@@ -1524,7 +1524,8 @@ def _validate_native_producer_descriptor(
         "rtdl.v4.prepared_triangle_reduction_callback.v7")
     fused_reuse_abi = (
         "rtdl.v4.prepared_bounded_relation_callback.v9"
-        if family == _BOUNDED else None)
+        if family == _BOUNDED else
+        "rtdl.v4.prepared_triangle_reduction_callback.v9")
     supported_abis = {legacy_abi, online_abi, lean_abi}
     if fused_reuse_abi is not None:
         supported_abis.add(fused_reuse_abi)
@@ -2324,7 +2325,8 @@ def _validate_runtime(runtime: object) -> Mapping[str, object]:
         if runtime["native_abi"] not in {
                     "rtdl.v4.prepared_triangle_reduction_callback.v5",
                     "rtdl.v4.prepared_triangle_reduction_callback.v6",
-                    "rtdl.v4.prepared_triangle_reduction_callback.v7"} \
+                    "rtdl.v4.prepared_triangle_reduction_callback.v7",
+                    "rtdl.v4.prepared_triangle_reduction_callback.v9"} \
                 or runtime["capacity"] is not None \
                 or runtime["minimum_overlap_f32"] is not None \
                 or runtime["triangle_mode"] not in _TRIANGLE_MODES:
@@ -5961,12 +5963,19 @@ class _PreparedTriangleOwner:
             construction_handoff.publish(self)
         prepare = getattr(library, "rtdl_optix_v4_prepare_triangle_reduction_callback_v1", None)
         abi_version = str(runtime["native_abi"]).rsplit(".", 1)[-1]
-        self._online_monitor = abi_version in {"v6", "v7"}
-        self._lean_monitor = abi_version == "v7"
+        self._online_monitor = abi_version in {"v6", "v7", "v9"}
+        self._lean_monitor = abi_version in {"v7", "v9"}
+        self._fused_replay = abi_version == "v9"
         execute_fast = getattr(
             library,
             "rtdl_optix_v4_execute_prepared_triangle_reduction_callback_"
-            + (abi_version if self._online_monitor else "v5"), None)
+            + ("v7" if self._fused_replay else
+               (abi_version if self._online_monitor else "v5")), None)
+        execute_replay = getattr(
+            library,
+            "rtdl_optix_v4_execute_prepared_triangle_reduction_callback_v9",
+            None,
+        ) if self._fused_replay else None
         execute_diagnostic = getattr(
             library, "rtdl_optix_v4_execute_prepared_triangle_reduction_callback_v4", None)
         commit = getattr(
@@ -5982,10 +5991,12 @@ class _PreparedTriangleOwner:
         destroy = getattr(library, "rtdl_optix_v4_destroy_prepared_triangle_reduction_callback_v2", None)
         if any(item is None for item in (
                 prepare, execute_fast, execute_diagnostic,
-                commit, cache_digest, destroy)):
+                commit, cache_digest, destroy)) or (
+                    self._fused_replay and execute_replay is None):
             _fail(
                 "RX036_NATIVE_ABI_MISSING", "native.triangle",
-                "prepare/execute-v5/diagnostic-v4/commit/cache_digest/destroy-v2")
+                "prepare/execute-v5-or-v7/replay-v9/diagnostic-v4/"
+                "commit/cache_digest/destroy-v2")
         prepare.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_float), ctypes.c_size_t,
             ctypes.POINTER(ctypes.c_uint32), ctypes.c_size_t, ctypes.POINTER(ctypes.c_uint64),
             ctypes.POINTER(ctypes.c_int64), ctypes.POINTER(ctypes.c_uint32), ctypes.c_uint64,
@@ -6005,6 +6016,15 @@ class _PreparedTriangleOwner:
         # cached for the newly appended size_t and leak undefined high bits on
         # later calls.  Publish the complete ABI atomically.
         execute_fast.argtypes = execute_fast_argtypes
+        if execute_replay is not None:
+            execute_replay.argtypes = [
+                ctypes.c_uint64, ctypes.c_size_t, ctypes.c_uint32,
+                ctypes.POINTER(ctypes.c_uint8), ctypes.c_size_t,
+                ctypes.POINTER(ctypes.c_uint64),
+                ctypes.POINTER(ctypes.c_uint32),
+                ctypes.POINTER(_FastPathReceipt),
+                ctypes.POINTER(ctypes.c_char), ctypes.c_size_t,
+            ]
         execute_diagnostic.argtypes = [ctypes.c_uint64, ctypes.POINTER(ctypes.c_float),
             ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float), ctypes.c_size_t,
             ctypes.c_uint32, ctypes.c_uint32, ctypes.c_uint32,
@@ -6023,6 +6043,8 @@ class _PreparedTriangleOwner:
                 prepare, execute_fast, execute_diagnostic,
                 commit, cache_digest, destroy):
             symbol.restype = ctypes.c_int
+        if execute_replay is not None:
+            execute_replay.restype = ctypes.c_int
         if isinstance(static_input, TriangleReductionBufferStaticInput):
             vertex_count = static_input.vertex_count
             triangle_count = static_input.triangle_count
@@ -6055,6 +6077,7 @@ class _PreparedTriangleOwner:
             _fail("RX030_NATIVE_FAILURE", "triangle.prepare", "zero token")
         self._token = int(self._token_cell.value)
         self._execute_fast = execute_fast
+        self._execute_replay = execute_replay
         self._execute_diagnostic = execute_diagnostic
         self._commit = commit; self._cache_digest = cache_digest
         self._event_capacity = static_input.event_capacity
@@ -6111,7 +6134,8 @@ class _PreparedTriangleOwner:
         self._token = int(self._token_cell.value)
         if self._token != 0:
             return
-        self._execute_fast = None; self._execute_diagnostic = None
+        self._execute_fast = None; self._execute_replay = None
+        self._execute_diagnostic = None
         self._commit = None
         self._cache_digest = None; self._destroy = None
         self._closed = True
@@ -6145,10 +6169,13 @@ class _PreparedTriangleOwner:
                          len(batch._packed_weights_u64 or b""))
             reused = self._query_cache_reusable(
                 batch_key, batch._device_input_sha256)
-            if reused:
+            fused_replay = (
+                reused and getattr(self, "_fused_replay", False)
+                and not diagnostics)
+            if reused and not fused_replay:
                 origin_native, direction_native, tmax_native, multipliers = \
                     self._last_query_arrays
-            else:
+            elif not reused:
                 origin_native = (ctypes.c_float * (len(batch._packed_origins_f32) // 4)).from_buffer_copy(
                     batch._packed_origins_f32)
                 direction_native = (ctypes.c_float * (len(batch._packed_directions_f32) // 4)).from_buffer_copy(
@@ -6220,7 +6247,13 @@ class _PreparedTriangleOwner:
                         compact_status = ctypes.c_uint32()
                         self._fast_compact_status = compact_status
                     fast_receipt = _FastPathReceipt()
-                    if getattr(self, "_lean_monitor", False):
+                    if fused_replay:
+                        native_status = int(self._execute_replay(
+                            self._token, count, use_multipliers,
+                            batch._device_input_digest_u8, 32,
+                            ctypes.byref(reduced), ctypes.byref(compact_status),
+                            ctypes.byref(fast_receipt), error, len(error)))
+                    elif getattr(self, "_lean_monitor", False):
                         native_status = int(self._execute_fast(
                             self._token, origin_native, direction_native,
                             tmax_native, count, int(reused), use_multipliers,
@@ -6279,9 +6312,11 @@ class _PreparedTriangleOwner:
                 # Publish the Python half while it is still protected by the
                 # same BaseException handler as native commit.  The native
                 # digest is nevertheless authoritative for later reuse.
-                self._last_batch_key = batch_key
-                self._last_query_arrays = (
-                    origin_native, direction_native, tmax_native, multipliers)
+                if not fused_replay:
+                    self._last_batch_key = batch_key
+                    self._last_query_arrays = (
+                        origin_native, direction_native, tmax_native,
+                        multipliers)
             except BaseException:
                 self._last_batch_key = None; self._last_query_arrays = None
                 if audit is not None:

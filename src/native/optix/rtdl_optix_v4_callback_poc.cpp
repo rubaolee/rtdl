@@ -284,7 +284,7 @@ static constexpr const char* kV4RtdlexeBoundedClosestHit =
 static constexpr const char* kV4RtdlexeTriangleFamily =
     "builtin_triangle_reduction_v1";
 static constexpr const char* kV4RtdlexeTriangleAbi =
-    "rtdl.v4.prepared_triangle_reduction_callback.v7";
+    "rtdl.v4.prepared_triangle_reduction_callback.v9";
 static constexpr const char* kV4RtdlexeTriangleBundle =
     "v4_builtin_triangle_checked_reduction_composed";
 static constexpr const char* kV4RtdlexeTriangleRaygen =
@@ -5131,7 +5131,12 @@ static void execute_v4_prepared_triangle_reduction_callback(
     const bool detailed_outputs = output_per_ray_u64 && output_event_count &&
         output_event_query && output_event_primitive && output_event_stable_id &&
         output_event_signed_value && output_event_include;
-    if (!query_origins_xyz || !query_directions_xyz || !query_tmax ||
+    const bool query_host_inputs_present = query_origins_xyz &&
+        query_directions_xyz && query_tmax;
+    const bool query_host_inputs_absent = !query_origins_xyz &&
+        !query_directions_xyz && !query_tmax;
+    if ((!query_host_inputs_present && !query_host_inputs_absent) ||
+            (!reuse_uploaded_query_inputs && query_host_inputs_absent) ||
             query_count == 0 || query_count > UINT32_MAX ||
             (!product_mode && !detailed_outputs) ||
             (product_mode && detailed_outputs) ||

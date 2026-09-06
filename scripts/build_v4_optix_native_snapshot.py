@@ -53,6 +53,7 @@ RTDLEXE_AOT_REQUIRED_SYMBOLS = (
     "rtdl_optix_v4_execute_prepared_triangle_reduction_callback_v5",
     "rtdl_optix_v4_execute_prepared_triangle_reduction_callback_v6",
     "rtdl_optix_v4_execute_prepared_triangle_reduction_callback_v7",
+    "rtdl_optix_v4_execute_prepared_triangle_reduction_callback_v9",
     "rtdl_optix_v4_commit_prepared_triangle_reduction_cache_v1",
     "rtdl_optix_v4_prepared_triangle_reduction_cache_digest_v1",
     "rtdl_optix_v4_destroy_prepared_triangle_reduction_callback_v2",
