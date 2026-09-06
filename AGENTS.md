@@ -2957,3 +2957,10 @@ The exact paper/package snapshot P is commit
 `R7_FINAL_BYTES_REVIEW_REQUEST.md` is the controlling independent-review
 request. `R7_INTERNAL_HOSTILE_PRECHECK.md` records an author-side precheck only
 and counts as zero independent reviews.
+
+R8 local preflight is recorded in `R8_LOCAL_PREFLIGHT_REPORT.md`. The anonymous
+two-source bundle is `output/source/rtdl-cgo2027-source.tar.gz`, SHA-256
+`159df8db...f95f2`; twin normalized builds were byte-identical and a
+space-containing foreign-root Tectonic build passed. This does not close R8:
+R7, two independent anonymity scans, authenticated form fields, upload,
+downloaded-byte comparison, and a submission receipt remain pending.

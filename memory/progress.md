@@ -19336,3 +19336,23 @@ bytes/anonymity/replay passes. Both internal passes found no new blocker, but
 they share the authoring context and therefore count as zero of the two required
 independent reviews. R7 and R8 remain open; no claim authorization or upload has
 occurred.
+
+## R8 local-only preflight and anonymous source bundle (2026-09-06)
+
+The official CGO page and public HotCRP landing page were reread. The exact PDF
+is an eight-page, US-Letter, anonymous standard-research candidate whose main
+text ends on page 7 before references. It has page/line numbers, 12/12 embedded
+font entries, no appendix, no color-dependent result, no horizontal overflow,
+and no unresolved citation. All eight pages and the metadata/text anonymity
+scan passed internally; the disclosed 1.90399pt output-routine vbox remains.
+
+The source-custody bundle contains only exact-P `main.tex` and
+`references.bib`. Two normalized ustar/gzip builds were byte-identical at
+20,108 bytes and SHA-256 `159df8db...f95f2`, with no Git commit header. A
+foreign path containing spaces reproduced an eight-page Letter PDF. This is a
+buildability check; time-dependent PDF metadata means it does not replace the
+exact submission PDF.
+
+R8 remains open. There are still 0/2 independent R7 reviews and anonymity
+scans, no authenticated author/topic/conflict form check, no upload, no
+downloaded-byte comparison, and no submission receipt.

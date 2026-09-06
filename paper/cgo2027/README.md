@@ -68,6 +68,14 @@ formal cells, 20,480 steady samples, 1,024 Arm-A instrumentation workers, 20
 AOT qualifications, and eight competence workers. The package explicitly says
 that this is an offline evidence recount, not a GPU rerun or product install.
 
+An additional anonymous source-custody bundle is at
+`output/source/rtdl-cgo2027-source.tar.gz`, 20,108 bytes, SHA-256
+`159df8db4fd4ae801f3c7f71a012259023c255dcd3a7a866805cfe310c4f95f2`.
+It contains only exact-P `main.tex` and `references.bib`. Two normalized builds
+were byte-identical, and extraction plus Tectonic compilation succeeded from a
+foreign path containing spaces. It is not presumed to be a required HotCRP
+upload.
+
 Detailed controls are in:
 
 ```text
@@ -78,6 +86,9 @@ history/internal_docs/post_goal5851_submission_remediation_20260906/
   R4_MANUSCRIPT_REWRITE_AND_RENDER_REPORT.md
   R5_FINAL_F2_REHEARSAL_REPORT.md
   R6_FINAL_DELIVERY_PAIR_AND_REPLAY_REPORT.md
+  R7_FINAL_BYTES_REVIEW_REQUEST.md
+  R7_INTERNAL_HOSTILE_PRECHECK.md
+  R8_LOCAL_PREFLIGHT_REPORT.md
   FREEZE_RECORD.md
   STATUS.json
 ```
@@ -94,6 +105,11 @@ The R7 request and author-side precheck are
 `history/internal_docs/post_goal5851_submission_remediation_20260906/R7_FINAL_BYTES_REVIEW_REQUEST.md`
 and `R7_INTERNAL_HOSTILE_PRECHECK.md`. The precheck is not an independent
 review and does not close R7.
+
+Local R8 checks that do not depend on reviewers or authenticated submission
+state have passed. R8 itself remains open because R7, two independent anonymity
+scans, HotCRP author/topic/conflict fields, upload, downloaded-byte verification,
+and a real submission receipt remain pending.
 
 The hard executable-code freeze is 2026-09-08 00:00 America/New_York. After
 that point, only frozen-tool execution, manuscript/bibliography edits, claim

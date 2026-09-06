@@ -8605,3 +8605,16 @@ the exact bytes are ready to send. Because both passes were performed by the
 lead authoring context, they count as zero independent reviews. Keep R7 open,
 all claim authorization false, and R8 blocked until two actual responses arrive
 and every material finding is closed or the affected claim is removed.
+
+## D252: complete only the local subset of R8 before independent review (2026-09-06)
+
+Accept `R8_LOCAL_PREFLIGHT_REPORT.md` as closure of checks that are independent
+of R7 and authenticated HotCRP state: official-rule reread, exact PDF format,
+page/reference boundary, embedded fonts, internal anonymity scan, hashes, and a
+deterministic anonymous source-bundle rebuild. Bind the source bundle to
+20,108 bytes and SHA-256
+`159df8db4fd4ae801f3c7f71a012259023c255dcd3a7a866805cfe310c4f95f2`.
+
+Do not call R8 complete. Two independent R7 reviews and anonymity scans,
+finding closure, author/topic/conflict form data, upload authorization, exact
+upload, downloaded-byte verification, and a submission receipt remain required.

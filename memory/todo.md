@@ -12069,6 +12069,8 @@ new artifact still require final-version review. Do not mark those gates closed.
       every material finding; the internal precheck counts as zero reviews.
 - [ ] R8: complete the final rule/anonymity/hash/upload gate and record
       submission only when upload and receipt actually exist.
+- [x] Complete the local-only R8 preflight and deterministic anonymous source
+      bundle; preserve reviewer/authenticated-form/upload requirements as open.
 
 ## Latest lead instruction (2026-09-06)
 
@@ -12099,3 +12101,6 @@ new artifact still require final-version review. Do not mark those gates closed.
 - [ ] Obtain two independent reviews of the exact P PDF/package bytes, close or
       descope every material finding, complete submission gates, and record
       upload only after it actually occurs.
+- [x] Recheck official CGO format rules, embedded fonts, page/reference boundary,
+      PDF metadata, exact hashes, and foreign-root source rebuild under R8 local
+      preflight. Do not call this R8 closure.
