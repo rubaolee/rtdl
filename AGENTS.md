@@ -13,10 +13,41 @@ changed experiment.
 
 The controlling final-sprint sequence is
 `history/internal_docs/cgo2027_final_sprint_goals_20260905.md`. Goal5849 is
-complete at its recorded local gates; Goal5850's first RTX generation is now
-complete under the successor protocol; Goal5851 is next. Both passing RTX
-generations must use exact source commit `c4351f612...`. Goal5852 is the
-irreversible code/evidence freeze.
+complete at its recorded local gates. Goal5850's RTX 2000 Ada pass at
+`c4351f612...` is retained historical evidence, but subsequent retained
+Goal5851 failures required pre-freeze successor repairs. It cannot be paired
+with a changed successor. Any positive Goal5848 result now requires two RTX
+compute-capability generations to pass independently at one identical clean,
+pushed final successor commit. Goal5852 is the irreversible code/evidence
+freeze.
+
+## Critical current override: Goal5851 final successor repair (2026-09-06)
+
+The first clean v9 successor transaction at `12ab7b49c...` retained all 512
+instrumentation workers and 80 formal cells with zero retry/discard, but failed
+the triangle prepared public RTDL/Direct gate at `1.220467x` against the
+unchanged `1.20x` limit. Relation passed at `1.134680x`. Its complete failure
+archive SHA-256 is
+`182043089d16d36cda9f613c86d3592b3bbe7b7bcaa1bb843ab9ff4441acfe60`;
+it may not be retried, relabeled, pooled or treated as a passing generation.
+
+The next committed repair `f65d93d4e...` removed only generic exact-replay
+control overhead, but its clean nonformal RTX 3090 median remained adverse at
+`1.208411x`. The current final pre-freeze successor additionally gives the
+already-admitted exact triangle replay a dedicated Python family-level helper
+while retaining the native context guard, owner mutex, committed-digest check,
+per-call receipt, output validation and fail-closed cache clearing. Its dirty
+runtime diagnostic reached `1.183902x` median and `1.324360x` worst block
+against unchanged `1.20x` and `1.35x` limits. That diagnostic is not formal
+evidence.
+
+The next admissible transaction must start from the exact clean pushed commit
+containing this repair, use wholly fresh DSO/AOT/preregistration/output bytes,
+and retain any failure. If RTX 3090 passes, a different compute-capability
+generation and UUID must independently pass the identical commit before a
+cross-generation authority or positive paper claim is allowed. The full
+repair and custody record is
+`history/internal_docs/goal5851_triangle_exact_replay_repair_20260906.md`.
 
 ## Critical current override: Goal5850 generation A complete (2026-09-06)
 

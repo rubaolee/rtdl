@@ -6101,9 +6101,14 @@ class _PreparedTriangleOwner:
         self._fast_reduced = ctypes.c_uint64()
         self._fast_compact_status = ctypes.c_uint32()
         self._call_error = ctypes.create_string_buffer(16384)
+        self._fast_reduced_ref = ctypes.byref(self._fast_reduced)
+        self._fast_compact_status_ref = ctypes.byref(
+            self._fast_compact_status)
+        self._call_error_size = len(self._call_error)
+        self._fast_output_bytes = ctypes.sizeof(ctypes.c_uint64)
         self._fast_status_extras = MappingProxyType({
             "success_event_count_d2h_bytes": 0,
-            "success_scalar_d2h_bytes": ctypes.sizeof(ctypes.c_uint64),
+            "success_scalar_d2h_bytes": self._fast_output_bytes,
             "success_total_product_d2h_bytes": (
                 20 if self._lean_monitor else
                 (96 if self._online_monitor else 12)),
@@ -6163,6 +6168,51 @@ class _PreparedTriangleOwner:
         finally:
             self._publish_destroyed_token()
 
+    def _clear_exact_replay_state(self) -> None:
+        self._last_batch_key = None
+        self._last_query_arrays = None
+        self._exact_replay_batch = None
+        self._exact_replay_count = 0
+        self._exact_replay_use_multipliers = 0
+        self._exact_replay_digest_u8 = None
+
+    def _execute_fused_replay(
+            self, batch, *, count: int, use_multipliers: int,
+            replay_digest_u8):
+        fast_receipt = _FastPathReceipt()
+        try:
+            native_status = int(self._execute_replay(
+                self._token, count, use_multipliers,
+                replay_digest_u8, 32,
+                self._fast_reduced_ref, self._fast_compact_status_ref,
+                ctypes.byref(fast_receipt), self._call_error,
+                self._call_error_size))
+            _raise_native(native_status, self._call_error,
+                          "triangle.execute_fast")
+            compact_status = int(self._fast_compact_status.value)
+            operation_receipt = _DeferredFastOperationReceipt(
+                fast_receipt, family=_TRIANGLE,
+                compact_status=compact_status,
+                expected_output_d2h_bytes=self._fast_output_bytes,
+                expected_prepared_input_reused=True,
+                online_monitor=self._online_monitor,
+                lean_monitor=self._lean_monitor)
+            self._last_fast_operation_receipt = operation_receipt
+            status = _DeferredCompactDeviceStatus(
+                family=_TRIANGLE,
+                compact_status=compact_status,
+                launch_count=count,
+                operation_receipt=operation_receipt,
+                extras=self._fast_status_extras)
+            output = int(self._fast_reduced.value)
+            if batch.expected_reduced_u64 is not None \
+                    and output != batch.expected_reduced_u64:
+                _fail("RX043_ORACLE_MISMATCH", "triangle.output", output)
+            return output, None, status, (), None
+        except BaseException:
+            self._clear_exact_replay_state()
+            raise
+
     def execute(
             self,
             batch: TriangleReductionBatch | TriangleReductionBufferBatch,
@@ -6170,33 +6220,30 @@ class _PreparedTriangleOwner:
         self._check()
         if not self._active.acquire(blocking=False): _fail("RX040_REENTRANT", "execute", "active")
         try:
-            exact_identity_replay = (
+            if (
                 not diagnostics
                 and getattr(self, "_fused_replay", False)
                 and batch is getattr(self, "_exact_replay_batch", None)
-            )
-            if exact_identity_replay:
-                count = self._exact_replay_count
-                use_multipliers = self._exact_replay_use_multipliers
-                replay_digest_u8 = self._exact_replay_digest_u8
-                batch_key = self._last_batch_key
-                reused = True
-                fused_replay = True
-            else:
-                count = (batch.query_count
-                         if isinstance(batch, TriangleReductionBufferBatch)
-                         else len(batch.queries))
-                batch_key = (batch._device_input_sha256, count,
-                             len(batch._packed_origins_f32),
-                             len(batch._packed_directions_f32),
-                             len(batch._packed_tmax_f32),
-                             len(batch._packed_weights_u64 or b""))
-                reused = self._query_cache_reusable(
-                    batch_key, batch._device_input_sha256)
-                fused_replay = (
-                    reused and getattr(self, "_fused_replay", False)
-                    and not diagnostics)
-                replay_digest_u8 = batch._device_input_digest_u8
+            ):
+                return self._execute_fused_replay(
+                    batch,
+                    count=self._exact_replay_count,
+                    use_multipliers=self._exact_replay_use_multipliers,
+                    replay_digest_u8=self._exact_replay_digest_u8)
+            count = (batch.query_count
+                     if isinstance(batch, TriangleReductionBufferBatch)
+                     else len(batch.queries))
+            batch_key = (batch._device_input_sha256, count,
+                         len(batch._packed_origins_f32),
+                         len(batch._packed_directions_f32),
+                         len(batch._packed_tmax_f32),
+                         len(batch._packed_weights_u64 or b""))
+            reused = self._query_cache_reusable(
+                batch_key, batch._device_input_sha256)
+            fused_replay = (
+                reused and getattr(self, "_fused_replay", False)
+                and not diagnostics)
+            replay_digest_u8 = batch._device_input_digest_u8
             if reused and not fused_replay:
                 origin_native, direction_native, tmax_native, multipliers = \
                     self._last_query_arrays
@@ -6211,17 +6258,25 @@ class _PreparedTriangleOwner:
                     batch._packed_weights_u64)
                     if batch._packed_weights_u64 is not None
                     else ctypes.POINTER(ctypes.c_uint64)())
-            if not exact_identity_replay:
-                if self._mode == "weighted_hit_count":
-                    if batch._packed_weights_u64 is None:
-                        _fail("RX006_INPUT_INVALID", "batch.query_weights", "exact U64 weights required")
-                    use_multipliers = 1
-                else:
-                    has_weights = batch._packed_weights_u64 is not None
-                    if has_weights:
-                        _fail("RX006_INPUT_INVALID", "batch.query_weights", "not admitted for all-hit count")
-                    multipliers = ctypes.POINTER(ctypes.c_uint64)()
-                    use_multipliers = 0
+            if self._mode == "weighted_hit_count":
+                if batch._packed_weights_u64 is None:
+                    _fail("RX006_INPUT_INVALID", "batch.query_weights", "exact U64 weights required")
+                use_multipliers = 1
+            else:
+                has_weights = batch._packed_weights_u64 is not None
+                if has_weights:
+                    _fail("RX006_INPUT_INVALID", "batch.query_weights", "not admitted for all-hit count")
+                multipliers = ctypes.POINTER(ctypes.c_uint64)()
+                use_multipliers = 0
+            if fused_replay:
+                result = self._execute_fused_replay(
+                    batch, count=count, use_multipliers=use_multipliers,
+                    replay_digest_u8=replay_digest_u8)
+                self._exact_replay_batch = batch
+                self._exact_replay_count = count
+                self._exact_replay_use_multipliers = use_multipliers
+                self._exact_replay_digest_u8 = replay_digest_u8
+                return result
             # Some narrow fault-injection tests construct an owner without
             # calling __init__; keep that path valid without adding a branch to
             # ordinary initialized owners beyond these attribute reads.
@@ -6273,13 +6328,7 @@ class _PreparedTriangleOwner:
                         compact_status = ctypes.c_uint32()
                         self._fast_compact_status = compact_status
                     fast_receipt = _FastPathReceipt()
-                    if fused_replay:
-                        native_status = int(self._execute_replay(
-                            self._token, count, use_multipliers,
-                            replay_digest_u8, 32,
-                            ctypes.byref(reduced), ctypes.byref(compact_status),
-                            ctypes.byref(fast_receipt), error, len(error)))
-                    elif getattr(self, "_lean_monitor", False):
+                    if getattr(self, "_lean_monitor", False):
                         native_status = int(self._execute_fast(
                             self._token, origin_native, direction_native,
                             tmax_native, count, int(reused), use_multipliers,
@@ -6343,22 +6392,17 @@ class _PreparedTriangleOwner:
                 # Publish the Python half while it is still protected by the
                 # same BaseException handler as native commit.  The native
                 # digest is nevertheless authoritative for later reuse.
-                if not fused_replay:
-                    self._last_batch_key = batch_key
-                    self._last_query_arrays = (
-                        origin_native, direction_native, tmax_native,
-                        multipliers)
+                self._last_batch_key = batch_key
+                self._last_query_arrays = (
+                    origin_native, direction_native, tmax_native,
+                    multipliers)
                 if getattr(self, "_fused_replay", False):
                     self._exact_replay_batch = batch
                     self._exact_replay_count = count
                     self._exact_replay_use_multipliers = use_multipliers
                     self._exact_replay_digest_u8 = replay_digest_u8
             except BaseException:
-                self._last_batch_key = None; self._last_query_arrays = None
-                self._exact_replay_batch = None
-                self._exact_replay_count = 0
-                self._exact_replay_use_multipliers = 0
-                self._exact_replay_digest_u8 = None
+                self._clear_exact_replay_state()
                 if audit is not None:
                     audit.abort()
                 raise

@@ -54,6 +54,10 @@ def _owner(batch: runtime.TriangleReductionBatch):
     owner._fast_reduced = ctypes.c_uint64()
     owner._fast_compact_status = ctypes.c_uint32()
     owner._call_error = ctypes.create_string_buffer(16384)
+    owner._fast_reduced_ref = ctypes.byref(owner._fast_reduced)
+    owner._fast_compact_status_ref = ctypes.byref(owner._fast_compact_status)
+    owner._call_error_size = len(owner._call_error)
+    owner._fast_output_bytes = 8
     owner._fast_status_extras = MappingProxyType({
         "success_event_count_d2h_bytes": 0,
         "success_scalar_d2h_bytes": 8,
@@ -138,6 +142,8 @@ class Goal5851TriangleFusedReplayTest(unittest.TestCase):
         self.assertEqual(owner._exact_replay_count, 0)
         self.assertEqual(owner._exact_replay_use_multipliers, 0)
         self.assertIsNone(owner._exact_replay_digest_u8)
+        self.assertTrue(owner._active.acquire(blocking=False))
+        owner._active.release()
 
     def test_equal_distinct_batch_uses_digest_path_then_becomes_identity(self) -> None:
         first = _batch()

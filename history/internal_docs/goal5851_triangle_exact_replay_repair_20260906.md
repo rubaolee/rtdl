@@ -4,7 +4,7 @@ Date: 2026-09-06
 
 ## Status
 
-`SUCCESSOR_TRANSACTION_1_RETAINED_FAILED__SECOND_GENERIC_REPAIR_IN_PROGRESS`
+`SUCCESSOR_TRANSACTION_1_RETAINED_FAILED__THIRD_REPAIR_NONFORMAL_GATE_PASS__CLEAN_FORMAL_REQUIRED`
 
 This document records a pre-freeze engineering repair. It does not complete
 Goal5851 and does not authorize a public or manuscript performance claim.
@@ -153,7 +153,7 @@ triangle public/Direct threshold. Two generic fixed-cost sources remained:
    when `cuCtxGetCurrent` reported that the retained RTDL primary context was
    already current on the calling thread.
 
-The in-progress successor caches only an identity shortcut to the already
+The committed successor caches only an identity shortcut to the already
 digest-committed immutable batch. A different object, including an equal-byte
 object, still enters the existing digest equality path. Any native or oracle
 failure clears both forms of Python reuse eligibility. The CUDA context guard
@@ -162,7 +162,83 @@ retained context; null or different contexts retain the old select-and-restore
 behavior, including restoration after an exception.
 
 These changes add no application vocabulary, formula, task dispatch, timer
-movement, workload change, Direct change, or threshold change. The directly
-affected local suite currently passes 121 tests with 3 expected skips. GPU
-native build and a same-machine balanced public/Direct diagnostic remain
-required before this second repair can be called effective.
+movement, workload change, Direct change, or threshold change. They were
+committed and pushed as `f65d93d4e5a7d5c50a270ace0e3edef0ec9295d6`,
+tree `142b27d531628611478c51724911f835074f799f`.
+
+A fresh clean native build on the RTX 3090 exported the required v9 ABI and
+produced DSO SHA-256
+`9e8f280d28302cea69d3b7eb49891e8e052148971988ed49b0365ca557d5ac6b`.
+An eight-block, balanced, same-machine nonformal RTDL/Direct diagnostic then
+retained 512 prepared executions per arm per block:
+
+- public RTDL median: 65,301 ns;
+- Direct OptiX median: 53,816 ns;
+- median within-block RTDL/Direct: `1.2084110096x`;
+- worst within-block RTDL/Direct: `1.2462025435x`.
+
+The Direct and worst-block limits passed, but the primary `1.20x` median limit
+did not. This is retained adverse engineering evidence, not a formal
+transaction. Its downloaded summary SHA-256 is
+`87d0fa3a9c6850c06a246b84cd418a6b84a7842b7debd9fb0829220772bd7bc2`.
+
+## Third Generic Control-Plane Repair
+
+Layer diagnostics localized the remaining public overhead above native v9 to
+the Python owner/public control plane rather than traversal. The successor
+therefore gives exact prepared replay a dedicated family-level helper after
+the ordinary owner checks and non-reentrant lock have succeeded. It
+precomputes stable ctypes references and fixed ABI sizes, invokes the same v9
+native entry point, validates native status, reconstructs a fresh per-call
+deferred operation receipt and compact status, validates the optional exact
+scalar oracle, and clears all replay eligibility on any `BaseException`.
+
+The helper does not cache an execution result or receipt, remove a check, move
+a timer, change an output, alter the workload, or bypass native context and
+owner locking. Native v9 still enters `ScopedRtdlCudaContext`, acquires the
+prepared owner's execution mutex, and validates the committed digest, count,
+multiplier mode, output pointers, launch status and receipt. A distinct
+equal-byte immutable batch still takes the digest-key path once before it can
+become an identity replay.
+
+This is an outcome-directed pre-freeze performance repair developed after the
+retained failures. It is evidence of implementation engineering for the
+admitted triangle-reduction family; it is not prospective evidence that the
+sealed compiler core automatically generated an optimization or that the same
+optimization generalizes to arbitrary callbacks.
+
+The dirty-runtime exploratory checkout reused the unchanged clean
+`f65d93d4e...` DSO and AOT candidates, because this repair changes only Python
+control flow. Its fresh eight-block balanced diagnostic retained 512 executions
+per arm per block and reported:
+
+- public RTDL median: 63,429 ns;
+- Direct OptiX median: 53,879 ns;
+- median within-block RTDL/Direct: `1.1839019978x`;
+- worst within-block RTDL/Direct: `1.3243602526x`.
+
+Both numerical limits were met in this diagnostic, but the result is not a
+formal pass: the runtime checkout was intentionally dirty, one block was close
+to the `1.35x` worst-block limit, and no preregistration or transaction
+authority was built. The downloaded summary SHA-256 is
+`dcea3edf8656c92ca082bb81c0632c2f15641bcda2adab7391b414ccae35d991`.
+
+At this checkpoint, the complete Goal5848-focused local suite passes 128
+tests. The selected adjacent suite passes 129 tests with 3 expected skips, and
+the selected `python -O` suite passes 84 tests with 3 expected skips. Pod tests
+against the exploratory runtime pass 51 tests. Static compilation, fatal Ruff
+selectors and `git diff --check` also pass.
+
+## Current Required Gate
+
+1. Commit and push the reviewed third repair as a new exact source identity.
+2. Check out that commit cleanly and build a fresh native DSO and fresh AOT
+   candidates; do not reuse the dirty-runtime diagnostic as evidence.
+3. Execute one wholly fresh RTX 3090 transaction with no retry, discard or
+   pooling, and retain a failure archive if any frozen gate fails.
+4. If RTX 3090 passes, run the identical final commit on a different RTX
+   compute-capability generation and GPU UUID.
+5. Only a passing independent cross-generation authority can complete
+   Goal5851 and authorize the corresponding bounded paper claim. The older Ada
+   pass at `c4351f612...` is historical and cannot be combined with this
+   changed source.
