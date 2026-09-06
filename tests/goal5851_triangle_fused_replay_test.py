@@ -6,6 +6,7 @@ import threading
 import unittest
 from pathlib import Path
 from types import MappingProxyType
+from unittest.mock import patch
 
 from rtdsl import v4_rtdlexe as runtime
 
@@ -117,12 +118,57 @@ class Goal5851TriangleFusedReplayTest(unittest.TestCase):
         self.assertEqual(args[2], 1)
         self.assertEqual(args[4], 32)
         self.assertEqual(bytes(args[3][:32]).hex(), batch._device_input_sha256)
+        self.assertIs(status._operation_receipt, None)
+        self.assertIs(owner._last_fast_status, status)
         self.assertTrue(status["ok"])
+        self.assertIs(status._operation_receipt, None)
+        operation = owner._last_fast_operation_receipt
+        self.assertIs(operation, status._operation_receipt)
+        self.assertIsNone(operation._materialized)
         materialized = dict(status)
         self.assertTrue(materialized["prepared_input_reused"])
         self.assertEqual(materialized["success_scalar_d2h_bytes"], 8)
         self.assertEqual(
             dict(materialized["operation_receipt"])["control_d2h_bytes"], 12)
+        self.assertIs(operation, materialized["operation_receipt"])
+
+    def test_public_exact_replay_bypasses_generic_owner_redispatch(self) -> None:
+        batch = _batch()
+        owner = _owner(batch)
+
+        def replay(*args):
+            _publish_success(args)
+            return 0
+
+        owner._execute_replay = replay
+        owner.execute = lambda *_args, **_kwargs: (_ for _ in ()).throw(
+            AssertionError("generic owner redispatch reached"))
+        prepared = runtime.PreparedRTDLExecutable(
+            family=runtime._TRIANGLE,
+            executable_identity_sha256="a" * 64,
+            owner=owner,
+        )
+
+        result = prepared.execute(batch)
+
+        self.assertEqual(result.output, 7)
+        self.assertEqual(result.executable_identity_sha256, "a" * 64)
+        self.assertIs(result.device_status["ok"], True)
+        self.assertIsNone(result.device_status._operation_receipt)
+        self.assertEqual(
+            result.device_status["operation_receipt"]["control_d2h_bytes"],
+            12,
+        )
+
+    def test_process_generation_change_still_fails_closed(self) -> None:
+        owner = _owner(_batch())
+
+        with patch.object(
+                runtime, "_NATIVE_IMAGE_CACHE_PID", os.getpid() + 1):
+            with self.assertRaises(runtime.RTDLExecutableError) as caught:
+                owner._check()
+
+        self.assertEqual(caught.exception.code, "RX038_PROCESS_BOUNDARY")
 
     def test_native_replay_failure_clears_python_reuse_state(self) -> None:
         batch = _batch()

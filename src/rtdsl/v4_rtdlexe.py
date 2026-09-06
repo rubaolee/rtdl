@@ -5368,6 +5368,7 @@ class _DeferredCompactDeviceStatus(Mapping[str, object]):
 
     __slots__ = (
         "_family", "_launch_count", "_operation_receipt",
+        "_operation_receipt_spec",
         "_raw_event_count", "_unique_event_count", "_extras",
         "_overflowed", "_semantic_capacity", "_raw_event_capacity",
         "_materialized",
@@ -5375,7 +5376,8 @@ class _DeferredCompactDeviceStatus(Mapping[str, object]):
 
     def __init__(
         self, *, family: str, compact_status: int, launch_count: int,
-        operation_receipt: Mapping[str, object],
+        operation_receipt: Mapping[str, object] | None = None,
+        operation_receipt_spec: tuple[object, ...] | None = None,
         raw_event_count: int | None = None,
         unique_event_count: int | None = None,
         overflowed: int | None = None,
@@ -5383,13 +5385,19 @@ class _DeferredCompactDeviceStatus(Mapping[str, object]):
         raw_event_capacity: int | None = None,
         extras: Mapping[str, object] | None = None,
     ) -> None:
+        if (operation_receipt is None) == (operation_receipt_spec is None):
+            _fail(
+                "RX035_DEVICE_STATUS_INVALID", "execute.operation_receipt",
+                "exactly one eager receipt or deferred receipt spec is required")
+        self._operation_receipt = operation_receipt
+        self._operation_receipt_spec = operation_receipt_spec
         # Failure must remain synchronous: a caller can never observe an
         # output from a failed device status merely by declining diagnostics.
         if compact_status != 0:
             _validated_compact_device_status(
                 family=family, compact_status=compact_status,
                 launch_count=launch_count,
-                operation_receipt=operation_receipt,
+                operation_receipt=self._get_operation_receipt(),
                 raw_event_count=raw_event_count,
                 unique_event_count=unique_event_count,
                 overflowed=overflowed,
@@ -5412,7 +5420,7 @@ class _DeferredCompactDeviceStatus(Mapping[str, object]):
                 _validated_compact_device_status(
                     family=family, compact_status=compact_status,
                     launch_count=launch_count,
-                    operation_receipt=operation_receipt,
+                    operation_receipt=self._get_operation_receipt(),
                     raw_event_count=raw_event_count,
                     unique_event_count=unique_event_count,
                     overflowed=overflowed,
@@ -5420,7 +5428,6 @@ class _DeferredCompactDeviceStatus(Mapping[str, object]):
                     raw_event_capacity=raw_event_capacity)
         self._family = family
         self._launch_count = launch_count
-        self._operation_receipt = operation_receipt
         self._raw_event_count = raw_event_count
         self._unique_event_count = unique_event_count
         self._overflowed = overflowed
@@ -5429,12 +5436,31 @@ class _DeferredCompactDeviceStatus(Mapping[str, object]):
         self._extras = extras if extras is not None else MappingProxyType({})
         self._materialized: Mapping[str, object] | None = None
 
+    def _get_operation_receipt(self) -> Mapping[str, object]:
+        operation_receipt = self._operation_receipt
+        if operation_receipt is None:
+            spec = self._operation_receipt_spec
+            if spec is None:
+                raise AssertionError("deferred operation receipt spec is absent")
+            operation_receipt = _DeferredFastOperationReceipt(
+                spec[0],
+                family=spec[1],
+                compact_status=spec[2],
+                expected_output_d2h_bytes=spec[3],
+                expected_prepared_input_reused=spec[4],
+                expected_semantic_capacity=spec[5],
+                online_monitor=spec[6],
+                lean_monitor=spec[7],
+            )
+            self._operation_receipt = operation_receipt
+        return operation_receipt
+
     def _get(self) -> Mapping[str, object]:
         if self._materialized is None:
             status = _validated_compact_device_status(
                 family=self._family, compact_status=0,
                 launch_count=self._launch_count,
-                operation_receipt=self._operation_receipt,
+                operation_receipt=self._get_operation_receipt(),
                 raw_event_count=self._raw_event_count,
                 unique_event_count=self._unique_event_count,
                 overflowed=self._overflowed,
@@ -5450,6 +5476,8 @@ class _DeferredCompactDeviceStatus(Mapping[str, object]):
         # compact status and withheld output on every failure path.
         if key == "ok":
             return True
+        if key == "operation_receipt" and self._materialized is None:
+            return self._get_operation_receipt()
         return self._get()[key]
 
     def __iter__(self) -> Iterator[str]:
@@ -5651,7 +5679,8 @@ class _PreparedBoundedOwner:
 
     def _check(self) -> None:
         if self._closed: _fail("RX037_USE_AFTER_CLOSE", "prepared", "closed")
-        if os.getpid() != self._pid: _fail("RX038_PROCESS_BOUNDARY", "prepared", "different process")
+        if _NATIVE_IMAGE_CACHE_PID != self._pid:
+            _fail("RX038_PROCESS_BOUNDARY", "prepared", "different process")
         if threading.get_ident() != self._thread: _fail("RX039_THREAD_BOUNDARY", "prepared", "different thread")
 
     def _publish_destroyed_token(self) -> None:
@@ -5942,6 +5971,17 @@ class _PreparedBoundedOwner:
 
 
 class _PreparedTriangleOwner:
+    @property
+    def _last_fast_operation_receipt(self):
+        status = getattr(self, "_last_fast_status", None)
+        return None if status is None else status._get_operation_receipt()
+
+    @_last_fast_operation_receipt.setter
+    def _last_fast_operation_receipt(self, value) -> None:
+        if value is not None:
+            raise AssertionError("triangle fast receipt must be owned by device status")
+        self._last_fast_status = None
+
     def __init__(self, *, library, native_path: Path, ptx: str,
                  runtime: Mapping[str, object],
                  static_input: TriangleReductionStaticInput |
@@ -6143,7 +6183,8 @@ class _PreparedTriangleOwner:
 
     def _check(self) -> None:
         if self._closed: _fail("RX037_USE_AFTER_CLOSE", "prepared", "closed")
-        if os.getpid() != self._pid: _fail("RX038_PROCESS_BOUNDARY", "prepared", "different process")
+        if _NATIVE_IMAGE_CACHE_PID != self._pid:
+            _fail("RX038_PROCESS_BOUNDARY", "prepared", "different process")
         if threading.get_ident() != self._thread: _fail("RX039_THREAD_BOUNDARY", "prepared", "different thread")
 
     def _publish_destroyed_token(self) -> None:
@@ -6187,23 +6228,20 @@ class _PreparedTriangleOwner:
                 self._fast_reduced_ref, self._fast_compact_status_ref,
                 ctypes.byref(fast_receipt), self._call_error,
                 self._call_error_size))
-            _raise_native(native_status, self._call_error,
-                          "triangle.execute_fast")
+            if native_status:
+                _raise_native(native_status, self._call_error,
+                              "triangle.execute_fast")
             compact_status = int(self._fast_compact_status.value)
-            operation_receipt = _DeferredFastOperationReceipt(
-                fast_receipt, family=_TRIANGLE,
-                compact_status=compact_status,
-                expected_output_d2h_bytes=self._fast_output_bytes,
-                expected_prepared_input_reused=True,
-                online_monitor=self._online_monitor,
-                lean_monitor=self._lean_monitor)
-            self._last_fast_operation_receipt = operation_receipt
             status = _DeferredCompactDeviceStatus(
                 family=_TRIANGLE,
                 compact_status=compact_status,
                 launch_count=count,
-                operation_receipt=operation_receipt,
+                operation_receipt_spec=(
+                    fast_receipt, _TRIANGLE, compact_status,
+                    self._fast_output_bytes, True, None,
+                    self._online_monitor, self._lean_monitor),
                 extras=self._fast_status_extras)
+            self._last_fast_status = status
             output = int(self._fast_reduced.value)
             if batch.expected_reduced_u64 is not None \
                     and output != batch.expected_reduced_u64:
@@ -6212,6 +6250,49 @@ class _PreparedTriangleOwner:
         except BaseException:
             self._clear_exact_replay_state()
             raise
+
+    def _execute_public_fused_replay(
+            self, batch, *, executable_identity_sha256: str
+    ) -> RTDLExecutionResult:
+        """Execute an already validated exact replay without generic redispatch."""
+
+        self._check()
+        if not self._active.acquire(blocking=False):
+            _fail("RX040_REENTRANT", "execute", "active")
+        fast_receipt = _FastPathReceipt()
+        try:
+            native_status = int(self._execute_replay(
+                self._token, self._exact_replay_count,
+                self._exact_replay_use_multipliers,
+                self._exact_replay_digest_u8, 32,
+                self._fast_reduced_ref, self._fast_compact_status_ref,
+                ctypes.byref(fast_receipt), self._call_error,
+                self._call_error_size))
+            if native_status:
+                _raise_native(native_status, self._call_error,
+                              "triangle.execute_fast")
+            compact_status = int(self._fast_compact_status.value)
+            status = _DeferredCompactDeviceStatus(
+                family=_TRIANGLE,
+                compact_status=compact_status,
+                launch_count=self._exact_replay_count,
+                operation_receipt_spec=(
+                    fast_receipt, _TRIANGLE, compact_status,
+                    self._fast_output_bytes, True, None,
+                    self._online_monitor, self._lean_monitor),
+                extras=self._fast_status_extras)
+            self._last_fast_status = status
+            output = int(self._fast_reduced.value)
+            if batch.expected_reduced_u64 is not None \
+                    and output != batch.expected_reduced_u64:
+                _fail("RX043_ORACLE_MISMATCH", "triangle.output", output)
+            return RTDLExecutionResult(
+                output, None, executable_identity_sha256, status, (), None)
+        except BaseException:
+            self._clear_exact_replay_state()
+            raise
+        finally:
+            self._active.release()
 
     def execute(
             self,
@@ -6343,16 +6424,10 @@ class _PreparedTriangleOwner:
                             int(reused and use_multipliers), multipliers,
                             ctypes.byref(reduced), ctypes.byref(compact_status),
                             ctypes.byref(fast_receipt), error, len(error)))
-                    _raise_native(native_status,
-                        error, "triangle.execute_fast")
-                    operation_receipt = _DeferredFastOperationReceipt(
-                        fast_receipt, family=_TRIANGLE,
-                        compact_status=int(compact_status.value),
-                        expected_output_d2h_bytes=ctypes.sizeof(ctypes.c_uint64),
-                        expected_prepared_input_reused=reused,
-                        online_monitor=getattr(self, "_online_monitor", False),
-                        lean_monitor=getattr(self, "_lean_monitor", False))
-                    self._last_fast_operation_receipt = operation_receipt
+                    if native_status:
+                        _raise_native(native_status,
+                            error, "triangle.execute_fast")
+                    compact_status_value = int(compact_status.value)
                     status_extras = getattr(
                         self, "_fast_status_extras", None)
                     if status_extras is None:
@@ -6367,10 +6442,15 @@ class _PreparedTriangleOwner:
                         }
                     status = _DeferredCompactDeviceStatus(
                         family=_TRIANGLE,
-                        compact_status=int(compact_status.value),
+                        compact_status=compact_status_value,
                         launch_count=count,
-                        operation_receipt=operation_receipt,
+                        operation_receipt_spec=(
+                            fast_receipt, _TRIANGLE, compact_status_value,
+                            ctypes.sizeof(ctypes.c_uint64), reused, None,
+                            getattr(self, "_online_monitor", False),
+                            getattr(self, "_lean_monitor", False)),
                         extras=status_extras)
+                    self._last_fast_status = status
                     counter_rows = ()
                 output = int(reduced.value)
                 output_sha = _digest(output) if diagnostics else None
@@ -6477,6 +6557,14 @@ class PreparedRTDLExecutable:
         *,
         include_diagnostics: bool = False,
     ) -> RTDLExecutionResult:
+        owner = self._owner
+        if (
+            include_diagnostics is False
+            and self._family == _TRIANGLE
+            and batch is getattr(owner, "_exact_replay_batch", None)
+        ):
+            return owner._execute_public_fused_replay(
+                batch, executable_identity_sha256=self._identity)
         if self._closed: _fail("RX037_USE_AFTER_CLOSE", "prepared", "closed")
         if not isinstance(batch, self._batch_types):
             _fail("RX044_BATCH_MISMATCH", "batch", type(batch).__name__)
@@ -6488,16 +6576,10 @@ class PreparedRTDLExecutable:
             _fail(
                 "RX006_INPUT_INVALID", "include_diagnostics",
                 "exact bool required")
-        output, output_sha, status, counters, receipt = self._owner.execute(
+        output, output_sha, status, counters, receipt = owner.execute(
             batch, diagnostics=diagnostics)
         return RTDLExecutionResult(
-            output=output,
-            output_sha256=output_sha,
-            executable_identity_sha256=self._identity,
-            device_status=status,
-            role_counters=counters,
-            traversal_receipt=receipt,
-        )
+            output, output_sha, self._identity, status, counters, receipt)
 
     def close(self) -> None:
         if self._closed: return
