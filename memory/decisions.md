@@ -8458,3 +8458,21 @@ The transaction remains internal engineering evidence regardless of whether
 the 1.25x RTDL/PyOptiX target passes. It cannot revise Goal5843, authorize
 public/manuscript wording, substitute for true GPU execution, or count as
 external review.
+
+## D245: accept Goal5850 generation A without promoting Goal5848 (2026-09-06)
+
+Accept transaction 4 as the first passing Goal5848 hardware generation. Its
+exact implementation source is `c4351f612...`; all 80 formal cells, 512
+instrumentation workers and 10,240 retained steady samples completed with zero
+retry/discard, and two independent authorities are byte-identical.
+
+Preserve transactions 1-3 as failures and prohibit pooling or relabeling. The
+v9 relation repair is admissible because it preserves exact cache-identity
+validation under the native owner lock while removing a redundant Python/native
+query boundary; it changes no task semantics, timer, baseline, estimator,
+threshold or sample schedule and adds no app dispatch.
+
+Do not call Goal5848 complete, generalize across hardware, or authorize public
+or manuscript performance wording. Goal5851 must execute identical source
+`c4351f612...`, not the later documentation commit, on a different RTX
+compute-capability generation and GPU UUID.

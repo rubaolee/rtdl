@@ -19138,3 +19138,23 @@ No native v8 GPU compile, true-OptiX Goal5844 execution, RTDL/PyOptiX timing,
 external review, or manuscript/public performance authority exists yet. Those
 are the only open facts; use `scripts/goal5844_launch_pod_transaction.py` from
 the final clean pushed commit when a pod is supplied.
+
+## Goal5850 first RTX generation complete (2026-09-06)
+
+The fourth fresh Goal5848 transaction completed on an RTX 2000 Ada (CC 8.9)
+from exact source `c4351f612...`, tree `1faf8ca2...`. It retained all 512
+instrumentation workers, all 80 formal workers and 10,240 steady samples with
+zero retry/discard. Triangle and bounded relation passed every primary gate;
+controller authority and independent recount are byte-identical. The archive
+SHA-256 is `f487f425...12c8`.
+
+The final generic v9 relation repair fuses exact prepared-cache digest checking
+into the execution ABI under the native owner lock, removing one redundant FFI
+and lock round trip without weakening cache identity. Relation RTDL/Direct
+steady median improved from the retained transaction-3 failure `1.209372x` to
+`1.075168x`; triangle is `1.171933x`. The old post-import diagnostics remain
+adverse at `2.111030x` relation and `1.997967x` triangle.
+
+This completes Goal5850 only. Goal5851 must replay identical source
+`c4351f612...` on a different RTX compute-capability generation and UUID before
+Goal5848 or any cross-generation performance statement can complete.

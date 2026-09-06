@@ -235,8 +235,8 @@ Goal5849 clean commit
   -> Goal5856 final gate and upload
 ```
 
-Goal5850 and Goal5851 are the only remaining GPU-dependent goals. Goal5849 is
-complete; Goal5850 is the next active goal. Goal5852 prevents either GPU
+Goal5851 is the only remaining GPU-dependent goal. Goal5849 and Goal5850 are
+complete; Goal5851 is the next active goal. Goal5852 prevents either GPU
 availability or a bad result from consuming the protected final two days.
 
 ## 4. Goal5849 completion record
@@ -256,13 +256,36 @@ Goal5849 completed locally on 2026-09-05.
 - compileall, all Goal5848 CLI `--help`, Bash syntax, Markdown links,
   staged-diff validation and secret scan: pass.
 
-The commit immediately following the reviewed implementation commit changes
-only this sprint-status record and the repository work guide. That clean pushed
-commit, reported by `git rev-parse HEAD` after checkout, is the exact source
-identity Goal5850 and Goal5851 must both use. No implementation byte may differ
-between the two generations.
+At Goal5849 completion, the commit immediately following the reviewed
+implementation changed only this sprint-status record and the repository work
+guide and became the initial Goal5850 source. Goal5850's preserved failures then
+activated its explicit pre-freeze successor rule. The controlling two-generation
+source is therefore the successful `c4351f612...` identity recorded below, not
+the initial Goal5849 checkpoint. No implementation byte may differ between the
+two passing generations.
 
-## 5. Submission success definition
+## 5. Goal5850 completion record
+
+Goal5850 completed on 2026-09-06 under the preregistered successor rule. Three
+complete failures were retained rather than relabeled: transaction 1 failed the
+old post-import endpoint, transaction 2 failed Direct runtime-identity
+authority, and transaction 3 failed the relation RTDL/Direct median gate at
+`1.209372x`. Their archive SHA-256 values and repairs are preserved in
+`goal5850_generation_a_final_report_20260906.md`.
+
+The fresh passing transaction used source commit
+`c4351f6120d1d73d7c2b72ff4d61ad747061f836`, tree
+`1faf8ca2a99e4c1011443942479e2edf7b297edb`, on RTX 2000 Ada CC 8.9. It ran all
+512 instrumentation workers and all 80 formal workers with zero retry/discard;
+both tasks passed all primary gates, and two independent authorities were
+byte-identical. The successful archive SHA-256 is
+`f487f42580ac8cb81c202fe867b976ba7a267b9ca7ccffb980c626d775b112c8`.
+
+Goal5851 must use the identical `c4351f612...` implementation source on a GPU
+with a different compute-capability generation and UUID. Later documentation
+commits do not supersede that experiment identity.
+
+## 6. Submission success definition
 
 The sprint succeeds when a scientifically defensible, anonymous paper and
 replayable artifact are submitted on time. Acceptance is not under author

@@ -12012,3 +12012,22 @@ author-artifact parity work.
 - [ ] If median within-block RTDL/PyOptiX is above 1.25x, retain the adverse result and optimize only the largest measured public/provider/native layer.
 - [ ] Copy all raw evidence back and independently revalidate it on the Mac.
 - [ ] Obtain deferred external review before any public or manuscript performance wording.
+
+## Goal5850/Goal5851 final-sprint checkpoint (2026-09-06)
+
+- [x] Preserve three complete Goal5850 failures and prohibit pooling or
+      relabeling.
+- [x] Remove the redundant relation cache-digest FFI/lock boundary through the
+      generic fail-closed v9 execute ABI.
+- [x] Pass local Goal5848 and adjacent suites, build native v9, and execute a
+      wholly fresh formal transaction from clean pushed source `c4351f612...`.
+- [x] Retain all 512 instrumentation workers, 80 formal workers and 10,240
+      steady samples with zero retry/discard.
+- [x] Download and independently verify the archive, manifest, worker recount,
+      authority equality and terminal transcript.
+- [ ] Run Goal5851 from identical source `c4351f612...` on an RTX GPU with a
+      compute-capability generation other than 8.9 and a different UUID.
+- [ ] Build the non-pooled cross-generation authority; if this is not complete
+      by the freeze deadline, remove the positive Goal5848 paper claim.
+- [ ] Impose Goal5852's irreversible code/evidence freeze by 2026-09-08 00:00
+      America/New_York.

@@ -13,11 +13,41 @@ changed experiment.
 
 The controlling final-sprint sequence is
 `history/internal_docs/cgo2027_final_sprint_goals_20260905.md`. Goal5849 is
-complete at its recorded local gates; Goal5850, the first RTX-generation
-Goal5848 transaction, is next. Both RTX generations must use the same final
-clean pushed commit. Goal5852 is the irreversible code/evidence freeze.
+complete at its recorded local gates; Goal5850's first RTX generation is now
+complete under the successor protocol; Goal5851 is next. Both passing RTX
+generations must use exact source commit `c4351f612...`. Goal5852 is the
+irreversible code/evidence freeze.
 
-## Critical active work: Goal5848 strong-baseline and post-import closure (2026-09-05)
+## Critical current override: Goal5850 generation A complete (2026-09-06)
+
+Goal5850 is internally complete at exactly
+`PASS__GOAL5850_GENERATION_A_COMPLETE__GOAL5851_REQUIRED`. The exact source is
+commit `c4351f6120d1d73d7c2b72ff4d61ad747061f836`, tree
+`1faf8ca2a99e4c1011443942479e2edf7b297edb`. On one NVIDIA RTX 2000 Ada
+Generation GPU (CC 8.9, UUID
+`GPU-2fe387f0-ed74-e62c-0686-750461318361`), all 512 instrumentation workers and
+all 80 formal workers completed with zero retry/discard. Both tasks passed all
+frozen primary gates, and the controller authority and independent recount are
+byte-identical.
+
+The successful archive SHA-256 is
+`f487f42580ac8cb81c202fe867b976ba7a267b9ca7ccffb980c626d775b112c8`;
+the authority internal seal is
+`fb681997646ffed254e19ee2a3a2180f2676f8dc6e9d79ae0356ddd50f1911d8`.
+The complete result and retained failure chain are documented in
+`history/internal_docs/goal5850_generation_a_final_report_20260906.md`.
+
+This is one-generation internal evidence only. The old post-import diagnostic
+remains adverse: `1.997967x` for triangle and `2.111030x` for relation. Public
+or manuscript performance wording, external consensus and Goal5848 completion
+remain unauthorized. Goal5851 must run the identical `c4351f612...` code on a
+different RTX compute-capability generation and GPU UUID; a later documentation
+commit is not an admissible substitute experiment source.
+
+## Retained Goal5848 failure history through transaction 2 (2026-09-05--06)
+
+The following section preserves the earlier failure-state rationale. The
+Goal5850 generation-A completion override above is the current authority.
 
 Goal5850's first complete transaction at `95f7d4fc...` retained every row and
 failed the original post-import gate. Subsequent fresh-process diagnosis proved
@@ -44,31 +74,37 @@ Python version instead of its exact `none__native_direct_optix` sentinel. Its
 failure archive SHA-256 is
 `fde22b987fdaf9b3617e9371ebb391254fa856eb2495688006ca54acf60d99fc`.
 It remains a failed transaction and may not be relabeled, pooled or reused.
-The next successor must distinguish native Direct and Python runtime identity
-fail closed, commit and push that repair, and execute wholly fresh artifacts,
-preregistration, instrumentation, formal cells and authority.
+The immediate successor was required to distinguish native Direct and Python
+runtime identity fail closed, commit and push that repair, and execute wholly
+fresh artifacts, preregistration, instrumentation, formal cells and authority.
+That repair and later transaction state are controlled by the current override
+above.
 
 Goal5848 is defined in
 `history/internal_docs/goal5848_strong_baseline_post_import_20260905/GOAL5848.md`.
-Its primary target is the real remaining Goal5847 debt: after implementation
-imports, RTDL took 637.846 ms versus 263.349 ms for pinned precompiled PyOptix
-(`2.504242x` paired median). Do not optimize or cite the favorable
-complete-process result dominated by PyOptix/CuPy import latency as a language
-speedup.
+Its original primary target was the Goal5847 post-import debt: RTDL took
+637.846 ms versus 263.349 ms for pinned precompiled PyOptix (`2.504242x` paired
+median). Transaction 1 proved that endpoint compared unequal CUDA lifecycle
+states, so the lifecycle repair above made it a mandatory adverse diagnostic
+and moved the primary endpoint before implementation-specific imports. Do not
+cite the favorable complete-process result dominated by PyOptix/CuPy import
+latency as an intrinsic language speedup.
 
 The goal requires both the frozen 4,096-by-4,096 canonical relation and the
 16,384-query checked-U64 triangle scalar, plus idiomatic PyOptix, equivalently
-device-optimized PyOptix and Direct OptiX arms. Hard gates include post-import
-RTDL/strong-PyOptix median `<=1.20x`, every block `<=1.35x`, prepared public
-RTDL/Direct `<=1.20x`, same-machine successor/predecessor regression
+device-optimized PyOptix and Direct OptiX arms. The corrected hard gates include
+implementation-entry RTDL/strong-PyOptix median `<=1.20x`, every block
+`<=1.35x`, prepared public RTDL/Direct `<=1.20x`, same-machine
+successor/predecessor regression
 `<=1.05x`, compiler-free RTDL deploy, exact output/OptiX receipts, fail-closed
 mutations, exact AOT cache reuse and independent replay on two RTX generations.
 
 No validation-off path, weak host-continuation baseline, task-specific engine
 logic, hidden timer movement, discarded adverse row or cross-machine raw-time
 ratio is admissible. Formal timing requires a committed preregistration after
-exploration and repair. Goal5848 has no performance or manuscript result yet;
-external review remains a later claim gate.
+exploration and repair. At this retained checkpoint Goal5848 had no performance
+result; the current single-generation result is controlled above and external
+review remains a later claim gate.
 
 ## Critical current override: Goal5845 relation steady debt closed (2026-09-04)
 
