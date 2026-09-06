@@ -489,3 +489,79 @@ memory/progress.md=0ee3675a5d396f07d76d2b02dbb6966d9c4f11706f73925a16d289b30252a
 
 `R5=CLOSED_WITH_EVIDENCE`. R4, R6, R7, and R8 remain open, and claim
 authorization remains false.
+
+## Final F2 component-boundary successor and clean replay
+
+F1 remains a retained pre-final tooling snapshot. Inspection against the R6
+acceptance text found that its `DEPENDENCIES.md` did not explicitly inventory
+the packaged project-authored components or their distribution basis. The
+exporter was changed before the hard freeze to produce that component boundary,
+and its test suite gained one focused check. No measured source, experiment,
+raw input, projection row, numerical summary, or verifier changed.
+
+Three pre-commit development test invocations failed while narrowing the new
+test: two incorrectly routed a synthetic fixture through frozen production
+projection/numerical identities, and one matched a phrase split across a
+Markdown newline. The final test inspects only the static generated inventory.
+No verifier or numerical gate was weakened.
+
+F2 was committed and pushed:
+
+```text
+commit=9771facece4ccd807e26c15b21892b9d0a701d32
+tree=11c62c28bdebcc7d437f8ab3326635af0832ce48
+remote=origin/codex/cgo-goal5836-handoff
+remote ref after push=9771facece4ccd807e26c15b21892b9d0a701d32
+verifier=5a41e246412870118f1c11cb11a1622e86d8999d664dcf578eee638f63ec0100
+exporter=ba3075214564cad6b51dfea93cb8741c100d19f149ecd5b5d1a70eee89ffabd1
+tests=a75d897032d44becdc4838ec49c1ffe31119943adf0f8d4735fbc9277047dcd9
+```
+
+A new empty repository fetched the remote branch at depth one and detached at
+F2 under `/tmp/rtdl-cgo2027-F2-9771face-clean`. It was clean before and after
+the transaction. Actual clean-F2 results:
+
+```text
+submission-evidence tests: normal 14/14 PASS; -O 14/14 PASS
+Goal5848 discovery: normal 128/128 PASS; -O 128/128 PASS
+Goal5851 fused replay: 7/7 PASS
+Ruff: PASS
+skips=0
+```
+
+Two new external roots were built successfully and were byte-identical:
+
+```text
+/tmp/rtdl-cgo2027-F2-9771face-build-a-20260906-173128
+/tmp/rtdl-cgo2027-F2-9771face-build-b-20260906-173128
+```
+
+Actual CLI reuse of root A returned exit 1 with overwrite refused. The first
+foreign extraction command incorrectly duplicated the archive's own top-level
+directory and then returned exit 2 because `verify.py` was not in that mistaken
+cwd. The failed directory was retained and not reused. Extraction into the
+second new parent succeeded at
+`/tmp/RTDL CGO final F2 replay 9771face retry/rtdl-cgo2027-artifact`.
+Both `/usr/bin/python3 -I` and `-I -O` returned exit 0 and
+`PASS__OFFLINE_PROJECTION_RECOUNT`. Verifier `cmp`, public identity scan, and
+archive metadata checks passed.
+
+```text
+projection self=fa30b906b0d5a6edfdcc3267f24cea8274c9c9450a79edeef0058e89f6d252ca
+projection file=94144ab768d669ebcdf83a12d018decd66a306f940fa4bf1cf18a1fcc91ae77f
+summary self=54ecfddf642cfbd00dfba8af343392524143781744c698e2bc72a3c1b3843105
+summary file=2a98ea207004153b4e04c52a36ce3ae5940cc7a7ddbc5723caa3fb5f6d498ddd
+manifest self=4a62601b0e421033e67169ed3f89818c6cf62b8acc7723df9cc3ca4c8a46fc32
+manifest file=da73f16918c572dbffc5d803627837ae412197afc3ea9eee341b4989d9b494d8
+private provenance self=12b47d35ddde66259343bb59b76fca3d93048af9e2908381352ccf01ddc3fc85
+private provenance file=97ac92b95af2d0f21c2445b1ef533c9a686181bff236561f2db4a45f328a037f
+receipt self=9294627a889356590b7a2ea53e126fb40711a7aefb739788e8ec0294dc67a522
+receipt file=6e03835f3b53a1a49dfab6b4f095a6c5cc2f984c07d0508c5cc7492ec98f099c
+archive=916cedbb7001c7aa43e66df3f992b543b7b3ca5a013f0f997790113a2e3738b8
+archive_bytes=180308
+archive_members=9
+```
+
+`R5_FINAL_F2_REHEARSAL_REPORT.md` and `FREEZE_RECORD.md` now control R5.
+F2 is immutable. R4, R6, R7, and R8 remain open, and claim authorization
+remains false.

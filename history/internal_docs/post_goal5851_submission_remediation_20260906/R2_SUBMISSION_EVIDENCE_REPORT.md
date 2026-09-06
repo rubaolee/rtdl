@@ -2,12 +2,32 @@
 
 Date: 2026-09-06
 
-Status: `CLOSED_WITH_EVIDENCE_PRE_F__FINAL_F_REHEARSAL_REQUIRED_R5`
+Status: `CLOSED_WITH_EVIDENCE__PRE_F_BODY_SUPERSEDED_BY_FINAL_F2_R5`
+
+## Final F2 supersession notice
+
+The body below preserves the original pre-F R2 rehearsal and its then-current
+hashes. R5 is now closed at final tooling snapshot F2, commit
+`9771facece4ccd807e26c15b21892b9d0a701d32`, tree
+`11c62c28bdebcc7d437f8ab3326635af0832ce48`. The controlling final report is
+`R5_FINAL_F2_REHEARSAL_REPORT.md`; the executable/evidence boundary is
+`FREEZE_RECORD.md`.
+
+F2 did not change the projection or recount bytes. It added an explicit
+component/distribution inventory to generated `DEPENDENCIES.md` and one test.
+Consequently, the final archive is 180,308 bytes with SHA-256
+`916cedbb7001c7aa43e66df3f992b543b7b3ca5a013f0f997790113a2e3738b8`.
+The F2 clean remote checkout passed 14/14 submission-evidence tests normally
+and under `-O`, 128/128 Goal5848 tests normally and under `-O`, 7/7 Goal5851
+tests, Ruff, twin deterministic export, overwrite rejection, and isolated
+normal/optimized foreign-path replay. Any pre-F or F1 identity below is
+historical and must not be cited as the final package identity.
 
 This is an execution report, not a new plan, manuscript acceptance, artifact
 review, or public-claim authorization. It records the actual pre-freeze tool
 implementation and rehearsal required by R2. The final successful rehearsal
-must still be repeated from a clean checkout of committed candidate F under R5.
+was subsequently repeated from a clean remote checkout of F2 under R5, as the
+supersession notice records.
 
 ## 1. Preserved boundaries
 
@@ -256,8 +276,7 @@ R2 tests plus Goal5848 contract, transaction-authority, and cross-generation
 authority tests. Ruff and compilation checks passed. `git diff M -- src
 include experiments` remained empty.
 
-R2 is closed at the pre-F evidence scope. It does not authorize paper wording
-or public claims. R5 must commit candidate F and repeat the indivisible chain
-from a fresh clean checkout, generate into new external roots, build twice,
-extract to a foreign path, run the frozen package verifier, record all hashes,
-and confirm that the packaged verifier is byte-identical to F.
+R2 was closed at this historical pre-F evidence scope. It did not authorize
+paper wording or public claims. The formerly pending R5 transaction has since
+passed at F2 as stated in the supersession notice. Claim authorization remains
+false pending R4, R6, R7, and R8.

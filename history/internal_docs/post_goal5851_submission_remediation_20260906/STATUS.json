@@ -1,7 +1,7 @@
 {
   "schema": "rtdl.cgo2027.post_goal5851_submission_remediation.status.v1",
-  "updated_at_utc": "2026-09-06T21:23:52Z",
-  "updated_at_et": "2026-09-06T17:23:52-0400",
+  "updated_at_utc": "2026-09-06T21:38:06Z",
+  "updated_at_et": "2026-09-06T17:38:06-0400",
   "overall_status": "REMEDIATION_IN_PROGRESS__NOT_SUBMISSION_READY__NO_NEW_PERFORMANCE_DEVELOPMENT",
   "controlling_directive": {
     "path": "history/internal_docs/lead_execution_directive_post_goal5851_20260906.md",
@@ -27,9 +27,10 @@
     "measured_successor_tree": "d53af23a2599f9d6adb4ac0bfff39cd0ab31860b",
     "predecessor_commit_E": "12ab1bc0a8ebbcefe42e93c677a151c04c3ba3c8",
     "tool_snapshot_F": {
-      "commit": "61190073428fbe487721262cfe1f4a77d4cb5d2f",
-      "tree": "2f2aa13221d2e1f7777b03e0ef3b1fd9feefcf6f",
-      "pushed_remote": "origin/codex/cgo-goal5836-handoff"
+      "commit": "9771facece4ccd807e26c15b21892b9d0a701d32",
+      "tree": "11c62c28bdebcc7d437f8ab3326635af0832ce48",
+      "pushed_remote": "origin/codex/cgo-goal5836-handoff",
+      "supersedes_tool_snapshot": "61190073428fbe487721262cfe1f4a77d4cb5d2f"
     },
     "paper_snapshot_P": null
   },
@@ -69,10 +70,10 @@
     }
   },
   "r2_submission_evidence": {
-    "status": "CLOSED_WITH_EVIDENCE__FINAL_F_REHEARSAL_PASSED",
+    "status": "CLOSED_WITH_EVIDENCE__FINAL_F2_REHEARSAL_PASSED",
     "report": {
       "path": "R2_SUBMISSION_EVIDENCE_REPORT.md",
-      "sha256": "3f5585470558c9e0ab47ee1ea93cedaebdc08eb7531a0283ce5d9b7494acd439"
+      "sha256": "73ebd0b77b1c68b7f2d6e2a8801f5e70ded4eb38dcabe8deb0fc8c03e27374dc"
     },
     "tools": [
       {
@@ -81,11 +82,11 @@
       },
       {
         "path": "scripts/goal5852_build_submission_evidence.py",
-        "sha256": "642f60ece4bd7f5848b19bfdf8a6c66556a2fb1ac70e3b68ad7d9d9e39c47c69"
+        "sha256": "ba3075214564cad6b51dfea93cb8741c100d19f149ecd5b5d1a70eee89ffabd1"
       },
       {
         "path": "tests/goal5852_submission_evidence_test.py",
-        "sha256": "e7217191c6e513d4bf3b4e652f025c75ac18eba9c6f701d2f8651831c24315c6"
+        "sha256": "a75d897032d44becdc4838ec49c1ffe31119943adf0f8d4735fbc9277047dcd9"
       }
     ],
     "projection": {
@@ -96,31 +97,39 @@
       "competence_workers": 8,
       "projection_self_sha256": "fa30b906b0d5a6edfdcc3267f24cea8274c9c9450a79edeef0058e89f6d252ca",
       "recount_summary_self_sha256": "54ecfddf642cfbd00dfba8af343392524143781744c698e2bc72a3c1b3843105",
-      "public_manifest_self_sha256": "b0a26d5630815f65035f6c58e9429d865d47a52fd13ec7117eb3d2d0bbfa653a",
-      "archive_sha256": "963acc1c543df70609fccc06e0fa79f63b886be75b46699b9a2a51c662092639",
-      "archive_bytes": 179978,
+      "public_manifest_self_sha256": "4a62601b0e421033e67169ed3f89818c6cf62b8acc7723df9cc3ca4c8a46fc32",
+      "archive_sha256": "916cedbb7001c7aa43e66df3f992b543b7b3ca5a013f0f997790113a2e3738b8",
+      "archive_bytes": 180308,
       "archive_members": 9
     },
     "rehearsal": {
-      "external_root_a": "/tmp/rtdl-cgo2027-r2-anonymous-final-a-20260906-1745",
-      "external_root_b": "/tmp/rtdl-cgo2027-r2-anonymous-final-b-20260906-1745",
+      "external_root_a": "/tmp/rtdl-cgo2027-F2-9771face-build-a-20260906-173128",
+      "external_root_b": "/tmp/rtdl-cgo2027-F2-9771face-build-b-20260906-173128",
       "deterministic_byte_identity": true,
       "foreign_path_offline_replay": true,
       "optimized_python_replay": true,
       "forbidden_identity_scan_clean": true,
       "internal_goal_identifier_scan_clean": true,
       "packaged_verifier_matches_template": true,
-      "focused_regression_tests": 65,
+      "focused_regression_tests": 66,
       "focused_regression_failures": 0,
       "final_clean_F_rehearsal": {
-        "status": "PASS__CLOSED_WITH_EVIDENCE",
-        "report_path": "R5_FINAL_F_REHEARSAL_REPORT.md",
-        "report_sha256": "249a012cf7435c2dc40f998dc657173201ea773cfe015c02a88c67fb5e4f734c",
-        "external_root_a": "/tmp/rtdl-cgo2027-R5-F611900734-build-a-20260906-1722",
-        "external_root_b": "/tmp/rtdl-cgo2027-R5-F611900734-build-b-20260906-1722",
-        "foreign_replay_root": "/tmp/RTDL CGO final F replay 611900734/rtdl-cgo2027-artifact",
+        "status": "PASS__F2_CLOSED_WITH_EVIDENCE",
+        "report_path": "R5_FINAL_F2_REHEARSAL_REPORT.md",
+        "report_sha256": "1a380b92fa2cc957c424865d91b64791fcdf826ff21f970046447fcfd1ad0d1b",
+        "freeze_record_path": "FREEZE_RECORD.md",
+        "freeze_record_sha256": "fe1ab9ae325b735a99ef54327f3b30528dac269952a0d2a990899e475ea1f620",
+        "external_root_a": "/tmp/rtdl-cgo2027-F2-9771face-build-a-20260906-173128",
+        "external_root_b": "/tmp/rtdl-cgo2027-F2-9771face-build-b-20260906-173128",
+        "foreign_replay_root": "/tmp/RTDL CGO final F2 replay 9771face retry/rtdl-cgo2027-artifact",
         "clean_checkout_before_and_after": true,
-        "remote_branch_matches_f": true
+        "remote_branch_matches_f": true,
+        "component_distribution_inventory_included": true,
+        "goal5848_normal_tests": 128,
+        "goal5848_optimized_tests": 128,
+        "goal5851_tests": 7,
+        "submission_evidence_normal_tests": 14,
+        "submission_evidence_optimized_tests": 14
       }
     }
   },
@@ -132,14 +141,14 @@
       "errata_count": 14
     },
     "current_control_hashes": {
-      "AGENTS.md": "9f77c3f9c261e15530e87462a8ebfd740cdd0cec59563ef512846b045ae8535f",
+      "AGENTS.md": "a4b0938d225668d6d3ef870aa748d4a82d22e3d3d3eb7d07e54e35ebd1833cc5",
       "KNOWN_STALE_CUSTODY_CHECKS.md": "9fa769bf587dc27db4bf772557d38e4697f049d6aa78178d37802b91762ae991",
       "README.md": "c52eb28a97bdd34d5c286a08a620c1042ce135939a35ea5e4a034a26c27ff98d",
-      "paper/cgo2027/README.md": "53e3fe4667347cc5e013fde88d818756a6f40ed50610446828162af50765a31d",
+      "paper/cgo2027/README.md": "a3993532b611661d14836871e8fbea5f149b3d51737617d8c4b0e45a4c4c3f84",
       "history/internal_docs/cgo2027_final_sprint_goals_20260905.md": "dd4b7676b7c93af04bdc7373a3a1a57bbc2469782c07030acfa41938a18eabe6",
       "memory/decisions.md": "cc62cf08052988ec8eb37fa0a3f078c187c7d84af55ba99ad36a46708e2afd7c",
-      "memory/progress.md": "0ee3675a5d396f07d76d2b02dbb6966d9c4f11706f73925a16d289b30252a1fc",
-      "memory/todo.md": "d55252812fd01dae1379a3e3b878cf9cedf06960ad805e277c8417329134944b"
+      "memory/progress.md": "4e1283c2bdac2d73eaf6fe3b2fe80b9980eabeabf31d83b93f0bb8be97233454",
+      "memory/todo.md": "c3d887626803510bb780e597c8521b147a5a5fc7a222e74f36e2f0a272127b74"
     },
     "custody_replay": {
       "goal5837_current_tree_exit": 1,
@@ -194,10 +203,10 @@
     "four_plan_corrections": "CLOSED_WITH_EVIDENCE",
     "R0": "CLOSED_WITH_EVIDENCE",
     "R1": "CLOSED_WITH_EVIDENCE",
-    "R2": "CLOSED_WITH_EVIDENCE__FINAL_F_REHEARSAL_PASSED",
+    "R2": "CLOSED_WITH_EVIDENCE__FINAL_F2_REHEARSAL_PASSED",
     "R3": "CLOSED_WITH_EVIDENCE",
     "R4": "OPEN",
-    "R5": "CLOSED_WITH_EVIDENCE",
+    "R5": "CLOSED_WITH_EVIDENCE__FINAL_F2_FROZEN",
     "R6": "OPEN",
     "R7": "OPEN",
     "R8": "OPEN"

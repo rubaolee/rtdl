@@ -13,11 +13,12 @@ applied; use `STATUS.json` for the current R-stage rather than repeating them.
 The detailed remediation plan remains inherited except where this directive
 resolves a difference.
 
-The four plan corrections and R0--R1 are closed with evidence. R2 has produced
-a deterministic anonymous projection, two byte-identical package builds, and
-normal/optimized offline recount from a foreign path, but only as a pre-F
-rehearsal. R3 control/custody reconciliation is active. The controlling live
-state, claim ledger, and append-only validation log are under
+The four plan corrections and R0--R3 are closed with evidence. Final offline
+tooling snapshot F2 is commit `9771facec...`; its fresh remote checkout passed
+the complete normal/optimized regressions, two byte-identical external builds,
+overwrite rejection, and normal/optimized offline recount from a foreign path.
+R5 is closed at F2. The controlling live state, claim ledger, freeze record,
+and append-only validation log are under
 `history/internal_docs/post_goal5851_submission_remediation_20260906/`.
 
 Preserve measured source M `d653fe4...`, predecessor E `12ab1bc...`, all
@@ -49,9 +50,10 @@ are import/lifecycle-confounded. Reviews already received concern pre-final
 bytes; final PDF/package review and external human authoring evidence remain
 absent. Public/manuscript claim authorization remains false.
 
-The final candidate tooling commit F, its clean-checkout full rehearsal, the
-rewritten manuscript, final anonymous package, final-byte review, and submission
-are still pending. The 2026-09-08 00:00 America/New_York development freeze and
+The rewritten manuscript, final PDF/package pairing, final-byte review, and
+submission are still pending. F2 is immutable: any executable change before
+the freeze requires a new candidate and complete rehearsal; after the freeze it
+is forbidden. The 2026-09-08 00:00 America/New_York development freeze and
 explicit external sending/submission authorization boundaries remain unchanged.
 The immutable historical completion records below must be read with this
 current receipt- and claim-scope qualification.
@@ -75,8 +77,9 @@ sources. Goal5851 subsequently obtained two independent passes at identical
 measured source M `d653fe4...` on Ada and Ampere. The current R1 adjudication
 preserves the machine observations but rejects unqualified original-protocol
 compliance because per-execution detailed receipt retention was not fulfilled.
-Goal5852 is now preparing the irreversible tooling/evidence freeze; F and its
-clean-checkout rehearsal remain pending.
+Goal5852 has frozen final offline tooling F2 at `9771facec...`; its complete
+clean-checkout rehearsal is recorded in
+`R5_FINAL_F2_REHEARSAL_REPORT.md` and `FREEZE_RECORD.md`.
 
 ## Critical current override: Goal5851 final successor (2026-09-06)
 

@@ -1,7 +1,7 @@
 {
   "schema": "rtdl.cgo2027.post_goal5851.r0_evidence_index.v1",
   "created_at_utc": "2026-09-06T20:23:02Z",
-  "verification_scope": "raw_root_hash_inventory_plus_pre_F_anonymous_projection_and_offline_recount_rehearsal",
+  "verification_scope": "raw_root_hash_inventory_plus_final_F2_anonymous_projection_and_offline_recount_rehearsal",
   "generations": [
     {
       "id": "ada_rtx4090_cc89",
@@ -53,9 +53,9 @@
     "authority_recount_byte_equal": true
   },
   "r2_anonymous_projection": {
-    "status": "CLOSED_WITH_EVIDENCE__FINAL_F_REHEARSAL_PASSED",
+      "status": "CLOSED_WITH_EVIDENCE__FINAL_F2_REHEARSAL_PASSED",
     "report": "R2_SUBMISSION_EVIDENCE_REPORT.md",
-    "report_sha256": "3f5585470558c9e0ab47ee1ea93cedaebdc08eb7531a0283ce5d9b7494acd439",
+      "report_sha256": "73ebd0b77b1c68b7f2d6e2a8801f5e70ded4eb38dcabe8deb0fc8c03e27374dc",
     "formal_cells": 160,
     "formal_samples": 20480,
     "instrumentation_endpoints": 1024,
@@ -65,10 +65,10 @@
     "projection_file_sha256": "94144ab768d669ebcdf83a12d018decd66a306f940fa4bf1cf18a1fcc91ae77f",
     "recount_summary_self_sha256": "54ecfddf642cfbd00dfba8af343392524143781744c698e2bc72a3c1b3843105",
     "recount_summary_file_sha256": "2a98ea207004153b4e04c52a36ce3ae5940cc7a7ddbc5723caa3fb5f6d498ddd",
-    "public_manifest_self_sha256": "b0a26d5630815f65035f6c58e9429d865d47a52fd13ec7117eb3d2d0bbfa653a",
-    "public_manifest_file_sha256": "feba2ad47422559c867ac04b18a826c00f9aa859d9882c8bddf2b33acf305929",
-    "archive_sha256": "963acc1c543df70609fccc06e0fa79f63b886be75b46699b9a2a51c662092639",
-    "archive_bytes": 179978,
+      "public_manifest_self_sha256": "4a62601b0e421033e67169ed3f89818c6cf62b8acc7723df9cc3ca4c8a46fc32",
+      "public_manifest_file_sha256": "da73f16918c572dbffc5d803627837ae412197afc3ea9eee341b4989d9b494d8",
+      "archive_sha256": "916cedbb7001c7aa43e66df3f992b543b7b3ca5a013f0f997790113a2e3738b8",
+      "archive_bytes": 180308,
     "archive_members": 9,
     "deterministic_two_builds": true,
     "foreign_path_offline_replay": true,
@@ -76,18 +76,24 @@
     "forbidden_identity_scan_clean": true,
     "internal_goal_identifier_scan_clean": true,
     "packaged_verifier_matches_template": true,
-    "final_f_rehearsal": {
-      "status": "PASS__CLOSED_WITH_EVIDENCE",
-      "tool_snapshot_commit": "61190073428fbe487721262cfe1f4a77d4cb5d2f",
-      "tool_snapshot_tree": "2f2aa13221d2e1f7777b03e0ef3b1fd9feefcf6f",
-      "report": "R5_FINAL_F_REHEARSAL_REPORT.md",
-      "report_sha256": "249a012cf7435c2dc40f998dc657173201ea773cfe015c02a88c67fb5e4f734c",
-      "external_root_a": "/tmp/rtdl-cgo2027-R5-F611900734-build-a-20260906-1722",
-      "external_root_b": "/tmp/rtdl-cgo2027-R5-F611900734-build-b-20260906-1722",
-      "foreign_replay_root": "/tmp/RTDL CGO final F replay 611900734/rtdl-cgo2027-artifact",
-      "clean_checkout_before_and_after": true,
-      "remote_branch_matches_f": true
-    },
+      "final_f_rehearsal": {
+        "status": "PASS__F2_CLOSED_WITH_EVIDENCE",
+        "tool_snapshot_commit": "9771facece4ccd807e26c15b21892b9d0a701d32",
+        "tool_snapshot_tree": "11c62c28bdebcc7d437f8ab3326635af0832ce48",
+        "report": "R5_FINAL_F2_REHEARSAL_REPORT.md",
+        "report_sha256": "1a380b92fa2cc957c424865d91b64791fcdf826ff21f970046447fcfd1ad0d1b",
+        "external_root_a": "/tmp/rtdl-cgo2027-F2-9771face-build-a-20260906-173128",
+        "external_root_b": "/tmp/rtdl-cgo2027-F2-9771face-build-b-20260906-173128",
+        "foreign_replay_root": "/tmp/RTDL CGO final F2 replay 9771face retry/rtdl-cgo2027-artifact",
+        "clean_checkout_before_and_after": true,
+        "remote_branch_matches_f": true,
+        "component_distribution_inventory_included": true,
+        "goal5848_normal_tests": 128,
+        "goal5848_optimized_tests": 128,
+        "goal5851_tests": 7,
+        "submission_evidence_normal_tests": 14,
+        "submission_evidence_optimized_tests": 14
+      },
     "public_claim_authorized": false
   },
   "r3_control_and_custody": {
@@ -104,5 +110,5 @@
     "current_control_relative_links_checked": 7,
     "current_control_missing_links": 0
   },
-  "conclusion": "R0 raw roots are hash-consistent, R2 produced a deterministic anonymous projection with independent offline recount in a foreign path, and R3 reconciled current controls without rewriting historical custody. The indivisible replay from committed candidate F remains mandatory under R5/R6; no public or manuscript claim is authorized yet."
+  "conclusion": "R0 raw roots are hash-consistent, final F2 produced a deterministic anonymous projection with independent offline recount in a foreign path, R3 reconciled current controls without rewriting historical custody, and R5's complete clean-checkout transaction passed. R4/R6/R7/R8 remain open; no public or manuscript claim is authorized yet."
 }

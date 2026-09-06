@@ -34,30 +34,34 @@ The sentence-level ledger and raw-to-table reconstruction are in:
 history/internal_docs/post_goal5851_submission_remediation_20260906/CLAIM_LEDGER.json
 history/internal_docs/post_goal5851_submission_remediation_20260906/R2_SUBMISSION_EVIDENCE_REPORT.md
 history/internal_docs/post_goal5851_submission_remediation_20260906/R3_CONTROL_AND_CUSTODY_CORRECTION_LEDGER.md
+history/internal_docs/post_goal5851_submission_remediation_20260906/FREEZE_RECORD.md
 ```
 
 ## Artifact state
 
 `artifact_post_goal5851/` is a committed template and verifier-source root; it
-is never a generated output root. R2 successfully built two byte-identical
-packages in new repository-external directories and replayed an extracted copy
-under a foreign path in normal and optimized Python without project imports.
-That is a pre-F rehearsal only. The successful chain must be repeated from a
-clean checkout of committed final tooling snapshot F before it can support the
-submission artifact.
+is never a generated output root. Final tooling snapshot F2 is commit
+`9771facece4ccd807e26c15b21892b9d0a701d32`, tree
+`11c62c28bdebcc7d437f8ab3326635af0832ce48`. A clean remote checkout of F2
+passed the complete normal/optimized regression matrix, produced two
+byte-identical packages in new repository-external directories, rejected an
+existing output root, and replayed an extracted copy under a foreign path in
+normal and optimized isolated Python without project imports. The final
+nine-member evidence archive is 180,308 bytes with SHA-256
+`916cedbb7001c7aa43e66df3f992b543b7b3ca5a013f0f997790113a2e3738b8`.
+It includes an explicit component/distribution inventory. R6 must still pair
+these frozen package bytes with the rewritten and reviewed final PDF.
 
 ## Remaining gates
 
-1. Commit candidate F and complete the clean-checkout export, deterministic
-   twin build, foreign-path offline replay, identity scan, and hash binding.
-2. Rewrite and render the full manuscript from the R2 projection and R3
+1. Rewrite and render the full manuscript from the R2 projection and R3
    correction ledger.
-3. Build the corresponding final anonymous package and replay the exact final
-   bytes.
-4. Obtain review of the actual final PDF and package. Earlier reviews are
+2. Pair the frozen anonymous package with the final PDF and replay the exact
+   delivered package bytes.
+3. Obtain review of the actual final PDF and package. Earlier reviews are
    pre-final input, not final-byte authorization; external human authoring
    evidence remains zero.
-5. Complete page-limit, formatting, bibliography, anonymity, link, and upload
+4. Complete page-limit, formatting, bibliography, anonymity, link, and upload
    checks. Record submission only after an authorized upload actually occurs.
 
 The hard executable-code freeze is 2026-09-08 00:00 America/New_York. After

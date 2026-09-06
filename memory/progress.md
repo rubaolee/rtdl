@@ -19270,3 +19270,28 @@ archive is 179,978 bytes with SHA-256
 `963acc1c543df70609fccc06e0fa79f63b886be75b46699b9a2a51c662092639`.
 R5 is closed; R4 manuscript rewrite, R6 final pairing, R7 final-bytes review,
 and R8 submission checks remain open. No public/manuscript claim is authorized.
+
+## Final F2 component-boundary freeze (2026-09-06)
+
+F1 was superseded before the hard freeze because its dependency note did not
+explicitly inventory the distribution boundary of package components and its
+R5 report omitted the complete 128/128 normal, 128/128 optimized, and 7/7
+regression matrix. The measured projection was not changed.
+
+Final tooling snapshot F2 is commit
+`9771facece4ccd807e26c15b21892b9d0a701d32`, tree
+`11c62c28bdebcc7d437f8ab3326635af0832ce48`, pushed to the active remote
+branch. A fresh remote checkout passed artifact tests 14/14 normally and under
+`-O`, Goal5848 discovery 128/128 normally and under `-O`, Goal5851 7/7, and
+Ruff. Two new external-root builds were byte-identical and overwrite was
+rejected. Isolated normal and optimized recount passed in a second foreign
+path after retaining one operator extraction-path error from the first path.
+
+The final nine-member archive is 180,308 bytes with SHA-256
+`916cedbb7001c7aa43e66df3f992b543b7b3ca5a013f0f997790113a2e3738b8`.
+The projection and recount identities remain unchanged. The package now has an
+explicit project-authored component/distribution inventory and excludes all
+third-party source, CUDA/OptiX components, drivers, proprietary headers,
+measured binaries, and keys. `FREEZE_RECORD.md` and
+`R5_FINAL_F2_REHEARSAL_REPORT.md` are the current R5 records. R4, R6, R7, and
+R8 remain open; no public/manuscript claim is authorized.

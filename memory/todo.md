@@ -12058,8 +12058,8 @@ new artifact still require final-version review. Do not mark those gates closed.
 - [x] R2/R3: reconcile raw-derived tables, current guidance and custody limits;
       implement the minimal offline tooling and complete a pre-F detached
       anonymous-package rehearsal.
-- [ ] R5: commit final tooling snapshot F and repeat the complete package replay
-      from its clean checkout before the irreversible freeze.
+- [x] R5: commit final tooling snapshot F2 and repeat the complete package replay
+      from its clean remote checkout before the irreversible freeze.
 - [ ] R4/R6: rewrite the manuscript and deliver/replay the corresponding anonymous
       artifact; retain first-result regressions and other adverse observations.
 - [ ] R7/R8: obtain actual final-byte reviews, close each retained-claim finding,
@@ -12080,10 +12080,11 @@ new artifact still require final-version review. Do not mark those gates closed.
       offline replay, mutation tests, and focused regression validation.
 - [x] Reconcile current control documents and add Goal5837/Goal5843 exact-
       snapshot custody plus additive review/measurement errata under R3.
-- [ ] Commit candidate tooling snapshot F with an explicit staged-path inventory
-      and no production/native/experiment changes.
-- [ ] From a clean checkout of F, repeat the indivisible export, twin package,
-      foreign-path normal/optimized replay, identity scan, and hash binding.
+- [x] Commit final tooling snapshot F2 with an explicit executable whitelist and
+      no production/native/experiment changes.
+- [x] From a clean remote checkout of F2, repeat the complete regressions,
+      indivisible export, twin package, overwrite rejection, foreign-path
+      normal/optimized replay, identity scan, component inventory, and hash binding.
 - [ ] Rewrite and render the complete bounded manuscript from the frozen R2
       projection. Keep all mandatory adverse disclosures in main text.
 - [ ] Build/replay the final anonymous package, obtain review of the actual final
