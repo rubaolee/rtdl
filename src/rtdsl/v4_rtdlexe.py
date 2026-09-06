@@ -861,6 +861,8 @@ class BoundedRelationBatch:
     _packed_bounds_f32: bytes = field(init=False, repr=False, compare=False)
     _packed_ids_u32: bytes = field(init=False, repr=False, compare=False)
     _device_input_sha256: str = field(init=False, repr=False, compare=False)
+    _canonical_expected_rows: tuple[tuple[int, int], ...] | None = field(
+        init=False, repr=False, compare=False)
 
     def __post_init__(self) -> None:
         rows = tuple(tuple(row) for row in self.source_boxes)
@@ -892,6 +894,7 @@ class BoundedRelationBatch:
         object.__setattr__(self, "_packed_ids_u32", bytes(ids))
         object.__setattr__(self, "_device_input_sha256", _sha_bytes(
             b"RTDL-V4-BOUNDED-BATCH-V1\x00" + bytes(bounds) + bytes(ids)))
+        canonical_expected = None
         if self.expected_rows is not None:
             expected = []
             for index, raw_row in enumerate(self.expected_rows):
@@ -907,7 +910,11 @@ class BoundedRelationBatch:
                     _require_uint(row[1], f"batch.expected_rows[{index}][1]",
                                   bits=32, code="RX006_INPUT_INVALID"),
                 ))
-            object.__setattr__(self, "expected_rows", tuple(expected))
+            expected_rows = tuple(expected)
+            object.__setattr__(self, "expected_rows", expected_rows)
+            canonical_expected = tuple(sorted(expected_rows))
+        object.__setattr__(
+            self, "_canonical_expected_rows", canonical_expected)
 
 
 @dataclass(frozen=True)
@@ -951,6 +958,8 @@ class BoundedRelationBufferBatch:
     _packed_bounds_f32: bytes = field(init=False, repr=False, compare=False)
     _packed_ids_u32: bytes = field(init=False, repr=False, compare=False)
     _device_input_sha256: str = field(init=False, repr=False, compare=False)
+    _canonical_expected_rows: tuple[tuple[int, int], ...] | None = field(
+        init=False, repr=False, compare=False)
 
     def __post_init__(self) -> None:
         count = _require_uint(
@@ -979,6 +988,11 @@ class BoundedRelationBufferBatch:
         object.__setattr__(self, "source_ids_u32le", ids)
         object.__setattr__(self, "source_count", count)
         object.__setattr__(self, "expected_rows", expected)
+        object.__setattr__(
+            self,
+            "_canonical_expected_rows",
+            None if expected is None else tuple(sorted(expected)),
+        )
         object.__setattr__(self, "_packed_bounds_f32", bounds)
         object.__setattr__(self, "_packed_ids_u32", ids)
         object.__setattr__(self, "_device_input_sha256", _sha_bytes(
@@ -2852,51 +2866,29 @@ class InitializingRTDLProvider:
         try:
             parallel_started = time.perf_counter_ns() if collect_timings else 0
             sealed_thread.start()
-            phase_started = time.perf_counter_ns() if collect_timings else 0
-            readiness_error = None
-            try:
-                readiness = _acquire_cuda_primary_context_readiness(
-                    expected_compute_capability=(
-                        self._expected_compute_capability))
-            except BaseException as error:
-                readiness_error = error
-            if collect_timings:
-                timings["cuda_primary_context"] = (
-                    time.perf_counter_ns() - phase_started)
             sealed_thread.join()
             if collect_timings:
                 timings["sealed_native_image"] = int(
                     sealed_state.get("elapsed_ns", 0))
                 timings["parallel_admission_wall"] = (
                     time.perf_counter_ns() - parallel_started)
-                timings["parallel_overlap_saved"] = max(
-                    0,
-                    timings["cuda_primary_context"]
-                    + timings["sealed_native_image"]
-                    - timings["parallel_admission_wall"],
-                )
+                # This background provider task still overlaps the independent
+                # signed-artifact loader.  Within the task, native warm must
+                # precede the Python readiness retain so CUDA cold admission is
+                # performed once rather than raced through two runtime fronts.
+                timings["parallel_overlap_saved"] = 0
             loaded = sealed_state.get("library")
             if isinstance(loaded, _NativeLibraryLease):
                 library = loaded
             sealed_error = sealed_state.get("error")
-            if readiness_error is not None or sealed_error is not None:
-                if readiness_error is not None:
-                    primary_error = readiness_error
-                    secondary_error = sealed_error
-                elif isinstance(sealed_error, BaseException):
-                    primary_error = sealed_error
-                    secondary_error = None
-                else:
+            if sealed_error is not None:
+                if not isinstance(sealed_error, BaseException):
                     _fail(
                         "RX057_PROVIDER_INITIALIZATION_INVALID",
                         "initializing_provider.parallel_admission",
                         "parallel admission failed without an exception",
                     )
-                if isinstance(secondary_error, BaseException):
-                    primary_error.add_note(
-                        "parallel provider admission also failed: "
-                        + repr(secondary_error))
-                raise primary_error
+                raise sealed_error
             if library is None:
                 _fail(
                     "RX057_PROVIDER_INITIALIZATION_INVALID",
@@ -2908,6 +2900,13 @@ class InitializingRTDLProvider:
             _warm_native_provider_runtime(library)
             if collect_timings:
                 timings["native_runtime_warm"] = (
+                    time.perf_counter_ns() - phase_started)
+            phase_started = time.perf_counter_ns() if collect_timings else 0
+            readiness = _acquire_cuda_primary_context_readiness(
+                expected_compute_capability=(
+                    self._expected_compute_capability))
+            if collect_timings:
+                timings["cuda_primary_context"] = (
                     time.perf_counter_ns() - phase_started)
                 timings["total"] = time.perf_counter_ns() - total_started
             with self._lock:
@@ -5568,6 +5567,9 @@ class _PreparedBoundedOwner:
         self._cached_output_packed: bytes | None = None
         self._cached_output_rows: tuple[tuple[int, int], ...] | None = None
         self._cached_output_sha: str | None = None
+        self._cached_validated_expected_rows: tuple[
+            tuple[int, int], ...
+        ] | None = None
 
     def _native_source_build_count(self) -> int:
         count = ctypes.c_uint64()
@@ -5674,6 +5676,7 @@ class _PreparedBoundedOwner:
             fast_receipt = _FastPathReceipt()
             audit = _open_audit(self._library) if diagnostics else None
             next_output_cache = None
+            next_validated_expected_rows = None
             try:
                 launch_count = source_count + self._indexed_count
                 # Full role counters remain an explicit diagnostic request.
@@ -5772,8 +5775,17 @@ class _PreparedBoundedOwner:
                     rows = self._cached_output_rows
                 else:
                     rows = tuple(struct.iter_unpack("<II", packed_rows))
-                if batch.expected_rows is not None and rows != tuple(sorted(batch.expected_rows)):
-                    _fail("RX043_ORACLE_MISMATCH", "bounded.output", rows)
+                expected_rows = batch._canonical_expected_rows
+                oracle_proof_reused = (
+                    expected_rows is not None
+                    and cached_rows_reused
+                    and expected_rows is getattr(
+                        self, "_cached_validated_expected_rows", None)
+                )
+                if expected_rows is not None:
+                    if not oracle_proof_reused and rows != expected_rows:
+                        _fail("RX043_ORACLE_MISMATCH", "bounded.output", rows)
+                    next_validated_expected_rows = expected_rows
                 if diagnostics:
                     output_sha = (
                         self._cached_output_sha
@@ -5810,6 +5822,8 @@ class _PreparedBoundedOwner:
                         self._cached_output_rows,
                         self._cached_output_sha,
                     ) = next_output_cache
+                self._cached_validated_expected_rows = (
+                    next_validated_expected_rows)
             # Asynchronous Python control-flow exits (KeyboardInterrupt,
             # SystemExit) must not strand a newly committed native generation
             # behind the preceding Python batch key.

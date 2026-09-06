@@ -241,21 +241,27 @@ class Goal5847AotProviderInitializationTest(unittest.TestCase):
         self.assertTrue(readiness.released)
         self.assertEqual(entry.active_lease_ids, set())
 
-    def test_sealed_image_load_overlaps_blocked_cuda_readiness(self):
+    def test_native_warm_precedes_python_cuda_readiness_retain(self):
         source, digest, entry, lease, readiness = self._resources()
         deployment, loaded, descriptor = self._deployment_and_loaded(digest)
         readiness_started = threading.Event()
         sealed_loaded = threading.Event()
         release_readiness = threading.Event()
+        order = []
 
         def delayed_readiness(**_kwargs):
+            order.append("readiness")
             readiness_started.set()
             self.assertTrue(release_readiness.wait(timeout=2.0))
             return readiness
 
         def observed_load(*_args, **_kwargs):
+            order.append("load")
             sealed_loaded.set()
             return lease
+
+        def observed_warm(_library):
+            order.append("warm")
 
         with patch.object(
                 runtime, "_acquire_cuda_primary_context_readiness",
@@ -263,7 +269,9 @@ class Goal5847AotProviderInitializationTest(unittest.TestCase):
                 patch.object(
                     runtime, "_load_verified_native_file_descriptor",
                     side_effect=observed_load), \
-                patch.object(runtime, "_warm_native_provider_runtime"), \
+                patch.object(
+                    runtime, "_warm_native_provider_runtime",
+                    side_effect=observed_warm), \
                 patch.object(
                     runtime, "_query_native_producer_descriptor",
                     return_value=descriptor):
@@ -271,6 +279,7 @@ class Goal5847AotProviderInitializationTest(unittest.TestCase):
                 source, collect_phase_timings=True)
             self.assertTrue(readiness_started.wait(timeout=2.0))
             self.assertTrue(sealed_loaded.wait(timeout=2.0))
+            self.assertEqual(order, ["load", "warm", "readiness"])
             release_readiness.set()
             provider = initializing.bind(loaded)
 
@@ -358,7 +367,8 @@ class Goal5847AotProviderInitializationTest(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError, "injected warm failure"):
                 initializing.bind(loaded)
         self.assertEqual(initializing.state, "CLOSED")
-        self.assertTrue(readiness.released)
+        # Native warm failed before the readiness lease was acquired.
+        self.assertFalse(readiness.released)
         self.assertEqual(entry.active_lease_ids, set())
 
     def test_unbound_close_is_idempotent_and_releases_resources(self):
@@ -373,7 +383,7 @@ class Goal5847AotProviderInitializationTest(unittest.TestCase):
         self.assertTrue(readiness.released)
         self.assertEqual(entry.active_lease_ids, set())
 
-    def test_parallel_readiness_failure_releases_loaded_native_image(self):
+    def test_post_warm_readiness_failure_releases_loaded_native_image(self):
         source, digest, entry, lease, _readiness = self._resources()
         deployment, loaded, descriptor = self._deployment_and_loaded(digest)
         with patch.object(
@@ -390,11 +400,11 @@ class Goal5847AotProviderInitializationTest(unittest.TestCase):
             with self.assertRaisesRegex(
                     RuntimeError, "injected readiness failure"):
                 initializing.bind(loaded)
-        self.assertEqual(warm.call_count, 0)
+        self.assertEqual(warm.call_count, 1)
         self.assertEqual(initializing.state, "CLOSED")
         self.assertEqual(entry.active_lease_ids, set())
 
-    def test_parallel_native_load_failure_releases_readiness(self):
+    def test_native_load_failure_prevents_readiness_acquisition(self):
         source, digest, entry, unused_lease, readiness = self._resources()
         runtime._release_native_library_image(unused_lease)
         deployment, loaded, descriptor = self._deployment_and_loaded(digest)
@@ -414,16 +424,16 @@ class Goal5847AotProviderInitializationTest(unittest.TestCase):
                 initializing.bind(loaded)
         self.assertEqual(warm.call_count, 0)
         self.assertEqual(initializing.state, "CLOSED")
-        self.assertTrue(readiness.released)
+        self.assertFalse(readiness.released)
         self.assertEqual(entry.active_lease_ids, set())
 
-    def test_parallel_dual_failure_preserves_primary_and_secondary_errors(self):
+    def test_native_load_failure_precedes_unreached_readiness_failure(self):
         source, digest, entry, unused_lease, _readiness = self._resources()
         runtime._release_native_library_image(unused_lease)
         deployment, loaded, descriptor = self._deployment_and_loaded(digest)
         with patch.object(
                 runtime, "_acquire_cuda_primary_context_readiness",
-                side_effect=RuntimeError("injected readiness failure")), \
+                side_effect=RuntimeError("injected readiness failure")) as acquire, \
                 patch.object(
                     runtime, "_load_verified_native_file_descriptor",
                     side_effect=RuntimeError("injected native load failure")), \
@@ -433,14 +443,12 @@ class Goal5847AotProviderInitializationTest(unittest.TestCase):
                     return_value=descriptor):
             initializing = deployment.begin_provider_initialization(source)
             with self.assertRaisesRegex(
-                    RuntimeError, "injected readiness failure") as rejected:
+                    RuntimeError, "injected native load failure") as rejected:
                 initializing.bind(loaded)
         self.assertEqual(warm.call_count, 0)
+        self.assertEqual(acquire.call_count, 0)
         self.assertEqual(initializing.state, "CLOSED")
-        self.assertIn(
-            "injected native load failure",
-            "\n".join(getattr(rejected.exception, "__notes__", ())),
-        )
+        self.assertEqual(getattr(rejected.exception, "__notes__", ()), ())
         self.assertEqual(entry.active_lease_ids, set())
 
     def test_forked_or_directly_constructed_capability_is_rejected(self):

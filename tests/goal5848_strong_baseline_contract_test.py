@@ -34,7 +34,9 @@ class Goal5848StrongBaselineContractTest(unittest.TestCase):
                 traversable_mix, last_traversable
             )
         body = {
-            "schema": contracts._COMPACT_TRAVERSAL_SCHEMA,
+            "schema": contracts._FULL_TRAVERSAL_SCHEMA,
+            "provider_library": "librtdl_optix",
+            "provider_library_path": "/sealed/librtdl_optix.so",
             "provider_library_sha256": "d" * 64,
             "route_identity": contracts._RTDL_ROUTE_IDENTITIES[task],
             "semantic_digest": "e" * 64,
@@ -42,30 +44,39 @@ class Goal5848StrongBaselineContractTest(unittest.TestCase):
                 "public_output_sha256"
             ],
             "physical_executor_classification": "optix_traversal_observed",
-            "expected_program_bundle": bundle,
-            "expected_program_bundle_id": bundle_id,
+            "expected_program_bundles": [bundle],
+            "expected_program_bundle_ids": [bundle_id],
             "expected_program_observed_at_receipt_edge": True,
-            "native_stamp": [
-                7,
-                11,
-                11,
-                launches,
-                launches,
-                0,
-                launches,
-                0,
-                launches,
-                8192 if relation else 16384,
-                bundle_id,
-                bundle_id,
-                first_traversable,
-                last_traversable,
-                0,
-                0,
-                0,
-                contracts._repeated_native_audit_mix(bundle_id, launches),
-                traversable_mix,
-            ],
+            "nonce": {"hi": 7, "lo": 11},
+            "native_snapshot": {
+                "nonce_hi": 7,
+                "nonce_lo": 11,
+                "attempted_launch_count": launches,
+                "successful_launch_count": launches,
+                "failed_launch_count": 0,
+                "complete_context_launch_count": launches,
+                "incomplete_context_launch_count": 0,
+                "context_bind_count": launches,
+                "raygen_invocation_count": 8192 if relation else 16384,
+                "program_bundle_mix": contracts._repeated_native_audit_mix(
+                    bundle_id, launches
+                ),
+                "traversable_mix": traversable_mix,
+                "pipeline_mix": 101,
+                "sbt_mix": 103,
+                "stream_mix": 107,
+                "params_mix": 109,
+                "callsite_mix": 113,
+                "first_program_bundle_id": bundle_id,
+                "last_program_bundle_id": bundle_id,
+                "first_traversable": first_traversable,
+                "last_traversable": last_traversable,
+                "pending_context_at_finish": 0,
+                "session_error": 0,
+                "incomplete_callsite_record_count": 0,
+                "incomplete_callsite_lines": [0] * 32,
+            },
+            "claim_rules": dict(contracts._FULL_TRAVERSAL_RULES),
         }
         body["receipt_sha256"] = contracts.digest(body)
         return body
@@ -95,9 +106,7 @@ class Goal5848StrongBaselineContractTest(unittest.TestCase):
                 },
                 "phase_instrumentation": True,
                 "diagnostic_traversal_receipt": cls._rtdl_traversal(task),
-                "latest_output_sha256": contracts.TASK_CONTRACTS[task][
-                    "public_output_sha256"
-                ],
+                "latest_output_sha256": None,
             })
         elif row["arm"] == contracts.IDIOMATIC_PYOPTIX_ARM:
             evidence.update({
@@ -526,7 +535,7 @@ class Goal5848StrongBaselineContractTest(unittest.TestCase):
 
     def test_coherently_resealed_wrong_physical_routes_are_rejected(self):
         cases = (
-            (contracts.RTDL_ARM, "native stamp"),
+            (contracts.RTDL_ARM, "full traversal native snapshot"),
             (contracts.IDIOMATIC_PYOPTIX_ARM, "idiomatic PyOptix"),
             (contracts.STRONG_PYOPTIX_ARM, "strong PyOptix operation"),
             (contracts.DIRECT_OPTIX_ARM, "Direct worker execution"),
@@ -542,7 +551,7 @@ class Goal5848StrongBaselineContractTest(unittest.TestCase):
                 evidence = receipt["measurements"]["evidence"]
                 if arm == contracts.RTDL_ARM:
                     traversal = evidence["diagnostic_traversal_receipt"]
-                    traversal["native_stamp"][4] = 0
+                    traversal["native_snapshot"]["successful_launch_count"] = 0
                     traversal["receipt_sha256"] = contracts.digest({
                         key: value
                         for key, value in traversal.items()
@@ -569,6 +578,68 @@ class Goal5848StrongBaselineContractTest(unittest.TestCase):
                         expected_row=row,
                         expected_source_commit="a" * 40,
                         expected_predecessor_commit="b" * 40,
+                    )
+
+    def test_rtdl_timed_fast_path_must_not_claim_an_uncomputed_digest(self):
+        row = next(
+            row for row in contracts.build_schedule()
+            if row["arm"] == contracts.RTDL_ARM
+        )
+        receipt = self._receipt(row)
+        receipt["measurements"]["evidence"]["latest_output_sha256"] = (
+            contracts.TASK_CONTRACTS[row["task"]]["public_output_sha256"]
+        )
+        receipt["result_sha256"] = contracts.digest({
+            key: value
+            for key, value in receipt.items()
+            if key != "result_sha256"
+        })
+        with self.assertRaisesRegex(
+            contracts.Goal5848ContractError, "RTDL execution evidence"
+        ):
+            contracts.validate_worker_receipt(
+                receipt,
+                expected_row=row,
+                expected_source_commit="a" * 40,
+                expected_predecessor_commit="b" * 40,
+            )
+
+    def test_full_traversal_receipt_hostile_mutations_fail_closed(self):
+        task = contracts.RELATION_TASK
+        cases = []
+
+        wrong_width = self._rtdl_traversal(task)
+        wrong_width["native_snapshot"]["attempted_launch_count"] = True
+        cases.append(wrong_width)
+
+        incomplete_callsite = self._rtdl_traversal(task)
+        incomplete_callsite["native_snapshot"][
+            "incomplete_callsite_lines"
+        ][0] = 17
+        cases.append(incomplete_callsite)
+
+        wrong_nonce = self._rtdl_traversal(task)
+        wrong_nonce["native_snapshot"]["nonce_lo"] += 1
+        cases.append(wrong_nonce)
+
+        weakened_rule = self._rtdl_traversal(task)
+        weakened_rule["claim_rules"][
+            "successful_optix_launch_required"
+        ] = False
+        cases.append(weakened_rule)
+
+        for receipt in cases:
+            with self.subTest(receipt=receipt):
+                receipt["receipt_sha256"] = contracts.digest({
+                    key: value
+                    for key, value in receipt.items()
+                    if key != "receipt_sha256"
+                })
+                with self.assertRaises(contracts.Goal5848ContractError):
+                    contracts._validate_rtdl_traversal_receipt(
+                        receipt,
+                        task=task,
+                        provider_library_sha256="d" * 64,
                     )
 
     def test_coherently_resealed_wrong_public_output_is_rejected(self):

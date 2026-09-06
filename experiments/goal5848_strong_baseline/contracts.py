@@ -151,7 +151,43 @@ _DIRECT_TASKS = {
 _COMPACT_TRAVERSAL_SCHEMA = (
     "rtdl.physical_execution.compact_traversal_receipt.v1"
 )
+_FULL_TRAVERSAL_SCHEMA = "rtdl.physical_execution.traversal_receipt.v1"
 _COMPACT_STAMP_LENGTH = 19
+_FULL_TRAVERSAL_RULES = {
+    "provider_name_alone_proves_traversal": False,
+    "selected_template_alone_proves_traversal": False,
+    "successful_optix_launch_required": True,
+    "nonzero_traversable_binding_required": True,
+    "program_bundle_binding_required": True,
+    "output_digest_bound": True,
+}
+_FULL_SNAPSHOT_U64_FIELDS = {
+    "nonce_hi",
+    "nonce_lo",
+    "attempted_launch_count",
+    "successful_launch_count",
+    "failed_launch_count",
+    "complete_context_launch_count",
+    "incomplete_context_launch_count",
+    "context_bind_count",
+    "raygen_invocation_count",
+    "program_bundle_mix",
+    "traversable_mix",
+    "pipeline_mix",
+    "sbt_mix",
+    "stream_mix",
+    "params_mix",
+    "callsite_mix",
+    "first_program_bundle_id",
+    "last_program_bundle_id",
+    "first_traversable",
+    "last_traversable",
+}
+_FULL_SNAPSHOT_U32_FIELDS = {
+    "pending_context_at_finish",
+    "session_error",
+    "incomplete_callsite_record_count",
+}
 
 
 def rtdl_program_bundles(task: str) -> tuple[str, ...]:
@@ -351,12 +387,144 @@ def _repeated_native_audit_mix(value: int, count: int) -> int:
     return state
 
 
+def _is_uint(value: object, bits: int) -> bool:
+    return (
+        type(value) is int
+        and 0 <= value < 1 << bits
+    )
+
+
+def _validate_full_rtdl_traversal_receipt(
+    receipt: Mapping[str, object],
+    *,
+    task: str,
+    provider_library_sha256: object,
+) -> None:
+    """Independently validate the full receipt emitted by diagnostic runs."""
+
+    expected_fields = {
+        "schema",
+        "provider_library",
+        "provider_library_path",
+        "provider_library_sha256",
+        "route_identity",
+        "semantic_digest",
+        "output_digest",
+        "nonce",
+        "physical_executor_classification",
+        "expected_program_bundles",
+        "expected_program_bundle_ids",
+        "expected_program_observed_at_receipt_edge",
+        "native_snapshot",
+        "claim_rules",
+        "receipt_sha256",
+    }
+    if set(receipt) != expected_fields:
+        raise Goal5848ContractError("RTDL full traversal receipt fields differ")
+    body = dict(receipt)
+    seal = body.pop("receipt_sha256", None)
+    bundle = _RTDL_PROGRAM_BUNDLES[task]
+    bundle_id = _physical_program_bundle_id(bundle)
+    launches = int(TASK_CONTRACTS[task]["required_optix_launch_count"])
+    raygen_count = 2 * RELATION_COUNT if task == RELATION_TASK else TRIANGLE_COUNT
+    nonce = receipt.get("nonce")
+    snapshot = receipt.get("native_snapshot")
+    if (
+        receipt.get("schema") != _FULL_TRAVERSAL_SCHEMA
+        or receipt.get("provider_library") != "librtdl_optix"
+        or type(receipt.get("provider_library_path")) is not str
+        or not receipt.get("provider_library_path")
+        or not _is_sha256(provider_library_sha256)
+        or receipt.get("provider_library_sha256") != provider_library_sha256
+        or receipt.get("route_identity") != _RTDL_ROUTE_IDENTITIES[task]
+        or not _is_sha256(receipt.get("semantic_digest"))
+        or receipt.get("output_digest")
+        != TASK_CONTRACTS[task]["public_output_sha256"]
+        or receipt.get("physical_executor_classification")
+        != "optix_traversal_observed"
+        or receipt.get("expected_program_bundles") != [bundle]
+        or receipt.get("expected_program_bundle_ids") != [bundle_id]
+        or receipt.get("expected_program_observed_at_receipt_edge") is not True
+        or receipt.get("claim_rules") != _FULL_TRAVERSAL_RULES
+        or seal != digest(body)
+        or not isinstance(nonce, Mapping)
+        or set(nonce) != {"hi", "lo"}
+        or not all(_is_uint(nonce.get(name), 64) for name in ("hi", "lo"))
+        or (nonce.get("hi"), nonce.get("lo")) == (0, 0)
+        or not isinstance(snapshot, Mapping)
+        or set(snapshot) != (
+            _FULL_SNAPSHOT_U64_FIELDS
+            | _FULL_SNAPSHOT_U32_FIELDS
+            | {"incomplete_callsite_lines"}
+        )
+    ):
+        raise Goal5848ContractError("RTDL full traversal receipt envelope differs")
+    if (
+        not all(_is_uint(snapshot.get(name), 64)
+                for name in _FULL_SNAPSHOT_U64_FIELDS)
+        or not all(_is_uint(snapshot.get(name), 32)
+                   for name in _FULL_SNAPSHOT_U32_FIELDS)
+    ):
+        raise Goal5848ContractError("RTDL full traversal snapshot widths differ")
+    lines = snapshot.get("incomplete_callsite_lines")
+    if (
+        not isinstance(lines, list)
+        or len(lines) != 32
+        or not all(_is_uint(value, 32) for value in lines)
+    ):
+        raise Goal5848ContractError("RTDL full traversal callsite lines differ")
+    expected_traversable_mix = _native_audit_mix_u64(
+        0, snapshot["first_traversable"]
+    )
+    if launches == 2:
+        expected_traversable_mix = _native_audit_mix_u64(
+            expected_traversable_mix, snapshot["last_traversable"]
+        )
+    if (
+        snapshot["nonce_hi"] != nonce["hi"]
+        or snapshot["nonce_lo"] != nonce["lo"]
+        or snapshot["attempted_launch_count"] != launches
+        or snapshot["successful_launch_count"] != launches
+        or snapshot["failed_launch_count"] != 0
+        or snapshot["complete_context_launch_count"] != launches
+        or snapshot["incomplete_context_launch_count"] != 0
+        or snapshot["context_bind_count"] != launches
+        or snapshot["raygen_invocation_count"] != raygen_count
+        or snapshot["pending_context_at_finish"] != 0
+        or snapshot["session_error"] != 0
+        or snapshot["incomplete_callsite_record_count"] != 0
+        or any(lines)
+        or snapshot["first_program_bundle_id"] != bundle_id
+        or snapshot["last_program_bundle_id"] != bundle_id
+        or snapshot["first_traversable"] == 0
+        or snapshot["last_traversable"] == 0
+        or (
+            launches == 1
+            and snapshot["first_traversable"] != snapshot["last_traversable"]
+        )
+        or snapshot["program_bundle_mix"]
+        != _repeated_native_audit_mix(bundle_id, launches)
+        or snapshot["traversable_mix"] != expected_traversable_mix
+    ):
+        raise Goal5848ContractError("RTDL full traversal native snapshot differs")
+
+
 def _validate_rtdl_traversal_receipt(
     receipt: object,
     *,
     task: str,
     provider_library_sha256: object,
 ) -> None:
+    if (
+        isinstance(receipt, Mapping)
+        and receipt.get("schema") == _FULL_TRAVERSAL_SCHEMA
+    ):
+        _validate_full_rtdl_traversal_receipt(
+            receipt,
+            task=task,
+            provider_library_sha256=provider_library_sha256,
+        )
+        return
     expected_fields = {
         "schema",
         "provider_library_sha256",
@@ -467,8 +635,8 @@ def _validate_rtdl_evidence(
         or evidence.get("runtime_compiler_attempt_count_after") != 0
         or evidence.get("runtime_compiler_modules") != []
         or evidence.get("nvrtc_mappings") != []
-        or evidence.get("latest_output_sha256")
-        != TASK_CONTRACTS[task]["public_output_sha256"]
+        or "latest_output_sha256" not in evidence
+        or evidence.get("latest_output_sha256") is not None
         or evidence.get("phase_instrumentation") is not True
         or not isinstance(phases, Mapping)
         or not phases

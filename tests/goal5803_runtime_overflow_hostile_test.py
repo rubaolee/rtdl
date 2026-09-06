@@ -193,6 +193,7 @@ def _owner(native: _FakeRelationNative):
     owner._cached_output_packed = None
     owner._cached_output_rows = None
     owner._cached_output_sha = None
+    owner._cached_validated_expected_rows = None
     owner._online_monitor = True
     owner._lean_monitor = False
     owner._artifact_identity = "a" * 64
@@ -601,6 +602,55 @@ class Goal5803RuntimeOverflowHostileTest(unittest.TestCase):
         self.assertIs(second.output, first.output)
         self.assertIs(owner._cached_output_rows, first.output)
         self.assertEqual(native.call_count, 2)
+
+    def test_identical_output_and_oracle_reuse_prior_validation_proof(self):
+        class ComparisonForbidden(tuple):
+            def __eq__(self, _other):
+                raise AssertionError("validated rows were compared again")
+
+            def __ne__(self, _other):
+                raise AssertionError("validated rows were compared again")
+
+        native = _FakeRelationNative(
+            capacity=1,
+            compact_status=0,
+            raw_count=1,
+            unique_count=1,
+            overflowed=0,
+            rows=((10, 100),),
+        )
+        owner = _owner(native)
+        prepared = _direct_prepared(owner)
+        batch = _batch(expected_rows=((10, 100),))
+        first = prepared.execute(batch, include_diagnostics=False)
+        owner._cached_output_rows = ComparisonForbidden(first.output)
+
+        second = prepared.execute(batch, include_diagnostics=False)
+
+        self.assertIs(second.output, owner._cached_output_rows)
+        self.assertEqual(native.call_count, 2)
+
+    def test_changed_oracle_is_checked_against_identical_cached_output(self):
+        native = _FakeRelationNative(
+            capacity=1,
+            compact_status=0,
+            raw_count=1,
+            unique_count=1,
+            overflowed=0,
+            rows=((10, 100),),
+        )
+        owner = _owner(native)
+        prepared = _direct_prepared(owner)
+        prepared.execute(
+            _batch(expected_rows=((10, 100),)), include_diagnostics=False
+        )
+
+        with self.assertRaises(runtime.RTDLExecutableError) as caught:
+            prepared.execute(
+                _batch(expected_rows=((10, 101),)),
+                include_diagnostics=False,
+            )
+        self.assertEqual(caught.exception.code, "RX043_ORACLE_MISMATCH")
 
     def test_oracle_failure_cannot_publish_output_cache(self):
         native = _FakeRelationNative(
