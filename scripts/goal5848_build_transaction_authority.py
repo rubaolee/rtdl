@@ -22,6 +22,8 @@ from experiments.goal5848_strong_baseline.contracts import (
     BLOCKS,
     DIRECT_OPTIX_ARM,
     IDIOMATIC_PYOPTIX_ARM,
+    IMPLEMENTATION_ENTRY_BLOCK_RATIO_LIMIT_PPM,
+    IMPLEMENTATION_ENTRY_RATIO_LIMIT_PPM,
     INSTRUMENTATION_AUTHORITY_SCHEMA,
     INSTRUMENTATION_AUTHORITY_STATUS,
     INSTRUMENTATION_OVERHEAD_LIMIT_PPM,
@@ -44,6 +46,7 @@ from experiments.goal5848_strong_baseline.contracts import (
     SUCCESSOR_PREDECESSOR_RATIO_LIMIT_PPM,
     TASK_CONTRACTS,
     TASKS,
+    WORKER_SCHEMA,
     aot_cache_protocol,
     build_schedule,
     digest,
@@ -259,8 +262,18 @@ def _validate_preregistration(
         or value.get("steady_warmups") != STEADY_WARMUPS
         or value.get("steady_repetitions") != STEADY_REPETITIONS
         or value.get("thresholds_ppm") != {
-            "post_import_median": POST_IMPORT_RATIO_LIMIT_PPM,
-            "post_import_worst_block": POST_IMPORT_BLOCK_RATIO_LIMIT_PPM,
+            "implementation_entry_median": (
+                IMPLEMENTATION_ENTRY_RATIO_LIMIT_PPM
+            ),
+            "implementation_entry_worst_block": (
+                IMPLEMENTATION_ENTRY_BLOCK_RATIO_LIMIT_PPM
+            ),
+            "post_import_diagnostic_reference_median": (
+                POST_IMPORT_RATIO_LIMIT_PPM
+            ),
+            "post_import_diagnostic_reference_worst_block": (
+                POST_IMPORT_BLOCK_RATIO_LIMIT_PPM
+            ),
             "public_direct_median": PUBLIC_DIRECT_RATIO_LIMIT_PPM,
             "successor_predecessor_median": (
                 SUCCESSOR_PREDECESSOR_RATIO_LIMIT_PPM
@@ -274,8 +287,10 @@ def _validate_preregistration(
         }
         or value.get("instrumentation_protocol") != instrumentation_protocol()
         or value.get("aot_cache_protocol") != aot_cache_protocol()
-        or value.get("endpoint")
-        != "implementation_import_end_to_first_exact_public_result"
+        or value.get("endpoint") != (
+            "implementation_entry_to_first_exact_public_result__"
+            "post_import_retained_as_state_mismatch_diagnostic"
+        )
         or value.get("estimator")
         != "median_of_eight_within_block_integer_ratios"
         or value.get("failure_policy") != expected_failure_policy
@@ -511,8 +526,25 @@ def _validate_instrumentation_evidence(
             else None
         )
         source = worker.get("source")
-        endpoint = (
+        implementation_import = (
+            measurements.get("implementation_import_ns")
+            if isinstance(measurements, Mapping)
+            else None
+        )
+        implementation_gap = (
+            measurements.get("implementation_import_to_endpoint_gap_ns")
+            if isinstance(measurements, Mapping)
+            else None
+        )
+        post_import_endpoint = (
             measurements.get("post_import_to_first_correct_result_ns")
+            if isinstance(measurements, Mapping)
+            else None
+        )
+        endpoint = (
+            measurements.get(
+                "implementation_entry_to_first_correct_result_ns"
+            )
             if isinstance(measurements, Mapping)
             else None
         )
@@ -534,8 +566,7 @@ def _validate_instrumentation_evidence(
                 "source", "hardware", "measurements", "claim_boundary",
                 "result_sha256",
             }
-            or worker.get("schema")
-            != "rtdl.goal5848.strong_baseline.worker.v1"
+            or worker.get("schema") != WORKER_SCHEMA
             or worker.get("status") != "PASS__GOAL5848_WORKER"
             or worker.get("arm") != RTDL_ARM
             or worker.get("task") != task
@@ -552,6 +583,17 @@ def _validate_instrumentation_evidence(
             or worker.get("hardware") != value.get("hardware")
             or type(endpoint) is not int
             or endpoint <= 0
+            or type(implementation_import) is not int
+            or implementation_import <= 0
+            or type(implementation_gap) is not int
+            or implementation_gap < 0
+            or type(post_import_endpoint) is not int
+            or post_import_endpoint <= 0
+            or endpoint != (
+                implementation_import
+                + implementation_gap
+                + post_import_endpoint
+            )
             or not isinstance(evidence, Mapping)
             or evidence.get("phase_instrumentation") != (mode == "on")
             or evidence.get("output_sha256")
@@ -568,7 +610,8 @@ def _validate_instrumentation_evidence(
                 for name, duration in partition.items()
                 if name != "unattributed_control_plane"
             )
-            or partition.get("unattributed_control_plane") != endpoint
+            or partition.get("unattributed_control_plane")
+            != post_import_endpoint
             or any(duration is not None for duration in components.values())
             or evidence.get("provider_initialization_phases_ns") != {}
         ):
@@ -740,7 +783,7 @@ def _validate_process(
             "exit_code", "wall_ns", "stdout_utf8", "stdout_sha256",
             "stderr_utf8", "stderr_sha256", "process_sha256",
         }
-        or value.get("schema") != "rtdl.goal5848.formal_process.v1"
+        or value.get("schema") != "rtdl.goal5848.formal_process.v2"
         or value.get("worker_id") != worker_id
         or value.get("exit_code") != 0
         or type(value.get("wall_ns")) is not int
@@ -1150,9 +1193,12 @@ def build_authority(
     transaction = _read(transaction_path, "transaction")
     _validate_seal(transaction, "transaction_sha256", "transaction")
     if (
-        transaction.get("schema") != "rtdl.goal5848.formal_transaction.v1"
+        transaction.get("schema") != "rtdl.goal5848.formal_transaction.v2"
         or transaction.get("status")
-        != "PASS__GOAL5848_SINGLE_GENERATION_FORMAL_TRANSACTION"
+        != (
+            "PASS__GOAL5848_LIFECYCLE_CORRECTED_SINGLE_GENERATION_"
+            "FORMAL_TRANSACTION"
+        )
         or transaction.get("expected_source_commit") != expected_source_commit
         or transaction.get("expected_predecessor_commit")
         != expected_predecessor_commit
@@ -1266,7 +1312,7 @@ def build_authority(
     ):
         raise RuntimeError("Goal5848 authority Git identity differs")
     result = {
-        "schema": "rtdl.goal5848.single_generation_authority.v1",
+        "schema": "rtdl.goal5848.single_generation_authority.v2",
         "status": "PASS__INDEPENDENT_BYTE_AND_GATE_RECOUNT",
         "source_commit": expected_source_commit,
         "predecessor_commit": expected_predecessor_commit,

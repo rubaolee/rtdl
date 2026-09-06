@@ -96,8 +96,16 @@ class Goal5848TransactionAuthorityTest(unittest.TestCase):
             "schedule": list(contracts.build_schedule()),
             "schedule_sha256": contracts.digest(list(contracts.build_schedule())),
             "thresholds_ppm": {
-                "post_import_median": contracts.POST_IMPORT_RATIO_LIMIT_PPM,
-                "post_import_worst_block": (
+                "implementation_entry_median": (
+                    contracts.IMPLEMENTATION_ENTRY_RATIO_LIMIT_PPM
+                ),
+                "implementation_entry_worst_block": (
+                    contracts.IMPLEMENTATION_ENTRY_BLOCK_RATIO_LIMIT_PPM
+                ),
+                "post_import_diagnostic_reference_median": (
+                    contracts.POST_IMPORT_RATIO_LIMIT_PPM
+                ),
+                "post_import_diagnostic_reference_worst_block": (
                     contracts.POST_IMPORT_BLOCK_RATIO_LIMIT_PPM
                 ),
                 "public_direct_median": (
@@ -123,7 +131,10 @@ class Goal5848TransactionAuthorityTest(unittest.TestCase):
             },
             "instrumentation_protocol": contracts.instrumentation_protocol(),
             "aot_cache_protocol": contracts.aot_cache_protocol(),
-            "endpoint": "implementation_import_end_to_first_exact_public_result",
+            "endpoint": (
+                "implementation_entry_to_first_exact_public_result__"
+                "post_import_retained_as_state_mismatch_diagnostic"
+            ),
             "estimator": "median_of_eight_within_block_integer_ratios",
             "failure_policy": {
                 "formal_worker_retry": False,
@@ -258,7 +269,7 @@ class Goal5848TransactionAuthorityTest(unittest.TestCase):
             _write(worker_path, receipt)
             stdout = json.dumps(receipt, sort_keys=True) + "\n"
             process = {
-                "schema": "rtdl.goal5848.formal_process.v1",
+                "schema": "rtdl.goal5848.formal_process.v2",
                 "worker_id": worker_id,
                 "command": authority._expected_process_command(
                     row,
@@ -286,8 +297,11 @@ class Goal5848TransactionAuthorityTest(unittest.TestCase):
             expected_predecessor_commit=predecessor_commit,
         )
         transaction = {
-            "schema": "rtdl.goal5848.formal_transaction.v1",
-            "status": "PASS__GOAL5848_SINGLE_GENERATION_FORMAL_TRANSACTION",
+            "schema": "rtdl.goal5848.formal_transaction.v2",
+            "status": (
+                "PASS__GOAL5848_LIFECYCLE_CORRECTED_SINGLE_GENERATION_"
+                "FORMAL_TRANSACTION"
+            ),
             "expected_source_commit": source_commit,
             "expected_predecessor_commit": predecessor_commit,
             "preregistration_file_sha256": hashlib.sha256(
@@ -559,7 +573,7 @@ class Goal5848TransactionAuthorityTest(unittest.TestCase):
             fixture = self._fixture(Path(temporary))
             prereg_path = fixture[1]
             prereg = json.loads(prereg_path.read_text())
-            prereg["thresholds_ppm"]["post_import_median"] += 1
+            prereg["thresholds_ppm"]["implementation_entry_median"] += 1
             prereg = _sealed({
                 key: value
                 for key, value in prereg.items()

@@ -213,6 +213,20 @@ def _finish_partition(
     return endpoint_ns, reconciliation
 
 
+def _finish_implementation_endpoint(
+    *, implementation_start_ns: int, import_ns: int,
+    endpoint_start_ns: int, endpoint_end_ns: int,
+) -> tuple[int, int]:
+    """Close the full implementation lifecycle without hiding the boundary gap."""
+
+    total_ns = endpoint_end_ns - implementation_start_ns
+    post_import_ns = endpoint_end_ns - endpoint_start_ns
+    gap_ns = total_ns - import_ns - post_import_ns
+    if total_ns <= 0 or gap_ns < 0:
+        raise RuntimeError("Goal5848 implementation endpoint is inconsistent")
+    return total_ns, gap_ns
+
+
 def _candidate(manifest_path: Path, task: str) -> tuple[dict[str, object], Path]:
     manifest = strict_json_loads(
         manifest_path.resolve(strict=True).read_text(encoding="utf-8"),
@@ -450,6 +464,14 @@ def _run_rtdl(
             endpoint_start_ns=endpoint_start,
             endpoint_end_ns=endpoint_end,
         )
+        implementation_endpoint_ns, implementation_gap_ns = (
+            _finish_implementation_endpoint(
+                implementation_start_ns=imported_started,
+                import_ns=import_ns,
+                endpoint_start_ns=endpoint_start,
+                endpoint_end_ns=endpoint_end,
+            )
+        )
         compiler_before = provider.runtime_compiler_attempt_count
         steady, latest = _sample(
             lambda: prepared.execute(batch),
@@ -517,6 +539,10 @@ def _run_rtdl(
         validate_component_diagnostics(components)
         return {
             "implementation_import_ns": import_ns,
+            "implementation_entry_to_first_correct_result_ns": (
+                implementation_endpoint_ns
+            ),
+            "implementation_import_to_endpoint_gap_ns": implementation_gap_ns,
             "post_import_to_first_correct_result_ns": endpoint_ns,
             "endpoint_partition_ns": partition,
             "partition_reconciliation": reconciliation,
@@ -733,6 +759,14 @@ def _run_idiomatic_pyoptix(args: argparse.Namespace) -> dict[str, object]:
         endpoint_start_ns=endpoint_start,
         endpoint_end_ns=endpoint_end,
     )
+    implementation_endpoint_ns, implementation_gap_ns = (
+        _finish_implementation_endpoint(
+            implementation_start_ns=imported_started,
+            import_ns=import_ns,
+            endpoint_start_ns=endpoint_start,
+            endpoint_end_ns=endpoint_end,
+        )
+    )
     steady, latest = _sample(
         execute,
         lambda result: _validate_pyoptix_result(args.task, result, expected),
@@ -748,6 +782,10 @@ def _run_idiomatic_pyoptix(args: argparse.Namespace) -> dict[str, object]:
     _ = (pipeline, groups, logs, sbt, keepalive, context, logger)
     return {
         "implementation_import_ns": import_ns,
+        "implementation_entry_to_first_correct_result_ns": (
+            implementation_endpoint_ns
+        ),
+        "implementation_import_to_endpoint_gap_ns": implementation_gap_ns,
         "post_import_to_first_correct_result_ns": endpoint_ns,
         "endpoint_partition_ns": partition,
         "partition_reconciliation": reconciliation,
@@ -829,6 +867,14 @@ def _run_strong_pyoptix(args: argparse.Namespace) -> dict[str, object]:
             endpoint_start_ns=endpoint_start,
             endpoint_end_ns=endpoint_end,
         )
+        implementation_endpoint_ns, implementation_gap_ns = (
+            _finish_implementation_endpoint(
+                implementation_start_ns=imported_started,
+                import_ns=import_ns,
+                endpoint_start_ns=endpoint_start,
+                endpoint_end_ns=endpoint_end,
+            )
+        )
         steady, latest = _sample(
             execute,
             lambda result: _validate_pyoptix_result(args.task, result, expected),
@@ -859,6 +905,10 @@ def _run_strong_pyoptix(args: argparse.Namespace) -> dict[str, object]:
     validate_component_diagnostics(components)
     return {
         "implementation_import_ns": import_ns,
+        "implementation_entry_to_first_correct_result_ns": (
+            implementation_endpoint_ns
+        ),
+        "implementation_import_to_endpoint_gap_ns": implementation_gap_ns,
         "post_import_to_first_correct_result_ns": endpoint_ns,
         "endpoint_partition_ns": partition,
         "partition_reconciliation": reconciliation,

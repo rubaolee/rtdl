@@ -19,6 +19,23 @@ clean pushed commit. Goal5852 is the irreversible code/evidence freeze.
 
 ## Critical active work: Goal5848 strong-baseline and post-import closure (2026-09-05)
 
+Goal5850's first complete transaction at `95f7d4fc...` retained every row and
+failed the original post-import gate. Subsequent fresh-process diagnosis proved
+that pinned PyOptix's required `import optix` creates the CUDA context before
+that arm's timer, while lazy RTDL creates the context inside its timer. Do not
+claim those endpoints represent equivalent lifecycle state, and do not move
+RTDL initialization into import to manufacture a pass.
+
+The pre-freeze successor is defined by
+`history/internal_docs/goal5850_lifecycle_endpoint_repair_20260906.md`. Its
+primary first-result endpoint starts before implementation-specific imports,
+retains the same `1.20x` median and `1.35x` worst-block limits, and records an
+exact import/gap/post-import decomposition. The original post-import ratio
+remains a mandatory non-gating diagnostic. Prepared RTDL/Direct, regression,
+competence, safety, custody, instrumentation and two-generation gates are not
+weakened. A new clean commit, fresh preregistration and wholly fresh transaction
+are required; no old or exploratory sample may be pooled.
+
 Goal5848 is defined in
 `history/internal_docs/goal5848_strong_baseline_post_import_20260905/GOAL5848.md`.
 Its primary target is the real remaining Goal5847 debt: after implementation

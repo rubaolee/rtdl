@@ -24,15 +24,15 @@ from .workloads import (
     TRIANGLE_TASK,
 )
 
-WORKER_SCHEMA = "rtdl.goal5848.strong_baseline.worker.v1"
-CONTROLLER_SCHEMA = "rtdl.goal5848.strong_baseline.controller.v1"
-PREREGISTRATION_SCHEMA = "rtdl.goal5848.preregistration.v1"
-PREFLIGHT_SCHEMA = "rtdl.goal5848.timer_free_preflight.v1"
+WORKER_SCHEMA = "rtdl.goal5848.strong_baseline.worker.v2"
+CONTROLLER_SCHEMA = "rtdl.goal5848.strong_baseline.controller.v2"
+PREREGISTRATION_SCHEMA = "rtdl.goal5848.preregistration.v2"
+PREFLIGHT_SCHEMA = "rtdl.goal5848.timer_free_preflight.v2"
 PREFLIGHT_PASS_STATUS = (
     "PASS__ALL_FOUR_PRIMARY_ARMS_EXACT_AND_BASELINES_COMPETENT"
 )
 INSTRUMENTATION_AUTHORITY_SCHEMA = (
-    "rtdl.goal5848.instrumentation_overhead_authority.v3"
+    "rtdl.goal5848.instrumentation_overhead_authority.v4"
 )
 INSTRUMENTATION_AUTHORITY_STATUS = (
     "PASS__PAIRED_FRESH_PROCESS_INSTRUMENTATION_OVERHEAD_WITHIN_FIVE_PERCENT"
@@ -73,6 +73,8 @@ STEADY_WARMUPS = 16
 STEADY_REPETITIONS = 128
 POST_IMPORT_RATIO_LIMIT_PPM = 1_200_000
 POST_IMPORT_BLOCK_RATIO_LIMIT_PPM = 1_350_000
+IMPLEMENTATION_ENTRY_RATIO_LIMIT_PPM = 1_200_000
+IMPLEMENTATION_ENTRY_BLOCK_RATIO_LIMIT_PPM = 1_350_000
 PUBLIC_DIRECT_RATIO_LIMIT_PPM = 1_200_000
 SUCCESSOR_PREDECESSOR_RATIO_LIMIT_PPM = 1_050_000
 STRONG_COMPETENCE_RATIO_LIMIT_PPM = 1_050_000
@@ -264,7 +266,7 @@ def instrumentation_protocol() -> dict[str, object]:
         "worker_count": len(schedule),
         "schedule": schedule,
         "schedule_sha256": digest(schedule),
-        "endpoint": "rtdl_post_import_to_first_exact_public_result",
+        "endpoint": "rtdl_implementation_entry_to_first_exact_public_result",
         "estimator": (
             "max_zero_median_of_within_block_mode_median_ratios_minus_one"
         ),
@@ -1067,17 +1069,38 @@ def validate_worker_receipt(
     measurements = value["measurements"]
     if not isinstance(measurements, Mapping):
         raise Goal5848ContractError("worker measurements are absent")
+    implementation_import = measurements.get("implementation_import_ns")
+    implementation_endpoint = measurements.get(
+        "implementation_entry_to_first_correct_result_ns"
+    )
+    implementation_gap = measurements.get(
+        "implementation_import_to_endpoint_gap_ns"
+    )
     endpoint = measurements.get("post_import_to_first_correct_result_ns")
     partition = measurements.get("endpoint_partition_ns")
     if value["arm"] == DIRECT_OPTIX_ARM:
-        if endpoint is not None or partition is not None \
+        if implementation_import is not None \
+                or implementation_endpoint is not None \
+                or implementation_gap is not None \
+                or endpoint is not None or partition is not None \
                 or measurements.get("partition_reconciliation") is not None:
             raise Goal5848ContractError(
-                "Direct arm must not invent a Python post-import endpoint"
+                "Direct arm must not invent a Python lifecycle endpoint"
             )
     else:
-        if type(endpoint) is not int or endpoint <= 0:
-            raise Goal5848ContractError("worker post-import endpoint differs")
+        if (
+            type(implementation_import) is not int
+            or implementation_import <= 0
+            or type(implementation_endpoint) is not int
+            or implementation_endpoint <= 0
+            or type(implementation_gap) is not int
+            or implementation_gap < 0
+            or type(endpoint) is not int
+            or endpoint <= 0
+            or implementation_endpoint
+            != implementation_import + implementation_gap + endpoint
+        ):
+            raise Goal5848ContractError("worker lifecycle endpoint differs")
         if not isinstance(partition, Mapping):
             raise Goal5848ContractError("worker endpoint partition is absent")
         reconciliation = validate_phase_partition(
@@ -1185,7 +1208,11 @@ def evaluate_complete_transaction(
         measurements = receipt["measurements"]
         if not isinstance(measurements, Mapping):
             raise Goal5848ContractError("transaction measurements are absent")
-        if name == "post_import":
+        if name == "implementation_entry":
+            value = measurements[
+                "implementation_entry_to_first_correct_result_ns"
+            ]
+        elif name == "post_import":
             value = measurements["post_import_to_first_correct_result_ns"]
         else:
             steady = measurements["steady_complete_execution"]
@@ -1201,11 +1228,19 @@ def evaluate_complete_transaction(
 
     result = {}
     for task in TASKS:
+        implementation_entry = []
         post_import = []
         competence = []
         public_direct = []
         regression = []
         for block in range(BLOCKS):
+            implementation_entry.append(ratio_ppm(
+                metric(arm(block, task, RTDL_ARM), "implementation_entry"),
+                metric(
+                    arm(block, task, STRONG_PYOPTIX_ARM),
+                    "implementation_entry",
+                ),
+            ))
             post_import.append(ratio_ppm(
                 metric(arm(block, task, RTDL_ARM), "post_import"),
                 metric(arm(block, task, STRONG_PYOPTIX_ARM), "post_import"),
@@ -1223,8 +1258,18 @@ def evaluate_complete_transaction(
                 metric(arm(block, task, PREDECESSOR_RTDL_ARM), "steady"),
             ))
         task_result = {
+            "implementation_entry_rtdl_over_strong_pyoptix_ppm_by_block": (
+                implementation_entry
+            ),
+            "implementation_entry_median_ppm": integer_median(
+                implementation_entry
+            ),
             "post_import_rtdl_over_strong_pyoptix_ppm_by_block": post_import,
             "post_import_median_ppm": integer_median(post_import),
+            "post_import_diagnostic_reference_pass": (
+                integer_median(post_import) <= POST_IMPORT_RATIO_LIMIT_PPM
+                and max(post_import) <= POST_IMPORT_BLOCK_RATIO_LIMIT_PPM
+            ),
             "strong_over_idiomatic_pyoptix_ppm_by_block": competence,
             "strong_competence_median_ppm": integer_median(competence),
             "rtdl_public_over_direct_ppm_by_block": public_direct,
@@ -1233,8 +1278,10 @@ def evaluate_complete_transaction(
             "successor_predecessor_median_ppm": integer_median(regression),
         }
         task_result["all_performance_gates_pass"] = (
-            task_result["post_import_median_ppm"] <= POST_IMPORT_RATIO_LIMIT_PPM
-            and max(post_import) <= POST_IMPORT_BLOCK_RATIO_LIMIT_PPM
+            task_result["implementation_entry_median_ppm"]
+            <= IMPLEMENTATION_ENTRY_RATIO_LIMIT_PPM
+            and max(implementation_entry)
+            <= IMPLEMENTATION_ENTRY_BLOCK_RATIO_LIMIT_PPM
             and task_result["strong_competence_median_ppm"]
             <= STRONG_COMPETENCE_RATIO_LIMIT_PPM
             and task_result["public_direct_median_ppm"]
@@ -1247,7 +1294,10 @@ def evaluate_complete_transaction(
         raise Goal5848ContractError("one or more Goal5848 performance gates fail")
     return {
         "schema": CONTROLLER_SCHEMA,
-        "status": "PASS__GOAL5848_SINGLE_GENERATION_PERFORMANCE_GATES",
+        "status": (
+            "PASS__GOAL5848_LIFECYCLE_CORRECTED_SINGLE_GENERATION_"
+            "PERFORMANCE_GATES"
+        ),
         "worker_count": len(validated),
         "retained_steady_sample_count": (
             len(validated) * STEADY_REPETITIONS
@@ -1270,6 +1320,8 @@ __all__ = [
     "CONTROLLER_SCHEMA",
     "DIRECT_OPTIX_ARM",
     "IDIOMATIC_PYOPTIX_ARM",
+    "IMPLEMENTATION_ENTRY_BLOCK_RATIO_LIMIT_PPM",
+    "IMPLEMENTATION_ENTRY_RATIO_LIMIT_PPM",
     "INSTRUMENTATION_AUTHORITY_SCHEMA",
     "INSTRUMENTATION_AUTHORITY_STATUS",
     "INSTRUMENTATION_BLOCKS",

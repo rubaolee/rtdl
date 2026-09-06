@@ -43,6 +43,7 @@ def write_instrumentation_fixture(
         partition["unattributed_control_plane"] = 0 if enabled else endpoint
         if enabled:
             partition["canonical_input_construction"] = endpoint
+        implementation_endpoint = endpoint + 11
         components = {
             name: (1 if enabled and name == "cuda_primary_context" else None)
             for name in contracts.COMPONENT_DIAGNOSTIC_KEYS
@@ -66,6 +67,11 @@ def write_instrumentation_fixture(
             },
             "hardware": hardware,
             "measurements": {
+                "implementation_import_ns": 10,
+                "implementation_entry_to_first_correct_result_ns": (
+                    implementation_endpoint
+                ),
+                "implementation_import_to_endpoint_gap_ns": 1,
                 "post_import_to_first_correct_result_ns": endpoint,
                 "endpoint_partition_ns": partition,
                 "component_diagnostics_ns": components,
@@ -149,7 +155,7 @@ def write_instrumentation_fixture(
             "block": block,
             "mode": mode,
             "replicate": replicate,
-            "endpoint_ns": endpoint,
+            "endpoint_ns": implementation_endpoint,
             "worker_receipt_sha256": worker["result_sha256"],
             "worker_file_sha256": hashlib.sha256(
                 worker_path.read_bytes()

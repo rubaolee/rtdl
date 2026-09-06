@@ -409,6 +409,8 @@ def main() -> None:
         "hardware": _hardware(),
         "measurements": {
             "implementation_import_ns": None,
+            "implementation_entry_to_first_correct_result_ns": None,
+            "implementation_import_to_endpoint_gap_ns": None,
             "post_import_to_first_correct_result_ns": None,
             "endpoint_partition_ns": None,
             "partition_reconciliation": None,

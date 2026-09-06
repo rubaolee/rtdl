@@ -18,6 +18,8 @@ from experiments.goal5848_strong_baseline.aot_cache_authority import (
 from experiments.goal5848_strong_baseline.contracts import (
     ARMS,
     BLOCKS,
+    IMPLEMENTATION_ENTRY_BLOCK_RATIO_LIMIT_PPM,
+    IMPLEMENTATION_ENTRY_RATIO_LIMIT_PPM,
     INSTRUMENTATION_OVERHEAD_LIMIT_PPM,
     PARTITION_ABSOLUTE_TOLERANCE_NS,
     PARTITION_RELATIVE_TOLERANCE_PPM,
@@ -169,8 +171,18 @@ def build_preregistration(args: argparse.Namespace) -> dict[str, object]:
         "schedule": schedule,
         "schedule_sha256": digest(schedule),
         "thresholds_ppm": {
-            "post_import_median": POST_IMPORT_RATIO_LIMIT_PPM,
-            "post_import_worst_block": POST_IMPORT_BLOCK_RATIO_LIMIT_PPM,
+            "implementation_entry_median": (
+                IMPLEMENTATION_ENTRY_RATIO_LIMIT_PPM
+            ),
+            "implementation_entry_worst_block": (
+                IMPLEMENTATION_ENTRY_BLOCK_RATIO_LIMIT_PPM
+            ),
+            "post_import_diagnostic_reference_median": (
+                POST_IMPORT_RATIO_LIMIT_PPM
+            ),
+            "post_import_diagnostic_reference_worst_block": (
+                POST_IMPORT_BLOCK_RATIO_LIMIT_PPM
+            ),
             "public_direct_median": PUBLIC_DIRECT_RATIO_LIMIT_PPM,
             "successor_predecessor_median": (
                 SUCCESSOR_PREDECESSOR_RATIO_LIMIT_PPM
@@ -185,7 +197,8 @@ def build_preregistration(args: argparse.Namespace) -> dict[str, object]:
         "instrumentation_protocol": instrumentation_protocol(),
         "aot_cache_protocol": aot_cache_protocol(),
         "endpoint": (
-            "implementation_import_end_to_first_exact_public_result"
+            "implementation_entry_to_first_exact_public_result__"
+            "post_import_retained_as_state_mismatch_diagnostic"
         ),
         "estimator": "median_of_eight_within_block_integer_ratios",
         "failure_policy": {

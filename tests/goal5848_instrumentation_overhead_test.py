@@ -39,6 +39,11 @@ class Goal5848InstrumentationOverheadTest(unittest.TestCase):
             },
             "hardware": {},
             "measurements": {
+                "implementation_import_ns": 10,
+                "implementation_entry_to_first_correct_result_ns": (
+                    endpoint + 11
+                ),
+                "implementation_import_to_endpoint_gap_ns": 1,
                 "post_import_to_first_correct_result_ns": endpoint,
                 "endpoint_partition_ns": partition,
                 "component_diagnostics_ns": components,

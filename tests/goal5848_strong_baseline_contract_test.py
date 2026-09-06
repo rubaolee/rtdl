@@ -226,7 +226,10 @@ class Goal5848StrongBaselineContractTest(unittest.TestCase):
         return evidence
 
     @staticmethod
-    def _receipt(row, *, post_import_ns=100, steady_ns=100):
+    def _receipt(
+        row, *, post_import_ns=100, steady_ns=100,
+        implementation_import_ns=1, implementation_gap_ns=1,
+    ):
         partition = {name: 0 for name in contracts.PARTITION_KEYS}
         partition["canonical_input_construction"] = post_import_ns
         direct = row["arm"] == contracts.DIRECT_OPTIX_ARM
@@ -260,7 +263,19 @@ class Goal5848StrongBaselineContractTest(unittest.TestCase):
                 "compute_capability": "8.9",
             },
             "measurements": {
-                "implementation_import_ns": 1,
+                "implementation_import_ns": (
+                    None if direct else implementation_import_ns
+                ),
+                "implementation_entry_to_first_correct_result_ns": (
+                    None
+                    if direct
+                    else post_import_ns
+                    + implementation_import_ns
+                    + implementation_gap_ns
+                ),
+                "implementation_import_to_endpoint_gap_ns": (
+                    None if direct else implementation_gap_ns
+                ),
                 "post_import_to_first_correct_result_ns": (
                     None if direct else post_import_ns
                 ),
@@ -480,6 +495,85 @@ class Goal5848StrongBaselineContractTest(unittest.TestCase):
         ):
             contracts.evaluate_complete_transaction(
                 failed_gate,
+                expected_source_commit="a" * 40,
+                expected_predecessor_commit="b" * 40,
+            )
+
+    def test_lifecycle_gate_retains_non_gating_post_import_failure(self):
+        receipts = []
+        for row in contracts.build_schedule():
+            if row["arm"] == contracts.RTDL_ARM:
+                post_import = 200
+                implementation_import = 1
+            elif row["arm"] == contracts.STRONG_PYOPTIX_ARM:
+                post_import = 100
+                implementation_import = 200
+            else:
+                post_import = 100
+                implementation_import = 1
+            receipts.append(self._receipt(
+                row,
+                post_import_ns=post_import,
+                implementation_import_ns=implementation_import,
+            ))
+
+        result = contracts.evaluate_complete_transaction(
+            receipts,
+            expected_source_commit="a" * 40,
+            expected_predecessor_commit="b" * 40,
+        )
+
+        for task in contracts.TASKS:
+            self.assertFalse(
+                result["tasks"][task][
+                    "post_import_diagnostic_reference_pass"
+                ]
+            )
+            self.assertTrue(
+                result["tasks"][task]["all_performance_gates_pass"]
+            )
+
+    def test_lifecycle_gate_cannot_be_replaced_by_post_import_pass(self):
+        receipts = []
+        for row in contracts.build_schedule():
+            implementation_import = (
+                200 if row["arm"] == contracts.RTDL_ARM else 1
+            )
+            receipts.append(self._receipt(
+                row,
+                post_import_ns=100,
+                implementation_import_ns=implementation_import,
+            ))
+
+        with self.assertRaisesRegex(
+            contracts.Goal5848ContractError, "performance gates"
+        ):
+            contracts.evaluate_complete_transaction(
+                receipts,
+                expected_source_commit="a" * 40,
+                expected_predecessor_commit="b" * 40,
+            )
+
+    def test_worker_rejects_coherently_resealed_lifecycle_decomposition(self):
+        row = next(
+            row for row in contracts.build_schedule()
+            if row["arm"] == contracts.RTDL_ARM
+        )
+        receipt = self._receipt(row)
+        receipt["measurements"][
+            "implementation_import_to_endpoint_gap_ns"
+        ] += 1
+        receipt["result_sha256"] = contracts.digest({
+            key: value
+            for key, value in receipt.items()
+            if key != "result_sha256"
+        })
+        with self.assertRaisesRegex(
+            contracts.Goal5848ContractError, "lifecycle endpoint"
+        ):
+            contracts.validate_worker_receipt(
+                receipt,
+                expected_row=row,
                 expected_source_commit="a" * 40,
                 expected_predecessor_commit="b" * 40,
             )

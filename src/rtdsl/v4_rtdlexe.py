@@ -2866,29 +2866,51 @@ class InitializingRTDLProvider:
         try:
             parallel_started = time.perf_counter_ns() if collect_timings else 0
             sealed_thread.start()
+            phase_started = time.perf_counter_ns() if collect_timings else 0
+            readiness_error = None
+            try:
+                readiness = _acquire_cuda_primary_context_readiness(
+                    expected_compute_capability=(
+                        self._expected_compute_capability))
+            except BaseException as error:
+                readiness_error = error
+            if collect_timings:
+                timings["cuda_primary_context"] = (
+                    time.perf_counter_ns() - phase_started)
             sealed_thread.join()
             if collect_timings:
                 timings["sealed_native_image"] = int(
                     sealed_state.get("elapsed_ns", 0))
                 timings["parallel_admission_wall"] = (
                     time.perf_counter_ns() - parallel_started)
-                # This background provider task still overlaps the independent
-                # signed-artifact loader.  Within the task, native warm must
-                # precede the Python readiness retain so CUDA cold admission is
-                # performed once rather than raced through two runtime fronts.
-                timings["parallel_overlap_saved"] = 0
+                timings["parallel_overlap_saved"] = max(
+                    0,
+                    timings["cuda_primary_context"]
+                    + timings["sealed_native_image"]
+                    - timings["parallel_admission_wall"],
+                )
             loaded = sealed_state.get("library")
             if isinstance(loaded, _NativeLibraryLease):
                 library = loaded
             sealed_error = sealed_state.get("error")
-            if sealed_error is not None:
-                if not isinstance(sealed_error, BaseException):
+            if readiness_error is not None or sealed_error is not None:
+                if readiness_error is not None:
+                    primary_error = readiness_error
+                    secondary_error = sealed_error
+                elif isinstance(sealed_error, BaseException):
+                    primary_error = sealed_error
+                    secondary_error = None
+                else:
                     _fail(
                         "RX057_PROVIDER_INITIALIZATION_INVALID",
                         "initializing_provider.parallel_admission",
                         "parallel admission failed without an exception",
                     )
-                raise sealed_error
+                if isinstance(secondary_error, BaseException):
+                    primary_error.add_note(
+                        "parallel provider admission also failed: "
+                        + repr(secondary_error))
+                raise primary_error
             if library is None:
                 _fail(
                     "RX057_PROVIDER_INITIALIZATION_INVALID",
@@ -2901,13 +2923,7 @@ class InitializingRTDLProvider:
             if collect_timings:
                 timings["native_runtime_warm"] = (
                     time.perf_counter_ns() - phase_started)
-            phase_started = time.perf_counter_ns() if collect_timings else 0
-            readiness = _acquire_cuda_primary_context_readiness(
-                expected_compute_capability=(
-                    self._expected_compute_capability))
             if collect_timings:
-                timings["cuda_primary_context"] = (
-                    time.perf_counter_ns() - phase_started)
                 timings["total"] = time.perf_counter_ns() - total_started
             with self._lock:
                 self._readiness = readiness

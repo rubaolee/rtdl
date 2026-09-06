@@ -17,6 +17,8 @@ from .contracts import (
     BLOCKS,
     DIRECT_OPTIX_ARM,
     IDIOMATIC_PYOPTIX_ARM,
+    IMPLEMENTATION_ENTRY_BLOCK_RATIO_LIMIT_PPM,
+    IMPLEMENTATION_ENTRY_RATIO_LIMIT_PPM,
     INSTRUMENTATION_AUTHORITY_SCHEMA,
     INSTRUMENTATION_AUTHORITY_STATUS,
     INSTRUMENTATION_OVERHEAD_LIMIT_PPM,
@@ -51,8 +53,8 @@ from .contracts import (
 from .device_artifacts import load_device_artifact_receipt
 from .worker import ROOT, _sha256_file, _write_create
 
-PROCESS_SCHEMA = "rtdl.goal5848.formal_process.v1"
-TRANSACTION_SCHEMA = "rtdl.goal5848.formal_transaction.v1"
+PROCESS_SCHEMA = "rtdl.goal5848.formal_process.v2"
+TRANSACTION_SCHEMA = "rtdl.goal5848.formal_transaction.v2"
 _FORMAL_INHERITED_ENVIRONMENT = {
     "CUDA_VISIBLE_DEVICES": "0",
     "CUDA_CACHE_DISABLE": "1",
@@ -173,8 +175,18 @@ def _validate_preregistration(
         or value.get("steady_warmups") != STEADY_WARMUPS
         or value.get("steady_repetitions") != STEADY_REPETITIONS
         or value.get("thresholds_ppm") != {
-            "post_import_median": POST_IMPORT_RATIO_LIMIT_PPM,
-            "post_import_worst_block": POST_IMPORT_BLOCK_RATIO_LIMIT_PPM,
+            "implementation_entry_median": (
+                IMPLEMENTATION_ENTRY_RATIO_LIMIT_PPM
+            ),
+            "implementation_entry_worst_block": (
+                IMPLEMENTATION_ENTRY_BLOCK_RATIO_LIMIT_PPM
+            ),
+            "post_import_diagnostic_reference_median": (
+                POST_IMPORT_RATIO_LIMIT_PPM
+            ),
+            "post_import_diagnostic_reference_worst_block": (
+                POST_IMPORT_BLOCK_RATIO_LIMIT_PPM
+            ),
             "public_direct_median": PUBLIC_DIRECT_RATIO_LIMIT_PPM,
             "successor_predecessor_median": (
                 SUCCESSOR_PREDECESSOR_RATIO_LIMIT_PPM
@@ -194,6 +206,10 @@ def _validate_preregistration(
         or value.get("discard_count") != 0
         or value.get("optix_disk_cache_policy")
         != "disabled_for_all_primary_arms"
+        or value.get("endpoint") != (
+            "implementation_entry_to_first_exact_public_result__"
+            "post_import_retained_as_state_mismatch_diagnostic"
+        )
     ):
         raise RuntimeError("Goal5848 preregistration differs")
     if arguments is not None:
@@ -739,7 +755,10 @@ def main() -> None:
             raise RuntimeError("Goal5848 preflight/formal GPU identity differs")
         result = {
             "schema": TRANSACTION_SCHEMA,
-            "status": "PASS__GOAL5848_SINGLE_GENERATION_FORMAL_TRANSACTION",
+            "status": (
+                "PASS__GOAL5848_LIFECYCLE_CORRECTED_SINGLE_GENERATION_"
+                "FORMAL_TRANSACTION"
+            ),
             "expected_source_commit": args.expected_source_commit,
             "expected_predecessor_commit": args.expected_predecessor_commit,
             "preregistration_file_sha256": _sha256_file(

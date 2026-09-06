@@ -13,7 +13,7 @@ class Goal5848CrossGenerationAuthorityTest(unittest.TestCase):
     @staticmethod
     def _write(path: Path, *, capability: str, uuid: str) -> None:
         value = {
-            "schema": "rtdl.goal5848.single_generation_authority.v1",
+            "schema": "rtdl.goal5848.single_generation_authority.v2",
             "status": "PASS__INDEPENDENT_BYTE_AND_GATE_RECOUNT",
             "source_commit": "a" * 40,
             "predecessor_commit": "b" * 40,

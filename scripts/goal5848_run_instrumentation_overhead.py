@@ -142,11 +142,28 @@ def _validate_worker(
     evidence = measurements.get("evidence")
     partition = measurements.get("endpoint_partition_ns")
     components = measurements.get("component_diagnostics_ns")
-    endpoint = measurements.get("post_import_to_first_correct_result_ns")
+    implementation_import = measurements.get("implementation_import_ns")
+    implementation_gap = measurements.get(
+        "implementation_import_to_endpoint_gap_ns"
+    )
+    post_import_endpoint = measurements.get(
+        "post_import_to_first_correct_result_ns"
+    )
+    endpoint = measurements.get(
+        "implementation_entry_to_first_correct_result_ns"
+    )
     mode_enabled = row["mode"] == "on"
     if (
-        type(endpoint) is not int
+        type(implementation_import) is not int
+        or implementation_import <= 0
+        or type(implementation_gap) is not int
+        or implementation_gap < 0
+        or type(post_import_endpoint) is not int
+        or post_import_endpoint <= 0
+        or type(endpoint) is not int
         or endpoint <= 0
+        or endpoint
+        != implementation_import + implementation_gap + post_import_endpoint
         or not isinstance(evidence, Mapping)
         or evidence.get("phase_instrumentation") is not mode_enabled
         or evidence.get("output_sha256")
@@ -161,7 +178,8 @@ def _validate_worker(
             for name, value in partition.items()
             if name != "unattributed_control_plane"
         )
-        or partition.get("unattributed_control_plane") != endpoint
+        or partition.get("unattributed_control_plane")
+        != post_import_endpoint
         or any(value is not None for value in components.values())
         or evidence.get("provider_initialization_phases_ns") != {}
     ):

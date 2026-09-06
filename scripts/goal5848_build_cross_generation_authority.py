@@ -56,7 +56,7 @@ def _read(path: Path) -> dict[str, object]:
     if (
         seal != digest(unsigned)
         or value.get("schema")
-        != "rtdl.goal5848.single_generation_authority.v1"
+        != "rtdl.goal5848.single_generation_authority.v2"
         or value.get("status") != "PASS__INDEPENDENT_BYTE_AND_GATE_RECOUNT"
         or value.get("worker_count") != 80
         or value.get("process_count") != 80
@@ -153,7 +153,7 @@ def build(first_path: Path, second_path: Path) -> dict[str, object]:
     if len({row["hardware"]["gpu_uuid"] for row in generation_rows}) != 2:
         raise RuntimeError("Goal5848 generation authorities reuse one GPU")
     result = {
-        "schema": "rtdl.goal5848.cross_generation_authority.v1",
+        "schema": "rtdl.goal5848.cross_generation_authority.v2",
         "status": (
             "PASS__GOAL5848_INTERNAL_TECHNICAL_COMPLETE__"
             "EXTERNAL_REVIEW_PENDING"
