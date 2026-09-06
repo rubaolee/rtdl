@@ -8,6 +8,11 @@ Decision:
 Review state: strict internal review only. External review is incomplete and
 no public or manuscript performance claim is authorized by this report.
 
+Self-review correction (2026-09-06): an earlier revision counted only two of
+the three triangle public/Direct blocks above `1.35x`. The correct blocks are
+`1.452162x`, `1.394327x`, and `1.401147x`. The historical Direct gate was
+median-only, so no raw ratio or gate result changed.
+
 ## 1. Scope and conclusion
 
 Goal5850 required one complete formal Goal5848 transaction on the first RTX
@@ -178,7 +183,7 @@ lifecycle endpoint.
 
 The Direct gate is median-only. Triangle's per-block RTDL/Direct ratios were
 `[1.452162, 1.164720, 1.175591, 1.147720, 1.394327, 1.401147,
-1.168275, 1.160903]`; the two blocks above 1.35 are retained. Relation's were
+1.168275, 1.160903]`; the three blocks above 1.35 are retained. Relation's were
 `[1.069719, 1.080617, 1.061945, 1.109492, 1.113723, 1.091956,
 1.063780, 1.069656]`.
 
@@ -247,7 +252,8 @@ mandatory and adverse, and any paper wording must present both boundaries.
 
 ### Attack: triangle is not uniformly within 1.35x of Direct
 
-Correct. Two triangle block ratios are `1.452162x` and `1.401147x`. The frozen
+Correct. Three triangle block ratios are `1.452162x`, `1.394327x`, and
+`1.401147x`. The frozen
 Direct gate is median-only and passes at `1.171933x`; there is no authority for
 a worst-block Direct bound or a statement that every execution is near Direct.
 

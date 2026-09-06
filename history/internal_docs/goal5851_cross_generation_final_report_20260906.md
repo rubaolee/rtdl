@@ -10,6 +10,13 @@ Goal5848/Goal5851. It does not authorize public or manuscript performance
 wording; independent external review remains unavailable and is a separate
 claim gate.
 
+Self-review correction (2026-09-06): an earlier revision incorrectly called
+`1.35x` a public/Direct worst-block limit. The frozen contract registers only a
+`1.20x` public/Direct median limit. Its `1.35x` worst-block limit applies to the
+implementation-entry RTDL/strong-PyOptix comparison. The Direct maxima below
+are retained descriptive observations, not a registered gate. No authority,
+raw ratio, or result status changed.
+
 ## Frozen Contract
 
 - exact experiment source:
@@ -19,7 +26,9 @@ claim gate.
 - frozen predecessor:
   `12ab1bc0a8ebbcefe42e93c677a151c04c3ba3c8`;
 - unchanged public/Direct median limit: `1.20x`;
-- unchanged public/Direct worst-block limit: `1.35x`;
+- no registered public/Direct worst-block limit;
+- unchanged implementation-entry RTDL/strong-PyOptix worst-block limit:
+  `1.35x`;
 - each generation: 512 instrumentation workers, 80 formal process cells,
   10,240 retained steady samples, zero retry and zero discard;
 - no workload, arm, timer, estimator, threshold or result row was changed
@@ -31,7 +40,7 @@ directions. It explicitly reports
 
 ## Passing Results
 
-| Generation | Task | Public RTDL / Direct median | Worst block | Successor / predecessor | Result |
+| Generation | Task | Public RTDL / Direct median | Observed maximum block, descriptive only | Successor / predecessor | Result |
 | --- | --- | ---: | ---: | ---: | --- |
 | Ada, RTX 4090, CC 8.9 | Triangle weighted all-hit | `1.175066x` | `1.211025x` | `0.903016x` | pass |
 | Ada, RTX 4090, CC 8.9 | Closed AABB relation count | `1.076852x` | `1.092253x` | `0.584438x` | pass |
@@ -137,8 +146,10 @@ Ampere pass/Ada failure pair. None was pooled with the final source.
 
 The evidence supports the bounded internal statement that, for the two frozen
 tasks and exact public prepared-replay contracts, RTDL stayed within the
-preregistered overhead limits relative to Direct OptiX on one Ampere and one
-Ada GPU while passing the pinned baseline and regression gates.
+preregistered public/Direct median limit on one Ampere and one Ada GPU while
+passing the pinned baseline, implementation-entry and regression gates. Every
+Direct block is retained and reported, but no public/Direct worst-block gate
+was preregistered.
 
 It does not establish arbitrary-callback performance, all-app performance,
 hardware-independent raw speedup, cold-start parity, human usability, external
