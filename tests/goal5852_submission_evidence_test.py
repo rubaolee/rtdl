@@ -222,6 +222,14 @@ class Goal5852SubmissionEvidenceTest(unittest.TestCase):
         ).read_text(encoding="utf-8")
         self.assertNotRegex(payload, r"(?i)goal\d+")
 
+    def test_public_component_inventory_states_distribution_boundary(self) -> None:
+        documents = EXPORTER._public_documents({"performance_rows": []})
+        inventory = documents["DEPENDENCIES.md"].decode("utf-8")
+        self.assertIn("project-authored material", inventory)
+        self.assertIn("No third-party source code, binary, dataset", inventory)
+        self.assertIn("external prerequisite", inventory)
+        self.assertIn("historical GPU environment offline", inventory)
+
     def test_wrong_threshold_and_gate_type_are_rejected(self) -> None:
         for field, value in (("median_ppm", 1199999), ("gate_type", "post_hoc")):
             mutated = copy.deepcopy(self.projection)

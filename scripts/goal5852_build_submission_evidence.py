@@ -631,12 +631,27 @@ full historical-authority relocation, external review, or claim authorization.
 | GPU execution | Not included | No GPU access |
 | Historical full authority | Not portable in this package | Not claimed |
 """,
-        "DEPENDENCIES.md": """# Dependencies and components
+        "DEPENDENCIES.md": """# Components, dependencies, and distribution basis
 
-Offline verification requires Python 3.10 or newer and only the Python standard
-library. It performs no network access, GPU execution, package installation, or
-project import. NVIDIA OptiX, CUDA, the measured binaries, proprietary headers,
-and signing keys are not distributed in this projection package.
+This peer-review artifact contains only project-authored material intentionally
+included for artifact evaluation:
+
+| Component | Distribution basis |
+| --- | --- |
+| `verify.py` | Project-authored standard-library verifier included as source |
+| `data/*.json` | Project-authored anonymous projections derived from retained measurements |
+| `*.md` and `manifest.json` | Project-authored documentation and integrity metadata |
+
+No third-party source code, binary, dataset, or proprietary header is bundled.
+Offline verification requires Python 3.10 or newer and only its standard
+library, which is an external prerequisite rather than a redistributed package
+component. Verification performs no network access, GPU execution, package
+installation, or project import.
+
+NVIDIA OptiX, CUDA, GPU drivers, measured binaries, proprietary headers, and
+signing keys are not distributed. Their original licensing and acquisition
+terms therefore remain outside this package. This evidence-only package does
+not claim to reconstruct or rerun the historical GPU environment offline.
 """,
     }
     return {name: text.encode("utf-8") for name, text in values.items()}
