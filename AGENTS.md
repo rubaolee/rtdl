@@ -36,6 +36,18 @@ competence, safety, custody, instrumentation and two-generation gates are not
 weakened. A new clean commit, fresh preregistration and wholly fresh transaction
 are required; no old or exploratory sample may be pooled.
 
+The first lifecycle-corrected transaction at `70f85796...` retained all 80
+formal cells and passed its transaction gates, but failed afterward while
+building the single-generation authority. The authority incorrectly required
+the native Direct OptiX receipt's runtime identity to equal the preregistered
+Python version instead of its exact `none__native_direct_optix` sentinel. Its
+failure archive SHA-256 is
+`fde22b987fdaf9b3617e9371ebb391254fa856eb2495688006ca54acf60d99fc`.
+It remains a failed transaction and may not be relabeled, pooled or reused.
+The next successor must distinguish native Direct and Python runtime identity
+fail closed, commit and push that repair, and execute wholly fresh artifacts,
+preregistration, instrumentation, formal cells and authority.
+
 Goal5848 is defined in
 `history/internal_docs/goal5848_strong_baseline_post_import_20260905/GOAL5848.md`.
 Its primary target is the real remaining Goal5847 debt: after implementation

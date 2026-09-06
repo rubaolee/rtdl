@@ -56,6 +56,7 @@ IDIOMATIC_PYOPTIX_ARM = "B_IDIOMATIC_PINNED_PYOPTIX"
 STRONG_PYOPTIX_ARM = "C_STRONG_DEVICE_CONTINUATION_PYOPTIX"
 DIRECT_OPTIX_ARM = "D_DIRECT_CUDA_OPTIX"
 PREDECESSOR_RTDL_ARM = "E_GOAL5847_RTDL_CONTROL"
+DIRECT_RUNTIME_IDENTITY = "none__native_direct_optix"
 PRIMARY_ARMS = (
     RTDL_ARM,
     IDIOMATIC_PYOPTIX_ARM,
@@ -1029,6 +1030,12 @@ def validate_worker_receipt(
         or value["repetitions"] != STEADY_REPETITIONS
     ):
         raise Goal5848ContractError("formal worker contract differs")
+    runtime_identity = value["python"]
+    if value["arm"] == DIRECT_OPTIX_ARM:
+        if runtime_identity != DIRECT_RUNTIME_IDENTITY:
+            raise Goal5848ContractError("Direct runtime identity differs")
+    elif not isinstance(runtime_identity, str) or not runtime_identity:
+        raise Goal5848ContractError("Python runtime identity differs")
     source = value["source"]
     expected_commit = (
         expected_predecessor_commit
@@ -1319,6 +1326,7 @@ __all__ = [
     "COMPONENT_DIAGNOSTIC_KEYS",
     "CONTROLLER_SCHEMA",
     "DIRECT_OPTIX_ARM",
+    "DIRECT_RUNTIME_IDENTITY",
     "IDIOMATIC_PYOPTIX_ARM",
     "IMPLEMENTATION_ENTRY_BLOCK_RATIO_LIMIT_PPM",
     "IMPLEMENTATION_ENTRY_RATIO_LIMIT_PPM",

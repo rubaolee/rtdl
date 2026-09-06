@@ -23,6 +23,7 @@ from .contracts import (
     BLOCKS,
     COMPONENT_DIAGNOSTIC_KEYS,
     DIRECT_OPTIX_ARM,
+    DIRECT_RUNTIME_IDENTITY,
     RELATION_TASK,
     STEADY_REPETITIONS,
     STEADY_WARMUPS,
@@ -404,7 +405,7 @@ def main() -> None:
         "classification": args.classification,
         "warmups": STEADY_WARMUPS,
         "repetitions": STEADY_REPETITIONS,
-        "python": "none__native_direct_optix",
+        "python": DIRECT_RUNTIME_IDENTITY,
         "source": source,
         "hardware": _hardware(),
         "measurements": {

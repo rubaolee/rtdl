@@ -568,6 +568,49 @@ class Goal5848TransactionAuthorityTest(unittest.TestCase):
                     expected_predecessor_commit=fixture[4],
                 )
 
+    def test_coherently_resealed_direct_python_substitution_fails(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            fixture = self._fixture(Path(temporary))
+            worker_path = next(
+                path
+                for path in (fixture[0] / "workers").iterdir()
+                if contracts.DIRECT_OPTIX_ARM in path.name
+            )
+            worker = json.loads(worker_path.read_text())
+            self.assertEqual(
+                worker["python"], contracts.DIRECT_RUNTIME_IDENTITY
+            )
+            worker["python"] = "3.12.14"
+            worker = _sealed({
+                key: value
+                for key, value in worker.items()
+                if key != "result_sha256"
+            }, "result_sha256")
+            _write(worker_path, worker)
+
+            process_path = fixture[0] / "processes" / worker_path.name
+            process = json.loads(process_path.read_text())
+            stdout = json.dumps(worker, sort_keys=True) + "\n"
+            process["stdout_utf8"] = stdout
+            process["stdout_sha256"] = hashlib.sha256(
+                stdout.encode("utf-8")
+            ).hexdigest()
+            process = _sealed({
+                key: value
+                for key, value in process.items()
+                if key != "process_sha256"
+            }, "process_sha256")
+            _write(process_path, process)
+
+            with self.assertRaisesRegex(RuntimeError, "source/runtime differs"):
+                authority.build_authority(
+                    transaction_root=fixture[0],
+                    preregistration_path=fixture[1],
+                    preflight_path=fixture[2],
+                    expected_source_commit=fixture[3],
+                    expected_predecessor_commit=fixture[4],
+                )
+
     def test_coherently_resealed_preregistration_threshold_fails(self):
         with tempfile.TemporaryDirectory() as temporary:
             fixture = self._fixture(Path(temporary))

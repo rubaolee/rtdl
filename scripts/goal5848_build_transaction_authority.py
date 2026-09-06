@@ -21,6 +21,7 @@ from experiments.goal5848_strong_baseline.contracts import (
     ARMS,
     BLOCKS,
     DIRECT_OPTIX_ARM,
+    DIRECT_RUNTIME_IDENTITY,
     IDIOMATIC_PYOPTIX_ARM,
     IMPLEMENTATION_ENTRY_BLOCK_RATIO_LIMIT_PPM,
     IMPLEMENTATION_ENTRY_RATIO_LIMIT_PPM,
@@ -1254,10 +1255,15 @@ def build_authority(
             if row["arm"] == PREDECESSOR_RTDL_ARM
             else preregistration["source_tree"]
         )
+        expected_runtime = (
+            DIRECT_RUNTIME_IDENTITY
+            if row["arm"] == DIRECT_OPTIX_ARM
+            else preregistration["python_version"]
+        )
         if (
             not isinstance(worker_source, Mapping)
             or worker_source.get("tree") != expected_tree
-            or worker.get("python") != preregistration["python_version"]
+            or worker.get("python") != expected_runtime
         ):
             raise RuntimeError(
                 f"Goal5848 authority worker source/runtime differs: {worker_id}"

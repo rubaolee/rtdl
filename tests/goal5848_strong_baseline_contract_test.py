@@ -244,7 +244,9 @@ class Goal5848StrongBaselineContractTest(unittest.TestCase):
             "classification": "formal",
             "warmups": contracts.STEADY_WARMUPS,
             "repetitions": contracts.STEADY_REPETITIONS,
-            "python": "3.12.14",
+            "python": (
+                contracts.DIRECT_RUNTIME_IDENTITY if direct else "3.12.14"
+            ),
             "source": {
                 "commit": (
                     "b" * 40
@@ -570,6 +572,28 @@ class Goal5848StrongBaselineContractTest(unittest.TestCase):
         })
         with self.assertRaisesRegex(
             contracts.Goal5848ContractError, "lifecycle endpoint"
+        ):
+            contracts.validate_worker_receipt(
+                receipt,
+                expected_row=row,
+                expected_source_commit="a" * 40,
+                expected_predecessor_commit="b" * 40,
+            )
+
+    def test_worker_rejects_coherently_resealed_direct_runtime_substitution(self):
+        row = next(
+            row for row in contracts.build_schedule()
+            if row["arm"] == contracts.DIRECT_OPTIX_ARM
+        )
+        receipt = self._receipt(row)
+        receipt["python"] = "3.12.14"
+        receipt["result_sha256"] = contracts.digest({
+            key: value
+            for key, value in receipt.items()
+            if key != "result_sha256"
+        })
+        with self.assertRaisesRegex(
+            contracts.Goal5848ContractError, "Direct runtime identity"
         ):
             contracts.validate_worker_receipt(
                 receipt,
