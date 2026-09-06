@@ -55,7 +55,7 @@ def _native_descriptor(
         "schema": "rtdl.v4.rtdlexe.native_producer_descriptor.v1",
         "family": family,
         "native_abi": (
-            ("rtdl.v4.prepared_bounded_relation_callback.v7" if bounded
+            ("rtdl.v4.prepared_bounded_relation_callback.v9" if bounded
              else "rtdl.v4.prepared_triangle_reduction_callback.v7")
             if online_monitor else
             ("rtdl.v4.prepared_bounded_relation_callback.v5" if bounded

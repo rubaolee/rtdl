@@ -1462,6 +1462,37 @@ extern "C" int rtdl_optix_v4_execute_prepared_bounded_relation_callback_v7(
         output_fast_receipt, error_out, error_size);
 }
 
+// Fused exact-reuse ABI: the caller's committed batch identity is checked
+// while the native owner lock is held, then the same cache generation executes.
+// This removes the separate digest-query boundary without weakening reuse.
+extern "C" int rtdl_optix_v4_execute_prepared_bounded_relation_callback_v9(
+        uint64_t prepared_token, const float* source_bounds_xyxy,
+        const uint32_t* source_ids, size_t source_count,
+        uint32_t reuse_cached_sources,
+        const uint8_t* expected_reuse_digest,
+        size_t expected_reuse_digest_size,
+        uint64_t* output_raw_event_count, uint64_t* output_unique_count,
+        uint32_t* output_overflowed, uint32_t* output_rows_interleaved,
+        uint32_t* output_fast_status,
+        RtdlV4FastPathReceipt* output_fast_receipt,
+        char* error_out, size_t error_size) {
+    return handle_native_call([&]() {
+        if (!expected_reuse_digest || expected_reuse_digest_size != 32u)
+            throw std::runtime_error(
+                "V4 bounded-relation v9 expected reuse digest is invalid");
+        if (reuse_cached_sources > 1u || !output_fast_status ||
+                !output_fast_receipt)
+            throw std::runtime_error(
+                "V4 bounded-relation v9 fast-control inputs are invalid");
+        execute_v4_prepared_bounded_relation_callback_fast(
+            prepared_token, source_bounds_xyxy, source_ids, source_count,
+            reuse_cached_sources != 0u,
+            output_raw_event_count, output_unique_count, output_overflowed,
+            output_rows_interleaved, output_fast_status, output_fast_receipt,
+            expected_reuse_digest, expected_reuse_digest_size);
+    }, error_out, error_size);
+}
+
 #if !defined(RTDL_OPTIX_RTDLEXE_AOT_RUNTIME)
 
 // Row-returning public successor: perform the same app-neutral compact-status

@@ -11,6 +11,7 @@
     rtdl_optix_v4_execute_prepared_bounded_relation_callback_v5;
     rtdl_optix_v4_execute_prepared_bounded_relation_callback_v6;
     rtdl_optix_v4_execute_prepared_bounded_relation_callback_v7;
+    rtdl_optix_v4_execute_prepared_bounded_relation_callback_v9;
     rtdl_optix_v4_prepared_bounded_relation_source_cache_build_count_v1;
     rtdl_optix_v4_commit_prepared_bounded_relation_source_cache_v2;
     rtdl_optix_v4_prepared_bounded_relation_source_cache_digest_v1;

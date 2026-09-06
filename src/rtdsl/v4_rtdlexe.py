@@ -861,6 +861,7 @@ class BoundedRelationBatch:
     _packed_bounds_f32: bytes = field(init=False, repr=False, compare=False)
     _packed_ids_u32: bytes = field(init=False, repr=False, compare=False)
     _device_input_sha256: str = field(init=False, repr=False, compare=False)
+    _device_input_digest_u8: object = field(init=False, repr=False, compare=False)
     _canonical_expected_rows: tuple[tuple[int, int], ...] | None = field(
         init=False, repr=False, compare=False)
 
@@ -892,8 +893,12 @@ class BoundedRelationBatch:
         object.__setattr__(self, "source_boxes", tuple(normalized_rows))
         object.__setattr__(self, "_packed_bounds_f32", bytes(bounds))
         object.__setattr__(self, "_packed_ids_u32", bytes(ids))
-        object.__setattr__(self, "_device_input_sha256", _sha_bytes(
-            b"RTDL-V4-BOUNDED-BATCH-V1\x00" + bytes(bounds) + bytes(ids)))
+        digest_hex = _sha_bytes(
+            b"RTDL-V4-BOUNDED-BATCH-V1\x00" + bytes(bounds) + bytes(ids))
+        object.__setattr__(self, "_device_input_sha256", digest_hex)
+        object.__setattr__(self, "_device_input_digest_u8",
+                           (ctypes.c_uint8 * 32).from_buffer_copy(
+                               bytes.fromhex(digest_hex)))
         canonical_expected = None
         if self.expected_rows is not None:
             expected = []
@@ -958,6 +963,7 @@ class BoundedRelationBufferBatch:
     _packed_bounds_f32: bytes = field(init=False, repr=False, compare=False)
     _packed_ids_u32: bytes = field(init=False, repr=False, compare=False)
     _device_input_sha256: str = field(init=False, repr=False, compare=False)
+    _device_input_digest_u8: object = field(init=False, repr=False, compare=False)
     _canonical_expected_rows: tuple[tuple[int, int], ...] | None = field(
         init=False, repr=False, compare=False)
 
@@ -995,8 +1001,12 @@ class BoundedRelationBufferBatch:
         )
         object.__setattr__(self, "_packed_bounds_f32", bounds)
         object.__setattr__(self, "_packed_ids_u32", ids)
-        object.__setattr__(self, "_device_input_sha256", _sha_bytes(
-            b"RTDL-V4-BOUNDED-BATCH-V1\x00" + bounds + ids))
+        digest_hex = _sha_bytes(
+            b"RTDL-V4-BOUNDED-BATCH-V1\x00" + bounds + ids)
+        object.__setattr__(self, "_device_input_sha256", digest_hex)
+        object.__setattr__(self, "_device_input_digest_u8",
+                           (ctypes.c_uint8 * 32).from_buffer_copy(
+                               bytes.fromhex(digest_hex)))
 
 
 @dataclass(frozen=True)
@@ -1410,7 +1420,7 @@ def _runtime_projection(materialized: object, family: str) -> dict[str, object]:
             _fail("RX005_BUILD_INPUT_INVALID", "protocol.minimum_overlap_f32", repr(minimum))
         return {
             "family": family,
-            "native_abi": "rtdl.v4.prepared_bounded_relation_callback.v7",
+            "native_abi": "rtdl.v4.prepared_bounded_relation_callback.v9",
             "capacity": capacity,
             "minimum_overlap_f32": minimum,
             "triangle_mode": None,
@@ -1512,12 +1522,19 @@ def _validate_native_producer_descriptor(
         "rtdl.v4.prepared_bounded_relation_callback.v7"
         if family == _BOUNDED else
         "rtdl.v4.prepared_triangle_reduction_callback.v7")
-    if native_abi not in {legacy_abi, online_abi, lean_abi}:
+    fused_reuse_abi = (
+        "rtdl.v4.prepared_bounded_relation_callback.v9"
+        if family == _BOUNDED else None)
+    supported_abis = {legacy_abi, online_abi, lean_abi}
+    if fused_reuse_abi is not None:
+        supported_abis.add(fused_reuse_abi)
+    if native_abi not in supported_abis:
         _fail("RX055_NATIVE_PRODUCER_SCHEMA_MISMATCH",
               "native_producer_descriptor.native_abi", native_abi)
-    online_monitor = native_abi in {online_abi, lean_abi}
+    online_monitor = native_abi in supported_abis - {legacy_abi}
+    lean_monitor = native_abi in {lean_abi, fused_reuse_abi}
     expected_fast_control_bytes = (
-        (28 if family == _BOUNDED else (12 if native_abi == lean_abi else 88))
+        (28 if family == _BOUNDED else (12 if lean_monitor else 88))
         if online_monitor else (16 if family == _BOUNDED else 4))
     expected_callback_status_launches = (
         0 if online_monitor else (5 if family == _BOUNDED else 3))
@@ -2297,7 +2314,8 @@ def _validate_runtime(runtime: object) -> Mapping[str, object]:
         if runtime["native_abi"] not in {
                     "rtdl.v4.prepared_bounded_relation_callback.v5",
                     "rtdl.v4.prepared_bounded_relation_callback.v6",
-                    "rtdl.v4.prepared_bounded_relation_callback.v7"} \
+                    "rtdl.v4.prepared_bounded_relation_callback.v7",
+                    "rtdl.v4.prepared_bounded_relation_callback.v9"} \
                 or capacity <= 0 or runtime["capacity"] != capacity \
                 or runtime["minimum_overlap_f32"] != minimum or minimum < 0.0 \
                 or runtime["triangle_mode"] is not None:
@@ -2313,7 +2331,7 @@ def _validate_runtime(runtime: object) -> Mapping[str, object]:
             _fail("RX015_RUNTIME_SCHEMA_INVALID", "product_projection.runtime", runtime)
     else:
         _fail("RX007_FAMILY_UNSUPPORTED", "product_projection.runtime.family", family)
-    if str(runtime["native_abi"]).endswith(".v7"):
+    if str(runtime["native_abi"]).endswith((".v7", ".v9")):
         expected_dynamic_status = "static_protocol_checked_compact_device_status_v5"
     elif str(runtime["native_abi"]).endswith(".v6"):
         expected_dynamic_status = "fused_online_monitor_compact_status_v4"
@@ -5465,8 +5483,9 @@ class _PreparedBoundedOwner:
             construction_handoff.publish(self)
         prepare = getattr(library, "rtdl_optix_v4_prepare_bounded_relation_callback_v1", None)
         abi_version = str(runtime["native_abi"]).rsplit(".", 1)[-1]
-        self._online_monitor = abi_version in {"v6", "v7"}
-        self._lean_monitor = abi_version == "v7"
+        self._online_monitor = abi_version in {"v6", "v7", "v9"}
+        self._lean_monitor = abi_version in {"v7", "v9"}
+        self._fused_reuse_digest = abi_version == "v9"
         execute_fast = getattr(
             library,
             "rtdl_optix_v4_execute_prepared_bounded_relation_callback_"
@@ -5499,12 +5518,17 @@ class _PreparedBoundedOwner:
             ctypes.POINTER(ctypes.c_uint32), ctypes.c_size_t, ctypes.c_float,
             ctypes.c_uint64, ctypes.POINTER(ctypes.c_uint64),
             ctypes.POINTER(ctypes.c_char), ctypes.c_size_t]
-        execute_fast.argtypes = [ctypes.c_uint64, ctypes.POINTER(ctypes.c_float),
-            ctypes.POINTER(ctypes.c_uint32), ctypes.c_size_t, ctypes.c_uint32,
+        execute_fast_argtypes = [ctypes.c_uint64, ctypes.POINTER(ctypes.c_float),
+            ctypes.POINTER(ctypes.c_uint32), ctypes.c_size_t, ctypes.c_uint32]
+        if self._fused_reuse_digest:
+            execute_fast_argtypes.extend([
+                ctypes.POINTER(ctypes.c_uint8), ctypes.c_size_t])
+        execute_fast_argtypes.extend([
             ctypes.POINTER(ctypes.c_uint64), ctypes.POINTER(ctypes.c_uint64),
             ctypes.POINTER(ctypes.c_uint32), ctypes.POINTER(ctypes.c_uint32),
             ctypes.POINTER(ctypes.c_uint32), ctypes.POINTER(_FastPathReceipt),
-            ctypes.POINTER(ctypes.c_char), ctypes.c_size_t]
+            ctypes.POINTER(ctypes.c_char), ctypes.c_size_t])
+        execute_fast.argtypes = execute_fast_argtypes
         execute_diagnostic.argtypes = [ctypes.c_uint64, ctypes.POINTER(ctypes.c_float),
             ctypes.POINTER(ctypes.c_uint32), ctypes.c_size_t, ctypes.c_uint32,
             ctypes.POINTER(ctypes.c_uint64), ctypes.POINTER(ctypes.c_uint64),
@@ -5610,10 +5634,18 @@ class _PreparedBoundedOwner:
             error, "bounded.source_cache_digest")
         return bytes(digest).hex() if present.value else None
 
-    def _source_cache_reusable(self, batch_key, digest_hex: str) -> bool:
-        return (batch_key == self._last_batch_key
-                and self._last_source_arrays is not None
-                and self._native_source_cache_digest() == digest_hex)
+    def _source_cache_reusable(
+            self, batch_key, digest_hex: str, *, verify_in_execute: bool = False,
+            ) -> bool:
+        local_match = (batch_key == self._last_batch_key
+                       and self._last_source_arrays is not None)
+        if not local_match:
+            return False
+        if verify_in_execute:
+            # v9 compares the exact digest while holding the same native owner
+            # lock used for execution, avoiding a second FFI/lock round trip.
+            return True
+        return self._native_source_cache_digest() == digest_hex
 
     def _check(self) -> None:
         if self._closed: _fail("RX037_USE_AFTER_CLOSE", "prepared", "closed")
@@ -5664,8 +5696,11 @@ class _PreparedBoundedOwner:
                 2 * source_count * self._indexed_count)
             batch_key = (batch._device_input_sha256, source_count,
                          len(batch._packed_bounds_f32), len(batch._packed_ids_u32))
+            fused_reuse_validation = (
+                getattr(self, "_fused_reuse_digest", False) and not diagnostics)
             reused = self._source_cache_reusable(
-                batch_key, batch._device_input_sha256)
+                batch_key, batch._device_input_sha256,
+                verify_in_execute=fused_reuse_validation)
             if reused:
                 sources, source_ids = self._last_source_arrays
             else:
@@ -5735,12 +5770,22 @@ class _PreparedBoundedOwner:
                     }
                 else:
                     self._last_fast_compact_control = None
-                    _raise_native(int(self._execute_fast(
-                        self._token, sources, source_ids, source_count,
-                        int(reused), ctypes.byref(raw_count),
-                        ctypes.byref(unique_count), ctypes.byref(overflowed),
-                        rows_native, ctypes.byref(compact_status),
-                        ctypes.byref(fast_receipt), error, len(error))),
+                    if fused_reuse_validation:
+                        native_status = int(self._execute_fast(
+                            self._token, sources, source_ids, source_count,
+                            int(reused), batch._device_input_digest_u8, 32,
+                            ctypes.byref(raw_count), ctypes.byref(unique_count),
+                            ctypes.byref(overflowed), rows_native,
+                            ctypes.byref(compact_status),
+                            ctypes.byref(fast_receipt), error, len(error)))
+                    else:
+                        native_status = int(self._execute_fast(
+                            self._token, sources, source_ids, source_count,
+                            int(reused), ctypes.byref(raw_count),
+                            ctypes.byref(unique_count), ctypes.byref(overflowed),
+                            rows_native, ctypes.byref(compact_status),
+                            ctypes.byref(fast_receipt), error, len(error)))
+                    _raise_native(native_status,
                         error, "bounded.execute_fast")
                     self._last_fast_compact_control = MappingProxyType({
                         "schema": "rtdl.v4.rtdlexe.relation_compact_control.v1",

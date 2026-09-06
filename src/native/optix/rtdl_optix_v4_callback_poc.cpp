@@ -268,7 +268,7 @@ struct V4RelationParams {
 static constexpr const char* kV4RtdlexeBoundedFamily =
     "custom_aabb_bounded_relation_v1";
 static constexpr const char* kV4RtdlexeBoundedAbi =
-    "rtdl.v4.prepared_bounded_relation_callback.v7";
+    "rtdl.v4.prepared_bounded_relation_callback.v9";
 static constexpr const char* kV4RtdlexeBoundedBundle =
     "v4_custom_aabb_bounded_relation_composed";
 static constexpr const char* kV4RtdlexeBoundedRaygen =
@@ -6439,7 +6439,9 @@ static void execute_v4_prepared_bounded_relation_callback(
         V4FormalLaunchStatus* output_status, uint64_t* output_counters,
         RtdlV4CallbackProductStatusSummary* output_summary = nullptr,
         uint32_t* output_fast_status = nullptr,
-        RtdlV4FastPathReceipt* output_fast_receipt = nullptr) {
+        RtdlV4FastPathReceipt* output_fast_receipt = nullptr,
+        const uint8_t* expected_reuse_digest = nullptr,
+        size_t expected_reuse_digest_size = 0u) {
     ScopedRtdlCudaContext context_guard;
     const bool fast_mode = output_fast_status != nullptr;
     if (!output_raw_count || !output_unique_count || !output_overflowed ||
@@ -6475,9 +6477,21 @@ static void execute_v4_prepared_bounded_relation_callback(
     if (reuse_cached_sources) {
         if (!prepared->source_cache_valid ||
                 !prepared->source_cache_committed ||
+                (expected_reuse_digest != nullptr &&
+                 !prepared->source_cache_digest_valid) ||
                 prepared->cached_sources.size() != source_count)
             throw std::runtime_error(
                 "V4 prepared bounded relation source-cache reuse is invalid");
+        if ((expected_reuse_digest == nullptr) !=
+                (expected_reuse_digest_size == 0u) ||
+                (expected_reuse_digest != nullptr &&
+                 (expected_reuse_digest_size !=
+                      prepared->source_cache_digest.size() ||
+                  std::memcmp(expected_reuse_digest,
+                              prepared->source_cache_digest.data(),
+                              prepared->source_cache_digest.size()) != 0)))
+            throw std::runtime_error(
+                "V4 prepared bounded relation source-cache digest mismatch");
         execution_sources = &prepared->cached_sources;
     } else {
         next_sources = v4_relation_boxes(
@@ -6928,12 +6942,15 @@ static void execute_v4_prepared_bounded_relation_callback_fast(
         uint64_t* output_raw_count, uint64_t* output_unique_count,
         uint32_t* output_overflowed, uint32_t* output_rows_interleaved,
         uint32_t* output_fast_status,
-        RtdlV4FastPathReceipt* output_fast_receipt) {
+        RtdlV4FastPathReceipt* output_fast_receipt,
+        const uint8_t* expected_reuse_digest = nullptr,
+        size_t expected_reuse_digest_size = 0u) {
     execute_v4_prepared_bounded_relation_callback(
         token, source_bounds_xyxy, source_ids, source_count,
         reuse_cached_sources, output_raw_count, output_unique_count,
         output_overflowed, output_rows_interleaved, nullptr, nullptr, nullptr,
-        output_fast_status, output_fast_receipt);
+        output_fast_status, output_fast_receipt,
+        expected_reuse_digest, expected_reuse_digest_size);
 }
 
 static uint64_t v4_prepared_bounded_relation_source_cache_build_count(
