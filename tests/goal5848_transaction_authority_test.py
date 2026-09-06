@@ -10,6 +10,9 @@ from unittest import mock
 
 from experiments.goal5848_strong_baseline import contracts
 from scripts import goal5848_build_transaction_authority as authority
+from tests.goal5848_instrumentation_fixture import (
+    write_instrumentation_fixture,
+)
 from tests.goal5848_strong_baseline_contract_test import (
     Goal5848StrongBaselineContractTest,
 )
@@ -163,29 +166,17 @@ class Goal5848TransactionAuthorityTest(unittest.TestCase):
         }, "authority_sha256")
         competence_path = root / "competence.json"
         _write(competence_path, competence)
-        instrumentation = _sealed({
-            "schema": contracts.INSTRUMENTATION_AUTHORITY_SCHEMA,
-            "status": contracts.INSTRUMENTATION_AUTHORITY_STATUS,
-            "hardware": hardware,
-            "schedule": list(contracts.build_instrumentation_schedule()),
-            "worker_count": 32,
-            "process_count": 32,
-            "registered_performance_timing_count": 0,
-            "formal_worker_count": 0,
-            "included_in_formal_estimators": False,
-            "retry_count": 0,
-            "discard_count": 0,
-            "tasks": {
-                task: {
-                    "pass": True,
-                    "limit_ppm": contracts.INSTRUMENTATION_OVERHEAD_LIMIT_PPM,
-                    "instrumentation_overhead_ppm": 40_000,
-                }
-                for task in contracts.TASKS
-            },
-        }, "authority_sha256")
-        instrumentation_path = root / "instrumentation.json"
-        _write(instrumentation_path, instrumentation)
+        instrumentation_path, instrumentation = write_instrumentation_fixture(
+            root,
+            source_commit=source_commit,
+            predecessor_commit=predecessor_commit,
+            preregistration_sha256=prereg["preregistration_sha256"],
+            hardware=hardware,
+            python_path=python,
+            candidate_manifest=Path(
+                str(artifacts["candidate_manifest"]["path"])
+            ),
+        )
         preflight = {
             "schema": contracts.PREFLIGHT_SCHEMA,
             "status": contracts.PREFLIGHT_PASS_STATUS,
@@ -376,7 +367,11 @@ class Goal5848TransactionAuthorityTest(unittest.TestCase):
             self.assertEqual(
                 result["instrumentation_overhead"]["sha256"],
                 hashlib.sha256(
-                    (Path(temporary) / "instrumentation.json").read_bytes()
+                    (
+                        Path(temporary)
+                        / "instrumentation"
+                        / "authority.json"
+                    ).read_bytes()
                 ).hexdigest(),
             )
             worker = next((fixture[0] / "workers").iterdir())
@@ -414,7 +409,7 @@ class Goal5848TransactionAuthorityTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             fixture = self._fixture(root)
-            instrumentation_path = root / "instrumentation.json"
+            instrumentation_path = root / "instrumentation" / "authority.json"
             instrumentation = json.loads(instrumentation_path.read_text())
             instrumentation["tasks"][contracts.RELATION_TASK][
                 "limit_ppm"
@@ -441,11 +436,38 @@ class Goal5848TransactionAuthorityTest(unittest.TestCase):
             }, "preflight_sha256")
             _write(preflight_path, preflight)
 
-            with self.assertRaisesRegex(RuntimeError, "instrumentation gate"):
+            with self.assertRaisesRegex(RuntimeError, "recount differs"):
                 authority.build_authority(
                     transaction_root=fixture[0],
                     preregistration_path=fixture[1],
                     preflight_path=preflight_path,
+                    expected_source_commit=fixture[3],
+                    expected_predecessor_commit=fixture[4],
+                )
+
+    def test_instrumentation_process_command_mutation_fails(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            fixture = self._fixture(root)
+            process_path = min(
+                (root / "instrumentation" / "processes").glob("*.json")
+            )
+            process = json.loads(process_path.read_text())
+            process["command"].extend(["--substituted", "true"])
+            process = _sealed({
+                key: value
+                for key, value in process.items()
+                if key != "process_sha256"
+            }, "process_sha256")
+            _write(process_path, process)
+
+            with self.assertRaisesRegex(
+                RuntimeError, "instrumentation process differs"
+            ):
+                authority.build_authority(
+                    transaction_root=fixture[0],
+                    preregistration_path=fixture[1],
+                    preflight_path=fixture[2],
                     expected_source_commit=fixture[3],
                     expected_predecessor_commit=fixture[4],
                 )

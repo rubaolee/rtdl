@@ -182,23 +182,30 @@ def _evaluate(
     for task in TASKS:
         values = defaultdict(list)
         blocks = []
+        paired_ratios_ppm = []
         for block in range(INSTRUMENTATION_BLOCKS):
             off = indexed[(task, block, "off")]
             on = indexed[(task, block, "on")]
             off_ns = int(off["endpoint_ns"])
             on_ns = int(on["endpoint_ns"])
+            paired_ratio_ppm = ratio_ppm(on_ns, off_ns)
             values["off"].append(off_ns)
             values["on"].append(on_ns)
+            paired_ratios_ppm.append(paired_ratio_ppm)
             blocks.append({
                 "block": block,
                 "off_ns": off_ns,
                 "on_ns": on_ns,
                 "signed_difference_ns": on_ns - off_ns,
+                "on_over_off_ppm": paired_ratio_ppm,
             })
         off_median = integer_median(values["off"])
         on_median = integer_median(values["on"])
-        overhead = max(0, on_median - off_median)
-        overhead_ppm = ratio_ppm(overhead, off_median)
+        paired_ratio_median_ppm = integer_median(paired_ratios_ppm)
+        overhead_ppm = max(0, paired_ratio_median_ppm - 1_000_000)
+        overhead = (
+            off_median * overhead_ppm + 500_000
+        ) // 1_000_000
         if overhead_ppm > INSTRUMENTATION_OVERHEAD_LIMIT_PPM:
             raise RuntimeError(
                 f"Goal5848 instrumentation overhead exceeds 5%: {task}"
@@ -220,8 +227,13 @@ def _evaluate(
             "blocks": blocks,
             "uninstrumented_endpoint_median_ns": off_median,
             "instrumented_endpoint_median_ns": on_median,
+            "paired_on_over_off_ppm_by_block": paired_ratios_ppm,
+            "paired_on_over_off_median_ppm": paired_ratio_median_ppm,
             "measured_instrumentation_overhead_ns": overhead,
             "instrumentation_overhead_ppm": overhead_ppm,
+            "estimator": (
+                "max_zero_median_of_within_block_on_over_off_ratios_minus_one"
+            ),
             "limit_ppm": INSTRUMENTATION_OVERHEAD_LIMIT_PPM,
             "native_phase_names": observed_phase_names,
             "pass": True,
@@ -306,6 +318,9 @@ def main() -> None:
                 "mode": row["mode"],
                 "endpoint_ns": endpoint,
                 "worker_receipt_sha256": receipt["result_sha256"],
+                "worker_file_sha256": hashlib.sha256(
+                    output.read_bytes()
+                ).hexdigest(),
             }
             receipts.append(compact)
             phase_rows[worker_id] = native
@@ -318,8 +333,19 @@ def main() -> None:
                 "native_phase_rows": native,
             }
             process["process_sha256"] = digest(process)
-            _write_create(processes / f"{worker_id}.json", process)
-            process_rows.append(process)
+            process_path = processes / f"{worker_id}.json"
+            _write_create(process_path, process)
+            process_rows.append({
+                "worker_id": worker_id,
+                "exit_code": completed.returncode,
+                "stdout_sha256": process["stdout_sha256"],
+                "stderr_sha256": process["stderr_sha256"],
+                "native_phase_rows": native,
+                "process_sha256": process["process_sha256"],
+                "process_file_sha256": hashlib.sha256(
+                    process_path.read_bytes()
+                ).hexdigest(),
+            })
         hardware_rows = {
             json.dumps(_read_json(workers / f"{row['worker_id']}.json")["hardware"],
                        sort_keys=True)
@@ -342,6 +368,8 @@ def main() -> None:
             "schedule": list(build_instrumentation_schedule()),
             "worker_count": len(receipts),
             "process_count": len(process_rows),
+            "worker_receipts": receipts,
+            "process_receipts": process_rows,
             "tasks": evaluation,
             "registered_performance_timing_count": 0,
             "formal_worker_count": 0,

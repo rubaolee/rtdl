@@ -7,6 +7,7 @@ import argparse
 import hashlib
 import json
 import os
+from collections.abc import Mapping
 from pathlib import Path
 
 from experiments.goal5848_strong_baseline.aot_cache_authority import (
@@ -22,6 +23,8 @@ from experiments.goal5848_strong_baseline.contracts import (
     TASKS,
     digest,
     instrumentation_protocol,
+    integer_median,
+    ratio_ppm,
     strict_json_loads,
 )
 from experiments.goal5848_strong_baseline.controller import _new_output_root
@@ -73,6 +76,171 @@ def _write_create(path: Path, value: dict[str, object]) -> None:
             os.close(descriptor)
 
 
+def _is_sha256(value: object) -> bool:
+    return (
+        isinstance(value, str)
+        and len(value) == 64
+        and all(character in "0123456789abcdef" for character in value)
+    )
+
+
+def _validate_instrumentation_summary(
+    value: Mapping[str, object],
+) -> None:
+    """Recompute the v2 pair-first estimator from authority-bound rows."""
+
+    expected_authority_keys = {
+        "schema", "status", "source_commit", "predecessor_commit",
+        "preregistration_sha256", "hardware", "schedule", "worker_count",
+        "process_count", "worker_receipts", "process_receipts", "tasks",
+        "registered_performance_timing_count", "formal_worker_count",
+        "included_in_formal_estimators", "retry_count", "discard_count",
+        "public_or_manuscript_claim_authorized", "authority_sha256",
+    }
+    protocol = instrumentation_protocol()
+    schedule = protocol["schedule"]
+    workers = value.get("worker_receipts")
+    processes = value.get("process_receipts")
+    tasks = value.get("tasks")
+    if (
+        set(value) != expected_authority_keys
+        or not isinstance(schedule, list)
+        or not isinstance(workers, list)
+        or not isinstance(processes, list)
+        or len(workers) != len(schedule)
+        or len(processes) != len(schedule)
+        or not isinstance(tasks, Mapping)
+        or set(tasks) != set(TASKS)
+    ):
+        raise RuntimeError("Goal5848 instrumentation evidence rows differ")
+
+    indexed: dict[tuple[str, int, str], int] = {}
+    phases_by_worker: dict[str, list[Mapping[str, object]]] = {}
+    for scheduled, worker, process in zip(schedule, workers, processes):
+        if (
+            not isinstance(scheduled, Mapping)
+            or not isinstance(worker, Mapping)
+            or set(worker) != {
+                "worker_id", "task", "block", "mode", "endpoint_ns",
+                "worker_receipt_sha256", "worker_file_sha256",
+            }
+            or not isinstance(process, Mapping)
+            or set(process) != {
+                "worker_id", "exit_code", "stdout_sha256", "stderr_sha256",
+                "native_phase_rows", "process_sha256",
+                "process_file_sha256",
+            }
+            or worker.get("worker_id") != scheduled.get("worker_id")
+            or worker.get("task") != scheduled.get("task")
+            or worker.get("block") != scheduled.get("block")
+            or worker.get("mode") != scheduled.get("mode")
+            or type(worker.get("endpoint_ns")) is not int
+            or worker["endpoint_ns"] <= 0
+            or not _is_sha256(worker.get("worker_receipt_sha256"))
+            or not _is_sha256(worker.get("worker_file_sha256"))
+            or process.get("worker_id") != scheduled.get("worker_id")
+            or process.get("exit_code") != 0
+            or not _is_sha256(process.get("stdout_sha256"))
+            or not _is_sha256(process.get("stderr_sha256"))
+            or not _is_sha256(process.get("process_sha256"))
+            or not _is_sha256(process.get("process_file_sha256"))
+            or not isinstance(process.get("native_phase_rows"), list)
+        ):
+            raise RuntimeError("Goal5848 instrumentation receipt differs")
+        native_rows = process["native_phase_rows"]
+        if scheduled["mode"] == "off" and (
+            native_rows
+            or process["stderr_sha256"] != hashlib.sha256(b"").hexdigest()
+        ):
+            raise RuntimeError("Goal5848 plain instrumentation evidence differs")
+        for phase in native_rows:
+            if (
+                not isinstance(phase, Mapping)
+                or set(phase) != {"family", "phase", "duration_ns"}
+                or not isinstance(phase.get("family"), str)
+                or not isinstance(phase.get("phase"), str)
+                or type(phase.get("duration_ns")) is not int
+                or phase["duration_ns"] < 0
+            ):
+                raise RuntimeError("Goal5848 instrumentation phase row differs")
+        key = (
+            str(scheduled["task"]),
+            int(scheduled["block"]),
+            str(scheduled["mode"]),
+        )
+        if key in indexed:
+            raise RuntimeError("Goal5848 instrumentation pair is duplicated")
+        indexed[key] = int(worker["endpoint_ns"])
+        phases_by_worker[str(scheduled["worker_id"])] = native_rows
+
+    expected_task_keys = {
+        "blocks", "uninstrumented_endpoint_median_ns",
+        "instrumented_endpoint_median_ns",
+        "paired_on_over_off_ppm_by_block",
+        "paired_on_over_off_median_ppm",
+        "measured_instrumentation_overhead_ns",
+        "instrumentation_overhead_ppm", "estimator", "limit_ppm",
+        "native_phase_names", "pass",
+    }
+    for task in TASKS:
+        off_values = []
+        on_values = []
+        ratios = []
+        blocks = []
+        for block in range(int(protocol["blocks"])):
+            off_ns = indexed[(task, block, "off")]
+            on_ns = indexed[(task, block, "on")]
+            paired_ratio = ratio_ppm(on_ns, off_ns)
+            off_values.append(off_ns)
+            on_values.append(on_ns)
+            ratios.append(paired_ratio)
+            blocks.append({
+                "block": block,
+                "off_ns": off_ns,
+                "on_ns": on_ns,
+                "signed_difference_ns": on_ns - off_ns,
+                "on_over_off_ppm": paired_ratio,
+            })
+        off_median = integer_median(off_values)
+        on_median = integer_median(on_values)
+        ratio_median = integer_median(ratios)
+        overhead_ppm = max(0, ratio_median - 1_000_000)
+        overhead_ns = (off_median * overhead_ppm + 500_000) // 1_000_000
+        expected_family = (
+            "bounded_relation" if task == TASKS[0] else "builtin_triangle"
+        )
+        phase_names = sorted({
+            str(phase["phase"])
+            for scheduled in schedule
+            if scheduled["task"] == task and scheduled["mode"] == "on"
+            for phase in phases_by_worker[str(scheduled["worker_id"])]
+            if phase["family"] == expected_family
+        })
+        expected = {
+            "blocks": blocks,
+            "uninstrumented_endpoint_median_ns": off_median,
+            "instrumented_endpoint_median_ns": on_median,
+            "paired_on_over_off_ppm_by_block": ratios,
+            "paired_on_over_off_median_ppm": ratio_median,
+            "measured_instrumentation_overhead_ns": overhead_ns,
+            "instrumentation_overhead_ppm": overhead_ppm,
+            "estimator": protocol["estimator"],
+            "limit_ppm": protocol["limit_ppm"],
+            "native_phase_names": phase_names,
+            "pass": overhead_ppm <= int(protocol["limit_ppm"]),
+        }
+        observed = tasks[task]
+        if (
+            not isinstance(observed, Mapping)
+            or set(observed) != expected_task_keys
+            or dict(observed) != expected
+            or "prepare.total" not in phase_names
+            or "prepare.gas" not in phase_names
+            or expected["pass"] is not True
+        ):
+            raise RuntimeError("Goal5848 instrumentation summary differs")
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--expected-source-commit", required=True)
@@ -122,6 +290,7 @@ def main() -> None:
     competence_tasks = competence.get("tasks")
     instrumentation_tasks = instrumentation.get("tasks")
     protocol = instrumentation_protocol()
+    _validate_instrumentation_summary(instrumentation)
     artifacts = preregistration.get("artifacts")
     if not isinstance(artifacts, dict):
         raise TypeError("Goal5848 preregistration artifacts are absent")

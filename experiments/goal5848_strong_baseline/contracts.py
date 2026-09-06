@@ -32,7 +32,7 @@ PREFLIGHT_PASS_STATUS = (
     "PASS__ALL_FOUR_PRIMARY_ARMS_EXACT_AND_BASELINES_COMPETENT"
 )
 INSTRUMENTATION_AUTHORITY_SCHEMA = (
-    "rtdl.goal5848.instrumentation_overhead_authority.v1"
+    "rtdl.goal5848.instrumentation_overhead_authority.v2"
 )
 INSTRUMENTATION_AUTHORITY_STATUS = (
     "PASS__PAIRED_FRESH_PROCESS_INSTRUMENTATION_OVERHEAD_WITHIN_FIVE_PERCENT"
@@ -215,8 +215,7 @@ def instrumentation_protocol() -> dict[str, object]:
         "schedule_sha256": digest(schedule),
         "endpoint": "rtdl_post_import_to_first_exact_public_result",
         "estimator": (
-            "max_zero_difference_of_paired_mode_medians_over_"
-            "uninstrumented_median"
+            "max_zero_median_of_within_block_on_over_off_ratios_minus_one"
         ),
         "limit_ppm": INSTRUMENTATION_OVERHEAD_LIMIT_PPM,
         "formal_estimator_inclusion": False,

@@ -7,8 +7,10 @@ import argparse
 import hashlib
 import json
 import os
+import re
 import stat
 import subprocess
+from collections import defaultdict
 from collections.abc import Mapping
 from pathlib import Path
 
@@ -47,6 +49,8 @@ from experiments.goal5848_strong_baseline.contracts import (
     digest,
     evaluate_complete_transaction,
     instrumentation_protocol,
+    integer_median,
+    ratio_ppm,
     strict_json_loads,
 )
 
@@ -95,6 +99,10 @@ _FORMAL_SANITIZED_ENVIRONMENT = (
     "NUMEXPR_NUM_THREADS",
     "VECLIB_MAXIMUM_THREADS",
     "BLIS_NUM_THREADS",
+)
+
+_INSTRUMENTATION_NATIVE_PHASE = re.compile(
+    r"RTDL_GOAL5807_NATIVE_PHASE\|([^|\n]+)\|([^|\n]+)\|([0-9]+)"
 )
 
 
@@ -351,6 +359,356 @@ def _validate_linked_authority(
     ):
         raise RuntimeError(f"Goal5848 linked authority differs: {prefix}")
     return value
+
+
+def _parse_instrumentation_phases(
+    stderr: bytes, *, mode: str,
+) -> list[dict[str, object]]:
+    if mode == "off":
+        if stderr:
+            raise RuntimeError("Goal5848 plain instrumentation stderr differs")
+        return []
+    try:
+        lines = stderr.decode("ascii").splitlines()
+    except UnicodeDecodeError as error:
+        raise RuntimeError("Goal5848 instrumentation stderr is not ASCII") from error
+    rows = []
+    for line in lines:
+        match = _INSTRUMENTATION_NATIVE_PHASE.fullmatch(line)
+        if match is None:
+            raise RuntimeError("Goal5848 instrumentation stderr differs")
+        family, phase, duration = match.groups()
+        rows.append({
+            "family": family,
+            "phase": phase,
+            "duration_ns": int(duration),
+        })
+    if not rows:
+        raise RuntimeError("Goal5848 instrumented phase evidence is absent")
+    return rows
+
+
+def _validate_instrumentation_evidence(
+    value: Mapping[str, object],
+    *,
+    authority_path: Path,
+    preregistration: Mapping[str, object],
+) -> None:
+    """Independently bind and recount all v2 instrumentation evidence."""
+
+    expected_authority_keys = {
+        "schema", "status", "source_commit", "predecessor_commit",
+        "preregistration_sha256", "hardware", "schedule", "worker_count",
+        "process_count", "worker_receipts", "process_receipts", "tasks",
+        "registered_performance_timing_count", "formal_worker_count",
+        "included_in_formal_estimators", "retry_count", "discard_count",
+        "public_or_manuscript_claim_authorized", "authority_sha256",
+    }
+    protocol = instrumentation_protocol()
+    schedule = protocol["schedule"]
+    worker_rows = value.get("worker_receipts")
+    process_rows = value.get("process_receipts")
+    tasks = value.get("tasks")
+    if (
+        set(value) != expected_authority_keys
+        or value.get("source_commit") != preregistration.get("source_commit")
+        or value.get("predecessor_commit")
+        != preregistration.get("predecessor_commit")
+        or value.get("preregistration_sha256")
+        != preregistration.get("preregistration_sha256")
+        or not isinstance(value.get("hardware"), Mapping)
+        or value.get("schedule") != schedule
+        or value.get("worker_count") != len(schedule)
+        or value.get("process_count") != len(schedule)
+        or value.get("registered_performance_timing_count") != 0
+        or value.get("formal_worker_count") != 0
+        or value.get("included_in_formal_estimators") is not False
+        or value.get("retry_count") != 0
+        or value.get("discard_count") != 0
+        or value.get("public_or_manuscript_claim_authorized") is not False
+        or not isinstance(schedule, list)
+        or not isinstance(worker_rows, list)
+        or not isinstance(process_rows, list)
+        or len(worker_rows) != len(schedule)
+        or len(process_rows) != len(schedule)
+        or not isinstance(tasks, Mapping)
+        or set(tasks) != set(TASKS)
+    ):
+        raise RuntimeError("Goal5848 instrumentation authority rows differ")
+    root = authority_path.resolve(strict=True).parent
+    workers_root = root / "workers"
+    processes_root = root / "processes"
+    if (
+        authority_path.name != "authority.json"
+        or workers_root.is_symlink()
+        or processes_root.is_symlink()
+        or not workers_root.is_dir()
+        or not processes_root.is_dir()
+        or {path.name for path in root.iterdir()}
+        != {"authority.json", "workers", "processes"}
+    ):
+        raise RuntimeError("Goal5848 instrumentation root differs")
+    expected_worker_names = {
+        f"{row['worker_id']}.json" for row in schedule
+    }
+    expected_process_names = {
+        f"{row['worker_id']}.{suffix}"
+        for row in schedule
+        for suffix in ("json", "stdout", "stderr")
+    }
+    if (
+        {path.name for path in workers_root.iterdir()} != expected_worker_names
+        or {path.name for path in processes_root.iterdir()}
+        != expected_process_names
+    ):
+        raise RuntimeError("Goal5848 instrumentation file set differs")
+
+    python_row = preregistration.get("python")
+    artifacts = preregistration.get("artifacts")
+    if not isinstance(python_row, Mapping) or not isinstance(artifacts, Mapping):
+        raise TypeError("Goal5848 instrumentation command inputs differ")
+    candidate_manifest = _artifact_path(artifacts, "candidate_manifest")
+    expected_source_commit = str(preregistration["source_commit"])
+    indexed: dict[tuple[str, int, str], int] = {}
+    phases_by_worker: dict[str, list[dict[str, object]]] = {}
+    empty_sha256 = hashlib.sha256(b"").hexdigest()
+
+    for scheduled, compact_worker, compact_process in zip(
+        schedule, worker_rows, process_rows
+    ):
+        if not all(
+            isinstance(row, Mapping)
+            for row in (scheduled, compact_worker, compact_process)
+        ):
+            raise RuntimeError("Goal5848 instrumentation row type differs")
+        worker_id = str(scheduled["worker_id"])
+        task = str(scheduled["task"])
+        block = int(scheduled["block"])
+        mode = str(scheduled["mode"])
+        worker_path = workers_root / f"{worker_id}.json"
+        process_path = processes_root / f"{worker_id}.json"
+        stdout_path = processes_root / f"{worker_id}.stdout"
+        stderr_path = processes_root / f"{worker_id}.stderr"
+        worker = _read(worker_path, f"instrumentation worker {worker_id}")
+        process = _read(process_path, f"instrumentation process {worker_id}")
+        _validate_seal(worker, "result_sha256", worker_id)
+        _validate_seal(process, "process_sha256", worker_id)
+        measurements = worker.get("measurements")
+        evidence = (
+            measurements.get("evidence")
+            if isinstance(measurements, Mapping)
+            else None
+        )
+        partition = (
+            measurements.get("endpoint_partition_ns")
+            if isinstance(measurements, Mapping)
+            else None
+        )
+        components = (
+            measurements.get("component_diagnostics_ns")
+            if isinstance(measurements, Mapping)
+            else None
+        )
+        source = worker.get("source")
+        endpoint = (
+            measurements.get("post_import_to_first_correct_result_ns")
+            if isinstance(measurements, Mapping)
+            else None
+        )
+        expected_worker = {
+            "worker_id": worker_id,
+            "task": task,
+            "block": block,
+            "mode": mode,
+            "endpoint_ns": endpoint,
+            "worker_receipt_sha256": worker.get("result_sha256"),
+            "worker_file_sha256": _sha256(worker_path),
+        }
+        if (
+            dict(compact_worker) != expected_worker
+            or set(worker) != {
+                "schema", "status", "arm", "task", "block", "worker_id",
+                "classification", "warmups", "repetitions", "python",
+                "source", "hardware", "measurements", "claim_boundary",
+                "result_sha256",
+            }
+            or worker.get("schema")
+            != "rtdl.goal5848.strong_baseline.worker.v1"
+            or worker.get("status") != "PASS__GOAL5848_WORKER"
+            or worker.get("arm") != RTDL_ARM
+            or worker.get("task") != task
+            or worker.get("block") != block
+            or worker.get("worker_id") != worker_id
+            or worker.get("classification") != "exploration"
+            or worker.get("warmups") != 1
+            or worker.get("repetitions") != 1
+            or not isinstance(source, Mapping)
+            or source.get("commit") != expected_source_commit
+            or source.get("tree") != preregistration.get("source_tree")
+            or source.get("clean") is not True
+            or source.get("status") != ""
+            or worker.get("hardware") != value.get("hardware")
+            or type(endpoint) is not int
+            or endpoint <= 0
+            or not isinstance(evidence, Mapping)
+            or evidence.get("phase_instrumentation") != (mode == "on")
+            or evidence.get("output_sha256")
+            != TASK_CONTRACTS[task]["public_output_sha256"]
+            or not isinstance(partition, Mapping)
+            or not isinstance(components, Mapping)
+        ):
+            raise RuntimeError(
+                f"Goal5848 instrumentation worker differs: {worker_id}"
+            )
+        if mode == "off" and (
+            any(
+                duration != 0
+                for name, duration in partition.items()
+                if name != "unattributed_control_plane"
+            )
+            or partition.get("unattributed_control_plane") != endpoint
+            or any(duration is not None for duration in components.values())
+            or evidence.get("provider_initialization_phases_ns") != {}
+        ):
+            raise RuntimeError(
+                f"Goal5848 plain instrumentation worker differs: {worker_id}"
+            )
+        if mode == "on" and not evidence.get(
+            "provider_initialization_phases_ns"
+        ):
+            raise RuntimeError(
+                f"Goal5848 instrumented worker phases differ: {worker_id}"
+            )
+        expected_command = [
+            str(python_row["path"]),
+            "-m",
+            "experiments.goal5848_strong_baseline.worker",
+            "--arm",
+            RTDL_ARM,
+            "--task",
+            task,
+            "--block",
+            str(block),
+            "--worker-id",
+            worker_id,
+            "--classification",
+            "exploration",
+            "--expected-source-commit",
+            expected_source_commit,
+            "--candidate-manifest",
+            candidate_manifest,
+            "--phase-instrumentation",
+            mode,
+            "--warmups",
+            "1",
+            "--repetitions",
+            "1",
+            "--output",
+            str(worker_path),
+        ]
+        if stdout_path.is_symlink() or stderr_path.is_symlink():
+            raise RuntimeError("Goal5848 instrumentation stream is a symlink")
+        stdout = stdout_path.read_bytes()
+        stderr = stderr_path.read_bytes()
+        native_phases = _parse_instrumentation_phases(stderr, mode=mode)
+        expected_process = {
+            "worker_id": worker_id,
+            "exit_code": 0,
+            "stdout_sha256": hashlib.sha256(stdout).hexdigest(),
+            "stderr_sha256": hashlib.sha256(stderr).hexdigest(),
+            "native_phase_rows": native_phases,
+            "process_sha256": process.get("process_sha256"),
+            "process_file_sha256": _sha256(process_path),
+        }
+        if (
+            dict(compact_process) != expected_process
+            or set(process) != {
+                "worker_id", "command", "exit_code", "stdout_sha256",
+                "stderr_sha256", "native_phase_rows", "process_sha256",
+            }
+            or process.get("worker_id") != worker_id
+            or process.get("command") != expected_command
+            or process.get("exit_code") != 0
+            or process.get("stdout_sha256")
+            != hashlib.sha256(stdout).hexdigest()
+            or process.get("stderr_sha256")
+            != hashlib.sha256(stderr).hexdigest()
+            or process.get("native_phase_rows") != native_phases
+            or stdout != (json.dumps(worker, sort_keys=True) + "\n").encode()
+            or (mode == "off" and process.get("stderr_sha256") != empty_sha256)
+        ):
+            raise RuntimeError(
+                f"Goal5848 instrumentation process differs: {worker_id}"
+            )
+        indexed[(task, block, mode)] = int(endpoint)
+        phases_by_worker[worker_id] = native_phases
+
+    expected_task_keys = {
+        "blocks", "uninstrumented_endpoint_median_ns",
+        "instrumented_endpoint_median_ns",
+        "paired_on_over_off_ppm_by_block",
+        "paired_on_over_off_median_ppm",
+        "measured_instrumentation_overhead_ns",
+        "instrumentation_overhead_ppm", "estimator", "limit_ppm",
+        "native_phase_names", "pass",
+    }
+    for task in TASKS:
+        values: dict[str, list[int]] = defaultdict(list)
+        ratios = []
+        blocks = []
+        for block in range(int(protocol["blocks"])):
+            off_ns = indexed[(task, block, "off")]
+            on_ns = indexed[(task, block, "on")]
+            paired_ratio = ratio_ppm(on_ns, off_ns)
+            values["off"].append(off_ns)
+            values["on"].append(on_ns)
+            ratios.append(paired_ratio)
+            blocks.append({
+                "block": block,
+                "off_ns": off_ns,
+                "on_ns": on_ns,
+                "signed_difference_ns": on_ns - off_ns,
+                "on_over_off_ppm": paired_ratio,
+            })
+        off_median = integer_median(values["off"])
+        on_median = integer_median(values["on"])
+        ratio_median = integer_median(ratios)
+        overhead_ppm = max(0, ratio_median - 1_000_000)
+        expected_family = (
+            "bounded_relation" if task == TASKS[0] else "builtin_triangle"
+        )
+        phase_names = sorted({
+            str(phase["phase"])
+            for scheduled in schedule
+            if scheduled["task"] == task and scheduled["mode"] == "on"
+            for phase in phases_by_worker[str(scheduled["worker_id"])]
+            if phase["family"] == expected_family
+        })
+        expected = {
+            "blocks": blocks,
+            "uninstrumented_endpoint_median_ns": off_median,
+            "instrumented_endpoint_median_ns": on_median,
+            "paired_on_over_off_ppm_by_block": ratios,
+            "paired_on_over_off_median_ppm": ratio_median,
+            "measured_instrumentation_overhead_ns": (
+                off_median * overhead_ppm + 500_000
+            ) // 1_000_000,
+            "instrumentation_overhead_ppm": overhead_ppm,
+            "estimator": protocol["estimator"],
+            "limit_ppm": protocol["limit_ppm"],
+            "native_phase_names": phase_names,
+            "pass": overhead_ppm <= int(protocol["limit_ppm"]),
+        }
+        observed = tasks[task]
+        if (
+            not isinstance(observed, Mapping)
+            or set(observed) != expected_task_keys
+            or dict(observed) != expected
+            or "prepare.total" not in phase_names
+            or "prepare.gas" not in phase_names
+            or expected["pass"] is not True
+        ):
+            raise RuntimeError("Goal5848 instrumentation recount differs")
 
 
 def _validate_process(
@@ -751,6 +1109,11 @@ def build_authority(
     competence = _validate_linked_authority(preflight, "baseline_competence")
     instrumentation = _validate_linked_authority(
         preflight, "instrumentation_overhead"
+    )
+    _validate_instrumentation_evidence(
+        instrumentation,
+        authority_path=Path(str(preflight["instrumentation_overhead_path"])),
+        preregistration=preregistration,
     )
     instrumentation_tasks = instrumentation.get("tasks")
     if (

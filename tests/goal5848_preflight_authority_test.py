@@ -15,6 +15,9 @@ from experiments.goal5848_strong_baseline import contracts, preflight_worker, wo
 from scripts import goal5848_finalize_preflight as finalizer
 from scripts import goal5848_probe_aot_cache_hits as aot_probe
 from scripts import goal5848_run_timer_free_preflight as preflight
+from tests.goal5848_instrumentation_fixture import (
+    write_instrumentation_fixture,
+)
 
 
 def _write(path: Path, value: object) -> None:
@@ -260,38 +263,17 @@ class Goal5848PreflightAuthorityTest(unittest.TestCase):
             competence["authority_sha256"] = contracts.digest(competence)
             competence_path = root / "competence.json"
             _write(competence_path, competence)
-            instrumentation = {
-                "schema": contracts.INSTRUMENTATION_AUTHORITY_SCHEMA,
-                "status": contracts.INSTRUMENTATION_AUTHORITY_STATUS,
-                "source_commit": source,
-                "predecessor_commit": predecessor,
-                "preregistration_sha256": prereg["preregistration_sha256"],
-                "hardware": hardware,
-                "schedule": list(contracts.build_instrumentation_schedule()),
-                "worker_count": 32,
-                "process_count": 32,
-                "tasks": {
-                    task: {
-                        "pass": True,
-                        "limit_ppm": (
-                            contracts.INSTRUMENTATION_OVERHEAD_LIMIT_PPM
-                        ),
-                        "instrumentation_overhead_ppm": 40_000,
-                    }
-                    for task in contracts.TASKS
-                },
-                "registered_performance_timing_count": 0,
-                "formal_worker_count": 0,
-                "included_in_formal_estimators": False,
-                "retry_count": 0,
-                "discard_count": 0,
-                "public_or_manuscript_claim_authorized": False,
-            }
-            instrumentation["authority_sha256"] = contracts.digest(
-                instrumentation
+            instrumentation_path, instrumentation = (
+                write_instrumentation_fixture(
+                    root,
+                    source_commit=source,
+                    predecessor_commit=predecessor,
+                    preregistration_sha256=prereg["preregistration_sha256"],
+                    hardware=hardware,
+                    python_path=root / "python",
+                    candidate_manifest=Path("/tmp/candidates.json"),
+                )
             )
-            instrumentation_path = root / "instrumentation.json"
-            _write(instrumentation_path, instrumentation)
             output = root / "preflight.json"
             argv = [
                 "goal5848_finalize_preflight.py",
@@ -339,7 +321,7 @@ class Goal5848PreflightAuthorityTest(unittest.TestCase):
                 mock.patch.object(finalizer, "load_device_artifact_receipt"),
                 mock.patch.object(finalizer, "load_aot_cache_authority"),
                 contextlib.redirect_stdout(io.StringIO()),
-                self.assertRaisesRegex(RuntimeError, "authorities disagree"),
+                self.assertRaisesRegex(RuntimeError, "summary differs"),
             ):
                 finalizer.main()
 

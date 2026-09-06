@@ -156,6 +156,25 @@ class Goal5848InstrumentationOverheadTest(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, "exceeds 5%"):
             instrumentation._evaluate(failed_receipts, failed_phases)
 
+    def test_evaluation_consumes_the_frozen_within_block_pairing(self):
+        receipts, phases = self._evaluation_inputs(100)
+        endpoints = {
+            "off": [811, 1694, 1220, 950, 605, 993, 825, 869],
+            "on": [1117, 1132, 484, 714, 1355, 773, 1355, 1044],
+        }
+        for row in receipts:
+            row["endpoint_ns"] = endpoints[str(row["mode"])][int(row["block"])]
+        result = instrumentation._evaluate(receipts, phases)
+        for task in contracts.TASKS:
+            row = result[task]
+            self.assertEqual(row["paired_on_over_off_median_ppm"], 989_915)
+            self.assertEqual(row["instrumentation_overhead_ppm"], 0)
+            self.assertTrue(row["pass"])
+            self.assertGreater(
+                row["instrumented_endpoint_median_ns"],
+                row["uninstrumented_endpoint_median_ns"] * 105 // 100,
+            )
+
     def test_worker_validator_rejects_source_or_off_mode_probe_mutation(self):
         row = next(
             row for row in contracts.build_instrumentation_schedule()
