@@ -2,7 +2,12 @@
 
 Date: 2026-09-06
 
-Status: `READY__NON_AMPERE_GPU_REQUIRED`
+Status: `SUPERSEDED_BY_D653FE4_AMPERE_EXECUTION_PACKET`
+
+This packet is retained to describe the historical `a4dd1d5d...` transaction.
+That source later failed on Ada and is no longer the final successor. Do not
+use this packet for a new run. The active packet is
+`goal5851_d653fe4_ampere_execution_packet_20260906.md`.
 
 This packet is operational documentation. It does not change the experiment
 source, protocol, workload, arms, timers, estimators or thresholds.

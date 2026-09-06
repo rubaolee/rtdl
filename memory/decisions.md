@@ -8476,3 +8476,22 @@ Do not call Goal5848 complete, generalize across hardware, or authorize public
 or manuscript performance wording. Goal5851 must execute identical source
 `c4351f612...`, not the later documentation commit, on a different RTX
 compute-capability generation and GPU UUID.
+
+## D246: final-source cross-generation evidence must use `d653fe4` (2026-09-06)
+
+Do not combine the historical `a4dd1d5d...` RTX 3090 pass with any result from
+a changed source. Its RTX 4090 triangle failure is retained adverse evidence
+and forced one final pre-freeze generic control-plane repair.
+
+Accept the `d653fe4...` RTX 4090 transaction as generation 1 of 2 because it
+passed every unchanged frozen gate, retained every registered sample, used zero
+retry/discard, and produced byte-identical authority/recount. The repair is
+admissible only at its exact boundary: it avoids redundant exact-batch Python
+dispatch and defers post-timer evidence-object construction while preserving
+all public checks, native owner locking, native receipt freshness and output
+validation.
+
+Require Ampere CC 8.6, a different GPU UUID and exact source `d653fe4...` for
+generation 2. Do not weaken the protocol, substitute a documentation commit,
+pool old rows, compute cross-machine raw-time ratios, or authorize manuscript
+performance wording before cross-generation authority and later review.

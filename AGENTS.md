@@ -21,49 +21,42 @@ compute-capability generations to pass independently at one identical clean,
 pushed final successor commit. Goal5852 is the irreversible code/evidence
 freeze.
 
-## Critical current override: Goal5851 final successor repair (2026-09-06)
+## Critical current override: Goal5851 final successor (2026-09-06)
 
-The final successor experiment source is clean pushed commit
-`a4dd1d5d32b962b81a29e560ac8845e9c508101c`, tree
-`424a88cd806f76737ae3aec0d3238ebced833bfc`. Its first wholly fresh formal
-transaction passed on an RTX 3090 Ampere GPU (CC 8.6, UUID
-`GPU-4c3be278-841f-27ce-6a4e-02ca58147d16`). All 512 instrumentation workers
-and 80 formal workers completed with zero retry/discard. Triangle public RTDL
-over Direct was `1.176605x` median with `1.187354x` worst block; relation was
-`1.121488x` median with `1.285963x` worst block. Both tasks passed every frozen
-gate and authority/recount are byte-identical. The archive SHA-256 is
-`a1b8300ab32ec8a846e82d1e6efde29c234718748415287293d76a903b25d824`.
+The final experiment source is clean pushed commit
+`d653fe4ad170c5b51fee309d653c9565944dcf2e`, tree
+`d53af23a2599f9d6adb4ac0bfff39cd0ab31860b`. It preserves the frozen Goal5848
+protocol and removes only generic prepared-triangle Python control overhead:
+repeat dispatch and eager post-timer evidence-object construction. It retains
+all process/thread/reentrancy, owner-lock, native status, compact status,
+per-call receipt and output-oracle checks. No workload, arm, timer, estimator,
+threshold, native traversal or app-specific engine logic changed.
 
-This is generation 1 of 2 for the final successor. Goal5851 and Goal5848 remain
+One wholly fresh formal transaction passed on an RTX 4090 Ada GPU (CC 8.9,
+UUID `GPU-01a12a86-b470-30ee-c81c-272e3b8fb6d7`, driver 580.159.04). All 512
+instrumentation workers and 80 formal workers completed, all 10,240 steady
+samples were retained, and retry/discard were zero. Triangle public RTDL over
+Direct was `1.175066x` median with `1.211025x` worst block; relation was
+`1.076852x` median with `1.092253x` worst block. Both tasks passed every frozen
+gate. Authority and independent recount are byte-identical with SHA-256
+`191e85ea19a2af2186cddf873d19483753197f258b5afddba06abd57cc0a66b7`;
+the complete archive SHA-256 is
+`c9128bae15da7ed3262c0bad96799e8cc56d1292c14f9af8713ea174cfc2cced`.
+
+This is generation 1 of 2 for the final source. Goal5851 and Goal5848 remain
 incomplete, and no positive public/manuscript claim is authorized. The second
-generation must check out exact experiment source `a4dd1d5d...`, not a later
-documentation commit, and must differ in compute-capability generation and GPU
-UUID. The old `c4351f612...` Ada pass cannot be paired with this source.
+generation must use exact source `d653fe4...`, not a later documentation
+commit, on an Ampere CC 8.6 GPU with a different UUID. The historical RTX 3090
+pass at source `a4dd1d5d...` cannot be paired with this changed source.
 
-The first clean v9 successor transaction at `12ab7b49c...` retained all 512
-instrumentation workers and 80 formal cells with zero retry/discard, but failed
-the triangle prepared public RTDL/Direct gate at `1.220467x` against the
-unchanged `1.20x` limit. Relation passed at `1.134680x`. Its complete failure
-archive SHA-256 is
-`182043089d16d36cda9f613c86d3592b3bbe7b7bcaa1bb843ab9ff4441acfe60`;
-it may not be retried, relabeled, pooled or treated as a passing generation.
-
-The next committed repair `f65d93d4e...` removed only generic exact-replay
-control overhead, but its clean nonformal RTX 3090 median remained adverse at
-`1.208411x`. The current final pre-freeze successor additionally gives the
-already-admitted exact triangle replay a dedicated Python family-level helper
-while retaining the native context guard, owner mutex, committed-digest check,
-per-call receipt, output validation and fail-closed cache clearing. Its dirty
-runtime diagnostic reached `1.183902x` median and `1.324360x` worst block
-against unchanged `1.20x` and `1.35x` limits. That diagnostic is not formal
-evidence.
-
-The next admissible transaction must start from exact clean pushed experiment
-source `a4dd1d5d...`, use wholly fresh DSO/AOT/preregistration/output bytes,
-and retain any failure. A different compute-capability generation and UUID
-must independently pass before a cross-generation authority or positive paper
-claim is allowed. The full repair and custody record is
+Preserve all earlier adverse evidence. In particular, exact source
+`a4dd1d5d...` passed on Ampere but failed the Ada triangle public/Direct gate at
+`1.249928x`; its failure archive SHA-256 is
+`76e3c1a01891a66dd7505fde079c4746ee43ce99245a8dbf12c56943e054f885`.
+The full repair and custody record is
 `history/internal_docs/goal5851_triangle_exact_replay_repair_20260906.md`.
+The active Ampere instructions are
+`history/internal_docs/goal5851_d653fe4_ampere_execution_packet_20260906.md`.
 
 ## Critical current override: Goal5850 generation A complete (2026-09-06)
 
@@ -84,12 +77,12 @@ the authority internal seal is
 The complete result and retained failure chain are documented in
 `history/internal_docs/goal5850_generation_a_final_report_20260906.md`.
 
-This is one-generation internal evidence only. The old post-import diagnostic
-remains adverse: `1.997967x` for triangle and `2.111030x` for relation. Public
-or manuscript performance wording, external consensus and Goal5848 completion
-remain unauthorized. Goal5851 must run the identical `c4351f612...` code on a
-different RTX compute-capability generation and GPU UUID; a later documentation
-commit is not an admissible substitute experiment source.
+This is one-generation historical evidence only. The old post-import
+diagnostic remains adverse: `1.997967x` for triangle and `2.111030x` for
+relation. The then-required identical-source Goal5851 replication was
+superseded by the retained successor failure/repair chain in the current
+override above. This `c4351f612...` result cannot be paired with a later
+source and does not authorize public or manuscript wording.
 
 ## Retained Goal5848 failure history through transaction 2 (2026-09-05--06)
 

@@ -12025,8 +12025,17 @@ author-artifact parity work.
       steady samples with zero retry/discard.
 - [x] Download and independently verify the archive, manifest, worker recount,
       authority equality and terminal transcript.
-- [ ] Run Goal5851 from identical source `c4351f612...` on an RTX GPU with a
-      compute-capability generation other than 8.9 and a different UUID.
+- [x] Preserve the `a4dd1d5d...` Ampere pass and Ada failure without pooling or
+      relabeling either result.
+- [x] Commit and push the final generic exact-replay repair as experiment source
+      `d653fe4...` without changing workload, arm, timer, estimator or gate.
+- [x] Run a wholly fresh RTX 4090 Ada transaction at `d653fe4...`; retain all
+      512 instrumentation workers, 80 formal cells and 10,240 steady samples,
+      with zero retry/discard and every frozen gate passing.
+- [x] Download and independently verify the `d653fe4...` Ada archive,
+      authority/recount byte identity and all 2,405 manifest rows.
+- [ ] Run the active Goal5851 packet from exact source `d653fe4...` on one idle
+      Ampere CC 8.6 RTX GPU with a different UUID.
 - [ ] Build the non-pooled cross-generation authority; if this is not complete
       by the freeze deadline, remove the positive Goal5848 paper claim.
 - [ ] Impose Goal5852's irreversible code/evidence freeze by 2026-09-08 00:00

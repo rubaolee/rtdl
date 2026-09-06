@@ -4,7 +4,7 @@ Date: 2026-09-06
 
 ## Status
 
-`FINAL_SUCCESSOR_AMPERE_PASS__SECOND_COMPUTE_GENERATION_REQUIRED`
+`FINAL_SUCCESSOR_ADA_PASS__SAME_COMMIT_AMPERE_REQUIRED`
 
 This document records a pre-freeze engineering repair. It does not complete
 Goal5851 and does not authorize a public or manuscript performance claim.
@@ -295,3 +295,114 @@ fresh passing transaction on a non-Ampere RTX compute-capability generation
 and different UUID using exact experiment source `a4dd1d5d...`, followed by
 the independent cross-generation authority. A later documentation commit is
 not an admissible replacement experiment source.
+
+## Retained Ada Failure At `a4dd1d5d...`
+
+The required second-generation transaction was then executed from the exact
+clean `a4dd1d5d...` source on an NVIDIA GeForce RTX 4090 (Ada, compute
+capability 8.9). It completed all formal work but failed the unchanged triangle
+prepared public RTDL/Direct gate:
+
+- public RTDL: 62,699 ns;
+- Direct OptiX: 50,341 ns;
+- median within-block RTDL/Direct: `1.249928x`, above `1.20x`;
+- worst block: `1.331835x`, below `1.35x`;
+- every non-triangle-public gate passed.
+
+The complete failure archive is retained outside Git under
+`/Users/rl2025/RTDL_evidence/goal5848/goal5851_ada_a4dd1d5d_formal_failure_rtx4090/`
+with SHA-256
+`76e3c1a01891a66dd7505fde079c4746ee43ce99245a8dbf12c56943e054f885`.
+Two earlier pre-formal failures on the same pod are also retained separately:
+one exposed Git `safe.directory` handling and one exposed a missing sparse
+checkout script. They are environment/setup failures, not performance rows,
+and were not pooled or relabeled.
+
+The `a4dd1d5d...` Ampere pass and Ada failure are an adverse cross-generation
+result. They cannot complete Goal5851 and cannot be combined with a later
+source.
+
+## Fourth Generic Control-Plane Repair
+
+An RTX 4090 layer decomposition localized the remaining prepared triangle
+public overhead to repeat Python dispatch and eager evidence-object
+construction above the unchanged native v9 replay. The final pre-freeze repair:
+
+1. preserves `RTDLExecutionResult` as a frozen, slotted dataclass and constructs
+   it positionally;
+2. routes an already fully validated exact prepared batch through a dedicated
+   public family replay front door instead of repeating the generic
+   `Prepared.execute -> owner.execute -> family` dispatch chain;
+3. keeps the process, thread, closed-owner, reentrancy, owner-lock, native
+   status, compact-status and scalar-oracle checks;
+4. retains one fresh raw native receipt per execution, but materializes the
+   immutable Python evidence view only when evidence is first requested after
+   the timer;
+5. uses the module's at-fork-maintained native-image process identity rather
+   than making a per-execution `os.getpid()` call, with an explicit fail-closed
+   process-drift test.
+
+No output, workload, arm, timer, estimator, threshold, native traversal,
+application formula or app-specific engine dispatch changed. The repair was
+committed and pushed as exact experiment source
+`d653fe4ad170c5b51fee309d653c9565944dcf2e`, tree
+`d53af23a2599f9d6adb4ac0bfff39cd0ab31860b`.
+
+The final directly relevant local suite passed 144 tests with 3 expected
+skips. A clean, API-compatible eight-block RTX 4090 paired diagnostic retained
+all rows and measured public RTDL/Direct at `1.177664x` median and `1.193838x`
+worst block. Its summary SHA-256 is
+`c1cfa67ad707f553053e308ba0e8354bbeb7713e2765fefe030e09d8b813aaa2`.
+This was a nonformal go/no-go diagnostic only.
+
+## Final Successor Ada Transaction
+
+One wholly fresh formal transaction then checked out exact clean source
+`d653fe4...` on an NVIDIA GeForce RTX 4090 (Ada, compute capability 8.9, UUID
+`GPU-01a12a86-b470-30ee-c81c-272e3b8fb6d7`, driver 580.159.04). The frozen
+predecessor remained `12ab1bc0a8ebbcefe42e93c677a151c04c3ba3c8`.
+
+The run completed all 512 fresh-process instrumentation workers and all 80
+formal process cells, retained 10,240 steady samples, and recorded zero retry
+and zero discard. Every frozen performance gate passed:
+
+| Task | Public RTDL / Direct median | Worst block | Successor / predecessor median | Result |
+| --- | ---: | ---: | ---: | --- |
+| Triangle weighted all-hit | `1.175066x` | `1.211025x` | `0.903016x` | pass |
+| Closed AABB relation count | `1.076852x` | `1.092253x` | `0.584438x` | pass |
+
+Median-of-block-median steady times were 59,811.5 ns RTDL and 50,977.0 ns
+Direct for triangle, and 280,976.5 ns RTDL and 261,218.5 ns Direct for
+relation. These descriptive medians are not substituted for the registered
+median-of-within-block-ratios estimator above.
+
+Implementation-entry RTDL/strong-PyOptix medians were `0.642180x` for triangle
+and `0.653826x` for relation. The mandatory unequal-lifecycle post-import
+diagnostics remained adverse at `1.559788x` and `1.749327x`; they are retained
+and remain non-gating, not hidden or relabeled.
+
+The authority status is `PASS__INDEPENDENT_BYTE_AND_GATE_RECOUNT`.
+Authority and independent recount are byte-identical with file SHA-256
+`191e85ea19a2af2186cddf873d19483753197f258b5afddba06abd57cc0a66b7`;
+the internal authority seal is
+`ce6a959fc6897ec3ff1732552f8fa94fde95ee54e63173424d80500bdca5ef04`.
+The 37,253,048-byte complete archive has SHA-256
+`c9128bae15da7ed3262c0bad96799e8cc56d1292c14f9af8713ea174cfc2cced`
+and is retained outside Git under
+`/Users/rl2025/RTDL_evidence/goal5848/goal5851_successor_ada_d653fe4_pass/`.
+
+After download, the Mac independently reproduced the archive hash, passed gzip
+integrity, reproduced the authority/recount hashes, and verified all 2,405
+manifest rows, 125,718,265 payload bytes and the manifest seal
+`8cbd609118b3b2c634a1a3dbec4c10ebd585fc527452083ae6f7ba650222fe06`
+with zero mismatches. The unmodified authority builder correctly rejects a
+path-relocated replay because preregistration binds pod-absolute
+`/workspace/...` identities; this is recorded as a relocation limitation, not
+claimed as a Mac authority rebuild.
+
+This supplies one passing generation for the final source `d653fe4...`.
+Goal5851 remains incomplete until one wholly fresh Ampere transaction with a
+different GPU UUID independently passes at that identical source, followed by
+the cross-generation authority. The older `a4dd1d5d...` Ampere pass cannot be
+paired with this changed final source. External review is absent and public or
+manuscript performance wording remains unauthorized.

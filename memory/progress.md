@@ -19155,6 +19155,31 @@ steady median improved from the retained transaction-3 failure `1.209372x` to
 `1.075168x`; triangle is `1.171933x`. The old post-import diagnostics remain
 adverse at `2.111030x` relation and `1.997967x` triangle.
 
-This completes Goal5850 only. Goal5851 must replay identical source
-`c4351f612...` on a different RTX compute-capability generation and UUID before
-Goal5848 or any cross-generation performance statement can complete.
+This completed Goal5850 only. Its then-required identical-source Goal5851 run
+was superseded by the later retained successor failure/repair chain. The
+`c4351f612...` result remains historical and cannot be paired with a later
+source.
+
+## Goal5851 final-source Ada generation passed (2026-09-06)
+
+The historical final candidate `a4dd1d5d...` passed on RTX 3090 Ampere but
+failed its RTX 4090 Ada triangle public RTDL/Direct gate at `1.249928x` against
+the unchanged `1.20x` limit. That complete failure and two earlier pre-formal
+setup failures remain retained and unpooled.
+
+The final pre-freeze source `d653fe4...`, tree `d53af23a...`, removes only
+generic exact prepared replay control overhead while preserving all public and
+native checks, fresh per-call receipts and frozen experiment contracts. Its
+directly relevant local suite passes 144 tests with 3 expected skips.
+
+A wholly fresh RTX 4090 Ada transaction at `d653fe4...` completed all 512
+instrumentation workers and 80 formal cells, retained 10,240 steady samples,
+and recorded zero retry/discard. Triangle public RTDL/Direct is `1.175066x`
+median and `1.211025x` worst block; relation is `1.076852x` median and
+`1.092253x` worst block. Every frozen gate passed. The archive SHA-256 is
+`c9128bae...2cced`; authority/recount SHA-256 is `191e85ea...0a66b7`.
+
+After download, the Mac reproduced the archive and authority hashes and
+verified all 2,405 manifest rows with zero mismatch. Goal5851 still needs a
+wholly fresh Ampere CC 8.6 pass at identical source `d653fe4...`, followed by
+the cross-generation authority. No public/manuscript claim is authorized yet.
