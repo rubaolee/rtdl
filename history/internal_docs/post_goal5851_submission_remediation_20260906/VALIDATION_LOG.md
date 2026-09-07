@@ -721,3 +721,89 @@ record at SHA-256
 `2c56e0bc183a927bf6e3e24dfa69d5da02b04134af95dc110d051dc6da67a01e`.
 This binding creates no acceptance: P-double-prime remains 0/2, claims remain
 unauthorized, and no upload or submission occurred.
+
+## P-triple-prime seven-finding remediation and preflight
+
+Date: 2026-09-07 America/New_York.
+
+The author-side pass applied the lead P-double-prime review and directive to
+the manuscript, bibliography, N1/N2/N3, change map, and claim ledger. It did
+not modify production/compiler/native code, experiments, scripts, tests,
+workloads, timers, thresholds, or F2, and it performed no GPU run.
+
+Failures and adverse intermediate states were retained:
+
+1. The first P-triple-prime PDF build produced eight pages but had horizontal
+   overfull boxes of 2.28424 pt and 38.34424 pt. Subsequent content-level edits
+   reduced but did not immediately eliminate the larger box; a later draft
+   still had 7.16423 pt. None was accepted as final.
+2. The first bibliography pass warned that the PCC entry lacked page numbers.
+   Pages 229--243 were added and the final BibTeX pass had zero warnings.
+3. `pdftotext` was unavailable on the default path. A first fallback PDF-text
+   command also had a local string/output scripting error. The corrected pypdf
+   extraction produced text for all eight pages and enabled the required scans.
+4. A naive top-level PDF font scan initially reported 6/12 embedded fonts. The
+   check was wrong for Type0 descendant fonts; recursive descriptor inspection
+   found 12/12 embedded with 12/12 ToUnicode mappings.
+5. One hash command used the nonexistent path
+   `paper/cgo2027/artifact_post_goal5851.tar.gz`. The actual frozen artifact at
+   `output/artifact/rtdl-cgo2027-artifact.tar.gz` then matched its expected hash
+   and nine-member inventory.
+6. A quick `jq` projection queried nonexistent top-level `review_state` and
+   `updated_at` fields and printed nulls. Parsing had succeeded; the corrected
+   query used `.review` and `.updated_at_utc`, confirmed 24 claims, and found
+   zero authorized claims.
+7. A combined delete/add `apply_patch` for the remediation report was rejected
+   before mutation because both operations targeted one file. Separate
+   apply-patch delete and add operations succeeded.
+8. A proposed relative-link correction targeted `paper/cgo2027/README.md`, but
+   the expected link list was actually in the repository-root README. The
+   context check rejected the patch before mutation; the root-relative links
+   were already valid and no correction was needed.
+
+Final precommit and candidate-object results:
+
+```text
+Tectonic cached build: PASS, exit 0
+PDF: 8 pages, 612 x 792 pt US Letter, 146231 bytes
+PDF SHA-256: 2840d348459d2cdeba02cda3a4b17547ce83bc208876736f805a2f5682c3d303
+paper PDF / delivery PDF cmp: PASS
+horizontal overfull boxes: 0
+vertical overfull boxes: 0
+unresolved citations/references: 0
+BibTeX warnings: 0
+all exact pages rendered and visually inspected: 8/8 PASS
+fonts embedded / ToUnicode: 12/12 / 12/12 PASS
+private-identity scan over PDF text/metadata/source/bibliography: PASS
+normalized source twin-build cmp: PASS
+source bundle SHA-256: 26e80da4004761203a0e6542dcb9a186690768facaf12eee7400ecc519f2b16a
+source bundle bytes: 21624
+source bundle regular files: 2
+foreign-path source compile: PASS, exit 0, 8 pages, US Letter
+tests.goal5852_submission_evidence_test: 14/14 PASS
+tests.goal5852_submission_evidence_test under python -O: 14/14 PASS
+candidate-parent executable/frozen path diff: empty
+F2 artifact SHA-256: 916cedbb7001c7aa43e66df3f992b543b7b3ca5a013f0f997790113a2e3738b8
+F2 artifact bytes/members: 180308 / 9
+GPU execution: not performed
+claim_authorized values other than false: 0 of 24
+```
+
+P-triple-prime was committed without changing the validated paper/source
+bytes:
+
+```text
+commit=c26c88a69382d9786c2f5f77c6cdc6763fc51e7c
+tree=b45bae5d83ec9c803657b28132c677d514897bb3
+parent=5334f0fc5deda053f54dbad12d09f4c43016875c
+subject=Remediate P-triple-prime review findings
+```
+
+Commit-object extraction recovers the recorded manuscript, bibliography, PDF,
+and source identities. The candidate-parent diff is empty under `src/`,
+`include/`, `experiments/`, `scripts/`, `tests/`, and
+`paper/cgo2027/artifact_post_goal5851/`. The unchanged F2 hash and member count
+also match.
+
+The candidate remains 0/2 independent acceptances. The local preflight and
+author remediation do not authorize a claim, upload, or submission.

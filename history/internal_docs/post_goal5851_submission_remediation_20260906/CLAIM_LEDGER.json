@@ -2,7 +2,7 @@
   "schema": "rtdl.cgo2027.post_goal5851.claim_ledger.v1",
   "version": 1,
   "created_at_utc": "2026-09-06T20:35:00Z",
-  "updated_at_utc": "2026-09-07T07:10:17Z",
+  "updated_at_utc": "2026-09-07T07:14:05Z",
   "measured_implementation": {
     "commit": "d653fe4ad170c5b51fee309d653c9565944dcf2e",
     "tree": "d53af23a2599f9d6adb4ac0bfff39cd0ab31860b",
@@ -17,7 +17,7 @@
     "public_or_manuscript_claim_authorized": false
   },
   "review": {
-    "current_reviewer": "Independent lead review of P-double-prime plus Codex author-side P-triple-prime remediation",
+    "current_reviewer": "Pending two independent reviews of exact P-triple-prime bytes; author-side remediation complete",
     "current_review_version": "post_goal5851_ptripleprime_author_remediated_pending_independent_review",
     "external_final_bytes_review": "PDOUBLEPRIME_ONE_REVISE_ZERO_ACCEPT__PTRIPLEPRIME_PENDING_TWO_INDEPENDENT_ACCEPTANCES",
     "old_p_lead_review": {
@@ -67,13 +67,15 @@
       "verdict": "REVISE_AND_REREVIEW_CHANGED_BYTES",
       "independent_acceptance": false
     },
-    "paper_snapshot_p_triple_prime_precommit": {
+    "paper_snapshot_p_triple_prime": {
+      "commit": "c26c88a69382d9786c2f5f77c6cdc6763fc51e7c",
+      "tree": "b45bae5d83ec9c803657b28132c677d514897bb3",
       "main_tex_sha256": "32c827349fe593f3030803a59d46056458d35c3d8733eb94a20818d57003bc32",
       "references_bib_sha256": "71c379b4ea23a8eaa08e97f94a3c9569d703ea7cb99186b81e0df0f00d5e4dd6",
       "pdf_sha256": "2840d348459d2cdeba02cda3a4b17547ce83bc208876736f805a2f5682c3d303",
       "source_bundle_sha256": "26e80da4004761203a0e6542dcb9a186690768facaf12eee7400ecc519f2b16a",
       "artifact_sha256": "916cedbb7001c7aa43e66df3f992b543b7b3ca5a013f0f997790113a2e3738b8",
-      "author_remediation_status": "SEVEN_FINDINGS_AUTHOR_REMEDIATED_PENDING_COMMIT_AND_INDEPENDENT_R7",
+      "author_remediation_status": "SEVEN_FINDINGS_AUTHOR_REMEDIATED_PENDING_TWO_INDEPENDENT_R7_ACCEPTANCES",
       "independent_acceptances_received": 0,
       "commit_identity_record_location": "R7_PTRIPLEPRIME_FINAL_BYTES_REVIEW_REQUEST.md"
     }
