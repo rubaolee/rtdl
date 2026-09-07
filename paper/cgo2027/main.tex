@@ -33,7 +33,7 @@ We present \rtdl, a bounded whole-protocol admission design for Python-authored
 ray-tracing computations. A typed callback schema, topology-specific trusted
 lowerers, executable-identity checks, and lifecycle gates jointly admit a small
 set of complete routes rather than accepting callbacks in isolation. The
-current artifact supports two stable public constructors and a bounded route
+current implementation supports two stable public constructors and a bounded route
 corpus covering triangle, custom-AABB, round-linear-curve, and sphere leaves;
 this is not arbitrary Python or topology-generic lowering. A prospective
 sealed-snapshot exam selected a sphere any-hit counting composition and produced
@@ -183,12 +183,14 @@ required receipt or oracle evidence. The distinction prevents a status gate
 from being described as numerical correctness and prevents a generated plan
 from being described as an executable lowering.
 
-The implementation has a double-fault caveat: teardown failure while a provider
-releases retry ownership can replace a primary exception. No
-public output is then released, and we did not observe this event, but the
-diagnostic provenance can be degraded. Similarly, the fork guard is enforced
-for Python-managed use; bypassing the public layer and invoking native state
-after a fork is outside the admitted contract.
+A focused mock reproduced a provider double fault: secondary bind or close
+failures can replace the primary exception and can lose cleanup retry ownership.
+The path releases no public output and was not observed in the retained
+successful GPU workers, but it remains unrepaired. The fork guard covers
+Python-managed forks that invoke the registered at-fork hook. A native fork
+that bypasses that hook can evade the cached-PID guard even if the child later
+uses the public API; inherited owners after such forks are outside the supported
+contract.
 
 \section{Bounded Language and Admission}
 
@@ -358,14 +360,16 @@ static verify $\rightarrow$ materialize/bind $\rightarrow$ prepare
 $\rightarrow$ execute/status gate $\rightarrow$ output $\rightarrow$ receipt.
 \end{center}
 
-The final public path checks native and compact status synchronously and the
-experiment checks every returned output against an oracle before declaring a
-worker successful. It does \emph{not} rehash files from disk on every launch.
-Moreover, the original design goal of a detailed receipt for every timed
-execution is not met: 4,096 timed executions in the main \rtdl arm are
-accompanied by 32 separate post-loop detailed diagnostic receipts. We therefore
-claim synchronous status and output gating, not per-execution detailed receipt
-coverage.
+The final public path checks native and compact status synchronously and, when
+the caller supplies an expected output, checks that value before return. The
+experiment then checks the returned value and digest against its worker oracle
+before accepting a sample or declaring the worker successful. The public path
+does \emph{not} rehash files from disk on every launch. Moreover, the original
+preregistered per-execution detailed-receipt requirement is not met: 4,096 timed
+executions in the main \rtdl arm are accompanied by 32 separate post-loop
+diagnostic executions, one retained detailed receipt per A worker. We therefore
+claim synchronous status and optional expected-output gating plus experimental
+output validation, not per-execution detailed-receipt coverage.
 
 \begin{figure*}[t]
 \centering
@@ -384,23 +388,32 @@ $\rightarrow$ executable-identity binding
 $\rightarrow$ OptiX build, prepare, and launch
 
 \medskip
-\textbf{Publication boundary}
+\textbf{Public execution}
 $\rightarrow$ native status gate
 $\rightarrow$ compact status gate
-$\rightarrow$ output oracle in the experiment
-$\rightarrow$ public result and optional detailed receipt
+$\rightarrow$ supplied expected-output check, when present
+$\rightarrow$ public return (prepared steady timer ends)
 
 \medskip
-\textbf{Separate evidence path}
+\textbf{Experiment validation}
+$\rightarrow$ returned value
+$\rightarrow$ worker output-and-digest oracle
+$\rightarrow$ accepted sample or worker success (first-result endpoint ends)
+
+\medskip
+\textbf{Separate diagnostic and evidence paths}
+$\rightarrow$ post-loop diagnostic execution and one retained detailed receipt
+per A worker
 $\rightarrow$ offline checker over generated source, PTX, ABI, symbols, and
 receipts; it does not import the \rtdl compiler.
 \end{minipage}}
 \caption{Architecture and trust boundary. Shared admission does not replace the
 topology-specific lowerer; that lowerer remains in the TCB.}
-\Description{Four-stage architecture: untrusted restricted Python enters shared
-admission; a trusted topology-specific lowerer builds the OptiX executable;
-status and oracle gates guard publication; a separate offline checker inspects
-generated evidence without importing the compiler.}
+\Description{Architecture in which untrusted restricted Python enters shared
+admission and a trusted topology-specific lowerer builds the OptiX executable.
+Public status and optional expected-output checks precede return; experiment
+validation follows return; separate post-loop diagnostic and offline checker
+paths retain bounded evidence.}
 \label{fig:architecture}
 \end{figure*}
 
@@ -468,8 +481,8 @@ any-hit-terminate row remained an eligible candidate; it was not selected. The
 pulse selected
 \nolinkurl{builtin_sphere::any_hit_count_continue_u64_per_query}.
 
-The artifact's private custody record identifies the exact sealed historical
-source. Implementation changed no bytes in the three frozen schema, admission,
+The private custody record identifies the exact sealed historical source.
+Implementation changed no bytes in the three frozen schema, admission,
 and lifecycle files. The resulting route
 performed two true OptiX launches and passed 12/12 rational-oracle rows. The
 result demonstrates framework-level reuse of admission, identity, and lifecycle
@@ -483,9 +496,9 @@ new topology-specific implementation.
 The offline checker imports no \rtdl module and rejects compiler-supplied
 projections as authority. It independently reads generated source, PTX/ABI
 metadata, symbols, and receipts. Across three route groups and four modes, it
-applied five property classes 20 times using 15 unique mutations. It also
-partially evaluates generated target structure rather than trusting labels in
-the compiler output.
+applied five property classes 20 times using 15 unique mutations. It checks
+selected lexical patterns and ordering constraints in generated target code
+rather than accepting compiler labels as authority.
 
 This checker is finite, not a verifier for arbitrary device control flow.
 During review, an out-of-authority in-memory probe inserted an unconditional
@@ -508,8 +521,8 @@ Five arms isolate different boundaries:
 A & current \rtdl ahead-of-time public path at measured source M; \\
 B & idiomatic pinned PyOptiX-compatible baseline; \\
 C & strong PyOptiX-compatible baseline with device continuation; \\
-D & direct CUDA/OptiX implementation; \\
-E & frozen \rtdl predecessor immediately before M. \\
+D & named Direct CUDA/OptiX reference implementation; \\
+E & frozen predecessor control for \rtdl. \\
 \end{tabularx}
 \end{center}
 
@@ -518,15 +531,24 @@ Each generation has eight blocks, two tasks, and five arms: 80 cells, with 128
 steady samples per cell. Across both generations this yields 160 cells and
 20,480 samples. A reported ratio is the median of eight within-block ratios of
 integer nanosecond measurements; lower is better. Raw times are not compared
-across machines.
+across machines. The steady timer encloses each prepared public action and ends
+at public return; worker output-and-digest validation follows outside that
+timer. Implementation-entry time starts immediately before implementation-specific
+imports and ends after the first result and worker output validation. Post-import
+time starts after those imports and ends at the same validation boundary. Pinned
+PyOptiX initializes CUDA context state during import, whereas \rtdl initializes
+it lazily later in the lifecycle; the two measurements therefore include
+different lifecycle work.
 
 The registered primary criterion was prepared A/D median $\leq1.20$. There was
 no registered A/D maximum-block gate. A registered A/C implementation-entry
 criterion used median $\leq1.20$ and maximum $\leq1.35$, but the endpoint was
 revised after an adverse result and both available first-result endpoints remain
-import/lifecycle-confounded. We therefore make no positive entry-latency claim.
-The registered A/E prepared criterion was $\leq1.05$; C/B competence used
-$\leq1.05$.
+import/lifecycle-confounded. We therefore treat A/C entry as a historical
+registered criterion but report it only as a diagnostic and make no positive
+entry-latency claim. Only prepared A/E was a registered regression gate;
+A/E first-result comparisons are post hoc, non-gating diagnostics. C/B
+competence used $\leq1.05$.
 
 \subsection{Prepared execution results}
 
@@ -555,7 +577,8 @@ reported as dispersion rather than converted into a pass/fail criterion.
 Ahead-of-time cache-hit latency was measured separately over 20 observations.
 Median hits were 58.3--78.2~ms and hit/cold ratios were approximately
 1.04--2.02\%. A cache hit still includes cache lookup, validation, and load; it
-is not an initial compilation and is not part of the prepared kernel endpoint.
+is not an initial compilation and is not part of the prepared public-execution
+endpoint.
 
 \subsection{Adverse lifecycle results}
 
@@ -570,8 +593,9 @@ Python/native lifecycle work remain material before steady state.
 
 \begin{table*}[t]
   \caption{Lifecycle ratios. A/C compares current \rtdl with the strong
-  device-continuation baseline; A/E compares current with the frozen predecessor.
-  Ratios are lower-is-better.}
+  device-continuation baseline; A/E compares current with frozen predecessor
+  control E. A/E entry and post-import rows are post hoc, non-gating
+  diagnostics; only A/E prepared was registered. Ratios are lower-is-better.}
   \label{tab:lifecycle}
   \small
   \begin{tabular}{@{}llrrrrrr@{}}
@@ -589,8 +613,8 @@ Python/native lifecycle work remain material before steady state.
 Arm C outperformed B in all four formal steady comparisons (C/B ratios
 0.221--0.654), establishing that B alone would be a weak baseline for this
 experiment. It does not establish C as globally optimal. We also recorded
-1,024 timer-instrumentation endpoints for A only. Those observations quantify
-A's own timer overhead but do not qualify or symmetrically instrument B, C, D,
+1,024 timer-instrumentation endpoints for A only. Paired overhead was measured
+only for A; no corresponding paired overhead measurement was made for B, C, D,
 or E.
 
 No wrong output was observed in the final GPU samples. This statement is not a
@@ -637,7 +661,7 @@ broader compilation ambitions.
 The protocol framing draws on typestate and interface theories
 ~\cite{strom1986typestate,deAlfaro2001interfaceAutomata,honda2016multiparty} and
 on typed linking and FFI work~\cite{furr2005ffi,patterson2017linkingTypes}. Our
-finite artifact checker is empirical and structural; it should not be confused
+finite generated-target checker is empirical and structural; it should not be confused
 with formal GPU verification such as GPUVerify~\cite{betts2012gpuverify}.
 
 \section{Artifact}
@@ -662,17 +686,23 @@ for new execution.
 
 \paragraph{Construct validity.}
 Prepared A/D measures the public steady path after setup; it does not measure
-interactive authoring, cold compilation, or first use. Direct D is a useful
-lower-bound implementation, not an application framework. Strong C is
-contract-equivalent at the output boundary but is neither byte-identical nor
-operation-identical to A. A-only instrumentation does not qualify other arms.
+interactive authoring, cold compilation, or first use. Direct D is the named
+contract-equivalent reference implementation, not a proven minimum-latency
+implementation or an application framework. Strong C is contract-equivalent at
+the output boundary but is neither byte-identical nor operation-identical to A.
+These observations do not identify intrinsic language overhead. Paired
+instrumentation overhead was measured only for A, not for the other arms.
 
 \paragraph{Internal validity.}
 Both tasks were used during system adaptation and tuning; they are not unseen
 confirmatory workloads. The implementation-entry endpoint was revised after an
 adverse observation, and both first-result endpoints include import and lifecycle
 effects. We preserve those outcomes rather than reinterpret them as a pass.
-The provider double-fault and Python-only fork boundary remain documented risks.
+Focused mocks reproduce the provider double-fault, which can replace the primary
+exception and lose cleanup retry ownership. Native forks that bypass the
+registered at-fork hook can evade the cached-PID guard even when the child later
+uses the public API. Neither unrepaired path produced public output or appeared
+in the retained successful GPU workers.
 
 \paragraph{External validity.}
 Measurements cover two consumer NVIDIA generations and two exact tasks. We do
