@@ -2,7 +2,7 @@
 
 Start: 2026-09-06T22:57:39-0400 America/New_York.
 
-Status: `N0_N1_N2_N3_N4_COMPLETE__N5_BYTES_VALIDATED__PDOUBLEPRIME_COMMIT_PENDING`.
+Status: `N0_N1_N2_N3_N4_N5_COMPLETE_AUTHOR_SCOPE__PDOUBLEPRIME_CREATED__R7_ZERO_OF_TWO`.
 
 This is the live, append-preserving execution record required by
 `lead_novelty_execution_directive_cgo2027_20260906.md`. It does not establish
@@ -102,12 +102,14 @@ premises, makes the effect-to-hardware chain concrete, and preserves every
 mandatory adverse result and implementation limit. Claims 022--024 were added
 to the ledger and remain unauthorized.
 
-## N5 precommit byte validation
+## N5 exact candidate and byte validation
 
-The final-layout working bytes have the following identities. The P-double-prime
-Git commit and tree are deliberately pending until these exact files are
-committed; this table must be updated after that commit rather than guessing an
-identity in advance.
+The exact P-double-prime paper snapshot is commit
+`b28076ad568d3b7b36cfa48b0c5846accff3cb95`, tree
+`2a63fecbcf09727dbe4e38f83edb253d80fa3cab`, with parent
+`50ca45521013f56b141402f4902a3af189b469f9`. The commit itself was reread to
+confirm the PDF, manuscript, bibliography, source bundle, and unchanged F2
+hashes below.
 
 | Item | Bytes | SHA-256 |
 | --- | ---: | --- |
@@ -150,7 +152,7 @@ Validation completed before the candidate commit:
 | N2 witness and derivation | `COMPLETE_AUTHOR_SCOPE_WITH_DISCLOSED_GAP` | `PROTOCOL_WITNESS_AND_DERIVATION.md`, SHA-256 `12c13d5c...24aca` | Exact fact-source/TCB/rejection/lowering trace; defective row is illustrative only | No retained executed defect; same-compiler/trusted-schema limits affect claim 022 |
 | N3 CGO contribution argument | `COMPLETE_AUTHOR_SCOPE` | `CGO_CONTRIBUTION_ARGUMENT.md`, SHA-256 `caefe3ed...dcbc` | One bounded protocol-admission contribution plus trusted typed-effect lowering method | No first/only, theorem, general algorithm, or cross-domain validation; claims 022--023 pending |
 | N4 manuscript revision | `COMPLETE_AUTHOR_SCOPE` | `MANUSCRIPT_CHANGE_MAP.md`, SHA-256 `29c89d3e...dd3`; final manuscript and bibliography hashes above | Every material change mapped to evidence, claims, source lines, and final pages | Changed bytes require new R7 review |
-| N5 bytes and rereview | `BYTES_VALIDATED__COMMIT_PENDING` | PDF/source/F2 identities above | Eight-page anonymous candidate, normalized buildable source, unchanged F2 | Assign actual P-double-prime commit/tree; create request; 0/2 reviews and R8 remain open |
+| N5 bytes and rereview | `COMPLETE_AUTHOR_SCOPE__R7_OPEN` | P-double-prime commit `b28076ad...cb95`, tree `2a63fecb...3cab`; `R7_PDOUBLEPRIME_FINAL_BYTES_REVIEW_REQUEST.md`, SHA-256 `2c56e0bc...a01e` | Eight-page anonymous candidate, normalized buildable source, unchanged F2, commit-object hashes rechecked | 0/2 independent reviews; final R7 and R8 remain open |
 
 ## Required final answers
 
@@ -180,10 +182,9 @@ Validation completed before the candidate commit:
    PyOptiX/OWL residual runs affirmatively, no longer infers novelty from the
    RT-core survey, and makes no arbitrary-lowering, semantic-inference,
    soundness, usability, first/only, or impossibility claim.
-6. **New bytes and package.** Working P-double-prime PDF is
-   `a8d3194b...6aa84`; source bundle is `5f2bbc85...f55df`; unchanged F2 is
-   `916cedbb...38b8`. The actual Git commit/tree are pending the next controlled
-   commit and will be appended without changing paper bytes.
+6. **New bytes and package.** P-double-prime is commit `b28076ad...cb95`, tree
+   `2a63fecb...3cab`; PDF is `a8d3194b...6aa84`; source bundle is
+   `5f2bbc85...f55df`; unchanged F2 is `916cedbb...38b8`.
 7. **Independent work still owed.** P-double-prime has zero of two independent
    final-byte acceptances. Final R7 closure, R8 authenticated form review,
    independent anonymity checks, upload/download hash check, and submission

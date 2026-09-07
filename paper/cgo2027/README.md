@@ -1,6 +1,6 @@
 # CGO 2027 anonymous manuscript workspace
 
-`main.tex` and `main.pdf` are the current P-prime manuscript candidate. The paper
+`main.tex` and `main.pdf` are the current P-double-prime manuscript candidate. The paper
 has been rewritten around bounded whole-protocol admission: shared
 schema/identity/lifecycle checks plus topology-specific trusted lowering. It
 does not claim arbitrary Python, arbitrary Callback IR, topology-generic
@@ -8,7 +8,7 @@ lowering, intrinsic language speedup, broad usability, or a representative
 unseen-application study.
 
 The exact candidate PDF is eight US-Letter pages with SHA-256
-`9bce71368ff0398efbc0d24685a80939fc691288663074ebf72ec9b20619013b`.
+`a8d3194b07fbf0105b59944e8044da1769b9ca8877f92d3a93aa44f605b6aa84`.
 Every page of these bytes has been rendered and inspected. The PDF has no
 overfull boxes, unresolved references, clipping, or overlap. The exact bytes
 passed the current author-side anonymity scan.
@@ -30,9 +30,12 @@ authorization.
   `c6020fd63097b35b5294778cf54c2fb84c879ad6`, tree
   `dc4b78ba3ec0f7816f87b87fdd74353c806caced`. Its independent lead verdict was
   `REVISE_AND_REREVIEW_CHANGED_BYTES`.
-- Current P-prime snapshot:
+- Superseded P-prime snapshot:
   `818c2ed284cde8acae9a09b531b8bfed3bf925ee`, tree
   `59e6eaacadac711f8b0d93980b1bfbbd3d772dc7`.
+- Current P-double-prime snapshot:
+  `b28076ad568d3b7b36cfa48b0c5846accff3cb95`, tree
+  `2a63fecbcf09727dbe4e38f83edb253d80fa3cab`.
 
 Two exact tasks passed the machine numerical contract independently on RTX
 4090 Ada and RTX 3090 Ampere. The main performance observation is prepared
@@ -62,7 +65,7 @@ The exact anonymous delivery pair is:
 
 | Deliverable | SHA-256 |
 | --- | --- |
-| `output/pdf/rtdl_cgo2027_submission_candidate.pdf` | `9bce71368ff0398efbc0d24685a80939fc691288663074ebf72ec9b20619013b` |
+| `output/pdf/rtdl_cgo2027_submission_candidate.pdf` | `a8d3194b07fbf0105b59944e8044da1769b9ca8877f92d3a93aa44f605b6aa84` |
 | `output/artifact/rtdl-cgo2027-artifact.tar.gz` | `916cedbb7001c7aa43e66df3f992b543b7b3ca5a013f0f997790113a2e3738b8` |
 
 The nine-member archive is 180,308 bytes. The P-prime author-side remediation
@@ -74,9 +77,9 @@ AOT qualifications, and eight competence workers. The package explicitly says
 that this is an offline evidence recount, not a GPU rerun or product install.
 
 An additional anonymous source-custody bundle is at
-`output/source/rtdl-cgo2027-source.tar.gz`, 20,699 bytes, SHA-256
-`1d76d60b1f72487a414ef2fe649415938bc12a3ea6baedd65396b9378b4d90ed`.
-It contains only exact-P-prime `main.tex` and `references.bib`. Two normalized builds
+`output/source/rtdl-cgo2027-source.tar.gz`, 20,540 bytes, SHA-256
+`5f2bbc858b0b783983d773e09d46be92b0b47ebc6f87e079c1dd855ac42f55df`.
+It contains only exact-P-double-prime `main.tex` and `references.bib`. Two normalized builds
 were byte-identical, and extraction plus Tectonic compilation succeeded from a
 foreign path containing spaces. It is not presumed to be a required HotCRP
 upload.
@@ -97,27 +100,33 @@ history/internal_docs/post_goal5851_submission_remediation_20260906/
   R7_OLD_P_CONTROL_RECORD_ERRATUM.md
   R7_PPRIME_LEAD_REMEDIATION_REPORT.md
   R7_PPRIME_FINAL_BYTES_REVIEW_REQUEST.md
+  R7_PDOUBLEPRIME_FINAL_BYTES_REVIEW_REQUEST.md
   R8_LOCAL_PREFLIGHT_REPORT.md
   R8_PPRIME_LOCAL_PREFLIGHT_REPORT.md
+  R8_PDOUBLEPRIME_LOCAL_PREFLIGHT_REPORT.md
   FREEZE_RECORD.md
   STATUS.json
+  novelty/
 ```
 
 ## Remaining gates
 
 Old P received one independent `REVISE` verdict. Its three major and four minor
-findings have been remediated author-side in P-prime, but R7 still requires two
-independent reviews of the actual P-prime PDF and archive bytes. The old-P
-review does not approve changed bytes. R8 still requires final independent anonymity,
+findings were remediated author-side in P-prime. P-double-prime then rewrote the
+novelty and contribution argument using primary-source and implementation
+tracing; that changed PDF bytes and superseded P-prime without receiving any
+independent acceptance. R7 requires two independent reviews of the exact
+P-double-prime PDF and unchanged F2 archive. The old-P review does not approve
+changed bytes. R8 still requires final independent anonymity,
 bibliography, link, hash, upload, and submission-receipt checks. No upload has
 occurred, and `public_or_manuscript_claim_authorized` remains false.
 
 The current R7 request is
-`history/internal_docs/post_goal5851_submission_remediation_20260906/R7_PPRIME_FINAL_BYTES_REVIEW_REQUEST.md`.
-The P-prime remediation and local preflight are author-side checks, not
+`history/internal_docs/post_goal5851_submission_remediation_20260906/R7_PDOUBLEPRIME_FINAL_BYTES_REVIEW_REQUEST.md`.
+The P-prime/P-double-prime remediation and local preflight are author-side checks, not
 independent reviews, and do not close R7.
 
-Local R8 checks for P-prime that do not depend on reviewers or authenticated
+Local R8 checks for P-double-prime that do not depend on reviewers or authenticated
 submission state have passed. R8 itself remains open because R7, two independent anonymity
 scans, HotCRP author/topic/conflict fields, upload, downloaded-byte verification,
 and a real submission receipt remain pending.

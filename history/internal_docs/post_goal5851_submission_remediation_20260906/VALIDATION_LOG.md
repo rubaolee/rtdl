@@ -700,3 +700,24 @@ GPU run. P-double-prime commit/tree identity and its final review request remain
 pending at this checkpoint. It has zero of two independent final-byte
 acceptances; R8, authenticated-form review, upload, downloaded-byte verification,
 and receipt remain open.
+
+### P-double-prime commit-object binding
+
+P-double-prime was then committed without changing the validated paper/source
+bytes:
+
+```text
+commit=b28076ad568d3b7b36cfa48b0c5846accff3cb95
+tree=2a63fecbcf09727dbe4e38f83edb253d80fa3cab
+parent=50ca45521013f56b141402f4902a3af189b469f9
+subject=Strengthen CGO novelty argument
+```
+
+`git show <commit>:<path> | shasum -a 256` independently recovered the
+committed manuscript, bibliography, PDF, source bundle, and F2 identities shown
+above. The committed diff from its parent remains empty under all frozen
+executable paths. The P-double-prime R7 request was then created as a control
+record at SHA-256
+`2c56e0bc183a927bf6e3e24dfa69d5da02b04134af95dc110d051dc6da67a01e`.
+This binding creates no acceptance: P-double-prime remains 0/2, claims remain
+unauthorized, and no upload or submission occurred.

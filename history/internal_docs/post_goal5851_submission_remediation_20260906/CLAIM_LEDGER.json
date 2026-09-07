@@ -2,7 +2,7 @@
   "schema": "rtdl.cgo2027.post_goal5851.claim_ledger.v1",
   "version": 1,
   "created_at_utc": "2026-09-06T20:35:00Z",
-  "updated_at_utc": "2026-09-07T03:12:48Z",
+  "updated_at_utc": "2026-09-07T03:31:00Z",
   "measured_implementation": {
     "commit": "d653fe4ad170c5b51fee309d653c9565944dcf2e",
     "tree": "d53af23a2599f9d6adb4ac0bfff39cd0ab31860b",
@@ -17,7 +17,7 @@
     "public_or_manuscript_claim_authorized": false
   },
   "review": {
-    "current_reviewer": "Independent lead review of old P plus Codex author-side P-prime and novelty remediation",
+    "current_reviewer": "Independent lead review of old P plus Codex author-side P-prime and P-double-prime novelty remediation",
     "current_review_version": "post_goal5851_pdoubleprime_author_scope_pending",
     "external_final_bytes_review": "OLD_P_REVISE__PPRIME_SUPERSEDED_WHEN_PDOUBLEPRIME_EXISTS__PDOUBLEPRIME_PENDING_TWO_INDEPENDENT_REVIEWS",
     "old_p_lead_review": {
@@ -41,6 +41,23 @@
     "pprime_review_request": {
       "path": "history/internal_docs/post_goal5851_submission_remediation_20260906/R7_PPRIME_FINAL_BYTES_REVIEW_REQUEST.md",
       "sha256": "43bd200394674b8439146e758e1c5529ba449e31e57bf1dd7229f58d84115f84",
+      "independent_reviews_required": 2,
+      "independent_acceptances_received": 0
+    },
+    "paper_snapshot_p_double_prime": {
+      "commit": "b28076ad568d3b7b36cfa48b0c5846accff3cb95",
+      "tree": "2a63fecbcf09727dbe4e38f83edb253d80fa3cab",
+      "main_tex_sha256": "f75b29160f015d7c5de3dd0eae560e54df2933f5e065ec97170c2ac9f0f92186",
+      "references_bib_sha256": "a8c62657c74a42f39926974c4b655e0b83149beb1b548d1a0fa647115a82e6ab",
+      "pdf_sha256": "a8d3194b07fbf0105b59944e8044da1769b9ca8877f92d3a93aa44f605b6aa84",
+      "artifact_sha256": "916cedbb7001c7aa43e66df3f992b543b7b3ca5a013f0f997790113a2e3738b8",
+      "source_bundle_sha256": "5f2bbc858b0b783983d773e09d46be92b0b47ebc6f87e079c1dd855ac42f55df",
+      "author_novelty_remediation_status": "COMPLETE_PENDING_INDEPENDENT_R7",
+      "independent_acceptances_received": 0
+    },
+    "p_double_prime_review_request": {
+      "path": "history/internal_docs/post_goal5851_submission_remediation_20260906/R7_PDOUBLEPRIME_FINAL_BYTES_REVIEW_REQUEST.md",
+      "sha256": "2c56e0bc183a927bf6e3e24dfa69d5da02b04134af95dc110d051dc6da67a01e",
       "independent_reviews_required": 2,
       "independent_acceptances_received": 0
     }
