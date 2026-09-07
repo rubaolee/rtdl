@@ -1,109 +1,152 @@
-# Manuscript Change Map for P-Quintuple-Prime
+# Manuscript Change Map for P-Sextuple-Prime (DSL-First)
 
 Date: 2026-09-07 America/New_York.
 
-Status: `N4_PQUINTUPLEPRIME_THREE_QUESTION_CLOSURE_COMPLETE_AUTHOR_SCOPE__NINE_PAGE_RENDER_MAPPED__INDEPENDENT_REVIEW_PENDING`.
+Status: `DSL_FIRST_REPURPOSED_RT_REWRITE_COMPLETE_AUTHOR_SCOPE__EXACT_CANDIDATE_COMMIT_BINDING_AND_TWO_INDEPENDENT_REVIEWS_PENDING`.
 
-The immediate baseline is P-quadruple-prime at commit
-`70a081e90c4c50ecf92d24741529de9859841c70`, tree
-`b4b1628345536976e2ed8fbb67ab5b4ff21fc802`, PDF SHA-256
-`bb957c0969bbd92c6a4be952c4e40a4ce5a183bf565c5f54a19b410102c77aca`.
-The replacement is the P-quintuple-prime manuscript/source candidate. This map
-preserves the P-quadruple-prime result-route pass and all seven inherited
-P-triple-prime corrections, then closes the lead's final three-question
-argument. Exact new commit/tree and file identities are recorded by the
-candidate control report after the immutable candidate commit exists.
-P-quintuple-prime remains unauthorized until its exact bytes receive the
-required independent reviews. No prior review transfers to these changed
-bytes.
+The immediate baseline is P-quintuple-prime at commit
+`41bbec66c6f9f8f770d18075fb9dacbed16d499d`, tree
+`135f2bc214927acdb305cf2edd2c5ef98690b4a2`, PDF SHA-256
+`34dad89878f7a283662e51059d1b81c4d266198657e0d4db065f0c3df2c41385`.
+Its control commit is `8dfdc810c9c23f259b20c511caf69d250f2b86ce`.
 
-## 1. Final three-question argument closure
+P-sextuple-prime replaces those manuscript bytes with a DSL-first paper. It
+retains all earlier result-route, trust, receipt, adverse-performance, and
+artifact corrections. Exact candidate commit and tree are recorded only after
+the immutable candidate commit exists. No review of an earlier candidate
+transfers to these bytes.
 
-The final lead directive asks: what extra the compiler knows, what that makes
-it reject/generate/select, and what implementation increment remains over the
-strongest acknowledged prior mechanisms. The manuscript now answers those
-questions in the required causal order. This is a wording and evidence-linkage
-pass only; no implementation, experiment, frozen artifact, or numerical result
-changed, and no previously passed test was rerun.
+No production source, native code, experiment, test, workload, timer,
+estimator, threshold, measured evidence, or F2 artifact changed. No GPU ran and
+no unchanged test suite was rerun.
 
-| Map ID | P-quadruple-prime residual gap | P-quintuple-prime action | Source/evidence | Main file location | Claim IDs | Final PDF pages |
-| --- | --- | --- | --- | --- | --- | ---: |
-| `TQC-01` | Table 1 stated the constraints but did not use a concrete compiler-decision verb in every row. | Makes the complete-relation row say the family verifier **rejects**, the triangle row say the generator **emits** the payload update and physical ignore, the exact-count row say the generator **selects** the intrinsic only under the exact-IR guard, and the application-ID row say admission **rejects** a schema/projection mismatch. | Existing W1--W3 source traces and component evidence; no new execution | Section 2.1, Table 1 | 001, 022--024 | 3 |
-| `TQC-02` | The paper disclosed both the general leaf path and measured exact-IR specialization but did not state their semantic connection tightly enough. | States that both implement the same known standard-count increment-and-continue behavior: the general path through leaf ABI plus wrapper and the specialization directly. It also states that the exact-IR guard selects trusted code rather than proving equivalence, and keeps recognizer/lowerer in the TCB. | Existing wrapper/lowering source and W2/W3 evidence; no new GPU equivalence claim | Section 3.2, Role-indexed effects | 003, 023 | 4 |
-| `TQC-03` | Related Work could still be read as treating different guarantee predicates as the contribution. | States that the contribution is the implemented connection from fixed result obligations to effect admission, trusted lowering, and publication checks, not predicate difference alone. It explicitly prices that design in restricted expressiveness and topology-specific trusted code and disclaims superiority over richer frameworks. | Existing N1 primary-source boundary audit and bounded implementation evidence | Section 7, Related Work | 001, 022--024 | 7 |
+## 1. Controlling directives
 
-The existing N1, N2, and N3 records already contained the required strongest-
-prior-system concessions, W1--W3 evidence boundaries, and general-versus-
-specialized-path explanation. They remain unchanged rather than creating a
-second theory or duplicate evidence record.
-
-## 2. Result-route contribution remediation retained from P-quadruple-prime
-
-| Map ID | P-triple-prime weakness | P-quadruple-prime action | Source/evidence | Main file location | Claim IDs | Final PDF pages |
-| --- | --- | --- | --- | --- | --- | ---: |
-| `RRC-01` | Abstract and first page led with a five-seam conjunction, leaving the compiler contribution implicit. | Recasts the problem and contribution as fixed output obligations constraining callback effects, traversal interpretation, and result publication; retains bounded/non-proof scope. | N2 W1--W3; N3 Sections 1--2 | Title, Abstract, Introduction, contribution list | 001, 022, 023 | 1--2 |
-| `RRC-02` | The protocol table listed abstract admission questions without showing what program or target decision changes. | Adds a four-row table for complete relation, triangle all-hit count, exact count specialization, and same-width application ID, each with an evidence boundary. | N2 Sections 1A--3, 6--7 | Section 2.1, Table 1 | 001, 022--024 | 3 |
-| `RRC-03` | Role-indexed effects did not expose a result-driven restriction or concrete logical-to-physical transformation. | Shows W1 role-valid effects narrowed by the complete relation, W2 payload update followed by physical intersection ignore and single delivery, and W3 `+1` to `+2` specialization exit. | Source trace and 4/4 existing-test replay; no GPU in this pass | Section 3.2 | 001, 003, 023 | 3--4 |
-| `RRC-04` | Evaluation questions followed mechanism categories rather than the contribution's causal chain. | Introduces RQ1 local legality/representation, RQ2 specialization invalidation, RQ3 shared reuse versus new lowerer work, and RQ4 exact implementation runtime cost. | Existing M/E/F2 authorities and W1--W3 replay only | Section 5 and Sections 5.1--5.6 | 004--019, 022--023 | 5--7 |
-| `RRC-05` | Related work compared against the five-seam bundle, risking novelty-by-wording. | Directly concedes PCC admission, Slang/Shader Components capabilities and specialization, and rich FFI/linking relations; states the narrower result-predicate remainder and preserves `UNKNOWN`. | N1 Sections 1.1--1.2, 3--5 | Section 7 | 024 | 7--8 |
-| `RRC-06` | Generality and conclusion repeated the mechanism bundle. | States the transferable design insight as result-contract-driven effect/action/publication organization, with domain-specific lowerers and evidence required anew. | N3 Sections 2--8 | Sections 6 and 10 | 001, 022--023 | 7--9 |
-
-No performance cell, experiment denominator, M/E/F2 identity, receipt count,
-or adverse observation changed in this pass. W1/W2 are source traces and W3 is
-an existing source-to-wrapper component test; none is represented as a new GPU
-experiment.
-
-## 3. Seven-finding remediation map retained from P-triple-prime
-
-| Finding | P-double-prime proposition | P-triple-prime wording/action | N1/N2 source | Main file location | Claim IDs | Final PDF pages |
-| --- | --- | --- | --- | --- | --- | --- |
-| `PDP-01` | The method and numbers could be read as every measured role executing through typed effect -> ABI/tag -> Numba leaf -> wrapper checks. | Describes that as the general/diagnostic path; discloses exact-IR guarded triangle direct count/reduction and relation fused intersection/row-emission paths, the per-leaf work they replace, retained checks, and specialization TCB; binds prepared numbers to those routes. | N2 Section 6; N3 Sections 2.2, 4.5 | `paper/cgo2027/main.tex`, Abstract, Introduction contribution 2, Section 3.2, Section 5.4, Conclusion | 003, 007--010, 023 | 1, 4, 6, 9 |
-| `PDP-02` | One decision was said to gate materialization, native load, and publication without distinguishing app-free warmup. | States that exact app-free runtime load/warm may precede admission; admission gates route return and subsequent per-route preparation/launch. Both mutation statements name the overlap-disabled configuration and native-library loader. | N2 Sections 4, 5; N3 Sections 1.2, 4.4 | Introduction contribution 1; Sections 2.2, 3.6, 5.1 | 002, 022 | 1, 2, 4, 6 |
-| `PDP-03` | Related work omitted PCC and could make validation-before-execution sound like the increment. | Adds Necula/Lee as a direct policy/proof-validation precedent; states that RTDL has no certificate, trusts its schema/compiler/lowerers/runtime, and contributes only a bounded RT-specific design/implementation with finite evidence. | `RW-PT-06`; N3 Sections 1, 3, 4.2 | Introduction contribution organization; Section 7; bibliography | 022, 024 | 1, 7--9 |
-| `PDP-04` | Supporting documents generalized the materialized-program `ProtocolExecutionResult` checks to measured AOT execution. | Separates materialized-program result, measured AOT `RTDLExecutionResult`, post-return worker oracle, and post-loop diagnostic; keeps 4,096 timed calls versus 32 receipts and precise timer endpoints. | N2 Sections 4.1, 5; N3 Section 2.3 | Section 3.6 and Figure 1 | 002, 015, 022 | 4--5 |
-| `PDP-05` | All ten prospective candidates were described as per-query counts. | States one value per query: six counts and four first-accepted-hit Booleans; preserves seven built-in/three custom, selected sphere count/continue, unselected eligible curve terminate, two launches, and 12/12 oracle rows. | Frozen `CHALLENGE_TABLE.json` and `FINAL_AUTHORITY.json` | Section 5.2 | 004, 005 | 6 |
-| `PDP-06` | One sentence claimed neither double-fault nor native-fork path produced output. | States separately that the double-fault mock returned no public result and the native-fork probe accepted a public call through mock native code without GPU work; neither defect appeared in retained successful GPU workers. | N3 Section 7; retained hostile source review | Sections 2.3 and 9, Internal validity | 018, 019 | 2, 8 |
-| `PDP-07` | Dynamic stable SlangPy documentation was labeled 0.42.0. | Fixes comparison identity to v0.43.1 commit `2f6c4625...`; separates dynamic stable docs accessed 2026-09-07; acknowledges RT pipeline, binding/marshalling, caching, and lifecycle facilities while keeping joint Q1--Q6 `UNKNOWN`. | `RW-SC-05`, `SC-10A`, `SC-10B` | Introduction, Section 7, bibliography | 024 | 1, 7, 9 |
-
-## 4. Bibliography state
-
-| Map ID | Action | Reason/evidence | Final PDF page |
-| --- | --- | --- | --- |
-| `MCM-P3-B01` | Replaces the dynamic `slangPy` 0.42.0 entry with `slangPyRelease` v0.43.1 and `slangPyDocs`. | Separates fixed release/source identity from mutable stable API/changelog documentation and acknowledges inherited 0.43.0 capabilities. | 9 |
-| `MCM-P3-B02` | Adds `necula1996safe` from the official USENIX record. | Direct precedent for policy-based validation of proof-carrying native code before execution. | 9 |
-
-All prior P-double-prime bibliography corrections remain inherited. Dynamic
-official documentation is cited as documentation, not peer-reviewed research.
-The RT-core survey remains mapping background only, never novelty-gap evidence.
-
-## 5. Mandatory disclosures preserved
-
-| Required disclosure | P-quintuple-prime PDF location | Status |
+| Directive | SHA-256 | Applied boundary |
 | --- | --- | --- |
-| Original per-call detailed-receipt requirement was not met | pp. 4, 8 | Preserved |
-| 4,096 timed A executions versus 32 separate diagnostic receipts | p. 4 | Preserved |
-| Prepared timer ends at return; worker oracle follows; first-result endpoint includes it | pp. 4--6 | Preserved |
-| All post-import A/C rows adverse; maximum block 2.377129x (2.377x in paper) | pp. 1, 7--9 | Preserved |
-| M-versus-E first-result regressions, entry about 8--22%, post-import about 16--31%, post hoc/non-gating | p. 7 | Preserved |
-| Import/lifecycle confounding | pp. 6--8 | Preserved |
-| Provider double-fault and native-fork limits | pp. 2, 8 | Preserved and corrected by path |
-| Zero independent-user authoring/prevalence evidence | pp. 5, 8 | Preserved |
-| Selected sphere route required about 2,635 topology-specific LOC and 28 compiler lines | pp. 4, 8 | Preserved |
-| Finite checker missed an early-return probe | pp. 6, 8 | Preserved |
-| A-only paired instrumentation scope | pp. 7--8 | Preserved |
-| Artifact is offline recount, not product install or GPU rerun | p. 8 | Preserved |
-| Measured routes are exact-IR specializations, not generic per-leaf execution | pp. 1, 4, 6, 9 | Preserved and made concrete with W3 |
+| `history/internal_docs/lead_dsl_first_submission_directive_20260907.md` | `ddbf047144a1e8641428f84a3588cf50f0171b0babfb0691399994e7efd68edf` | Make the restricted-Python DSL/compiler the paper's main subject; whole-protocol is one contribution, not the title-level subject. |
+| `history/internal_docs/lead_repurposed_rt_problem_statement_and_evidence_20260907.md` | `ca85675a7321c138603e858794e02aa6fe75b8f8b446a572908a620ea838c3e6` | State a bounded result-obligation compiler problem, credit prior solutions, add application evidence, and forbid first/only/impossibility claims. |
 
-All nine P-quintuple-prime working pages were rendered and inspected before
-candidate freeze. No disclosure was removed to preserve a stronger sentence or
-the prior eight-page layout.
+Both directives authorize manuscript, bibliography, evidence-recovery, and
+control work only. They do not authorize implementation or new experiments.
 
-## 6. Authorization state
+## 2. DSL-first manuscript restructuring
 
-All 24 claim entries remain `claim_authorized=false`. P-double-prime received
-one independent `REVISE_AND_REREVIEW_CHANGED_BYTES` verdict and zero
-acceptances. P-triple-prime preserved the seven author-side corrections but
-received no independent acceptance. P-quadruple-prime then completed the
-result-route pass and also received no transferable acceptance before this
-replacement. P-quintuple-prime starts at 0/2 independent acceptances; no upload
-or submission has occurred.
+| Map ID | P-quintuple-prime weakness | P-sextuple-prime action | Evidence boundary | PDF pages |
+| --- | --- | --- | --- | ---: |
+| `DSL-01` | Title and opening centered on a contract audit rather than the language. | Retitles the paper `RTDL: A Restricted-Python DSL for Repurposed RT`; rewrites the abstract and introduction around the language/compiler problem. | Positioning change only; no new implementation or performance claim. | 1--2 |
+| `DSL-02` | The paper did not show a concrete user program early. | Adds an abridged, typed all-hit count program derived from the real supported standard-library source, with explicit omissions and a non-standalone caption. | Exact supported source family; no claim of arbitrary Python. | 2 |
+| `DSL-03` | Author and compiler responsibilities were diffuse. | Separates author-owned callback source, records, manifest, geometry mapping, predicates, and oracle from compiler-owned parsing, IR, ABI, wrapper/PTX, binding, status, and lifecycle. | Descriptive boundary of current V4 implementation. | 2, 6--7, 9--11 |
+| `DSL-04` | Contributions were organized as seams rather than language/compiler artifacts. | States four contributions: programming model, typed IR and admission, code generation/runtime, and application/evaluation evidence. | Fixed-family implementation; no soundness or usability claim. | 1--2 |
+| `DSL-05` | Language subset and target path were scattered. | Adds a representation table, role-indexed effects, fail-closed judgments, and a source-to-prepared-execution pipeline. | Explanatory judgments summarize implemented checks; they are not a mechanized theorem. | 2--6 |
+| `DSL-06` | General leaves and measured specializations could be conflated. | Gives code generation its own section and distinguishes Numba leaf ABI, trusted topology wrappers, exact-IR specializations, and the non-executable canonical plan. | Measured rows remain bound to exact specialized paths. | 5--7, 9 |
+
+## 3. Repurposed-RT problem and prior solutions
+
+The paper now asks: for an author-selected geometric mapping, how can a
+restricted language represent bounded computation while making selected result
+obligations constrain callbacks, data interpretation, traversal actions, and
+result return?
+
+| Map ID | Action | Attribution and claim ceiling | PDF pages |
+| --- | --- | --- | ---: |
+| `PRT-01` | Adds an obligation table for RTNN, RayJoin, and RayDB. | Their range/nearest maintenance, continue-after-hit, identity, deduplication, and aggregation techniques are prior solutions, not RTDL inventions. | 1, 3 |
+| `PRT-02` | Makes LibRTS the closest application-facing abstraction. | RTDL claims neither API superiority nor inability of LibRTS to add checks. | 7, 9--10 |
+| `PRT-03` | Adds CrossRT, Luisa, Dr.Jit, Scion, TTA/TTA+, OptiX, OSL, Slang, Shader Components, PyOptiX, and OWL comparisons. | Cross-host/device generation, pipeline automation, specialization, BVH language design, event control, and rendering-domain contracts are all credited as prior capability. | 1, 9--10, 12 |
+| `PRT-04` | Narrows the increment to the implemented connection from selected fixed-family result obligations to effect admission, trusted target-action generation, executable identity, and interface-specific failure checks. | No first, only, exhaustive, superiority, or impossibility claim; source silence remains `UNKNOWN`. | 1--6, 10--11 |
+
+The Scion bibliography entry uses its final PLDI 2026 title, `Decoupling Data
+Layouts from Bounding Volume Hierarchies`, Article 175, 39 pages, DOI
+`10.1145/3808253`. TTA/TTA+ is cited as MICRO 2024, DOI
+`10.1109/MICRO61859.2024.00080`.
+
+## 4. Historical application evidence recovery
+
+The new application evidence matrix is
+`novelty/DSL_FIRST_APPLICATION_EVIDENCE_MATRIX_20260907.md`. It records exactly
+what survives and prevents the paper from treating absent application sources
+as current runnable examples.
+
+| Evidence class | Applications | Safe use | Mandatory limit |
+| --- | --- | --- | --- |
+| `E1` | Particle tracking, triangle counting, LibRTS | Exact historical application-source hash and callback-consumer binding remain recoverable from retained recount scripts. | The actual historical application files are absent from the current checkout and submission artifact. |
+| `E2` | RayDB, X-HD, RTNN, RT-DBSCAN, Spatial RayJoin, RT-BarnesHut | Frozen source-audit records retain path, mapping, and structural responsibility information. | Individual source bytes are absent; rows are not current runnable examples. |
+
+The manuscript table names all nine project-authored mappings, the
+application-owned semantics, reused RTDL/shared responsibilities, and the
+evidence caveat. It discloses RayDB as the sole private-loader exception,
+attributes every application algorithm to its original paper, and does not
+claim that every application stage ran on RT cores.
+
+## 5. Evidence denominators remain separate
+
+| Evidence set | Exact denominator retained in P-sextuple-prime | Forbidden interpretation |
+| --- | --- | --- |
+| Historical portfolio | Nine mappings and thirteen selected paper lanes | Not nine external users, current runnable examples, or unseen-app generalization. |
+| Historical V2/V4 authority | 464 exact behaviorally true-OptiX workers; 34 rows; 16 pass, 18 fail; 11 clear V4 wins, 10 clear losses, 13 uncertain | Not PyOptiX, not final M, not a broad performance win, and not pooled with final M. Raw archive is absent and was not rerun. |
+| Final measured M | Two exact specialized tasks on RTX 4090 Ada and RTX 3090 Ampere; 160 cells and 20,480 steady samples | Not all nine apps, arbitrary callbacks, generic Numba-leaf execution, or intrinsic language overhead. |
+| Sealed composition | One author-defined selected sphere composition, two launches, 12/12 oracle rows | Not an unbiased unseen-app exam or topology-generic synthesis. |
+| Finite target checker | Five property classes applied 20 times with 15 unique mutations | Not control-flow, numerical, or refinement soundness. |
+
+## 6. Inherited corrections retained
+
+P-sextuple-prime preserves all earlier corrections, including:
+
+- concrete reject/generate/select decisions for the bounded relation, all-hit
+  count, and exact-IR specialization;
+- explicit separation of general Numba leaves from measured trusted
+  specializations;
+- exact app-free warm/load may precede route admission;
+- materialized-program receipts versus the measured AOT fast result;
+- provider double-fault and native-fork limitations;
+- proof-carrying code, typed linking/FFI, Slang/Shader Components, and formal
+  GPU verification as stronger or adjacent precedents; and
+- source hashes establishing identity rather than semantics.
+
+## 7. Mandatory disclosures in the final text
+
+| Disclosure | PDF location |
+| --- | ---: |
+| Prepared public RTDL/Direct medians are `1.077--1.175x`, not a speedup claim | 1, 9, 11 |
+| All post-import RTDL/strong-PyOptiX medians are adverse; worst block `2.377x` | 1, 9--11 |
+| Entry was revised after an adverse result; first-result endpoints remain confounded | 9, 11 |
+| M versus E first-result regression is post hoc and non-gating | 9--10 |
+| 4,096 timed A calls have only 32 separate diagnostic receipts | 6, 11 |
+| Paired instrumentation qualification covers A only | 9, 11 |
+| Selected sphere route required about 2,635 topology-specific lines and 28 compiler lines | 5, 8, 11 |
+| Finite checker missed an out-of-authority early-return probe | 8, 11 |
+| Zero independent-user sessions or authoring-time measures | 7, 9, 11 |
+| Six historical app sources and the old raw archive are absent | 6--8, 11 |
+| Artifact is offline evidence recount, not product install or GPU rerun | 10--11 |
+
+## 8. Exact pre-commit candidate bytes and author QA
+
+| Deliverable | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `paper/cgo2027/main.tex` | 60,755 | `a339ace8ec2f071cd85c2416e9f67b5d76ae533d43a41a96dbfa2f6647be7de0` |
+| `paper/cgo2027/references.bib` | 21,953 | `bb0b71ae0fec49492888fbc9252ed412897cb2d4d7f1e33008f902cdb3b74e61` |
+| Both candidate PDF paths | 182,617 each | `a1772fc41809deb91f64466fc0cccb9557023c143d99d361b4f3b9aa38ad36f0` |
+| Normalized source bundle | 29,176 | `a49ea4aedc2b96084eefddf2ee987e20e968b59416c678caa30c5ab0c4606afa` |
+| Unchanged F2 artifact | 180,308 | `916cedbb7001c7aa43e66df3f992b543b7b3ca5a013f0f997790113a2e3738b8` |
+
+Author-side checks passed: cached Tectonic build; 12 US-Letter pages; main
+content ends on page 11; zero horizontal or vertical overfull boxes; zero
+undefined citations/references; 12/12 fonts embedded, subset, and Unicode
+mapped; both PDF paths byte-identical; two independently generated normalized
+source archives byte-identical; source hashes preserved after extraction to a
+foreign path containing spaces; foreign-path compilation exited zero; all 12
+pages rendered and visually inspected; and no tested private path, username,
+host, key, internal Goal ID, or agent name appeared in extracted PDF text.
+
+These are author-side checks, not an independent acceptance. BibTeX emits
+nonfatal completeness warnings for several inherited conference records and
+the in-press survey; all cited entries render and no citation is unresolved.
+
+## 9. Authorization state
+
+The claim ledger now contains 28 entries and zero authorized flags. The four
+new entries cover the restricted-Python DSL surface, historical application
+evidence, complete mixed historical performance counts, and the bounded
+repurposed-RT problem statement. P-sextuple-prime begins at 0/2 independent
+acceptances. No prior vote transfers, no authenticated submission form has
+been checked, no upload has occurred, and no submission receipt exists.

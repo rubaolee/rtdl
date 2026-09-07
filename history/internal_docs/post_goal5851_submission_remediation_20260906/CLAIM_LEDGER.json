@@ -2,7 +2,7 @@
   "schema": "rtdl.cgo2027.post_goal5851.claim_ledger.v1",
   "version": 1,
   "created_at_utc": "2026-09-06T20:35:00Z",
-  "updated_at_utc": "2026-09-07T11:38:16Z",
+  "updated_at_utc": "2026-09-07T12:21:58Z",
   "measured_implementation": {
     "commit": "d653fe4ad170c5b51fee309d653c9565944dcf2e",
     "tree": "d53af23a2599f9d6adb4ac0bfff39cd0ab31860b",
@@ -17,9 +17,9 @@
     "public_or_manuscript_claim_authorized": false
   },
   "review": {
-    "current_reviewer": "Pending two independent reviews of exact P-quintuple-prime bytes; author-side three-question argument closure complete",
-    "current_review_version": "post_goal5851_pquintupleprime_three_question_closure_author_remediated_pending_independent_review",
-    "external_final_bytes_review": "PQUADRUPLEPRIME_ZERO_TRANSFERABLE_ACCEPT__PQUINTUPLEPRIME_PENDING_TWO_INDEPENDENT_ACCEPTANCES",
+    "current_reviewer": "Pending two independent reviews of exact P-sextuple-prime DSL-first bytes; author-side directive execution and hostile preflight complete",
+    "current_review_version": "post_goal5851_psextupleprime_dsl_first_author_remediated_pending_independent_review",
+    "external_final_bytes_review": "PQUINTUPLEPRIME_ZERO_TRANSFERABLE_ACCEPT__PSEXTUPLEPRIME_PENDING_TWO_INDEPENDENT_ACCEPTANCES",
     "old_p_lead_review": {
       "path": "history/internal_docs/post_goal5851_submission_remediation_20260906/R7_LEAD_INDEPENDENT_FINAL_BYTES_REVIEW.md",
       "sha256": "c449a6c6eed4f177496a762b38f13434a09b1447aa3b3521db56c66b818d5ddd",
@@ -502,9 +502,9 @@
       "validation_phase": "Author-side W1-W3 source derivation, existing component/mutation replay, and manuscript remapping; independent final-byte review pending.",
       "limitations": "W1 is one fixed-family restriction, W2 uses established OptiX mechanisms, and W3 is a source-to-wrapper test without GPU equivalence. Exact app-free runtime load/warm may precede route admission. Same-compiler derivations, trusted semantic schemas, exact-IR specializations, and topology lowerers remain TCB; no PCC certificate, automatic intent inference, arbitrary topology synthesis, general algorithm, soundness theorem, first/only claim, or proof another system cannot implement it.",
       "paper_destination": "Abstract; Introduction; Protocol Mismatch; Bounded Language and Admission; Conclusion",
-      "disposition": "RETAIN_AS_BOUNDED_RESULT_ROUTE_DESIGN__PENDING_PQUINTUPLEPRIME_R7",
+      "disposition": "RETAIN_AS_BOUNDED_RESULT_ROUTE_DESIGN__PENDING_PSEXTUPLEPRIME_R7",
       "claim_authorized": false,
-      "reviewer": "Codex author-side P-quintuple-prime three-question closure; two independent exact-byte reviews pending"
+      "reviewer": "Codex author-side P-sextuple-prime DSL-first rewrite; two independent exact-byte reviews pending"
     },
     {
       "claim_id": "METHOD-TYPED-EFFECT-TRUSTED-LOWERING-023",
@@ -522,9 +522,9 @@
       "validation_phase": "Author-side W2/W3 lowering trace, existing source-to-wrapper test replay, and previously retained finite checker/GPU route evidence.",
       "limitations": "An implementation method, not invention of OptiX all-hit operations or a new effect calculus. The measured specializations replace per-leaf calls/tag checks at specialized roles and remain TCB; their IR guards are selectors, not proofs. The canonical plan is non-executable and not every topology admits every language-level effect.",
       "paper_destination": "Abstract; Contributions; Role-indexed effects; Plan versus executable lowering; Conclusion",
-      "disposition": "RETAIN_AS_RESULT_ROUTE_IMPLEMENTATION_METHOD__PENDING_PQUINTUPLEPRIME_R7",
+      "disposition": "RETAIN_AS_RESULT_ROUTE_IMPLEMENTATION_METHOD__PENDING_PSEXTUPLEPRIME_R7",
       "claim_authorized": false,
-      "reviewer": "Codex author-side P-quintuple-prime three-question closure; two independent exact-byte reviews pending"
+      "reviewer": "Codex author-side P-sextuple-prime DSL-first rewrite; two independent exact-byte reviews pending"
     },
     {
       "claim_id": "RELATED-WORK-EXACT-GUARANTEE-BOUNDARY-024",
@@ -537,9 +537,74 @@
       "validation_phase": "Primary-source author/standards/project documentation audit; no opponent execution and no inference from silence.",
       "limitations": "PCC is a direct policy-validation precedent; RTDL has no proof certificate. Slang and Shader Components already provide substantial capability, interface, and specialization mechanisms; FFI/linking work tracks rich semantic and physical relations. SlangPy v0.43.1 provides substantial RT, binding, cache, and lifecycle facilities. This is a source-bounded observation, not a first/only, exhaustive-review, empirical-negative, or impossibility claim; dynamic docs are not peer-reviewed research.",
       "paper_destination": "Abstract; Introduction; Related Work; External-validity threats",
-      "disposition": "RETAIN_SCOPED_RESULT_PREDICATE_WORDING__PENDING_PQUINTUPLEPRIME_R7",
+      "disposition": "RETAIN_SCOPED_RESULT_PREDICATE_WORDING__PENDING_PSEXTUPLEPRIME_R7",
       "claim_authorized": false,
-      "reviewer": "Codex author-side P-quintuple-prime three-question closure; two independent exact-byte reviews pending"
+      "reviewer": "Codex author-side P-sextuple-prime DSL-first rewrite; two independent exact-byte reviews pending"
+    },
+    {
+      "claim_id": "LANG-RESTRICTED-PYTHON-DSL-025",
+      "candidate_sentence": "RTDL exposes a restricted-Python DSL in which authors declare immutable records, typed role functions, and manifests while raw traversal, PTX composition, pipeline/SBT construction, and runtime binding remain compiler-owned.",
+      "scope": "The current V4 public research API, callback front end and IR, one supported built-in-triangle standard-library program, and explicitly implemented route lowerers at measured source M.",
+      "source_evidence": [
+        {"path": "src/rtdsl/v4.py", "sha256": "650c3a5258ecfa6f51faee6e5b06e2891fa30632c74bf89fcee1e1106456122d"},
+        {"path": "src/rtdsl/v4_callback_frontend.py", "sha256": "c7f3799922bcb978cda1d67a1e4b62f00d4153172d3cd0a286ec9c7d5f2a725b"},
+        {"path": "src/rtdsl/v4_callback_ir.py", "sha256": "edf571196dde4a557b328b5a35fd65e2e57e63cf4a48180d1fa87dba363c1ec7"},
+        {"path": "src/rtdsl/v4_triangle_standard_library.py", "sha256": "98b819ff8fb2f1c99b726e0530539aca6b5731daf3e52b02671727db1043c500"},
+        {"path": "src/rtdsl/v4_public_builtin_triangle.py", "sha256": "627d2ae1db01769e50697f6bf92a05e1eee21ca5d10d6ddb1c360b901a7cec9c"}
+      ],
+      "validation_phase": "Author-side source trace and manuscript remapping; no executable bytes or GPU experiment changed.",
+      "limitations": "Not arbitrary Python, a general OptiX replacement, arbitrary-topology synthesis, or evidence that independent users find authoring easier. The stable facade has two constructors, and trusted topology-specific lowerers remain required.",
+      "paper_destination": "Title; Abstract; RTDL by Example and Programming Model; IR; Code Generation; Conclusion",
+      "disposition": "RETAIN_BOUNDED_DSL_AND_PROGRAMMING_MODEL__PENDING_PSEXTUPLEPRIME_R7",
+      "claim_authorized": false,
+      "reviewer": "Codex author-side P-sextuple-prime DSL-first rewrite; two independent exact-byte reviews pending"
+    },
+    {
+      "claim_id": "APP-HISTORICAL-V4-MAPPINGS-026",
+      "candidate_sentence": "A frozen source audit covered nine project-authored V4 application mappings and thirteen selected paper lanes; the current evidence set retains exact application-source hashes for three mappings and archive-level audit records for six.",
+      "scope": "Historical Particle, triangle counting, RayDB, LibRTS, X-HD, RTNN, RT-DBSCAN, Spatial RayJoin, and RT-BarnesHut mappings only.",
+      "source_evidence": [
+        {"path": "scripts/goal5773_build_evidence.py", "sha256": "273cf68bb8cdce27193e77218404af3ca7b0d98a5ab9355b7667e58d3329e70c"},
+        {"path": "scripts/goal5787_build_cgo_integration.py", "sha256": "4deac345052a79ff25cf439740395fc554e7bc3316662fa0a91c519b2eebb393"},
+        {"path": "scripts/goal5789_a2_independent_recount.py", "sha256": "3bc0b7df1b05ad6ea7d7d91c394b9f797c237f1da7a1dac931c2b7a2d6239050"},
+        {"path": "scripts/goal5792_source_backed_responsibility_audit.py", "sha256": "2a50d597fd25370dcfb8d2b0acda7535c73884899bbfcb81f1e9927ecca0a376"},
+        {"path": "history/internal_docs/post_goal5851_submission_remediation_20260906/novelty/DSL_FIRST_APPLICATION_EVIDENCE_MATRIX_20260907.md", "sha256": "9ffba6ef1dd5a076febabe742380f1554749bf9a13ebd5d1f25e875a811d9cd3"}
+      ],
+      "validation_phase": "Author-side recovery from surviving source-index, responsibility, and independent-recount scripts; no application rerun.",
+      "limitations": "Six individual application files and the frozen 10.8 MB source archive are absent. The portfolio is historical mapping/responsibility evidence, not current installability, unseen-user generalization, usability, elimination of trusted native partners, or proof that every stage ran on RT cores. RayDB was the sole private-loader exception.",
+      "paper_destination": "Abstract; Contributions; V4 Applications and Case Studies; Historical application evidence; Threats",
+      "disposition": "RETAIN_E1_E2_EVIDENCE_CLASSES__PENDING_PSEXTUPLEPRIME_R7",
+      "claim_authorized": false,
+      "reviewer": "Codex author-side evidence recovery; two independent exact-byte reviews pending"
+    },
+    {
+      "claim_id": "PERF-HISTORICAL-MIXED-V2-V4-027",
+      "candidate_sentence": "A historical RTX 4000 Ada authority contained 464 exact behaviorally true-OptiX workers and 34 V2-direct/V4 rows: 16 row-local median passes, 18 failures, 11 clear V4 wins, 10 clear losses, and 13 uncertain by the recorded 95 percent confidence intervals.",
+      "scope": "The separate historical 34-row V2-direct/V4 authority only.",
+      "source_evidence": [
+        {"path": "scripts/goal5787_build_cgo_integration.py", "sha256": "4deac345052a79ff25cf439740395fc554e7bc3316662fa0a91c519b2eebb393"}
+      ],
+      "validation_phase": "Author-side recovery of the frozen generator's recorded counts; raw archive absent and not rerun in this pass.",
+      "limitations": "Not a PyOptiX comparison, not final M, not a broad speedup claim, and not poolable with final two-task evidence. The raw archive is absent, so the row population was not independently reverified in this pass.",
+      "paper_destination": "Historical application evidence; Threats",
+      "disposition": "RETAIN_FULL_MIXED_COUNTS_ONLY__PENDING_PSEXTUPLEPRIME_R7",
+      "claim_authorized": false,
+      "reviewer": "Codex author-side evidence recovery; two independent exact-byte reviews pending"
+    },
+    {
+      "claim_id": "PROBLEM-REPURPOSED-RESULT-OBLIGATIONS-028",
+      "candidate_sentence": "For an author-selected geometric mapping, RTDL studies how selected application result obligations can constrain callback effects, data interpretation, traversal actions, and result return in a bounded DSL and compiler.",
+      "scope": "The fixed result routes and evidence boundaries stated in the DSL-first manuscript, motivated by RTNN, RayJoin, RayDB, LibRTS, and other cited prior systems.",
+      "source_evidence": [
+        {"path": "history/internal_docs/lead_repurposed_rt_problem_statement_and_evidence_20260907.md", "sha256": "ca85675a7321c138603e858794e02aa6fe75b8f8b446a572908a620ea838c3e6"},
+        {"path": "history/internal_docs/lead_dsl_first_submission_directive_20260907.md", "sha256": "ddbf047144a1e8641428f84a3588cf50f0171b0babfb0691399994e7efd68edf"}
+      ],
+      "validation_phase": "Bounded primary-source literature synthesis plus trace to existing RTDL admission and code-generation decisions; independent novelty review pending.",
+      "limitations": "Prior systems already solve individual obligations and provide strong abstractions. This is not a first-discovery claim, an exhaustive literature review, evidence that rendering lacks protocols, or proof that adjacent systems cannot implement similar guarantees.",
+      "paper_destination": "Abstract; Introduction; Prior-obligation table; Related Work; Conclusion",
+      "disposition": "RETAIN_AS_BOUNDED_COMPILER_PROBLEM__PENDING_PSEXTUPLEPRIME_R7",
+      "claim_authorized": false,
+      "reviewer": "Codex author-side P-sextuple-prime literature and manuscript audit; two independent exact-byte reviews pending"
     }
   ]
 }
