@@ -1,0 +1,774 @@
+{
+  "application_count": 9,
+  "applications": [
+    {
+      "app_id": "particle_tracking",
+      "bytes_present": true,
+      "executed_claimed_by_manifest": false,
+      "historical_identity": "exact_historical_hash_and_consumer_binding",
+      "runnable_claimed_by_manifest": false,
+      "source_path": "Paper-reproduction-apps/goal5753-held-out-particle-tracking/v4_whole_app.py",
+      "v4_source_sha256": "e2d26dd9a67025066ca77d1c57f358c34a8e4446a679b32f772a228ee52712a4"
+    },
+    {
+      "app_id": "triangle_counting",
+      "bytes_present": true,
+      "executed_claimed_by_manifest": false,
+      "historical_identity": "exact_historical_hash_and_consumer_binding",
+      "runnable_claimed_by_manifest": false,
+      "source_path": "Paper-reproduction-apps/triangle-counting-paper/v4_whole_app.py",
+      "v4_source_sha256": "8ab4f4ad6c5913483633b06e70035a26637bc2b2a0589ce470623504d86e6210"
+    },
+    {
+      "app_id": "librts",
+      "bytes_present": true,
+      "executed_claimed_by_manifest": false,
+      "historical_identity": "exact_historical_hash_and_consumer_binding",
+      "runnable_claimed_by_manifest": false,
+      "source_path": "Paper-reproduction-apps/librts-paper/v4_whole_app.py",
+      "v4_source_sha256": "2952d38b341525d5b529a4391949df5b1ab59cd463c752f4da4df0823e40b987"
+    },
+    {
+      "app_id": "rtnn",
+      "bytes_present": true,
+      "executed_claimed_by_manifest": false,
+      "historical_identity": "recovered_candidate_source_not_old_authority",
+      "runnable_claimed_by_manifest": false,
+      "source_path": "Paper-reproduction-apps/rtnn-paper/v4_whole_app.py",
+      "v4_source_sha256": "9ac2119998bf787500177ae02a6beba9172f0230a890f7966094b4a888f7f1f1"
+    },
+    {
+      "app_id": "x_hd",
+      "bytes_present": true,
+      "executed_claimed_by_manifest": false,
+      "historical_identity": "recovered_candidate_source_not_old_authority",
+      "runnable_claimed_by_manifest": false,
+      "source_path": "Paper-reproduction-apps/x-hd-paper/v4_whole_app.py",
+      "v4_source_sha256": "7eb1b7b4c994d5d30a87d214a09fbdcc15e97243720b70b196357d554039d2db"
+    },
+    {
+      "app_id": "rt_dbscan",
+      "bytes_present": true,
+      "executed_claimed_by_manifest": false,
+      "historical_identity": "recovered_candidate_source_not_old_authority",
+      "runnable_claimed_by_manifest": false,
+      "source_path": "Paper-reproduction-apps/rt-dbscan-paper/v4_whole_app.py",
+      "v4_source_sha256": "8136260817b2e1f4735fd437c603a990c8bab450a441785fa5aebe676547b338"
+    },
+    {
+      "app_id": "raydb",
+      "bytes_present": true,
+      "executed_claimed_by_manifest": false,
+      "historical_identity": "recovered_candidate_source_not_old_authority",
+      "runnable_claimed_by_manifest": false,
+      "source_path": "Paper-reproduction-apps/raydb-paper/v4_whole_app.py",
+      "v4_source_sha256": "f482f409fbd6cd565d661d8440886835bdc7417e9d934e89f3fad67f664cbc05"
+    },
+    {
+      "app_id": "rayjoin",
+      "bytes_present": true,
+      "executed_claimed_by_manifest": false,
+      "historical_identity": "recovered_candidate_source_not_old_authority",
+      "runnable_claimed_by_manifest": false,
+      "source_path": "Paper-reproduction-apps/rayjoin-paper/v4_whole_app.py",
+      "v4_source_sha256": "968365001aa3393e782e9404d9432dd56abf605a450c8bddfd5717d0ff569df5"
+    },
+    {
+      "app_id": "rt_barneshut",
+      "bytes_present": true,
+      "executed_claimed_by_manifest": false,
+      "historical_identity": "recovered_candidate_source_not_old_authority",
+      "runnable_claimed_by_manifest": false,
+      "source_path": "Paper-reproduction-apps/rt-barneshut-paper/v4_whole_app.py",
+      "v4_source_sha256": "98c0f922d50d64f07f1b10af2118924a0b69ebe1bb59096c040a8912d915bc61"
+    }
+  ],
+  "claim_boundary": {
+    "historical_goal5785_execution_replayed": false,
+    "performance_result_exists": false,
+    "six_old_historical_authorities_recovered": false,
+    "six_sources_available_as_new_candidate_inputs": true,
+    "three_exact_historical_v4_source_hashes_present": true
+  },
+  "directory_manifest_sha256": "a2cdb9f9f83a49485f8964c9ae8391ed9531c9b7f25bfe4cf16164c594bfa0cb",
+  "file_count": 134,
+  "files": [
+    {
+      "path": "Paper-reproduction-apps/goal5753-held-out-particle-tracking/README.md",
+      "sha256": "791c394fceb421d5b25fa815c6d2b9b6263817affd30f697de4a8cef54e034f3",
+      "size_bytes": 2462
+    },
+    {
+      "path": "Paper-reproduction-apps/goal5753-held-out-particle-tracking/callback_attempt.py",
+      "sha256": "c70401946242b0e4464a12996104a81932e356fd884b88bace659d08d1608641",
+      "size_bytes": 5451
+    },
+    {
+      "path": "Paper-reproduction-apps/goal5753-held-out-particle-tracking/independent_oracle.py",
+      "sha256": "61a724c47c3d92840f83f027ec3ae0f67a972252989ae0bed964830a1b5022a5",
+      "size_bytes": 2529
+    },
+    {
+      "path": "Paper-reproduction-apps/goal5753-held-out-particle-tracking/physical_contract.py",
+      "sha256": "1ab385e96a58d23819fb65b259bfee1f262410d0cdc646bc975ff490c3db0fc3",
+      "size_bytes": 2218
+    },
+    {
+      "path": "Paper-reproduction-apps/goal5753-held-out-particle-tracking/v4_whole_app.py",
+      "sha256": "e2d26dd9a67025066ca77d1c57f358c34a8e4446a679b32f772a228ee52712a4",
+      "size_bytes": 14689
+    },
+    {
+      "path": "Paper-reproduction-apps/librts-paper/acquire_exact_ae_archive.py",
+      "sha256": "bebc3eb53084920d61d5487869fabe6dcc6ba412d54e9fece6f6ada345d019b3",
+      "size_bytes": 8546
+    },
+    {
+      "path": "Paper-reproduction-apps/librts-paper/audit_exact_archive_operation_inventory.py",
+      "sha256": "b739624ee4ea65af42cccb9d65cc3c93ac033b60eeba66b879fb08de1552f924",
+      "size_bytes": 5161
+    },
+    {
+      "path": "Paper-reproduction-apps/librts-paper/audit_exact_figure6_point_contains_denominator.py",
+      "sha256": "2b53fba98ec1ebc16586ff04ed520cb8caf675a2850a16f2034711114789d2ef",
+      "size_bytes": 5990
+    },
+    {
+      "path": "Paper-reproduction-apps/librts-paper/audit_goal5503_author_range_intersects_contract.py",
+      "sha256": "c2223dc890cfb9523ba7d80b4272b2832736b44cef76f5348c6dadaddbac3ea2",
+      "size_bytes": 7606
+    },
+    {
+      "path": "Paper-reproduction-apps/librts-paper/build_author_paper_log_denominator_matrix.py",
+      "sha256": "624a7cacaaf7d59080337eed0c34a1ab5d27a4cece2ba34c596433552b2c6947",
+      "size_bytes": 7923
+    },
+    {
+      "path": "Paper-reproduction-apps/librts-paper/build_dataset_acquisition_decision.py",
+      "sha256": "6e26bd9d183d709ff270d77478f1e099b3a2a241f5e6dd38895dda1ce80edb14",
+      "size_bytes": 4814
+    },
+    {
+      "path": "Paper-reproduction-apps/librts-paper/build_exact_aabb_column_cache.py",
+      "sha256": "c45af4edf0fceaac14e4b4d8c40f1fa9f0b4707bfa3b1af940e51014069d9b5b",
+      "size_bytes": 6266
+    },
+    {
+      "path": "Paper-reproduction-apps/librts-paper/build_full_paper_target_availability_audit.py",
+      "sha256": "e6717955ca907efb57e2cdf14f18443963647f347736f3bbb2b7a47f61f0841c",
+      "size_bytes": 10857
+    },
+    {
+      "path": "Paper-reproduction-apps/librts-paper/build_goal5505_librts_runtime_semantics_gate.py",
+      "sha256": "3f90a1e30b102f238c53aa6c1f3bc0cb266fc51f9ebb2cbab7c1d53dfc897eb6",
+      "size_bytes": 5667
+    },
+    {
+      "path": "Paper-reproduction-apps/librts-paper/build_goal5506_librts_scalable_semantics_gate.py",
+      "sha256": "48f5310eba862c4e0409bcffbf5b6a5d259fd12c9cd55f9b6c485f2921f8f1ca",
+      "size_bytes": 3728
+    },
+    {
+      "path": "Paper-reproduction-apps/librts-paper/build_goal5507_librts_generic_range_intersects_fix_gate.py",
+      "sha256": "358e188b032e4f5565269640d155160dc6a05ed85ccf84ac75a611686b98c93f",
+      "size_bytes": 5862
+    },
+    {
+      "path": "Paper-reproduction-apps/librts-paper/build_goal5508_librts_degenerate_validity_fix_gate.py",
+      "sha256": "4787346434fdf3ee236f69585b3807d66681ff047ba53ba8bc4fd1fc67f6256a",
+      "size_bytes": 7386
+    },
+    {
+      "path": "Paper-reproduction-apps/librts-paper/build_goal5509_librts_range_intersects_next_batch_gate.py",
+      "sha256": "4419c2d367d2bae76983e937a2297fbbbf96b83962c8ebdce8a31e536a7cd549",
+      "size_bytes": 4802
+    },
+    {
+      "path": "Paper-reproduction-apps/librts-paper/build_goal5511_librts_range_intersects_select0001_gate.py",
+      "sha256": "52585d7c04a5d7d2b7d5140ac54aba3c5ff657d929004ddeb6689b059d5d24c9",
+      "size_bytes": 5062
+    },
+    {
+      "path": "Paper-reproduction-apps/librts-paper/build_goal5512_librts_range_intersects_capacity_resolution_gate.py",
+      "sha256": "6c9a69fcf50dd8a27319ed4753e5b8e7b3a068942f375353cb4c556004180dd0",
+      "size_bytes": 3379
+    },
+    {
+      "path": "Paper-reproduction-apps/librts-paper/build_goal5513_librts_range_intersects_select001_gate.py",
+      "sha256": "a779d850531a1b8129ad0e814a670a364f224daeadffa522e3654edff500cdb5",
+      "size_bytes": 4601
+    },
+    {
+      "path": "Paper-reproduction-apps/librts-paper/build_goal5514_librts_range_intersects_select001_resolution_gate.py",
+      "sha256": "38c53eb7930bdb65e200183c4459f218cb5e89a8181038506e5a6370d79f0ffa",
+      "size_bytes": 3313
+    },
+    {
+      "path": "Paper-reproduction-apps/librts-paper/build_goal5515_librts_range_intersects_select001_correction_gate.py",
+      "sha256": "79678cef450ac9b04800096e8ba34b08abf5900e31bd09ada7d3f0db6f4ef068",
+      "size_bytes": 4605
+    },
+    {
+      "path": "Paper-reproduction-apps/librts-paper/build_goal5516_range_intersects_coverage_ledger.py",
+      "sha256": "ef59b0f6c2bdd8e1a7c12d30e0355629663f46b75c32e59ec09c7b40d7f1f626",
+      "size_bytes": 6655
+    },
+    {
+      "path": "Paper-reproduction-apps/librts-paper/build_goal5517_librts_range_contains_batch_gate.py",
+      "sha256": "8a7213bcde53208238f0b61383a53e5248c4e9a18d5bca21e1af148cb48ce681",
+      "size_bytes": 4462
+    },
+    {
+      "path": "Paper-reproduction-apps/librts-paper/build_goal5518_range_contains_coverage_ledger.py",
+      "sha256": "a6e7d698eb543bef4a244db209cd2d674943d1b5d1ab32acebd81a4b9b7a5881",
+      "size_bytes": 3248
+    },
+    {
+      "path": "Paper-reproduction-apps/librts-paper/build_goal5519_librts_operation_scoped_aabb_validity_gate.py",
+      "sha256": "e6427c9c6482eb6854f460fe3b1b60d42ca4b58272e4bef6c8900f59860d5a0b",
+      "size_bytes": 8828
+    },
+    {
+      "path": "Paper-reproduction-apps/librts-paper/build_goal5520_parks_europe_range_contains_cardinality_gate.py",
+      "sha256": "6ec1f70541f929cd41254cbc0ab7b9238d3495b45652a87a0bf21fb3d082b99b",
+      "size_bytes": 4002
+    },
+    {
+      "path": "Paper-reproduction-apps/librts-paper/build_goal5521_librts_parks_bz2_range_contains_cardinality_gate.py",
+      "sha256": "a504c143c5d16120c2201789674c3039595363a53c33a68eba8349d11f4479ab",
+      "size_bytes": 5219
+    },
+    {
+      "path": "Paper-reproduction-apps/librts-paper/build_goal5522_librts_parks_bz2_point_contains_cardinality_gate.py",
+      "sha256": "8bc6e0f26d4a7f9b97aeb3df070c627a03ca57d0189707ed73dc72836bcc306f",
+      "size_bytes": 4913
+    },
+    {
+      "path": "Paper-reproduction-apps/librts-paper/build_goal5523_librts_parks_europe_point_contains_cardinality_gate.py",
+      "sha256": "b77fb53b796e2f732bb34ac4aafeb699593d53f6284916cac91d0ca3d9f89f26",
+      "size_bytes": 3990
+    },
+    {
+      "path": "Paper-reproduction-apps/librts-paper/build_goal5524_librts_system_value_closeout.py",
+      "sha256": "ff1b66d7330a76f2e48362ac9ebe1cc02ffa164ff24aaf7e8f667a9958e91e11",
+      "size_bytes": 5760
+    },
+    {
+      "path": "Paper-reproduction-apps/librts-paper/build_pod_author_environment_summary.py",
+      "sha256": "a21f95af8e0bb18838db7cc72be3c215d380c4c3c1c4bfad8e6fd606cbb5de77",
+      "size_bytes": 5328
+    },
+    {
+      "path": "Paper-reproduction-apps/librts-paper/build_ray_multicast_feasibility_audit.py",
+      "sha256": "5a998db7a24605bea604293c2eed871db0bedaec4a3a2b3deed91946b410846b",
+      "size_bytes": 5337
+    },
+    {
+      "path": "Paper-reproduction-apps/librts-paper/data/fixtures/tiny_boxes.wkt",
+      "sha256": "12629026e7323d795d00407a3ac7b11206eca18b442ac8357b2870e57922e3f2",
+      "size_bytes": 144
+    },
+    {
+      "path": "Paper-reproduction-apps/librts-paper/data/fixtures/tiny_range_queries.wkt",
+      "sha256": "72a363f6394d69cc1d508ac12854d43300f526d1eb662365621548c3633f86df",
+      "size_bytes": 255
+    },
+    {
+      "path": "Paper-reproduction-apps/librts-paper/diagnose_representative_pip_semantics.py",
+      "sha256": "04020a39a57ae468d73446f33275b8a2a921d3fa99c164ea1ced70541e0a3b7a",
+      "size_bytes": 12611
+    },
+    {
+      "path": "Paper-reproduction-apps/librts-paper/extend_verified_operation_batch.py",
+      "sha256": "08df0d9db3b3e82ced810919d96be638b52e82cbccb0b77b128e07d78813ac7e",
+      "size_bytes": 7978
+    },
+    {
+      "path": "Paper-reproduction-apps/librts-paper/extract_verified_ae_archive.py",
+      "sha256": "1b596e563ac00e16b3a5ad8fbda4940641dbc212c23538313dd4b78a66ade55f",
+      "size_bytes": 14985
+    },
+    {
+      "path": "Paper-reproduction-apps/librts-paper/extract_verified_ae_subset.py",
+      "sha256": "ba303c14431d815d06d3a17042c2e55bdc2fed8285e4ce126c31de6ee9e407b8",
+      "size_bytes": 5345
+    },
+    {
+      "path": "Paper-reproduction-apps/librts-paper/extract_verified_operation_batch.py",
+      "sha256": "65ad487c8ec3d74ca9f1b3de2a445bc94777c7a616ecbf2dc387986caa482a7d",
+      "size_bytes": 6443
+    },
+    {
+      "path": "Paper-reproduction-apps/librts-paper/extract_verified_operation_subset.py",
+      "sha256": "553cdb17f61c05cb0cc520666fc6145e0080a4f6bcc1199d4d00c6f9430fe92b",
+      "size_bytes": 5887
+    },
+    {
+      "path": "Paper-reproduction-apps/librts-paper/generate_goal5506_librts_scalable_semantics_probe.py",
+      "sha256": "147648a7d6c97757f7c87e1c371d41b934ad3c8c9730fc8286f4cca939383662",
+      "size_bytes": 3883
+    },
+    {
+      "path": "Paper-reproduction-apps/librts-paper/librts_author_pip_compat.py",
+      "sha256": "5afc8cc3e969fdae53f20760d3c7a35bf6dd78bc791b01aa21a4d67f8986ec43",
+      "size_bytes": 7190
+    },
+    {
+      "path": "Paper-reproduction-apps/librts-paper/librts_reproduction.py",
+      "sha256": "bc260314e32e7727d831b6de8b04542d7de90058638a832817a975fea9c89a25",
+      "size_bytes": 21539
+    },
+    {
+      "path": "Paper-reproduction-apps/librts-paper/rtdl3_action_migration.py",
+      "sha256": "d586f39792a329f9adbc002b513f351d4efd6ff490e8f74cbb7145ed61a72345",
+      "size_bytes": 20830
+    },
+    {
+      "path": "Paper-reproduction-apps/librts-paper/rtdl3_whole_app.py",
+      "sha256": "2e0ae8400dea9acfe18fd0e1506f0e888ae48b1c98ed67d4d860ae8a2345ea5b",
+      "size_bytes": 12011
+    },
+    {
+      "path": "Paper-reproduction-apps/librts-paper/run_exact_point_contains_batch_gate.py",
+      "sha256": "24c4c3f6f74fb656583c7b4ef6101b039fe04a47463c7f26176c997a980613d5",
+      "size_bytes": 6014
+    },
+    {
+      "path": "Paper-reproduction-apps/librts-paper/run_exact_point_contains_count_gate.py",
+      "sha256": "629626250cd7963f0104e1fea72a9922e4bb20408134877ae52dcdd10f712279",
+      "size_bytes": 16711
+    },
+    {
+      "path": "Paper-reproduction-apps/librts-paper/run_exact_point_contains_count_only_gate.py",
+      "sha256": "4171cece95b673f2da6ba3930b8b5298bfb84e9f0cb9eff1481959d4ad94e2e5",
+      "size_bytes": 5412
+    },
+    {
+      "path": "Paper-reproduction-apps/librts-paper/run_exact_point_contains_prepared_phase_batch.py",
+      "sha256": "c9f2f7cc94c6c5f0edd23b6cdf657accebb53d23e3de4f3a284910d402f08c1c",
+      "size_bytes": 4624
+    },
+    {
+      "path": "Paper-reproduction-apps/librts-paper/run_exact_point_contains_prepared_phase_columns_gate.py",
+      "sha256": "b2be659fdf8504a3d763f944bec43c638c54dfe0128aa75073f497720d28f5bb",
+      "size_bytes": 5951
+    },
+    {
+      "path": "Paper-reproduction-apps/librts-paper/run_exact_point_contains_prepared_phase_columns_repeat.py",
+      "sha256": "b1ac76acaab42141553f2d527e2e4bda2b7aae06e2d4f34748ff716559acece4",
+      "size_bytes": 9114
+    },
+    {
+      "path": "Paper-reproduction-apps/librts-paper/run_exact_point_contains_prepared_phase_gate.py",
+      "sha256": "63c14f48de4a2e2f65f14337f035b78ccf4e0d26a6997f0f1c9358fc18137a5d",
+      "size_bytes": 5754
+    },
+    {
+      "path": "Paper-reproduction-apps/librts-paper/run_exact_range_contains_count_gate.py",
+      "sha256": "3ec51752a519dd412512206a1bab007fee2c0ab36aab32af9764117ce8ee3645",
+      "size_bytes": 6973
+    },
+    {
+      "path": "Paper-reproduction-apps/librts-paper/run_exact_range_intersects_batch.py",
+      "sha256": "199192a1f26b701a81c1007ea7447fb27ea0a7b513fadf9549c32b916c3bb3b6",
+      "size_bytes": 4342
+    },
+    {
+      "path": "Paper-reproduction-apps/librts-paper/run_exact_range_intersects_count_gate.py",
+      "sha256": "8b2f4cfa554ca2f1f19cd025d7830e4576c0104614d502b7f79aa08bd10afa57",
+      "size_bytes": 8584
+    },
+    {
+      "path": "Paper-reproduction-apps/librts-paper/run_goal5501_range_intersects_mismatch_diagnostic.py",
+      "sha256": "21adfa7f07468379e44d65d380fbdefc5876dbf4b2888263f5434323935584c2",
+      "size_bytes": 9756
+    },
+    {
+      "path": "Paper-reproduction-apps/librts-paper/run_goal5502_librts_author_validity_gate.py",
+      "sha256": "8a93ebc22afa0d9e79dcd079a10e8216c296d9a52b8da2555b9a965b3fc7a4c6",
+      "size_bytes": 5452
+    },
+    {
+      "path": "Paper-reproduction-apps/librts-paper/run_goal5504_librts_range_intersects_semantics_fixtures.py",
+      "sha256": "f511a5a3ceed5c02e884747d596dc2e9eedaf6826c531efb15443deff3ac125f",
+      "size_bytes": 6426
+    },
+    {
+      "path": "Paper-reproduction-apps/librts-paper/run_goal5507_rtdl_range_intersects_probe.py",
+      "sha256": "4e574d536a23dd587e5ca1b0c5bf8e7b5503e1183b475f78ec2ec2823e283139",
+      "size_bytes": 4119
+    },
+    {
+      "path": "Paper-reproduction-apps/librts-paper/run_goal5520_parks_europe_range_contains_cardinality_gate.py",
+      "sha256": "61300184020ca0df714fe586f911def0e7bf773207558d0ebed27141f939234a",
+      "size_bytes": 8272
+    },
+    {
+      "path": "Paper-reproduction-apps/librts-paper/run_goal5521_parks_bz2_author_capacity_precheck.py",
+      "sha256": "83c995619da8bcc50fb6c346978908a38812141bc530aeb5be4e495ba61a7a86",
+      "size_bytes": 4261
+    },
+    {
+      "path": "Paper-reproduction-apps/librts-paper/run_goal5521_parks_bz2_range_contains_cardinality_gate.py",
+      "sha256": "64468d71ad61c56e4b8dce71e0ca7f6b8203495f30a9f1e8138d90f8a8957874",
+      "size_bytes": 7951
+    },
+    {
+      "path": "Paper-reproduction-apps/librts-paper/run_goal5522_parks_bz2_point_contains_cardinality_gate.py",
+      "sha256": "462171ca364abb90dfeffeb7a0c2367fa4f3d7afb84546cfbf05a611b7d5882c",
+      "size_bytes": 7856
+    },
+    {
+      "path": "Paper-reproduction-apps/librts-paper/run_same_input_mutation_gate.py",
+      "sha256": "ac54e9db5b58f361bfaf2ff5d3748d004956c3fcf0e5bad2d2895b3d2ae249c3",
+      "size_bytes": 5037
+    },
+    {
+      "path": "Paper-reproduction-apps/librts-paper/run_same_input_pip_gate.py",
+      "sha256": "102bddf581d7654dcc5f8e2a8cdbd20f0f6eda2b7a38be87c99f1f43945c0428",
+      "size_bytes": 8797
+    },
+    {
+      "path": "Paper-reproduction-apps/librts-paper/run_same_input_point_contains_gate.py",
+      "sha256": "5a38621814928301e1c6f1e44cdd75c9c49149678f1431f066a35ad64c3d0d67",
+      "size_bytes": 7644
+    },
+    {
+      "path": "Paper-reproduction-apps/librts-paper/run_same_input_range_contains_gate.py",
+      "sha256": "07120b9088bb0c2a4e9071d5c4c77bc7cfe43f08d7aaa4c6d0f6bcbcb1778912",
+      "size_bytes": 6332
+    },
+    {
+      "path": "Paper-reproduction-apps/librts-paper/run_same_input_range_intersects_gate.py",
+      "sha256": "637f47b86f7af917924973caf8f252c307950883f9dd33d570839edd52fc6814",
+      "size_bytes": 6403
+    },
+    {
+      "path": "Paper-reproduction-apps/librts-paper/run_same_input_representative_pip_gate.py",
+      "sha256": "6c38bf25cff08cb253d5c7b55217547ebe942c60296292dba2960eeb2094c542",
+      "size_bytes": 10478
+    },
+    {
+      "path": "Paper-reproduction-apps/librts-paper/v4_whole_app.py",
+      "sha256": "2952d38b341525d5b529a4391949df5b1ab59cd463c752f4da4df0823e40b987",
+      "size_bytes": 11115
+    },
+    {
+      "path": "Paper-reproduction-apps/raydb-paper/README.md",
+      "sha256": "c746ef28137793a86837ac5afde473ce59959afa8635d33eed6abaf50ed19282",
+      "size_bytes": 6475
+    },
+    {
+      "path": "Paper-reproduction-apps/raydb-paper/author_source_policy.py",
+      "sha256": "da2bfd58e01621b6d4ff35fa71840ae3630fcb18a3aaae374b81c4ea428b71d9",
+      "size_bytes": 2235
+    },
+    {
+      "path": "Paper-reproduction-apps/raydb-paper/build_crystal_q11_same_source_gate.py",
+      "sha256": "787f7cd1b8f4c2eb1df4364b85c64c1acee90710eb0f33c3b581a6bdec8387d7",
+      "size_bytes": 7212
+    },
+    {
+      "path": "Paper-reproduction-apps/raydb-paper/build_figure12_denominator_audit.py",
+      "sha256": "822b33153f8f5f834ab8e4b0ba6dbfeafa731420e183bb03a00a359b5861ae65",
+      "size_bytes": 8516
+    },
+    {
+      "path": "Paper-reproduction-apps/raydb-paper/build_raydb_scoped_closeout.py",
+      "sha256": "fa20ebe8839578d2be0f8e458ded51171d2049a9a7b395cd1fd6e3b665073078",
+      "size_bytes": 27008
+    },
+    {
+      "path": "Paper-reproduction-apps/raydb-paper/build_scale_resource_gate.py",
+      "sha256": "d2ba5eeb04f55e637326a7db8c20f95abf7108a3fb40afa9e366db43510df56f",
+      "size_bytes": 7322
+    },
+    {
+      "path": "Paper-reproduction-apps/raydb-paper/build_ssb_partitioned_phase_matrix.py",
+      "sha256": "84a51d8bc3133a8bda2397076ff9fcffd2173517204ca27f330ea088fd8deffa",
+      "size_bytes": 13432
+    },
+    {
+      "path": "Paper-reproduction-apps/raydb-paper/build_ssb_q11_packet.py",
+      "sha256": "e62d548d8e6d06539749207723b6464dace9745815bec4031311ecb6738da774",
+      "size_bytes": 6144
+    },
+    {
+      "path": "Paper-reproduction-apps/raydb-paper/build_ssb_sf1_matrix.py",
+      "sha256": "49c0ceb79ab404d26e2735c0d6584a29dd45f80a65d7ea0645054e058ce7e115",
+      "size_bytes": 25237
+    },
+    {
+      "path": "Paper-reproduction-apps/raydb-paper/consolidate_ssb_sf1_matrix.py",
+      "sha256": "2b7dee7acfce8112b165a100a55589343936a8f7945950040ffa6693af5d39ce",
+      "size_bytes": 5465
+    },
+    {
+      "path": "Paper-reproduction-apps/raydb-paper/generate_ssb_dataset.py",
+      "sha256": "8d7fbd29abc2070c3da2bdafbcdb245cb5ddf62b8a921a41cd9001c847f7177d",
+      "size_bytes": 14786
+    },
+    {
+      "path": "Paper-reproduction-apps/raydb-paper/raydb_reproduction.py",
+      "sha256": "456430d5919b72883e0b7eabdb3766f42bf6957ee9f5a95d83f683fcf136f4e6",
+      "size_bytes": 23197
+    },
+    {
+      "path": "Paper-reproduction-apps/raydb-paper/rtdl3_action_migration.py",
+      "sha256": "8fa53c5de7b0a3edfdbb65508122e367813ab6c99ee93c795258c25181b24444",
+      "size_bytes": 26199
+    },
+    {
+      "path": "Paper-reproduction-apps/raydb-paper/rtdl3_whole_app.py",
+      "sha256": "4a49789619ccb2414e5c21ef7fc47b93f4e4b43e1b65ca596844f91a22cccf18",
+      "size_bytes": 13677
+    },
+    {
+      "path": "Paper-reproduction-apps/raydb-paper/run_ssb_packet_rtdl.py",
+      "sha256": "31af1c654b2ad902843aa7ead54127fb53e43b119688d58e4976abc04b556d05",
+      "size_bytes": 26959
+    },
+    {
+      "path": "Paper-reproduction-apps/raydb-paper/run_ssb_prepared_phase_matrix.py",
+      "sha256": "23808e2be4a75c9e2e121db3867b2dcacf80d0d551c2e7881943336fb56ab0f6",
+      "size_bytes": 9083
+    },
+    {
+      "path": "Paper-reproduction-apps/raydb-paper/run_ssb_q11_rtdl.py",
+      "sha256": "771992cc0bdbbde23c592df4b688d41762924cd2b02b3ca27ec18f3d8f86293c",
+      "size_bytes": 11920
+    },
+    {
+      "path": "Paper-reproduction-apps/raydb-paper/run_ssb_scale_partitioned_matrix.py",
+      "sha256": "62eb8ab5a166244fd9a70ffe49ac3a3bf8bdf944b2533cc7ac8f00762a2920db",
+      "size_bytes": 34212
+    },
+    {
+      "path": "Paper-reproduction-apps/raydb-paper/v4_whole_app.py",
+      "sha256": "f482f409fbd6cd565d661d8440886835bdc7417e9d934e89f3fad67f664cbc05",
+      "size_bytes": 14121
+    },
+    {
+      "path": "Paper-reproduction-apps/rayjoin-paper/rayjoin_numba_overlay_kernels.py",
+      "sha256": "f21c95df11dc6abfc9f96d1132d8f8c9b062fc9d1bcfb4ce3bbbf91be111230b",
+      "size_bytes": 14787
+    },
+    {
+      "path": "Paper-reproduction-apps/rayjoin-paper/rtdl3_action_migration.py",
+      "sha256": "e3890aeba80d56fb34f68ef8bd5ea87f2885887eb168b6ad5d17b0cbe7f7ec65",
+      "size_bytes": 56334
+    },
+    {
+      "path": "Paper-reproduction-apps/rayjoin-paper/rtdl3_whole_app.py",
+      "sha256": "34f60c5179469efc7e3d9ef1fa22d3631423b2cddda017e7be26fbcdba4f5c4d",
+      "size_bytes": 14640
+    },
+    {
+      "path": "Paper-reproduction-apps/rayjoin-paper/section52_lsi.py",
+      "sha256": "45a4f36b77b843c918abcb75464a6bbd12a6565a67c83536ea748bea50bb5569",
+      "size_bytes": 3442
+    },
+    {
+      "path": "Paper-reproduction-apps/rayjoin-paper/section53_pip.py",
+      "sha256": "df390a09d062307d60d9110e5532127a7e67aed31076a37653f5ba572347df52",
+      "size_bytes": 15399
+    },
+    {
+      "path": "Paper-reproduction-apps/rayjoin-paper/section57_overlay.py",
+      "sha256": "e0370ef02398110a7ac097f12ac41e05f7c65a966457ac88a0bf93d752d90155",
+      "size_bytes": 40551
+    },
+    {
+      "path": "Paper-reproduction-apps/rayjoin-paper/section57_overlay_columnar_binary.py",
+      "sha256": "d9a6e0af950bc8c811481f3b4c83489fc6256446c785ae8de69b78b739970d31",
+      "size_bytes": 234686
+    },
+    {
+      "path": "Paper-reproduction-apps/rayjoin-paper/section57_overlay_numba.py",
+      "sha256": "fc668147dd86b3195fd04c4c415b98fa274d6edca7e6fbc55e0c9585dbb150cd",
+      "size_bytes": 22069
+    },
+    {
+      "path": "Paper-reproduction-apps/rayjoin-paper/v4_fixtures.py",
+      "sha256": "a63d0339feefd871784d31cc9d1561e30c22749132ef71f157f108191538f1a8",
+      "size_bytes": 1348
+    },
+    {
+      "path": "Paper-reproduction-apps/rayjoin-paper/v4_whole_app.py",
+      "sha256": "968365001aa3393e782e9404d9432dd56abf605a450c8bddfd5717d0ff569df5",
+      "size_bytes": 19697
+    },
+    {
+      "path": "Paper-reproduction-apps/rt-barneshut-paper/aggregate_hierarchy_adapter.py",
+      "sha256": "9b72dce1918b1087ac5af8e262eefe9644780cd90875222c7d04ef986eead6cb",
+      "size_bytes": 20827
+    },
+    {
+      "path": "Paper-reproduction-apps/rt-barneshut-paper/author_contract_reference.py",
+      "sha256": "c4119e42940ac3d07e6f99bedfe64ed2d0f2606ff7ca4e3a307312f57b5a3576",
+      "size_bytes": 15895
+    },
+    {
+      "path": "Paper-reproduction-apps/rt-barneshut-paper/data/manifest.json",
+      "sha256": "516d331187c138c1db6e74da9caa33039fee6b6869c419ff63340ec45b15bf10",
+      "size_bytes": 2510
+    },
+    {
+      "path": "Paper-reproduction-apps/rt-barneshut-paper/goal5651_native_aggregate_hierarchy_successor.py",
+      "sha256": "66b85b99447c3aafa9126ba57458e59b692cc8b4cfb389a19a3babe804797af9",
+      "size_bytes": 10747
+    },
+    {
+      "path": "Paper-reproduction-apps/rt-barneshut-paper/rt_barneshut_reproduction.py",
+      "sha256": "6d1f58cd5404408a540e58d5416fa8f0b2078bf8ad98e03c714c2f94194b6057",
+      "size_bytes": 15268
+    },
+    {
+      "path": "Paper-reproduction-apps/rt-barneshut-paper/rtdl3_action_migration.py",
+      "sha256": "5cc902a84a4eba2e06fb56f18089d318b667fa556faa0f25ebfb5f1839972b40",
+      "size_bytes": 5097
+    },
+    {
+      "path": "Paper-reproduction-apps/rt-barneshut-paper/rtdl3_whole_app.py",
+      "sha256": "9c22c1354874e6e9d30eb69e2b3296bf7854c9deee4adb3e36c3f07965b1371e",
+      "size_bytes": 5008
+    },
+    {
+      "path": "Paper-reproduction-apps/rt-barneshut-paper/v2_true_optix_direct.py",
+      "sha256": "dca46e66459d51009bb6b15f9e0950c5cd597960823f96e4f81f2188fc3e26e1",
+      "size_bytes": 4504
+    },
+    {
+      "path": "Paper-reproduction-apps/rt-barneshut-paper/v4_fixture.py",
+      "sha256": "0b1e45ee95960d09dcdf856b7a92706bdee937ba418ad2e1a8a23f9d952b7c7b",
+      "size_bytes": 3659
+    },
+    {
+      "path": "Paper-reproduction-apps/rt-barneshut-paper/v4_whole_app.py",
+      "sha256": "98c0f922d50d64f07f1b10af2118924a0b69ebe1bb59096c040a8912d915bc61",
+      "size_bytes": 12290
+    },
+    {
+      "path": "Paper-reproduction-apps/rt-dbscan-paper/data/fixtures/border_noise3d_component_signature.csv",
+      "sha256": "51d69ed7dcd5ef32d0f8f661780498362a4786ac216db3f599b1305367a26dcd",
+      "size_bytes": 401
+    },
+    {
+      "path": "Paper-reproduction-apps/rt-dbscan-paper/rtdl3_action_migration.py",
+      "sha256": "d4b623ca2f334816b3d39ec3dc99114a46cfbc501560b4455355acefe67b3a02",
+      "size_bytes": 44190
+    },
+    {
+      "path": "Paper-reproduction-apps/rt-dbscan-paper/rtdl3_whole_app.py",
+      "sha256": "b851c9f0b4be4894fd8ac605c960810d97fe93b8e5c9af27ffba42f93a8fb123",
+      "size_bytes": 3188
+    },
+    {
+      "path": "Paper-reproduction-apps/rt-dbscan-paper/v4_whole_app.py",
+      "sha256": "8136260817b2e1f4735fd437c603a990c8bab450a441785fa5aebe676547b338",
+      "size_bytes": 12477
+    },
+    {
+      "path": "Paper-reproduction-apps/rtdl3_whole_app_contract.py",
+      "sha256": "06bfe56af8e2add7fc0bf585127756d9378bd7b6be194c165c975a74aec586b3",
+      "size_bytes": 3111
+    },
+    {
+      "path": "Paper-reproduction-apps/rtnn-paper/README.md",
+      "sha256": "59f6e805afe3cae67979abd58084bc52f6044ca29ce2a236785484a88dd475bd",
+      "size_bytes": 19625
+    },
+    {
+      "path": "Paper-reproduction-apps/rtnn-paper/data/fixtures/goal5531_exact_knn/queries.xyz",
+      "sha256": "8172b70beb29d150f6d788b8021b160d741bf717bb28c98417a171adb8165d57",
+      "size_bytes": 24
+    },
+    {
+      "path": "Paper-reproduction-apps/rtnn-paper/data/fixtures/goal5531_exact_knn/search.xyz",
+      "sha256": "2bd362eb5e401f01f1e9e4148aaf0f6d52166889c5cd7457ef48264769d10b46",
+      "size_bytes": 112
+    },
+    {
+      "path": "Paper-reproduction-apps/rtnn-paper/rtdl3_action_migration.py",
+      "sha256": "c7ddaa4b154bcc05deb7216bc0259406dd5387ec9fe2fcc2bc0f7058bf2a8f38",
+      "size_bytes": 35495
+    },
+    {
+      "path": "Paper-reproduction-apps/rtnn-paper/rtdl3_whole_app.py",
+      "sha256": "964505542b727341631cbafd6d2e30b0aa860eb3115cec8c9e3633e774993535",
+      "size_bytes": 3068
+    },
+    {
+      "path": "Paper-reproduction-apps/rtnn-paper/v4_whole_app.py",
+      "sha256": "9ac2119998bf787500177ae02a6beba9172f0230a890f7966094b4a888f7f1f1",
+      "size_bytes": 14995
+    },
+    {
+      "path": "Paper-reproduction-apps/triangle-counting-paper/run_functional_receipt.py",
+      "sha256": "d3d6773d270e63e647e993a0101e00f6ee6e370909ef936a1b8ccffcb70002d8",
+      "size_bytes": 17838
+    },
+    {
+      "path": "Paper-reproduction-apps/triangle-counting-paper/v2_14_whole_app.py",
+      "sha256": "91fd12f41daf8b9d3768e5792620734abae74675771872d84307c78d5e943815",
+      "size_bytes": 5171
+    },
+    {
+      "path": "Paper-reproduction-apps/triangle-counting-paper/v4_whole_app.py",
+      "sha256": "8ab4f4ad6c5913483633b06e70035a26637bc2b2a0589ce470623504d86e6210",
+      "size_bytes": 17947
+    },
+    {
+      "path": "Paper-reproduction-apps/x-hd-paper/data/fixtures/directed2d_asymmetric_a.wkt",
+      "sha256": "b38ef1c3defeced9dc1bfe9d5576afe36b10b2b74885137616954970a5c51a95",
+      "size_bytes": 26
+    },
+    {
+      "path": "Paper-reproduction-apps/x-hd-paper/data/fixtures/directed2d_asymmetric_b.wkt",
+      "sha256": "724102f1d77733f32e29c86d1b2edffbf58f198947d32a71537f70e46e0cb74a",
+      "size_bytes": 29
+    },
+    {
+      "path": "Paper-reproduction-apps/x-hd-paper/rtdl3_action_migration.py",
+      "sha256": "4f3bdb34703503b219ee495b4a91d603e4c4a775e0e8ef3fd22920df429546cc",
+      "size_bytes": 28501
+    },
+    {
+      "path": "Paper-reproduction-apps/x-hd-paper/rtdl3_whole_app.py",
+      "sha256": "f86c725392321752b2560f87b05415abced2bd316b165a84297e55602a962826",
+      "size_bytes": 3812
+    },
+    {
+      "path": "Paper-reproduction-apps/x-hd-paper/scripts/run_xhd_author_json_gate.py",
+      "sha256": "48dfc1203040eb2a7a9e65397d07d51b8857d496c9d14a800290dd82aaf9f568",
+      "size_bytes": 7221
+    },
+    {
+      "path": "Paper-reproduction-apps/x-hd-paper/scripts/run_xhd_cell_mbr_frontier_route_gate.py",
+      "sha256": "33ed8396fb1d581cf8e92d98a54b2c46904d7c24922f20bbe8b654490c9f6e87",
+      "size_bytes": 57989
+    },
+    {
+      "path": "Paper-reproduction-apps/x-hd-paper/scripts/xhd_input_loader.py",
+      "sha256": "04908717661fd2f97def9581c9ce476ea35a316ae523b2a9d66f0c81773b8455",
+      "size_bytes": 24718
+    },
+    {
+      "path": "Paper-reproduction-apps/x-hd-paper/v2_true_optix_direct.py",
+      "sha256": "0f993042de699bddfb7a86e4105e365baba83caf583eedd33c9db0f69fea294b",
+      "size_bytes": 10260
+    },
+    {
+      "path": "Paper-reproduction-apps/x-hd-paper/v4_whole_app.py",
+      "sha256": "7eb1b7b4c994d5d30a87d214a09fbdcc15e97243720b70b196357d554039d2db",
+      "size_bytes": 16499
+    }
+  ],
+  "goal5785_expected_archive_sha256": "75bd1ce4647de8a198110dbb9be12b3f9a04e8b7ca53946227ddbbc78ac3ba41",
+  "goal5785_final_archive_recovered": false,
+  "matching_directories_are_independent_sources_claimed": false,
+  "matching_historical_directory_count_observed": 42,
+  "schema": "rtdl.v4_paper_apps_pyoptix.source_recovery.v1",
+  "source_origin": "/home/lestat/work/goal5782_clean_validation_v5/source/Paper-reproduction-apps",
+  "source_origin_copy_count_claimed": 1
+}

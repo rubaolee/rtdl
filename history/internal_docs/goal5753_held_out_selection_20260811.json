@@ -1,0 +1,73 @@
+{
+  "beacon": {
+    "chain_index": 2,
+    "output_value": "ec27c996d2c05882b1ebb6a18aef9ad488f9452781a3c2d54f4f23a4301b01413e01d2fda4eaad004b0b90d820aad84382562e595ef75bb446c7fb085ff48fa3",
+    "pulse_index": 1898696,
+    "time_stamp": "2026-08-11T19:46:00.000Z",
+    "time_stamp_ms": 1786477560000
+  },
+  "beacon_response_sha256": "2cf3cfb21ac814bd9825cbb85a4e93ffd0712bc7c73de141a852443aecc87ec9",
+  "candidate_universe_sha256": "fb89d1da0e9b7bc18ce3333eb11a5920ffdef9f23ba227f4ecbf96e898234b05",
+  "claim_boundary": {
+    "behavioral_true_optix_passed": false,
+    "correctness_passed": false,
+    "expressibility_passed": false,
+    "performance_claimed": false,
+    "production_claimed": false
+  },
+  "committed_target_minute_ms": 1786477560000,
+  "core_freeze_sha256": "6ad6e802c72d0d9f1ea5e55775ded7eda2028f51adcba82ae127001e2104bc72",
+  "freeze_commit": "8ef21fc96",
+  "freeze_commit_time_ms": 1786477454000,
+  "post_selection_change_policy": {
+    "allowed": [
+      "held_out_application_callback_source",
+      "held_out_application_typed_schema",
+      "held_out_application_input_output_glue",
+      "held_out_application_independent_oracle",
+      "held_out_application_tests_and_evidence_tools",
+      "goal5753_reports_and_evidence"
+    ],
+    "any_forbidden_diff_fails_exam": true,
+    "forbidden": [
+      "src_rtdsl_core_or_compiler",
+      "callback_ir_or_verifier",
+      "cpu_interpreter",
+      "numba_codegen",
+      "ptx_composer",
+      "optix_wrapper_or_native",
+      "partner_runtime_or_lifecycle",
+      "toolchain_or_dependency_versions"
+    ]
+  },
+  "schema": "rtdl.v4.goal5753.held_out_selection.v1",
+  "selection": {
+    "candidate_count": 17,
+    "domain": "rtdl-v4-goal5753-held-out-selection-v1",
+    "material_sha256": "26bfa7f148c7177fb7aaffe70ef4008f22b6fe626c698299763994c1cce493a3",
+    "replacement_allowed": false,
+    "selected_candidate": {
+      "candidate_id": "Wang2022AnGP::particle_tracking",
+      "citation_key": "Wang2022AnGP",
+      "disposition": "new_problem_family__particle_tracking",
+      "eligible": true,
+      "paper": {
+        "author": "Bin Wang and Ingo Wald and Nate Morrical and Will Usher and Lin Mu and Karsten Thompson and Richard Hughes",
+        "entry_type": "article",
+        "journal": "Comput. Phys. Commun.",
+        "title": "An {GPU}-accelerated particle tracking method for Eulerian-Lagrangian simulations using hardware ray tracing cores",
+        "year": "2022"
+      },
+      "problem": "Particle Tracking",
+      "source_index": 26,
+      "survey_measurements": {
+        "average": "1.85",
+        "best_speedup": "2.0",
+        "improves_count": "5",
+        "worst_speedup": "1.08"
+      }
+    },
+    "selected_index_zero_based": 13
+  },
+  "status": "held_out_application_selected_and_irrevocably_frozen"
+}

@@ -1,0 +1,26 @@
+{
+  "added": [],
+  "audited_file_count": 283,
+  "changed": [],
+  "execution_source_archive_sha256": "96dd2398f3e438b43320ca076ffaf3b74647bcb6095260877278741920741a33",
+  "held_out_exam_core_diff_count": 0,
+  "missing": [],
+  "native_sha256": "d790104ee042967d5e5dc73c4ddcf4f1af312170e7f701ff3a779bbb092e1154",
+  "schema": "rtdl.v4.goal5753.frozen_core_seal_audit.v1",
+  "scope": {
+    "exact_files": [
+      "Makefile",
+      "pyproject.toml",
+      "requirements.txt"
+    ],
+    "exact_prefixes": [
+      "src/"
+    ],
+    "freeze_commit": "8ef21fc96",
+    "freeze_commit_files": {
+      "docs/v4/restricted_python_optix_callbacks_design.md": "9cf65dbbdf4483cd42dbd7268d6f15d45d9f9cf7ffec6890a8c33e434e9f23ad"
+    },
+    "line_endings_normalized_for_text_source_only": true
+  },
+  "status": "exact_goal5752_core_and_native_unchanged"
+}

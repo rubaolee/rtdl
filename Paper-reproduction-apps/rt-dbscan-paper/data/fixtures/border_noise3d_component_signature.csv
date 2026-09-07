@@ -1,0 +1,17 @@
+# Bounded RT-DBSCAN component-signature fixture.
+# epsilon=0.35, min_points=5
+# Cluster A: five dense core points plus one border point.
+# Cluster B: five dense core points.
+# One distant noise point.
+0.44,0.00,0.00
+0.00,0.00,0.00
+0.10,0.00,0.00
+-0.10,0.00,0.00
+0.00,0.10,0.00
+0.00,-0.10,0.00
+2.00,0.00,0.00
+2.10,0.00,0.00
+1.90,0.00,0.00
+2.00,0.10,0.00
+2.00,-0.10,0.00
+5.00,5.00,5.00
