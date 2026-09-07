@@ -2,7 +2,7 @@
   "schema": "rtdl.cgo2027.post_goal5851.claim_ledger.v1",
   "version": 1,
   "created_at_utc": "2026-09-06T20:35:00Z",
-  "updated_at_utc": "2026-09-07T11:37:01Z",
+  "updated_at_utc": "2026-09-07T11:38:16Z",
   "measured_implementation": {
     "commit": "d653fe4ad170c5b51fee309d653c9565944dcf2e",
     "tree": "d53af23a2599f9d6adb4ac0bfff39cd0ab31860b",
@@ -94,6 +94,28 @@
       "author_remediation_status": "RESULT_ROUTE_CONTRIBUTION_CASE_COMPLETE_PENDING_TWO_INDEPENDENT_R7_ACCEPTANCES",
       "independent_acceptances_received": 0,
       "commit_identity_record_location": "R7_PQUADRUPLEPRIME_FINAL_BYTES_REVIEW_REQUEST.md"
+    },
+    "paper_snapshot_p_quintuple_prime": {
+      "commit": "41bbec66c6f9f8f770d18075fb9dacbed16d499d",
+      "tree": "135f2bc214927acdb305cf2edd2c5ef98690b4a2",
+      "parent": "8b4475893a7a4486fb89fa35f1ce2470fb2d13f4",
+      "main_tex_sha256": "537efb44319297733f8c94717be2769dbea88fdee738d8e7ac7c7e185bb58430",
+      "references_bib_sha256": "71c379b4ea23a8eaa08e97f94a3c9569d703ea7cb99186b81e0df0f00d5e4dd6",
+      "pdf_sha256": "34dad89878f7a283662e51059d1b81c4d266198657e0d4db065f0c3df2c41385",
+      "pdf_bytes": 154295,
+      "pdf_pages": 9,
+      "source_bundle_sha256": "f9e70fd7e709eeb611ba740628654379866e638d3534c9ddb94a3b8c0f3ea30a",
+      "source_bundle_bytes": 23637,
+      "artifact_sha256": "916cedbb7001c7aa43e66df3f992b543b7b3ca5a013f0f997790113a2e3738b8",
+      "author_remediation_status": "THREE_QUESTION_ARGUMENT_CLOSURE_COMPLETE_PENDING_TWO_INDEPENDENT_R7_ACCEPTANCES",
+      "independent_acceptances_received": 0,
+      "commit_identity_record_location": "R7_PQUINTUPLEPRIME_FINAL_BYTES_REVIEW_REQUEST.md"
+    },
+    "p_quintuple_prime_review_request": {
+      "path": "history/internal_docs/post_goal5851_submission_remediation_20260906/R7_PQUINTUPLEPRIME_FINAL_BYTES_REVIEW_REQUEST.md",
+      "sha256": "47702aa496f805bb4c0edff12c60d04877a051de77094ddcca5e302e0e16f580",
+      "independent_reviews_required": 2,
+      "independent_acceptances_received": 0
     }
   },
   "common_evidence": {

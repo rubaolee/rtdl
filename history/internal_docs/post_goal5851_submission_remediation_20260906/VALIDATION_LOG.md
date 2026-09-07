@@ -906,3 +906,84 @@ candidate-parent diff is empty under `src/`, `include/`, `experiments/`,
 
 P-quadruple-prime remains 0/2 independent acceptances. No public/manuscript
 claim is authorized, and no upload or submission occurred.
+
+## P-quintuple-prime three-question closure and preflight
+
+Date: 2026-09-07 America/New_York.
+
+The final lead directive was applied as a minimum manuscript and evidence-
+linkage closure. It required explicit answers to: what fixed-family knowledge
+the compiler has beyond local typing, what that knowledge makes it reject,
+generate, or select, and what implemented increment remains after conceding
+the strongest prior mechanisms.
+
+The manuscript changed in exactly three argument areas:
+
+1. Table 1 now uses concrete reject/generate/select actions and keeps each
+   action adjacent to its result obligation and evidence boundary.
+2. Section 3.2 now states that the general leaf ABI/wrapper and exact standard-
+   count specialization implement the same known increment-and-continue
+   behavior; the exact-IR guard selects trusted code rather than proving
+   equivalence.
+3. Related Work now identifies the contribution as the implemented connection
+   from fixed result obligations to admission, trusted lowering, and
+   publication, and explicitly states the restricted-expressiveness and
+   topology-specific-TCB cost without claiming superiority.
+
+N1, N2, and N3 remained unchanged because their existing bytes already carried
+the necessary prior-art concessions, witness boundaries, and route comparison.
+No production/compiler/native source, experiment, script, test, workload,
+timer, estimator, threshold, frozen F2 byte, or numerical result changed. No
+GPU ran and no previously passed test was rerun.
+
+Author-side PDF and source validation produced:
+
+```text
+Tectonic cached build: PASS, exit 0
+PDF: 9 pages, 612 x 792 pt US Letter, 154295 bytes
+PDF SHA-256: 34dad89878f7a283662e51059d1b81c4d266198657e0d4db065f0c3df2c41385
+paper PDF / delivery PDF cmp: PASS
+horizontal overfull boxes: 0
+vertical overfull boxes: 0
+unresolved citations/references: 0
+all exact pages rendered and visually inspected: 9/9 PASS
+fonts embedded / subset / ToUnicode: 12/12 / 12/12 / 12/12 PASS
+PDF private-identity text scan: PASS
+normalized source twin-build cmp: PASS
+source bundle SHA-256: f9e70fd7e709eeb611ba740628654379866e638d3534c9ddb94a3b8c0f3ea30a
+source bundle bytes: 23637
+source bundle regular files: 2
+foreign-path source compile: PASS, exit 0, 9 pages, US Letter
+F2 artifact SHA-256: 916cedbb7001c7aa43e66df3f992b543b7b3ca5a013f0f997790113a2e3738b8
+F2 artifact bytes/members: 180308 / 9
+tests rerun: 0, by directive because executable/F2 inputs did not change
+GPU execution: not performed
+claim_authorized values other than false: 0 of 24
+```
+
+The immutable candidate was committed as:
+
+```text
+commit=41bbec66c6f9f8f770d18075fb9dacbed16d499d
+tree=135f2bc214927acdb305cf2edd2c5ef98690b4a2
+parent=8b4475893a7a4486fb89fa35f1ce2470fb2d13f4
+subject=Close CGO three-question argument
+main_tex_sha256=537efb44319297733f8c94717be2769dbea88fdee738d8e7ac7c7e185bb58430
+references_bib_sha256=71c379b4ea23a8eaa08e97f94a3c9569d703ea7cb99186b81e0df0f00d5e4dd6
+pdf_sha256=34dad89878f7a283662e51059d1b81c4d266198657e0d4db065f0c3df2c41385
+source_bundle_sha256=f9e70fd7e709eeb611ba740628654379866e638d3534c9ddb94a3b8c0f3ea30a
+```
+
+Commit-object extraction reproduced every identity above and the unchanged F2
+hash. The candidate-parent diff is empty under `src/`, `include/`,
+`experiments/`, `scripts/`, `tests/`, and
+`paper/cgo2027/artifact_post_goal5851/`.
+
+One first font-check command used an obsolete cached wrapper path and an awk
+variable name colliding with a built-in. It failed before producing a result,
+changed no file, and was not counted as evidence. The corrected invocation
+used the installed Poppler binary and produced the 12/12 result above.
+
+P-quintuple-prime starts at 0/2 independent exact-byte acceptances. The author
+closure and local preflight count as zero. No claim is authorized, no upload
+was attempted, and no submission receipt exists.

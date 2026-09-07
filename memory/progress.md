@@ -1,5 +1,28 @@
 # Progress
 
+## CGO P-quintuple-prime three-question closure (2026-09-07)
+
+The final lead directive was applied with three manuscript-only changes: Table
+1 now gives explicit reject/generate/select decisions; the design text connects
+the general Numba leaf/wrapper route and exact standard-count specialization to
+the same known increment-and-continue behavior while keeping the recognizer and
+lowerer trusted; and Related Work states the implemented result-obligation-to-
+admission/lowering/publication increment together with its restricted-
+expressiveness and topology-specific-TCB cost. No executable, experiment,
+evidence, F2, or numerical byte changed; no test or GPU run was repeated.
+
+Exact candidate P-quintuple-prime is commit
+`41bbec66c6f9f8f770d18075fb9dacbed16d499d`, tree
+`135f2bc214927acdb305cf2edd2c5ef98690b4a2`. Its exact nine-page PDF is
+154,295 bytes at SHA-256
+`34dad89878f7a283662e51059d1b81c4d266198657e0d4db065f0c3df2c41385`;
+the source bundle is 23,637 bytes at
+`f9e70fd7e709eeb611ba740628654379866e638d3534c9ddb94a3b8c0f3ea30a`;
+F2 remains `916cedbb...3738b8`. Candidate-object, PDF/source, visual, font,
+anonymity, and executable-zero-diff checks passed author-side. The new R7
+request and R8 local preflight are ready, but R7 remains 0/2, every one of 24
+claims remains unauthorized, and no upload or submission occurred.
+
 ## CGO P-quadruple-prime result-route candidate (2026-09-07)
 
 The contribution pass is frozen at commit
