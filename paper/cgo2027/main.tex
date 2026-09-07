@@ -13,7 +13,7 @@
 
 \newcommand{\rtdl}{\textsc{RTDL}\xspace}
 
-\title{Whole-Protocol Admission for Restricted Python on RT Hardware}
+\title{Result-Route Contracts for Restricted Python on RT Hardware}
 \acmConference[CGO '27]{IEEE/ACM International Symposium on Code Generation
 and Optimization}{March 20--24, 2027}{Salt Lake City, Utah, USA}
 \acmYear{2027}
@@ -22,34 +22,37 @@ and Optimization}{March 20--24, 2027}{Salt Lake City, Utah, USA}
 \begin{document}
 
 \begin{abstract}
-Ray-tracing APIs expose fast traversal through callback protocols spanning
-roles, semantic and physical layouts, continuation, and executable identity.
-Existing systems offer strong local checks, Python access, and pipeline
-construction. The primary materials we examined, however, do not state the same
-joint admission condition over source, generated artifacts, loaded executable,
-and result publication.
+Ray-tracing APIs expose fast traversal through callback protocols, but the
+promised result can constrain both legal callback effects and their physical
+interpretation. A role may locally permit early termination even when a fixed
+route must return a complete relation. Conversely, an all-hit count can
+logically accept an event yet physically ignore the intersection so later hits
+remain visible. Stage legality and machine types alone do not state these
+result obligations.
 
-We present \rtdl, a bounded protocol-carrying compilation and admission design
-for Python-authored RT computations. It jointly checks five route seams:
-role/effect closure, semantic ownership, physical binding, fail-closed
-continuation, and executable identity. General typed effects reach hardware
-control through trusted wrappers; the evaluated routes use disclosed trusted
-exact-IR specializations. The implementation has two stable public constructors
-and a bounded corpus spanning triangle, custom-AABB, curve, and sphere leaves;
-it is not arbitrary Python, semantic inference, or generic topology lowering. A
-sealed-snapshot exam selected a sphere any-hit count and
-produced two OptiX launches with 12/12 oracle checks. A checker that does not
-import the compiler validates five generated-code property classes in 20
-registered instances, but only over finite target structures.
+We present \rtdl, a bounded result-route contract design for Python-authored RT
+computations. For fixed families, it connects output requirements to admissible
+effects, traversal interpretation, semantic and physical data contracts,
+fail-closed publication, and executable identity. General typed effects reach
+hardware control through trusted topology wrappers; the evaluated routes use
+disclosed trusted exact-IR specializations. The implementation has two stable
+public constructors and a bounded corpus spanning triangle, custom-AABB, curve,
+and sphere leaves; it is not arbitrary Python, semantic inference, generic
+topology lowering, or a proof that trusted lowerers preserve semantics. A
+sealed-snapshot exam selected a sphere any-hit count and produced two OptiX
+launches with 12/12 oracle checks. A compiler-independent checker validates five
+generated-code property classes in 20 registered instances, but only over
+finite target structures.
 
 Across two NVIDIA GPU generations, we evaluate 160 registered cells containing
 20,480 timed samples. At the prepared endpoint, public ahead-of-time \rtdl
 median latency is 1.077--1.175$\times$ a direct CUDA/OptiX implementation.
 First-result measurements are adverse: post-import \rtdl is
 1.560--1.837$\times$ a strong PyOptiX device-continuation baseline by median,
-with a 2.377$\times$ worst block. Thus the contribution is bounded protocol
-admission with near-direct prepared latency on two tasks, not intrinsic speedup,
-general lowering, demonstrated usability, or a soundness theorem.
+with a 2.377$\times$ worst block. Thus the contribution is a bounded, checkable
+result-route compilation method with near-direct prepared latency on two tasks,
+not intrinsic speedup, general lowering, demonstrated usability, or a soundness
+theorem.
 \end{abstract}
 
 \begin{CCSXML}
@@ -63,7 +66,7 @@ general lowering, demonstrated usability, or a soundness theorem.
 \end{CCSXML}
 
 \ccsdesc[500]{Software and its engineering~Compilers}
-\keywords{ray tracing, restricted Python, protocol admission, GPU compilation}
+\keywords{ray tracing, restricted Python, result contracts, GPU compilation}
 
 \maketitle
 
@@ -83,35 +86,37 @@ PyOptiX and SlangPy expose RT to Python; OWL and Luisa automate substantial
 pipeline construction; DXR payload qualifiers and Slang capabilities enforce
 stage and target constraints
 ~\cite{nvidiaPyOptix,slangPyRelease,slangPyDocs,nvidiaOWL,zheng2022luisa,microsoftDXRPAQ,slangCapabilities}.
-These are strong mechanisms. We instead ask how a compiler should gate one
-relation spanning locally checked callbacks, same-width application meanings,
-physical artifacts, device continuation, and the exact executable. The checked
-primary materials do not document that joint condition; in several cases the
-answer is unknown, not proven absent:
+These are strong mechanisms. They do not by themselves decide whether a locally
+legal callback action preserves the result promised by a particular RT route.
+For example, complete enumeration constrains early termination, while all-hit
+counting requires a target-specific distinction between logical acceptance and
+physical intersection acceptance. We therefore ask:
 
 \begin{quote}
-Can restricted Python admit a bounded RT route by jointly checking semantic,
-physical, continuation, and identity facts while retaining near-direct prepared
-latency?
+Can restricted Python make a fixed RT result contract constrain callback
+effects, traversal interpretation, and publication while retaining near-direct
+prepared latency?
 \end{quote}
 
-For a narrow domain, \rtdl maps typed restricted callbacks to compiler-owned,
-topology-specific lowerers. It binds source, PTX, ABI, and native symbols;
-carries an accepted route identity into preparation and interface-specific
-publication checks; and provides an independent offline checker for selected
-generated-code properties. Its canonical plan is non-executable, while concrete
-lowering remains trusted and topology-specific.
+For a narrow domain, \rtdl makes these result-route relations explicit. Family
+admission restricts callback effects and compares declared data and physical
+contracts with compiled representations. Trusted lowerers specific to each
+topology implement traversal interpretation, including standard-route
+specializations guarded by exact program identity. Source, PTX,
+ABI, and native identities are bound to the admitted route and carried into
+preparation and interface-specific publication checks. The design separates
+metadata checks, trusted lowering obligations, and execution-time failures; it
+provides no general semantic proof.
 
 This paper makes one core systems contribution, an implementation contribution,
 and a bounded evidence contribution:
 \begin{enumerate}[leftmargin=*,itemsep=1pt,topsep=2pt]
-  \item A \emph{protocol-carrying admitted executable}: one decision checks five
-  cross-artifact relations before a materialized route is returned, and its
-  accepted identity is carried through per-route preparation and publication.
+  \item A concrete \emph{result-route contract} for fixed RT families. It
+  connects output obligations to admissible effects, traversal interpretation,
+  physical settings, and fail-closed result publication.
   \item A restricted-Python implementation with typed effects, a deterministic
-  ABI, Numba leaves, and trusted wrappers. The measured standard routes use
-  trusted
-  exact-IR specializations; these and the topology wrappers remain in the TCB.
+  ABI, Numba leaves, and trusted topology lowerers. The measured standard routes
+  use exact-IR specializations; both recognizers and lowerers remain in the TCB.
   \item Finite mutation, sealed-composition, target checking, and two-generation
   performance evidence. Prepared public latency is
   1.077--1.175$\times$ Direct; adverse first-result, receipt, generality, and
@@ -134,24 +139,41 @@ These are related to typestate, interface automata, and session-style protocol
 reasoning~\cite{strom1986typestate,deAlfaro2001interfaceAutomata,honda2016multiparty},
 but the FFI and generated-code boundary adds an identity problem familiar from
 linking and foreign interfaces~\cite{furr2005ffi,patterson2017linkingTypes}.
-Table~\ref{tab:obligations} summarizes the obligations used here.
+Table~\ref{tab:result-route} makes the additional result-related decisions
+concrete. Each row is an implemented fixed-family rule, not a theorem for
+arbitrary RT programs.
 
-\begin{table}[t]
-  \caption{Whole-protocol obligations in the current system.}
-  \label{tab:obligations}
+\begin{table*}[t]
+  \caption{Implemented result-route relations and their evidence boundaries.}
+  \label{tab:result-route}
   \small
-  \begin{tabular}{@{}p{.25\columnwidth}p{.67\columnwidth}@{}}
+  \begin{tabularx}{\textwidth}{@{}p{.19\textwidth}p{.25\textwidth}p{.34\textwidth}X@{}}
     \toprule
-    Obligation & Admission question \\
+    Observable result obligation & Not decided by stage or machine typing &
+    RTDL constraint or transformation & Evidence boundary \\
     \midrule
-    Role/effect & Is each operation legal in this callback role? \\
-    Semantic ABI & Do payload and result meanings agree end to end? \\
-    Physical ABI & Do widths, alignments, slots, and row layouts agree? \\
-    Topology & Does the callback set match the build-input and leaf kind? \\
-    Identity/state & Is the checked executable the loaded executable, and is every state transition legal? \\
+    Complete bounded relation & Whether locally legal \texttt{TERMINATE} or
+    \texttt{IGNORE} fits this route & Family verification requires
+    \texttt{ACCEPT\_CONTINUE} returns; capacity failure publishes no partial
+    relation & Source rule and existing CPU checks; not a general enumeration
+    theory \\
+    Triangle all-hit count & Whether logical acceptance should physically
+    accept an intersection & Update payload, then call
+    \texttt{optixIgnoreIntersection()}; require single any-hit delivery and
+    checked overflow & Generic and specialized lowering source; OptiX
+    mechanisms are established, not invented here \\
+    Standard count specialization & Whether same-shape \texttt{+1} and
+    \texttt{+2} callbacks may share a fixed intrinsic & Exact-IR guard;
+    changing \texttt{+1} to \texttt{+2} selects the general leaf path & Existing
+    source-to-wrapper test replay; no GPU equivalence or general optimization
+    theorem \\
+    Relation application ID & Whether an attribute denotes physical index or
+    application ID despite equal \texttt{u32} width & Trusted schema,
+    compiled-contract projection, and mismatch rejection & Existing field
+    mutation and mock; application intent is not inferred \\
     \bottomrule
-  \end{tabular}
-\end{table}
+  \end{tabularx}
+\end{table*}
 
 \subsection{A concrete semantic-ABI failure}
 
@@ -263,6 +285,24 @@ any-hit role also requires an explicit delivery and continuation contract; the
 presence of that declaration does not prove order independence for arbitrary
 callback logic.
 
+Role legality is necessary but not sufficient for a fixed result route. The
+general any-hit role admits continue, ignore, and terminate effects. The
+current complete bounded-relation verifier instead collects all return effects
+and requires only logical acceptance with continued traversal; it defines no
+filtering or early-termination meaning
+for that route. Thus a role-valid effect can be rejected because it conflicts
+with the route's output obligation. This is an implemented family restriction,
+not a claim that all complete-enumeration designs must reject filtering.
+
+Logical effects also need not map one-to-one to physical intersection actions.
+In the triangle all-hit route, the logical continue effect first updates the
+payload and then physically ignores the intersection, preserving later
+events instead of shrinking traversal's accepted interval. Native geometry
+separately requests one any-hit delivery per primitive, and the reduction checks
+overflow. These are established OptiX mechanisms; \rtdl's contribution is to
+make their required combination part of the trusted implementation of a fixed
+result contract, not to invent all-hit traversal.
+
 General callback lowering makes the authority split explicit. Verification
 checks role-indexed typed effects; ABI lowering flattens them and assigns
 effect/status tags; generated Numba leaves write those fields and tags; and
@@ -275,6 +315,15 @@ Static schema, ABI, and identity admission remain, as do runtime failures and
 applicable overflow, capacity, and supplied expected-output checks. The
 specializations and wrappers are in the TCB; an IR digest selects a path rather
 than proving semantic preservation.
+
+Specialization admission depends on program identity, not just role and ABI
+shape. An existing compiler test changes a count callback from
+\texttt{payload.count + 1} to \texttt{+2}. The modified callback remains
+front-end legal and has the same role shape, but its IR identity changes and the
+generator exits the standard-count intrinsic for the general leaf path. This
+source-to-wrapper check establishes one concrete selection boundary; it neither
+executes the modified program on a GPU nor proves arbitrary specialization
+correctness.
 
 \subsection{Fail-closed judgments}
 
@@ -468,11 +517,31 @@ trusted lowerer; a matching schema alone is insufficient.
 
 \section{Evaluation}
 
-We ask whether mutations reach intended gates, a sealed framework admits one
-selected composition, an independent checker validates generated artifacts, and
-the public route approaches direct performance at registered endpoints.
+We organize existing evidence around four questions. \textbf{RQ1} asks which
+locally legal or representation-compatible combinations require a
+result-related restriction. \textbf{RQ2} asks when a source change invalidates a
+standard-route specialization. \textbf{RQ3} asks what a sealed extension reuses
+and what topology-specific work remains. \textbf{RQ4} asks the runtime cost of
+the exact implementation paths. Evidence types remain separate: source traces
+and component tests are not GPU equivalence tests, finite mutations are not a
+soundness proof, and measured routes are not arbitrary-program lowering.
 
 \subsection{Earlier liveness and residual evidence}
+
+For RQ1, the role-level any-hit set permits continue, ignore, and terminate,
+while the complete bounded-relation route accepts only continue returns. The
+triangle lowerer supplies the complementary transformation evidence: it records
+an accepted event before physically ignoring the intersection to preserve later
+events. These are source-traced implemented rules; this paper did not execute a
+deliberately terminating complete-relation program on the GPU.
+
+For RQ2, we replayed an existing compiler test that changes the standard count
+update from \texttt{+1} to \texttt{+2}. Front-end verification still succeeds,
+the callback IR identity changes, and wrapper generation switches from the
+fixed count intrinsic to the general leaf path. The test exercises parsing, IR
+verification, contract/ABI construction, and wrapper generation. It does not
+execute either generated path on a GPU or establish semantic preservation for
+other optimizations.
 
 For two fixed contracts, 19 single-leaf mutations exercised 19/19 expected
 gates: seven role/effect, one semantic-ABI, seven physical-ABI, two continuation,
@@ -490,7 +559,7 @@ evidence about those systems' guarantees~\cite{nvidiaPyOptix,nvidiaOWL}. The
 \subsection{Sealed-snapshot composition exam}
 \label{sec:prospective}
 
-Before a public randomness pulse, we fixed an author-defined ten-row challenge:
+For RQ3, before a public randomness pulse, we fixed an author-defined ten-row challenge:
 seven built-in four-role and three custom six-role rows. All used supported
 primitive families and returned one value per query: six produced counts, and
 four produced Booleans by terminating on the first accepted hit. The curve
@@ -520,7 +589,7 @@ GPUVerify illustrate the substantially stronger proof obligation~\cite{betts2012
 
 \subsection{Performance methodology}
 
-We measured two exact tasks. \emph{Relation} uses 4,096 objects and 4,096
+For RQ4, we measured two exact tasks. \emph{Relation} uses 4,096 objects and 4,096
 queries, returns 4,096 canonical u32 pair rows, and performs two true OptiX
 traversals. \emph{Triangle} uses 16,384 primitives and 16,384 queries, performs
 one true traversal, and returns the checked scalar 65,530.
@@ -632,10 +701,12 @@ lowerers generate and bind CUDA/OptiX code. Failed status gates suppress output,
 while experiments may add application oracles.
 
 The implementation suggests, but does not validate elsewhere, a pattern for
-managed-language/accelerator boundaries: expose cross-component obligations,
-compare source and target projections, gate executable minting, bind admission
-to loaded bytes, and include asynchronous failure in publication. Lowerers,
-trusted semantics, and checker vocabularies must be re-established per domain.
+managed-language/accelerator boundaries: use the application-visible result
+contract to organize callback legality, target-action interpretation, and
+publication; then distinguish metadata checks from trusted lowering obligations
+and execution-time failures. Other accelerators may expose analogous splits,
+but their effects, lowerers, and checker vocabularies would need independent
+design and evidence.
 
 \section{Related Work}
 
@@ -654,34 +725,42 @@ caching, and lifecycle support
 ~\cite{nvidiaPyOptix,slangPyRelease,slangPyDocs}. OWL manages substantial OptiX construction, and
 Luisa automates resource dependency analysis and RT pipeline/SBT/launch work
 ~\cite{nvidiaOWL,zheng2022luisa,luisaCompute}. The checked primary materials do
-not state the same joint five-seam admission condition; this source-bounded
-observation is not evidence that those systems cannot implement it.
+not state the same fixed result-route contract that we implement; for several
+systems the exact guarantee remains unknown. This source-bounded observation is
+not evidence that those systems cannot implement it.
 
 Shader Components and Slang provide modular interfaces, specialization, and
 reflection; current Slang also infers and validates target, stage, API, and
 hardware capabilities, while shader cursors address cross-platform parameter
 layout and binding~\cite{he2017shaderComponents,he2018slang,slangCapabilities,slangShaderCursors}.
-Dr.Jit traces and optimizes broad Python/C++ computations through OptiX, and
-CrossRT generates cross-platform host/device RT code
-~\cite{jakob2022drjit,frolov2024crossrt}. \rtdl is narrower: it contributes a
-concrete route-level admission organization, not their language breadth,
-generation scope, or an exclusivity result.
+These mechanisms already decide substantial stage and target compatibility.
+Their predicates do not by themselves decide the distinct result-route
+questions illustrated here: whether a complete route permits termination, or
+whether logical acceptance must be implemented by physical intersection
+rejection. This distinction does not imply that Slang could not be extended to
+express those predicates. Dr.Jit traces and optimizes broad Python/C++
+computations through OptiX, and CrossRT generates cross-platform host/device RT
+code~\cite{jakob2022drjit,frolov2024crossrt}. \rtdl is narrower than all of
+these systems in language and generation scope.
 
 Proof-carrying code established consumer-side policy validation of a supplied
 safety proof before native execution~\cite{necula1996safe}. \rtdl has no proof
 certificate: schemas, compiler projections, topology lowerers, and runtime are
-trusted, while hashes establish identity rather than semantics. Its proposed
-increment is a bounded RT-specific design and implementation, not validation
-before execution.
+trusted, while hashes establish identity rather than semantics. Its increment
+is the concrete, bounded relation from RT result obligations to effects,
+target-action interpretation, and publication, not validation before execution.
 
 Typestate, interface automata, and multiparty session types provide general and
 often formally stronger models of state and global/local protocol compatibility
 ~\cite{strom1986typestate,deAlfaro2001interfaceAutomata,honda2016multiparty}.
-Typed linking and FFI checking already relate rich cross-language and physical
-representations~\cite{furr2005ffi,patterson2017linkingTypes}. \rtdl specializes
-these concerns to five RT compiler/runtime seams and proves no new calculus or
-soundness theorem. Its finite target checker is empirical and structural, unlike
-formal GPU verification such as GPUVerify~\cite{betts2012gpuverify}.
+Typed linking and FFI checking already relate rich cross-language behavior,
+physical representations, offsets, tags, and effects
+~\cite{furr2005ffi,patterson2017linkingTypes}. \rtdl contributes no new linking
+calculus. It instantiates a narrower RT result-route model whose trusted lowerer
+must reconcile logical callback effects with traversal actions and whose
+runtime suppresses publication on represented failures. Its finite target
+checker is empirical and structural, unlike formal GPU verification such as
+GPUVerify~\cite{betts2012gpuverify}.
 
 \section{Artifact}
 
@@ -740,19 +819,22 @@ private provenance remains available for confidential audit.
 
 \section{Conclusion}
 
-\rtdl admits bounded RT routes as protocol-carrying executables. One decision
-compares five cross-artifact seams before returning a materialized route, whose
-identity is carried into preparation and interface-specific publication checks.
-General callbacks use typed effects and trusted topology wrappers; the measured
-standard routes use disclosed exact-IR specializations in that TCB. Two public
-constructors and a four-leaf corpus exercise the design. Finite checks support
-this boundary, not semantic inference, arbitrary lowering, novelty by absence,
+\rtdl makes a fixed RT output contract constrain callback effects, traversal
+interpretation, and result publication. Its implemented families can reject a
+role-legal effect that conflicts with a complete result, lower logical event
+acceptance to physical intersection rejection for all-hit counting, and exit an
+exact specialization when callback semantics change. These decisions are tied
+to semantic and physical contracts and executable identity before a
+materialized route is returned. Trusted topology lowerers and exact-IR
+recognizers remain in the TCB. Finite checks support these implemented
+relations, not semantic inference, arbitrary lowering, novelty by absence,
 proof-carrying safety, or general soundness.
 
 Across two tasks and GPU generations, prepared median latency is
 1.077--1.175$\times$ Direct; post-import A/C reaches 1.837$\times$ median and a
-2.377$\times$ worst block. This bounded compiler-system method has near-direct
-prepared latency and explicit TCB, receipt, generality, and lifecycle limits.
+2.377$\times$ worst block. This bounded result-route method has near-direct
+prepared latency on two exact tasks and explicit TCB, receipt, generality, and
+lifecycle limits.
 
 \bibliographystyle{ACM-Reference-Format}
 \bibliography{references}

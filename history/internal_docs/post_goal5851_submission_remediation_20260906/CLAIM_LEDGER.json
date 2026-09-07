@@ -2,7 +2,7 @@
   "schema": "rtdl.cgo2027.post_goal5851.claim_ledger.v1",
   "version": 1,
   "created_at_utc": "2026-09-06T20:35:00Z",
-  "updated_at_utc": "2026-09-07T07:14:05Z",
+  "updated_at_utc": "2026-09-07T07:49:56Z",
   "measured_implementation": {
     "commit": "d653fe4ad170c5b51fee309d653c9565944dcf2e",
     "tree": "d53af23a2599f9d6adb4ac0bfff39cd0ab31860b",
@@ -17,9 +17,9 @@
     "public_or_manuscript_claim_authorized": false
   },
   "review": {
-    "current_reviewer": "Pending two independent reviews of exact P-triple-prime bytes; author-side remediation complete",
-    "current_review_version": "post_goal5851_ptripleprime_author_remediated_pending_independent_review",
-    "external_final_bytes_review": "PDOUBLEPRIME_ONE_REVISE_ZERO_ACCEPT__PTRIPLEPRIME_PENDING_TWO_INDEPENDENT_ACCEPTANCES",
+    "current_reviewer": "Pending two independent reviews of exact P-quadruple-prime bytes; author-side result-route remediation complete",
+    "current_review_version": "post_goal5851_pquadrupleprime_result_route_author_remediated_pending_independent_review",
+    "external_final_bytes_review": "PTRIPLEPRIME_ZERO_ACCEPT__PQUADRUPLEPRIME_PENDING_TWO_INDEPENDENT_ACCEPTANCES",
     "old_p_lead_review": {
       "path": "history/internal_docs/post_goal5851_submission_remediation_20260906/R7_LEAD_INDEPENDENT_FINAL_BYTES_REVIEW.md",
       "sha256": "c449a6c6eed4f177496a762b38f13434a09b1447aa3b3521db56c66b818d5ddd",
@@ -139,15 +139,17 @@
   "claims": [
     {
       "claim_id": "ARCH-CENTRAL-BOUNDED-COMPILER-001",
-      "candidate_sentence": "RTDL compiles a bounded restricted-Python callback protocol into statically admitted, provider-specific execution plans for the supported families.",
+      "candidate_sentence": "For supported fixed RT families, RTDL makes observable output obligations constrain admissible callback effects, trusted traversal interpretation, and fail-closed result publication.",
       "scope": "The finite V4 callback subset, two stable constructors, and explicitly supported provider/family routes only.",
       "source_evidence": [
         {"path": "src/rtdsl/v4_family_schema.py", "sha256": "ed988db4aa5df2887366673b3a86ebc4b2aed2a46598ca12d68af98ac5744149"},
         {"path": "src/rtdsl/v4_generic_family_lifecycle.py", "sha256": "d8b528ea0915eda2d4ce746ed31cac2411d813837945aa6f3e67008843620f38"},
-        {"path": "src/rtdsl/v4_family.py", "sha256": "060aaa5ab8f8810d88d7b2296a4ef2d7c98060ee80de8aeea8016044b55ce959"}
+        {"path": "src/rtdsl/v4_family.py", "sha256": "060aaa5ab8f8810d88d7b2296a4ef2d7c98060ee80de8aeea8016044b55ce959"},
+        {"path": "src/rtdsl/v4_bounded_relation.py", "sha256": "4ac50a83ffb80400c6b950150a5702633b3cafa0e43b0b54527f7db44949467a"},
+        {"path": "src/rtdsl/v4_triangle_reduction_optix_wrapper_codegen.py", "sha256": "f7d1f07b4462a6713a4bcda7aaf64f3a480575f1034059f3fbe61d640044eecb"}
       ],
-      "validation_phase": "Static source review plus bounded Goal5838/Goal5840 evidence.",
-      "limitations": "Not arbitrary Python, arbitrary Callback IR, arbitrary topology, or topology-generic native lowering.",
+      "validation_phase": "W1-W3 static source trace, existing component-test replay, and bounded Goal5838/Goal5840 evidence.",
+      "limitations": "Fixed-family implementation only; not arbitrary Python, arbitrary Callback IR, arbitrary topology, topology-generic native lowering, or a result-contract soundness theorem.",
       "paper_destination": "Abstract; Introduction; Design overview",
       "disposition": "RETAIN_BOUNDED_WORDING",
       "claim_authorized": false,
@@ -449,52 +451,57 @@
     },
     {
       "claim_id": "NOVELTY-PROTOCOL-ADMITTED-EXECUTABLE-022",
-      "candidate_sentence": "For supported finite routes, RTDL represents role/effect closure, semantic attribute ownership, physical binding, fail-closed continuation, and executable identity in one declaration/projection decision made before a materialized route is returned; the accepted identity is carried through per-route preparation and interface-specific publication checks.",
+      "candidate_sentence": "For supported fixed RT routes, RTDL connects output obligations to admissible effects, trusted traversal interpretation, semantic and physical contracts, fail-closed publication, and executable identity before returning a materialized route.",
       "scope": "Two stable public protocol families and explicitly implemented topology-specific OptiX lowerers at measured implementation M only.",
       "source_evidence": [
         {"path": "src/rtdsl/v4_callback_lifecycle.py", "sha256": "2038d50934578d63ca9503f8ddbee15098c7ebcead2e533337d4569be09313b0"},
         {"path": "src/rtdsl/v4_protocol_contract.py", "sha256": "e60f83f5a15df58de2f3f38b681331efb51b797c1b12628ebdaaf1c26a448973"},
-        {"path": "history/internal_docs/post_goal5851_submission_remediation_20260906/novelty/PROTOCOL_WITNESS_AND_DERIVATION.md", "sha256": "b8bc76ecbcb3e156bb405c0b46575fb61696a73bb076246b7c37bb8dbe87112e"}
+        {"path": "src/rtdsl/v4_bounded_relation.py", "sha256": "4ac50a83ffb80400c6b950150a5702633b3cafa0e43b0b54527f7db44949467a"},
+        {"path": "src/rtdsl/v4_triangle_reduction_optix_wrapper_codegen.py", "sha256": "f7d1f07b4462a6713a4bcda7aaf64f3a480575f1034059f3fbe61d640044eecb"},
+        {"path": "tests/goal5759_v4_triangle_reduction_target_test.py", "sha256": "3d44b0285afba026333e81abd4f262232db075b5b8150871c9fc14bab767101f"},
+        {"path": "history/internal_docs/post_goal5851_submission_remediation_20260906/novelty/PROTOCOL_WITNESS_AND_DERIVATION.md", "sha256": "91bb40d890bd2952499109dc519e3b6d7846aa2912d39e66c09dcff925b029fa"}
       ],
-      "validation_phase": "Author-side source derivation, existing mutation replay, and manuscript remapping; independent final-byte review pending.",
-      "limitations": "Exact app-free runtime load/warm may precede route admission. Same-compiler derivations, trusted semantic schemas, exact-IR specializations, and topology lowerers remain TCB; no PCC certificate, automatic intent inference, arbitrary topology synthesis, general algorithm, soundness theorem, first/only claim, or proof another system cannot implement it.",
+      "validation_phase": "Author-side W1-W3 source derivation, existing component/mutation replay, and manuscript remapping; independent final-byte review pending.",
+      "limitations": "W1 is one fixed-family restriction, W2 uses established OptiX mechanisms, and W3 is a source-to-wrapper test without GPU equivalence. Exact app-free runtime load/warm may precede route admission. Same-compiler derivations, trusted semantic schemas, exact-IR specializations, and topology lowerers remain TCB; no PCC certificate, automatic intent inference, arbitrary topology synthesis, general algorithm, soundness theorem, first/only claim, or proof another system cannot implement it.",
       "paper_destination": "Abstract; Introduction; Protocol Mismatch; Bounded Language and Admission; Conclusion",
-      "disposition": "RETAIN_AS_BOUNDED_COMPILER_SYSTEMS_DESIGN__PENDING_PTRIPLEPRIME_R7",
+      "disposition": "RETAIN_AS_BOUNDED_RESULT_ROUTE_DESIGN__PENDING_PQUADRUPLEPRIME_R7",
       "claim_authorized": false,
-      "reviewer": "Codex author-side P-triple-prime remediation; two independent P-triple-prime final-byte reviews pending"
+      "reviewer": "Codex author-side P-quadruple-prime remediation; two independent exact-byte reviews pending"
     },
     {
       "claim_id": "METHOD-TYPED-EFFECT-TRUSTED-LOWERING-023",
-      "candidate_sentence": "General restricted callbacks lower from role-indexed typed effects through a deterministic ABI and generated Numba leaves to trusted wrapper checks; the evaluated standard triangle and relation routes use disclosed exact-IR guarded direct/fused specializations.",
+      "candidate_sentence": "General restricted callbacks lower from role-indexed typed effects through a deterministic ABI and generated Numba leaves to trusted wrapper checks; for triangle all-hit counting, logical acceptance records a contribution and then physically ignores the intersection, while exact-IR guards select the measured standard specialization.",
       "scope": "Implemented V4 callback IR, ABI, Numba leaf generation, and explicitly supported wrapper generators at M.",
       "source_evidence": [
         {"path": "src/rtdsl/v4_callback_ir.py", "sha256": "edf571196dde4a557b328b5a35fd65e2e57e63cf4a48180d1fa87dba363c1ec7"},
         {"path": "src/rtdsl/v4_callback_abi.py", "sha256": "3f4be4d998ee91600c6a1f4bba4fadbb435f23d193a49f4cbf6dc50522d74fb5"},
         {"path": "src/rtdsl/v4_callback_numba_codegen.py", "sha256": "4c72a5886dc43b0f5a3ccb71fd84c5ccb9076110f13813800f188132b69fc29f"},
         {"path": "src/rtdsl/v4_triangle_reduction_optix_wrapper_codegen.py", "sha256": "f7d1f07b4462a6713a4bcda7aaf64f3a480575f1034059f3fbe61d640044eecb"},
-        {"path": "src/rtdsl/v4_bounded_relation_optix_wrapper_codegen.py", "sha256": "ef1a7ec9a54d150db11ea7aa1eecf87e536b9de7b982e5254b96c627afd533a2"}
+        {"path": "src/rtdsl/v4_bounded_relation_optix_wrapper_codegen.py", "sha256": "ef1a7ec9a54d150db11ea7aa1eecf87e536b9de7b982e5254b96c627afd533a2"},
+        {"path": "src/native/optix/rtdl_optix_v4_callback_poc.cpp", "sha256": "4e9c05bdc227c48ccc998b10ec382d84e041a8c268c1dff9ca04d987455045a7"},
+        {"path": "tests/goal5759_v4_triangle_reduction_target_test.py", "sha256": "3d44b0285afba026333e81abd4f262232db075b5b8150871c9fc14bab767101f"}
       ],
-      "validation_phase": "Author-side read-only lowering trace plus previously retained finite checker and GPU route evidence.",
-      "limitations": "An implementation method, not a new effect calculus. The measured specializations replace per-leaf calls/tag checks at specialized roles and remain TCB; their IR guards are selectors, not proofs. The canonical plan is non-executable and not every topology admits every language-level effect.",
+      "validation_phase": "Author-side W2/W3 lowering trace, existing source-to-wrapper test replay, and previously retained finite checker/GPU route evidence.",
+      "limitations": "An implementation method, not invention of OptiX all-hit operations or a new effect calculus. The measured specializations replace per-leaf calls/tag checks at specialized roles and remain TCB; their IR guards are selectors, not proofs. The canonical plan is non-executable and not every topology admits every language-level effect.",
       "paper_destination": "Abstract; Contributions; Role-indexed effects; Plan versus executable lowering; Conclusion",
-      "disposition": "RETAIN_AS_IMPLEMENTATION_METHOD__PENDING_PTRIPLEPRIME_R7",
+      "disposition": "RETAIN_AS_RESULT_ROUTE_IMPLEMENTATION_METHOD__PENDING_PQUADRUPLEPRIME_R7",
       "claim_authorized": false,
-      "reviewer": "Codex author-side P-triple-prime remediation; two independent P-triple-prime final-byte reviews pending"
+      "reviewer": "Codex author-side P-quadruple-prime remediation; two independent exact-byte reviews pending"
     },
     {
       "claim_id": "RELATED-WORK-EXACT-GUARANTEE-BOUNDARY-024",
-      "candidate_sentence": "The checked primary materials document strong local checking, Python access, construction, staging, generation, and validation-before-execution precedents, but do not state the same joint five-seam finite-route admission guarantee; for several systems the exact result remains unknown.",
-      "scope": "Only the named source versions and exact Q1-Q6 propositions in the N1 boundary audit, accessed 2026-09-06 and the fixed SlangPy/PCC recheck on 2026-09-07.",
+      "candidate_sentence": "The checked primary materials document strong local checking, Python access, construction, staging, specialization, rich FFI/linking relations, and validation-before-execution precedents, but do not state the same fixed RT result-route relation; for several systems the exact result remains unknown.",
+      "scope": "Only the named source versions, exact Q1-Q6 propositions, and RR1-RR3 result predicates in the N1 boundary audit, accessed 2026-09-06 and rechecked on 2026-09-07.",
       "source_evidence": [
-        {"path": "history/internal_docs/post_goal5851_submission_remediation_20260906/novelty/RELATED_WORK_BOUNDARIES.md", "sha256": "739bca412ea29e1ed149566b9f32d30f262bfecfc55ca15bdb8888ed92c3c15d"},
-        {"path": "history/internal_docs/post_goal5851_submission_remediation_20260906/novelty/CGO_CONTRIBUTION_ARGUMENT.md", "sha256": "9cf76575d7fe69d6e862880fbec43f3be98fcc83ca6f97bd38f49742ff287a99"}
+        {"path": "history/internal_docs/post_goal5851_submission_remediation_20260906/novelty/RELATED_WORK_BOUNDARIES.md", "sha256": "0b933d85513808f2c62ae51d8d82ae4f8251675cc9a02667ce82d2567b93d1a0"},
+        {"path": "history/internal_docs/post_goal5851_submission_remediation_20260906/novelty/CGO_CONTRIBUTION_ARGUMENT.md", "sha256": "fd0d9b13b82c4238a48ce9bbbd55118187a2457789465c1691b28e5e52543147"}
       ],
       "validation_phase": "Primary-source author/standards/project documentation audit; no opponent execution and no inference from silence.",
-      "limitations": "PCC is a direct policy-validation precedent; RTDL has no proof certificate. SlangPy v0.43.1 already provides substantial RT, binding, cache, and lifecycle facilities. This is a source-bounded observation, not a first/only, exhaustive-review, empirical-negative, or impossibility claim; dynamic docs are not peer-reviewed research.",
+      "limitations": "PCC is a direct policy-validation precedent; RTDL has no proof certificate. Slang and Shader Components already provide substantial capability, interface, and specialization mechanisms; FFI/linking work tracks rich semantic and physical relations. SlangPy v0.43.1 provides substantial RT, binding, cache, and lifecycle facilities. This is a source-bounded observation, not a first/only, exhaustive-review, empirical-negative, or impossibility claim; dynamic docs are not peer-reviewed research.",
       "paper_destination": "Abstract; Introduction; Related Work; External-validity threats",
-      "disposition": "RETAIN_SCOPED_UNKNOWN_AWARE_WORDING__PENDING_PTRIPLEPRIME_R7",
+      "disposition": "RETAIN_SCOPED_RESULT_PREDICATE_WORDING__PENDING_PQUADRUPLEPRIME_R7",
       "claim_authorized": false,
-      "reviewer": "Codex author-side P-triple-prime remediation; two independent P-triple-prime final-byte reviews pending"
+      "reviewer": "Codex author-side P-quadruple-prime remediation; two independent exact-byte reviews pending"
     }
   ]
 }

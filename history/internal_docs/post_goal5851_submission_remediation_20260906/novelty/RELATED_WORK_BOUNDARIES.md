@@ -1,9 +1,10 @@
 # Related-Work Capability and Guarantee Boundaries
 
-Date checked: 2026-09-07 America/New_York. The 2026-09-06 audit is retained
-below except where this P-triple-prime remediation explicitly supersedes it.
+Date checked: 2026-09-07 America/New_York. The 2026-09-06 audit and
+P-triple-prime corrections are retained below except where this
+P-quadruple-prime authoring pass explicitly narrows the comparison.
 
-Status: `N1_PTRIPLEPRIME_REMEDIATED__AUTHOR_SCOPE__INDEPENDENT_REVIEW_PENDING`.
+Status: `N1_PQUADRUPLEPRIME_RESULT_ROUTE_REMEDIATED__AUTHOR_SCOPE__INDEPENDENT_REVIEW_PENDING`.
 
 This is a primary-source boundary audit for the CGO 2027 RTDL manuscript. It
 does not prove novelty, authorize a claim, or report a new opponent experiment.
@@ -31,6 +32,31 @@ This formulation is intentionally narrower than a general safety theorem. It
 does not ask whether a sufficiently careful application could implement the
 same checks. It asks what guarantee the cited system itself documents and what
 RTDL must still establish in its actual implementation.
+
+### 1.1 Concrete result-route predicates
+
+Q1--Q6 remain useful for auditing the full executable boundary, but they are
+not by themselves the paper's incremental research claim. The central
+comparison is now three concrete predicates induced by an observable result:
+
+| Predicate | Concrete RTDL question | Implemented RTDL relation | Comparison discipline |
+| --- | --- | --- | --- |
+| `RR1_COMPLETE_EFFECT` | May a locally role-legal `IGNORE` or `TERMINATE` be used by the current route that promises a complete bounded relation? | The family verifier collects all any-hit returns and requires exactly `ACCEPT_CONTINUE`; capacity overflow is fail closed. | Compare with role/stage capability checks, but do not infer that another language cannot add a result predicate or that filtering is impossible in another complete-enumeration design. |
+| `RR2_LOGICAL_PHYSICAL` | Does logical event acceptance mean that the hardware intersection should be physically accepted? | The triangle all-hit lowerer updates count/payload and then calls `optixIgnoreIntersection()`; geometry separately requires single any-hit delivery and reduction checks overflow. | The OptiX operations are established mechanisms. The possible increment is their explicit connection to a fixed result contract inside RTDL's trusted route, not invention of all-hit traversal. |
+| `RR3_SPECIALIZATION_IDENTITY` | Can two callbacks with the same role/ABI shape but updates `+1` and `+2` use the same fixed count intrinsic? | No. An exact-IR guard selects the standard intrinsic; the existing `+1` to `+2` test remains front-end legal but switches to the general leaf path. | Compare with existing specialization systems while limiting evidence to one source-to-wrapper component test, not a general optimization theorem or GPU equivalence result. |
+
+These predicates identify what the compiler must decide beyond ordinary
+machine-width compatibility. They do not establish exclusivity. For each named
+neighbor, a missing express statement remains `UNKNOWN` rather than evidence of
+inability.
+
+### 1.2 Direct comparison on the same predicates
+
+| Near neighbor | Capability already established | Concrete RTDL remainder | Mandatory boundary |
+| --- | --- | --- | --- |
+| Proof-carrying code (PCC) | Consumer policy, producer-supplied proof, and validation before native execution. | RTDL instantiates fixed RT result predicates and trusted lowering/publication relations without a proof certificate. | Admission-before-execution is not new; RTDL is theoretically weaker and trusts compiler/runtime components. |
+| Shader Components and Slang | Interfaces, composition, specialization, reflection, and current target/stage/API/hardware capability inference and validation. | `RR1` and `RR2` ask distinct result predicates: preservation of a complete result and interpretation of logical acceptance as a physical RT action. | Capability predicates do not automatically answer these result predicates, but this does not show that Slang cannot be extended to express them. |
+| FFI checking and linking types | Rich cross-language representation and behavior relations, including offsets, tags, and effects. | RTDL supplies a narrow RT event/result/capacity/traversal-wrapper relation and binds it to one executable route. | Cross-representation semantic checking is not new; RTDL contributes no general linking type or soundness theorem. |
 
 ## 2. Evidence vocabulary
 
@@ -117,7 +143,7 @@ itself remains unchanged.
 | Typestate handles only one object, so it cannot address RT protocols. | False and unnecessary. | Delete. Treat typestate/interface/session systems as formal antecedents and narrow RTDL to a domain-specific implementation method. |
 | Typed linking and FFI check only machine layouts. | False/unsupported. | Delete. Acknowledge richer cross-language relations and state that RTDL specializes the concrete RT artifact set without a new theorem. |
 | No existing work can implement an equivalent mechanism. | Unsupported and not required. | Prohibit. Ordinary code or another compiler could implement equivalent checks. |
-| The checked systems' primary materials do not document the same joint finite-route admission relation. | Supported only as a source-bounded observation, with several exact-Q results still `UNKNOWN`. | Retain with named sources, checked versions, and no exclusivity implication. |
+| The checked systems' primary materials do not document the same fixed RT result-route relation. | Supported only as a source-bounded observation over RR1--RR3 and Q1--Q6, with several exact results still `UNKNOWN`. | Retain with named sources, checked versions, and no exclusivity implication. |
 | Validation of a producer-supplied native program before execution is new. | False. Proof-carrying code is a direct policy-and-validation precedent. | Delete. State that RTDL has no proof certificate and contributes only its bounded RT-specific representation, enforcement points, implementation, and finite evidence. |
 
 ## 8. Source cards and search record
@@ -163,11 +189,13 @@ papers, and old non-goals are not projected forward into current systems.
 ## 10. N1 conclusion
 
 N1 supports a narrower, defensible problem statement, not an exclusivity claim.
-Nearby systems and prior methods already provide Python access, RT construction, shader
-modularity, reflection/layout support, capability checks, staged generation,
-formal models of protocols and linking, and proof-validated native-code
-admission. The checked primary sources do not
-state the same finite Q1-Q6 route-level admission guarantee, but for several
-systems that result is `UNKNOWN`, not a demonstrated absence. RTDL therefore
-must earn its contribution through the concrete representation and enforcement
-chain traced in N2 and the incremental method argument in N3.
+Nearby systems and prior methods already provide Python access, RT construction,
+shader modularity, reflection/layout support, capability checks, staged
+generation, formal models of protocols and linking, and proof-validated native
+code admission. The paper's concrete remainder is the implemented connection
+from fixed RT output obligations to admissible effects, physical traversal
+interpretation, specialization selection, and fail-closed publication. The
+checked primary sources do not state this same bounded result-route contract,
+but for several systems that result is `UNKNOWN`, not a demonstrated absence.
+RTDL must therefore earn its contribution through the source-traced W1--W3
+relations in N2 and the bounded implementation/evidence argument in N3.

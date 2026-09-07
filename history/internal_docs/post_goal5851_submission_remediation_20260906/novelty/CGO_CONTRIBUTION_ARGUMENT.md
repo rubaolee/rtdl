@@ -2,7 +2,7 @@
 
 Date: 2026-09-07 America/New_York.
 
-Status: `N3_PTRIPLEPRIME_REMEDIATED__SYSTEMS_DESIGN__INDEPENDENT_REVIEW_PENDING`.
+Status: `N3_PQUADRUPLEPRIME_RESULT_ROUTE_REMEDIATED__SYSTEMS_DESIGN__INDEPENDENT_REVIEW_PENDING`.
 
 This document joins the primary-source capability audit in
 `RELATED_WORK_BOUNDARIES.md` (N1) with the implementation trace in
@@ -33,8 +33,12 @@ inability and supports no first/only claim. Evidence IDs: `RW-RT-01`--`05`,
 
 ### 1.2 What does RTDL add?
 
-RTDL's core design is a **protocol-carrying admitted executable** for fixed RT
-families. One route contract explicitly represents and relates:
+RTDL's core design is a **result-route contract** for fixed RT families. The
+application-visible output obligation constrains callback effects, their
+target-specific traversal interpretation, and the conditions under which a
+result may be published. The admitted executable is the carrier of this
+contract, not the contribution's sole abstraction. One route explicitly
+represents and relates:
 
 1. callback roles and permitted effects;
 2. nominal payload or intersection-attribute ownership;
@@ -44,12 +48,15 @@ families. One route contract explicitly represents and relates:
 
 The compiler defines where each fact originates, extracts a declaration and a
 separately represented compiled projection, canonicalizes them, and applies one
-five-relation decision before returning a materialized route. The accepted
-identity is then carried through per-route preparation and the publication
-checks implemented by each interface. Exact app-free native runtime loading or
-warming may start before admission; it exposes no admitted route and does not
-authorize per-route preparation or launch. Evidence IDs: `PC-01`--`PC-05` and
-N2 Sections 4--5.
+decision before returning a materialized route. More concretely, W1 rejects
+locally legal effects that lack semantics for the current complete relation;
+W2 implements logical all-hit acceptance by recording a contribution and then
+physically ignoring the intersection; W3 makes exact program identity guard a
+fixed count intrinsic. The accepted executable identity is then carried through
+per-route preparation and the publication checks implemented by each interface.
+Exact app-free native runtime loading or warming may start before admission; it
+exposes no admitted route and does not authorize per-route preparation or
+launch. Evidence IDs: W1--W3, `PC-01`--`PC-05`, and N2 Sections 1A and 4--6.
 
 The same-width N2 witness makes the design concrete. Attribute zero can legally
 hold physical `primitive_index:u32` or application `item_id:u32`; width and
@@ -62,11 +69,14 @@ so this is consistency under a premise, not semantic inference or proof.
 ### 1.3 Why is this organization worth studying?
 
 The contribution is not that five checks happen to differ. It is the concrete
-systems choice to turn facts otherwise spread among restricted Python IR,
-callback ABI, physical contracts, generated OptiX programs, runtime state, and
-executable custody into one inspectable route object with named comparison and
-enforcement points. That organization makes authority, representation drift,
-trusted code, and fail-closed obligations explicit and auditable.
+compiler choice to let a fixed result contract determine more than a return
+type: which role-legal effects the route admits, how a trusted lowerer interprets
+logical effects as physical RT operations, when a specialization is valid, and
+when partial or failed state may become a result. The route object connects
+those decisions to facts otherwise spread among restricted Python IR, callback
+ABI, physical contracts, generated OptiX programs, runtime state, and executable
+custody. That organization makes authority, transformation, trusted code, and
+fail-closed obligations explicit and auditable.
 
 This is useful research evidence only to the extent demonstrated here: two
 public protocol families, finite mutations, one sealed composition exercise, a
@@ -97,19 +107,29 @@ and there is no independent human authoring study. Evidence IDs:
 
 ## 2. One design, one implementation method, finite evidence
 
-### 2.1 Core design (`CONTRIB-PROTOCOL-UNIT`)
+### 2.1 Core design (`CONTRIB-RESULT-ROUTE-CONTRACT`)
 
-For a fixed RT family, the shared route contract connects role/effect closure,
-nominal attribute ownership, physical/result/reducer binding, continuation, and
-executable identity. One decision checks those five relations before a
-materialized route is returned. The accepted identity continues into per-route
-preparation and interface-specific publication checks. This is the proposed
-systems-design contribution.
+For a fixed RT family, the shared route contract starts from an observable
+result obligation and connects it to role/effect closure, target traversal
+interpretation, nominal attribute ownership, physical/result/reducer binding,
+continuation, and executable identity. One decision checks the represented
+relations before a materialized route is returned. The accepted identity
+continues into per-route preparation and interface-specific publication checks.
+This result-to-effect-to-target-action relation is the proposed systems-design
+contribution; the five seams are its implementation structure.
 
 It is not a claim that the declarations are independent authorities. The
 semantic schema is trusted and both projections are produced inside one
 compiler. A wrong but internally coherent schema can pass. The design catches
 represented disagreement; it does not infer application intent.
+
+The three witnesses expose distinct consequences:
+
+| Witness | Result obligation | Compiler consequence | Evidence limit |
+| --- | --- | --- | --- |
+| W1 | Complete bounded relation | A role-valid `IGNORE` or `TERMINATE` is rejected by this family; only `ACCEPT_CONTINUE` returns are admitted. | Source rule and existing component checks; no invalid GPU route and no general enumeration theorem. |
+| W2 | Triangle all-hit count | Logical acceptance updates state, then the trusted lowerer physically ignores the intersection; single-delivery and overflow rules complete the convention. | Source trace plus unchanged historical route evidence; OptiX mechanisms are prior art and no new GPU sample was added. |
+| W3 | Standard count intrinsic | Exact callback IR, not role/ABI shape alone, selects specialization; `+1` to `+2` exits to the general leaf path. | Existing source-to-wrapper test replay; no GPU equivalence or general optimization theorem. |
 
 ### 2.2 Implementation method (`CONTRIB-TYPED-EFFECT-LOWERING`)
 
@@ -131,6 +151,15 @@ RTDL does not synthesize arbitrary wrappers from arbitrary protocol graphs. The
 reported prepared latencies measure these specialized standard routes, not the
 cost of executing every role through the general Numba-leaf ABI.
 
+The transformation case is deliberately concrete. The triangle route's logical
+`ACCEPT_CONTINUE` is not emitted as physical intersection acceptance: the
+wrapper records the contribution and calls `optixIgnoreIntersection()` so later
+events remain visible. The exact count intrinsic performs that convention
+directly. When the callback's update changes from `+1` to `+2`, the front end
+still accepts the program but the exact-IR guard no longer selects the intrinsic.
+This is an implemented selection boundary, not a proof that the fallback and
+specialized paths are equivalent for all programs.
+
 ### 2.3 Interface and evidence boundaries
 
 | Interface or phase | What actually happens | Prohibited generalization |
@@ -144,12 +173,12 @@ cost of executing every role through the general Numba-leaf ABI.
 
 | Existing concept or capability | What it already solves | RTDL's narrower increment | What RTDL does not add |
 | --- | --- | --- | --- |
-| PCC | Policy-based admission of native binaries through validation of a supplied proof. | No proof certificate; instead, one bounded RT-specific route representation and selected compiler/runtime checks. | Validation-before-execution, proof-carrying safety, or a formal semantic theorem. |
-| DXR PAQs and Slang capabilities | Stage accesses and target/stage/API/hardware requirements with compiler validation. | Connects selected role/effect facts to nominal attribute ownership, physical/result contract, continuation, and exact executable identity in one finite decision. | A new stage-capability system or better general shader typing. |
-| Shader Components, Slang interfaces, reflection/cursors | Modular interfaces, specialization, parameter layout, marshalling, and binding. | Uses a bounded RT route rather than one component/type as the represented admission unit. | New modules, generics, reflection, marshalling, or caching. |
+| PCC | Policy-based admission of native binaries through validation of a supplied proof. | No proof certificate; instead, fixed RT output obligations select represented effect, lowering, and publication rules in a trusted compiler/runtime. | Validation-before-execution, proof-carrying safety, or a formal semantic theorem. |
+| DXR PAQs and Slang capabilities | Stage accesses and target/stage/API/hardware requirements with compiler validation. | Adds distinct result predicates for this finite system: whether a complete route permits early termination and how logical acceptance maps to a physical intersection action. | A new stage-capability system, proof that Slang cannot express these predicates, or better general shader typing. |
+| Shader Components, Slang interfaces, reflection/cursors | Modular interfaces, specialization, parameter layout, marshalling, and binding. | Uses exact source semantics as well as role/ABI shape to guard a fixed result-route specialization and binds it to route publication. | New modules, generics, reflection, marshalling, caching, or specialization in general. |
 | OWL, SlangPy, Luisa, Dr.Jit, CrossRT | Python RT access, pipeline/SBT management, staging, code generation, dependency analysis, and cross-platform lowering. | Makes a particular semantic/physical/continuation/identity relation explicit for the supported RTDL families. | A broader language/platform or proof those systems cannot implement the relation. |
 | Typestate, interface automata, session types | General state/protocol, compatibility, projection, and formal safety/progress machinery. | A finite engineering projection into a split RT compiler/runtime's concrete artifacts and lifecycle. | A state calculus, refinement algorithm, projection theorem, fidelity, or progress proof. |
-| Linking types and FFI checking | Rich cross-language behavior and physical/semantic representation checks. | Binds one RT-specific set of roles, attributes, physical plans, continuation, and executable bytes. | A general linking type or FFI soundness theorem. |
+| Linking types and FFI checking | Rich cross-language behavior and physical/semantic representation checks, including offsets, tags, and effects. | Instantiates one RT event/result/capacity/traversal-wrapper relation and binds it to an executable route. | A general linking type, a new cross-representation paradigm, or FFI soundness theorem. |
 
 ## 4. Hostile reviewer questions
 
@@ -165,10 +194,12 @@ not supersede PAQs, Slang capabilities, reflection, or SBT validation.
 
 Those are direct foundations and often stronger theories. PCC in particular
 prevents any claim that policy validation before native execution is new. RTDL's
-increment is only the concrete bounded RT design: which five facts are carried,
-where they are extracted, where one route decision is made, and how its identity
-is connected to preparation and interface-specific publication. Hashes provide
-identity coherence, not semantic correctness.
+increment is only the concrete bounded RT design: how a promised result narrows
+otherwise legal effects, how the trusted lowerer interprets a logical effect as
+a physical traversal action, how exact program identity guards a standard
+specialization, and how those choices are connected to preparation and
+interface-specific publication. Hashes provide identity coherence, not semantic
+correctness.
 
 ### 4.3 Why not add assertions to OWL, SlangPy, or an ordinary wrapper?
 
@@ -210,15 +241,18 @@ under that premise, not truth of the premise.
 
 | ID | Proposed contribution statement | N1 boundary | N2 mechanism/evidence | Required limitation |
 | --- | --- | --- | --- | --- |
-| `CONTRIB-PROTOCOL-UNIT` | RTDL organizes five dispersed RT route obligations into one declaration/projection decision and carries the accepted identity into later route stages. | PCC and protocol/linking systems establish broader antecedents; exact Q1-Q6 remains `UNKNOWN` for several close systems. | `PC-01`--`PC-05`; N2 admission/initialization timeline | Domain-specific and finite; app-free warmup may precede admission; same-compiler derivations; trusted schema/lowerers; no exclusivity. |
-| `CONTRIB-TYPED-EFFECT-LOWERING` | General callbacks lower through typed effects/ABI/Numba leaves/wrappers; measured standard routes use disclosed exact-IR specializations. | Existing languages already provide typed interfaces, specialization, and generation. | N2 Section 6 branch table and frozen M source | Implementation method, not new effect theory; specialization TCB; no arbitrary-lowerer claim. |
+| `CONTRIB-RESULT-ROUTE-CONTRACT` | For fixed families, RTDL connects output obligations to admissible effects, target traversal interpretation, physical/data contracts, and fail-closed publication. | PCC and protocol/linking systems establish broader antecedents; shader systems establish stage/capability and specialization mechanisms; exact result-route guarantees remain `UNKNOWN` for several close systems. | W1--W3; `PC-01`--`PC-05`; N2 Sections 1A and 4--6 | Domain-specific and finite; app-free warmup may precede admission; same-compiler derivations; trusted schema/lowerers; no exclusivity or semantic proof. |
+| `CONTRIB-TYPED-EFFECT-LOWERING` | General callbacks lower through typed effects/ABI/Numba leaves/wrappers; triangle logical acceptance is implemented by payload update plus physical ignore; measured standard routes use disclosed exact-IR specializations. | Existing RT APIs already provide ignore/single-delivery operations, and languages already provide typed interfaces, specialization, and generation. | W2/W3; N2 Section 6 branch table and frozen M source | Implementation method, not invention of OptiX mechanisms or a new effect theory; specialization TCB; no arbitrary-lowerer claim. |
 | `EVIDENCE-BOUNDED-VALIDATION` | Mutation, finite checking, sealed composition, two-generation exact-task measurements, and replayable recount support feasibility. | Does not decide novelty against other systems. | Existing M/E/F2 evidence and N2 classification | Finite scope, adverse results retained, no human study, no executed wrong-route witness, no formal semantics. |
 
 ## 6. Claims to retain, narrow, or delete
 
 | Disposition | Claim |
 | --- | --- |
-| Retain, bounded | RTDL implements one route-level admission decision over five named seams for its supported finite families. |
+| Retain, bounded | For supported fixed families, RTDL makes output obligations constrain admissible callback effects, trusted traversal interpretation, and fail-closed publication. |
+| Retain, evidence-only | The complete bounded-relation target requires exactly `ACCEPT_CONTINUE` even though the role-level any-hit set also permits `IGNORE` and `TERMINATE`. |
+| Retain, implementation | Triangle logical acceptance records a contribution and then physically ignores the intersection; established OptiX delivery controls and checked overflow are also required. |
+| Retain, evidence-only | Changing the standard count callback from `+1` to `+2` remains front-end legal but exits the exact-IR count intrinsic in an existing source-to-wrapper test. |
 | Retain, bounded | The accepted route identity is carried into per-route preparation and interface-specific publication checks. |
 | Retain, implementation | General typed effects lower through a deterministic ABI and trusted wrappers; reported routes use disclosed exact-IR specializations. |
 | Retain, evidence-only | With native-initialization overlap disabled, integrated projection mutations are rejected before the native-library loader. |
@@ -230,6 +264,8 @@ under that premise, not truth of the premise.
 | Delete | Every public interface returns only after digest and detailed receipt validation. |
 | Delete | The illustrative `(100,0),(101,1)` defective route was executed. |
 | Delete | RTDL is first/only, proves semantic correctness, or supports arbitrary topology lowering. |
+| Delete | RTDL invented all-hit traversal, `optixIgnoreIntersection`, or single any-hit delivery. |
+| Delete | W1 proves all complete enumeration must reject filtering, or W3 proves GPU equivalence/general optimization correctness. |
 
 ## 7. Cost and adverse-evidence disclosure
 
@@ -256,9 +292,12 @@ repair runtime defects.
 
 ## 8. N3 verdict
 
-The work supports **one bounded compiler-systems design**, one concrete
-implementation method, and finite evaluation evidence. It may be suitable for
-CGO only if the manuscript states these exact boundaries and the P-triple-prime
-bytes survive independent review. This author-side argument does not establish
-novelty, authorize a claim, or support a new theory, arbitrary compiler,
-universal Python RT safety, or categorical superiority over named systems.
+The work supports **one bounded compiler-systems design**: fixed RT output
+contracts constrain callback effects, trusted target-action interpretation,
+specialization selection, and result publication. It also supports one concrete
+implementation method and finite evaluation evidence. It may be suitable for
+CGO only if the manuscript states these exact boundaries and the new
+P-quadruple-prime bytes survive independent review. This author-side argument
+does not establish novelty, authorize a claim, or support a new theory,
+arbitrary compiler, universal Python RT safety, or categorical superiority over
+named systems.

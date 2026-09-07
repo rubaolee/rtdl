@@ -1,10 +1,10 @@
 # Protocol Witness and Fact Derivation
 
-Date checked: 2026-09-07 America/New_York. This P-triple-prime pass preserves
-the earlier audit and corrects its lowering, initialization, and publication
-overgeneralizations.
+Date checked: 2026-09-07 America/New_York. This P-quadruple-prime authoring pass
+preserves the earlier audit and adds the three source-traced result-route
+witnesses required by the lead contribution directive.
 
-Status: `N2_PTRIPLEPRIME_REMEDIATED__AUTHOR_SCOPE__INDEPENDENT_REVIEW_PENDING`.
+Status: `N2_PQUADRUPLEPRIME_RESULT_ROUTE_REMEDIATED__AUTHOR_SCOPE__INDEPENDENT_REVIEW_PENDING`.
 
 This report traces one RTDL protocol seam from requirement to representation,
 target-side fact, admission point, execution guard, and public result. It is a
@@ -17,10 +17,70 @@ or authorize a manuscript claim.
 | Item | Identity |
 | --- | --- |
 | Measured implementation M | commit `d653fe4ad170c5b51fee309d653c9565944dcf2e`, tree `d53af23a2599f9d6adb4ac0bfff39cd0ab31860b` |
-| Read-only audit starting HEAD | commit `50ca45521013f56b141402f4902a3af189b469f9`, tree `3651be79cff13aa9493fe9cc0558c6c26ab5bb92` |
+| Read-only result-route audit starting HEAD | commit `b608f9aa5e4e04d083d8a2963d552e00287b47cd`, tree `bb8927c4d34eeb94a5656ce8da5b1df997329797` |
 | Protocol implementation difference from M | None in the files hashed in Section 8 |
 | Evidence type added here | Source trace and local replay of already committed unit checks only |
 | GPU execution in this audit | None |
+
+## 1A. Three result-route witnesses
+
+These witnesses establish concrete compiler relations already present in the
+measured source. They do not add an executable path, extend the experiment
+population, or prove a general semantics.
+
+### W1: role legality is weaker than fixed-route result legality
+
+`src/rtdsl/v4_callback_ir.py:572-580` permits an any-hit role to return
+`ACCEPT_CONTINUE`, `IGNORE`, or `TERMINATE`. The complete bounded-relation
+target applies a stricter check at `src/rtdsl/v4_bounded_relation.py:241-263`:
+it recursively collects all return effects and requires the set to be exactly
+`{ACCEPT_CONTINUE}`, otherwise rejecting with `any_hit_effect`.
+
+The result contract explains the extra restriction. A route promising the
+current complete relation has no defined early-termination or filtering output
+semantics. This proves the existence and location of a result-related family
+rule, not that all complete-enumeration algorithms must reject `IGNORE`, nor
+that this audit executed a deliberately terminating GPU program.
+
+### W2: logical acceptance is lowered to physical intersection rejection
+
+For triangle all-hit counting, the generic wrapper at
+`src/rtdsl/v4_triangle_reduction_optix_wrapper_codegen.py:418-430` updates the
+payload for logical `ACCEPT_CONTINUE` and then emits
+`optixIgnoreIntersection()`. The exact-standard specialization at the same file
+around lines 486-534 performs the corresponding checked count/reduction action
+and also ignores the physical intersection. Native geometry setup at
+`src/native/optix/rtdl_optix_v4_callback_poc.cpp:1921` uses
+`OPTIX_GEOMETRY_FLAG_REQUIRE_SINGLE_ANYHIT_CALL`.
+
+Physical acceptance would reduce the accepted traversal interval; physical
+ignore preserves later events after the logical contribution has been recorded.
+Payload-before-ignore and single-delivery controls are established OptiX
+techniques. RTDL's source-traced implementation contribution is the combination
+chosen by the trusted lowerer for this fixed result route, together with its
+overflow/status checks. It is not the invention of all-hit traversal or an
+independent proof of completeness.
+
+### W3: callback semantics, not ABI shape alone, guards specialization
+
+`tests/goal5759_v4_triangle_reduction_target_test.py:72-102` changes the
+standard callback update from `payload.count + 1` to `payload.count + 2`. The
+modified callback remains front-end legal and preserves role/ABI shape, but its
+canonical IR identity changes. Wrapper generation consequently does not select
+the fixed standard-count intrinsic and uses the general leaf path.
+
+On 2026-09-07, the existing W3 test and three existing bounded-relation checks
+were replayed with the frozen Python 3.12 environment: 4/4 passed in 0.017 s.
+The run exercised parse, verification, contract/ABI construction, and wrapper
+generation; no GPU was used. This is evidence for one recognizer boundary, not
+GPU equivalence, a semantic-preservation theorem, or a result over arbitrary
+specializations.
+
+| Witness | Source or existing check | Evidence level | Explicit nonclaim |
+| --- | --- | --- | --- |
+| W1 | Role set plus bounded-relation family verifier | Source trace; three existing CPU contract checks replayed | No deliberately invalid GPU route and no general enumeration theorem |
+| W2 | Generic and specialized triangle wrapper plus native GAS setting | Source trace; historical GPU results belong to unchanged M/F2 paths | No new GPU sample and no claim to invent OptiX all-hit mechanisms |
+| W3 | Exact-standard count test with `+1` changed to `+2` | Existing source-to-wrapper test replay | No GPU equivalence or general optimization theorem |
 
 ## 2. Running example: same machine type, different meaning
 
@@ -253,6 +313,8 @@ source in this table.
 | `src/rtdsl/v4_triangle_reduction_optix_wrapper_codegen.py` | `f7d1f07b4462a6713a4bcda7aaf64f3a480575f1034059f3fbe61d640044eecb` |
 | `src/rtdsl/v4_rtdlexe.py` | `99fdc5c0f4462fe153e9659ba5f2d541e9876be76e11cebbf46ede8fa8cc6a34` |
 | `experiments/goal5848_strong_baseline/worker.py` | `353faec5a4dd46ad00c0979f2bb544eb278460d8b55fdf054127853a03ca11e4` |
+| `tests/goal5759_v4_triangle_reduction_target_test.py` | `3d44b0285afba026333e81abd4f262232db075b5b8150871c9fc14bab767101f` |
+| `tests/goal5760_v4_bounded_relation_test.py` | `faa1550b98990c771c20b516b808258edc96b5d0de49c9caca6bf5a9dd4b99fd` |
 | `tests/goal5797_protocol_contract_test.py` | `a24b3a32204b57bbf2e4af3bf3860941d4938e99f3bb304b14ef3ca6a0b82554` |
 | `tests/goal5795_v4_public_lifecycle_test.py` | `abfd85654a1ec7aa867b87a4633762eb87f0776188f85a8a592c2f55bc425e31` |
 
@@ -285,15 +347,21 @@ illustrative example.
 
 ## 10. N2 conclusion and mandatory paper corrections
 
-N2 establishes a real but bounded compiler mechanism. The same-width semantic
-ABI example remains useful because ordinary type/layout validity does not
-distinguish physical index from application ID. However, its wrong output must
-be marked illustrative. The paper must remove or rewrite every claim that the
-defective route was executed, reached launch, or returned the illustrative
-rows. It may retain the current, replayed facts that CP002 mutation is detected,
-the integrated projection mutation is rejected before the native-library
-loader when initialization overlap is disabled, and the correct route has
-separate existing correctness evidence, with each evidence class named
-accurately. It must also identify the measured exact-IR specializations and
-distinguish the materialized-program result path, measured AOT prepared result,
-worker oracle, and separate diagnostic execution.
+N2 establishes a real but bounded compiler mechanism. W1 shows a fixed output
+obligation imposing a stricter effect rule than role legality. W2 shows a
+trusted lowerer interpreting logical acceptance through a different physical
+intersection action. W3 shows one same-shape source change invalidating a fixed
+intrinsic. Together they support a concrete result-route contract argument,
+while leaving schemas, recognizers, lowerers, runtime, and hardware in the TCB.
+
+The same-width semantic ABI example remains useful because ordinary type/layout
+validity does not distinguish physical index from application ID. Its wrong
+output must remain illustrative. The paper may retain the replayed facts that
+CP002 mutation is detected, the integrated projection mutation is rejected
+before the native-library loader when initialization overlap is disabled, and
+the correct route has separate existing correctness evidence, with each
+evidence class named accurately. It must identify the measured exact-IR
+specializations and distinguish the materialized-program result path, measured
+AOT prepared result, worker oracle, and separate diagnostic execution. No W1,
+W2, or W3 source trace may be described as a new GPU experiment or a general
+semantic theorem.
