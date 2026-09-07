@@ -2,7 +2,7 @@
   "schema": "rtdl.cgo2027.post_goal5851.claim_ledger.v1",
   "version": 1,
   "created_at_utc": "2026-09-06T20:35:00Z",
-  "updated_at_utc": "2026-09-06T22:23:05Z",
+  "updated_at_utc": "2026-09-07T01:46:55Z",
   "measured_implementation": {
     "commit": "d653fe4ad170c5b51fee309d653c9565944dcf2e",
     "tree": "d53af23a2599f9d6adb4ac0bfff39cd0ab31860b",
@@ -17,9 +17,33 @@
     "public_or_manuscript_claim_authorized": false
   },
   "review": {
-    "current_reviewer": "Codex internal R1 plus R4 hostile final-byte manuscript mapping",
-    "current_review_version": "post_goal5851_r4_v2",
-    "external_final_bytes_review": "PENDING_R7"
+    "current_reviewer": "Independent lead review of old P plus Codex author-side P-prime remediation",
+    "current_review_version": "post_goal5851_pprime_v1",
+    "external_final_bytes_review": "OLD_P_REVISE__PPRIME_PENDING_TWO_INDEPENDENT_REVIEWS",
+    "old_p_lead_review": {
+      "path": "history/internal_docs/post_goal5851_submission_remediation_20260906/R7_LEAD_INDEPENDENT_FINAL_BYTES_REVIEW.md",
+      "sha256": "c449a6c6eed4f177496a762b38f13434a09b1447aa3b3521db56c66b818d5ddd",
+      "verdict": "REVISE_AND_REREVIEW_CHANGED_BYTES",
+      "counts_as_pprime_acceptance": false
+    },
+    "paper_snapshot_pprime": {
+      "commit": "818c2ed284cde8acae9a09b531b8bfed3bf925ee",
+      "tree": "59e6eaacadac711f8b0d93980b1bfbbd3d772dc7",
+      "main_tex_sha256": "ef2a5387f8b54ee8b571688ce90f80d22350006e042e7124eb99eb190f97288f",
+      "pdf_sha256": "9bce71368ff0398efbc0d24685a80939fc691288663074ebf72ec9b20619013b",
+      "artifact_sha256": "916cedbb7001c7aa43e66df3f992b543b7b3ca5a013f0f997790113a2e3738b8",
+      "source_bundle_sha256": "1d76d60b1f72487a414ef2fe649415938bc12a3ea6baedd65396b9378b4d90ed",
+      "claim_mapping_path": "history/internal_docs/post_goal5851_submission_remediation_20260906/R7_PPRIME_LEAD_REMEDIATION_REPORT.md",
+      "claim_mapping_sha256": "1e457d276c2bac8e7f6ee3e1a8892b0fd11046f513d639e8260e9776fa51cf3e",
+      "author_remediation_status": "COMPLETE_PENDING_INDEPENDENT_REREVIEW",
+      "independent_acceptances_received": 0
+    },
+    "pprime_review_request": {
+      "path": "history/internal_docs/post_goal5851_submission_remediation_20260906/R7_PPRIME_FINAL_BYTES_REVIEW_REQUEST.md",
+      "sha256": "43bd200394674b8439146e758e1c5529ba449e31e57bf1dd7229f58d84115f84",
+      "independent_reviews_required": 2,
+      "independent_acceptances_received": 0
+    }
   },
   "common_evidence": {
     "goal5838_authority": {
@@ -160,7 +184,7 @@
         {"path": "history/internal_docs/goal5840_independent_lowering_refinement_20260903/FINAL_AUTHORITY.json", "sha256": "80fae4ccd065316b195fd1435534dd4fdf7343572525ecd57604da28dee7865e"}
       ],
       "validation_phase": "Independent bounded structural check and mutation rejection.",
-      "limitations": "Not a general compiler-soundness theorem, semantic proof for arbitrary callbacks, or application-correctness proof.",
+      "limitations": "Checks selected lexical patterns and ordering constraints only; not partial evaluation, a general compiler-soundness theorem, semantic proof for arbitrary callbacks, or application-correctness proof.",
       "paper_destination": "Independent finite checker; Threats to Validity",
       "disposition": "RETAIN_FINITE_COUNTS_ONLY",
       "claim_authorized": false,
@@ -235,7 +259,7 @@
         {"root": "/Users/rl2025/RTDL_evidence/goal5848/goal5851_successor_ampere_d653fe4_pass", "authority_recount_sha256": "35049de227c9c251314615039f07aaf6af71dd26bf24e8c6f5e1c74fb8ceadb3"}
       ],
       "validation_phase": "Formal lifecycle evidence plus R2 projection and independent endpoint recount.",
-      "limitations": "The endpoint was revised after an adverse result. Both endpoints are lifecycle/import-confounded; PyOptix import initializes substantial CUDA state while RTDL import is lazy. No positive implementation-entry performance claim is authorized.",
+      "limitations": "Implementation-entry begins before implementation-specific imports; post-import begins after them; both end after first result and worker output validation. PyOptix initializes CUDA context state during import while RTDL does so lazily later. A/C entry had a historical registered criterion, but the paper treats both endpoints as lifecycle-confounded diagnostics and authorizes no positive entry claim.",
       "paper_destination": "Adjacent lifecycle diagnostic table; main-text adverse disclosure",
       "disposition": "RETAIN_BOTH_ENDPOINTS_AS_DIAGNOSTIC__NO_POSITIVE_ENTRY_CLAIM",
       "claim_authorized": false,
@@ -244,7 +268,7 @@
     {
       "claim_id": "PERF-AE-STEADY-AND-FIRST-RESULT-012",
       "candidate_sentence": "Relative to predecessor E, successor M improved prepared steady execution on all four rows (0.903016x, 0.584438x, 0.922388x, and 0.608228x) but regressed every first-result row: about 16%-31% post-import and 8%-22% at implementation entry.",
-      "scope": "A/E comparison for the same two tasks and two GPU generations.",
+      "scope": "Current M versus frozen predecessor control E for the same two tasks and two GPU generations.",
       "source_evidence": [
         {"root": "/Users/rl2025/RTDL_evidence/goal5848/goal5851_successor_ada_d653fe4_pass", "authority_recount_sha256": "191e85ea19a2af2186cddf873d19483753197f258b5afddba06abd57cc0a66b7"},
         {"root": "/Users/rl2025/RTDL_evidence/goal5848/goal5851_successor_ampere_d653fe4_pass", "authority_recount_sha256": "35049de227c9c251314615039f07aaf6af71dd26bf24e8c6f5e1c74fb8ceadb3"}
@@ -273,7 +297,7 @@
     {
       "claim_id": "METHOD-INSTRUMENTATION-A-ONLY-014",
       "candidate_sentence": "Paired instrumentation qualification covered only RTDL Arm A and measured 2,349, 2,781, 0, and 2,431 ppm overhead across the four generation/task rows.",
-      "scope": "1,024 Arm-A instrumentation workers across two GPU generations; formal arms share an instrumentation policy but B/C lack paired qualification evidence.",
+      "scope": "1,024 Arm-A instrumentation workers across two GPU generations; formal arms share an instrumentation policy but B/C/D/E lack paired overhead measurements.",
       "source_evidence": [
         {"path": "experiments/goal5848_strong_baseline/contracts.py", "sha256": "58eaa97abacb43fdb05884b02f72cc6dd2d5729851a70ff3890dc07c9a5dc942"},
         {"root": "/Users/rl2025/RTDL_evidence/goal5848/goal5851_cross_generation_d653fe4_complete", "authority_recount_sha256": "99e1eab6f33e609a8739caecb26dc05e5c8d669b3ad67f58fd0540d781151692"}
@@ -287,14 +311,14 @@
     },
     {
       "claim_id": "METHOD-RECEIPT-SCOPE-015",
-      "candidate_sentence": "The measured public prepared path synchronously rejects native and compact-status failures and the experiment checks every returned output against its oracle, but detailed operation-receipt validation is deferred and each formal A worker retains one separate diagnostic receipt rather than one complete physical receipt per timed invocation.",
+      "candidate_sentence": "The measured public prepared path synchronously rejects native and compact-status failures and checks a caller-supplied expected output before return when present; after public return, the experiment checks each returned output and digest against its worker oracle. Each formal A worker retains one separate post-loop diagnostic detailed receipt rather than one complete physical receipt per timed invocation.",
       "scope": "Goal5851 public prepared Arm A and its formal worker/archive behavior.",
       "source_evidence": [
         {"path": "src/rtdsl/v4_rtdlexe.py", "sha256": "99fdc5c0f4462fe153e9659ba5f2d541e9876be76e11cebbf46ede8fa8cc6a34"},
         {"path": "src/native/optix/rtdl_optix_v4_callback_poc.cpp", "sha256": "4e9c05bdc227c48ccc998b10ec382d84e041a8c268c1dff9ca04d987455045a7"},
         {"path": "experiments/goal5848_strong_baseline/worker.py", "sha256": "353faec5a4dd46ad00c0979f2bb544eb278460d8b55fdf054127853a03ca11e4"}
       ],
-      "validation_phase": "Synchronous checks before public return; per-call oracle after timer; one separate post-loop diagnostic receipt.",
+      "validation_phase": "Native/compact status and optional supplied expected-output check before public return; worker output-and-digest oracle after the prepared steady timer; one separate post-loop diagnostic execution and receipt.",
       "limitations": "The original written per-execution detailed-receipt requirement was not fulfilled. No wrong final GPU output was observed, but that does not repair literal protocol compliance.",
       "paper_destination": "Lifecycle design; Evaluation methodology; Threats to validity",
       "disposition": "MANDATORY_SCOPE_CORRECTION",
@@ -324,7 +348,7 @@
         {"root": "/Users/rl2025/RTDL_evidence/goal5848/goal5851_cross_generation_d653fe4_complete", "authority_recount_sha256": "99e1eab6f33e609a8739caecb26dc05e5c8d669b3ad67f58fd0540d781151692"}
       ],
       "validation_phase": "R2 recount of all 20 AOT fresh-hit durations and four cold denominators.",
-      "limitations": "A cache hit is not first-ever source compilation, signing, cache fill, deployment, or arbitrary-environment startup.",
+      "limitations": "A cache hit is not first-ever source compilation, signing, cache fill, deployment, arbitrary-environment startup, or part of the prepared public-execution endpoint.",
       "paper_destination": "Deployment/AOT evaluation and limitations",
       "disposition": "RETAIN_VERIFIED_R2__MAPPED_IN_R4__PENDING_R7",
       "claim_authorized": false,
@@ -332,13 +356,13 @@
     },
     {
       "claim_id": "LIMIT-PROVIDER-DOUBLE-FAULT-018",
-      "candidate_sentence": "A secondary provider release or close failure can replace the primary bind exception and clear retry ownership on the double-fault path.",
+      "candidate_sentence": "A secondary provider bind or close failure can replace the primary exception and lose cleanup retry ownership on the double-fault path.",
       "scope": "Provider bind cleanup at the current M source identity.",
       "source_evidence": [
         {"path": "src/rtdsl/v4_rtdlexe.py", "sha256": "99fdc5c0f4462fe153e9659ba5f2d541e9876be76e11cebbf46ede8fa8cc6a34"}
       ],
       "validation_phase": "Hostile source review and focused mock lifecycle reproduction.",
-      "limitations": "No public output is produced and the path did not occur in retained successful workers; universal cleanup/root-cause preservation is unsupported.",
+      "limitations": "A focused mock reproduced the defect. No public output is produced and the path was not observed in retained successful GPU workers; universal cleanup and primary-root-cause preservation remain unsupported and unrepaired.",
       "paper_destination": "Threats to validity / failure-semantics limitation",
       "disposition": "MANDATORY_LIMITATION__DO_NOT_CLAIM_UNIVERSAL_CLEANUP",
       "claim_authorized": false,
@@ -346,13 +370,13 @@
     },
     {
       "claim_id": "LIMIT-SUPPORTED-PROCESS-FORK-019",
-      "candidate_sentence": "The process-ownership guard covers Python-managed fork lifecycle through the registered at-fork hook and cached-PID checks.",
+      "candidate_sentence": "The process-ownership guard covers Python-managed forks that invoke the registered at-fork hook.",
       "scope": "Python-managed process creation paths that execute the registered hook.",
       "source_evidence": [
         {"path": "src/rtdsl/v4_rtdlexe.py", "sha256": "99fdc5c0f4462fe153e9659ba5f2d541e9876be76e11cebbf46ede8fa8cc6a34"}
       ],
       "validation_phase": "Source review plus supported Python lifecycle tests.",
-      "limitations": "A native fork that bypasses Python's hook is outside the supported contract; no claim may say all process forks fail before native entry.",
+      "limitations": "A native fork that bypasses Python's hook can evade the cached-PID guard even if its child later invokes the public API; inherited owners after such forks are outside the supported contract.",
       "paper_destination": "Lifecycle contract and limitations",
       "disposition": "RETAIN_PYTHON_MANAGED_SCOPE_ONLY",
       "claim_authorized": false,

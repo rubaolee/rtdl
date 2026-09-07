@@ -12065,8 +12065,9 @@ new artifact still require final-version review. Do not mark those gates closed.
       retain first-result regressions and other adverse observations.
 - [x] Prepare a self-contained R7 request for exact snapshot P/PDF/artifact and
       complete an explicitly non-independent internal hostile precheck.
-- [ ] R7: obtain two actual independent final-byte reviews and close or descope
-      every material finding; the internal precheck counts as zero reviews.
+- [ ] R7: obtain two actual independent reviews of exact P-prime commit
+      `818c2ed28...` and close or descope every material finding. The old-P lead
+      `REVISE` verdict and all author-side checks count as zero P-prime approvals.
 - [ ] R8: complete the final rule/anonymity/hash/upload gate and record
       submission only when upload and receipt actually exist.
 - [x] Complete the local-only R8 preflight and deterministic anonymous source
@@ -12098,9 +12099,9 @@ new artifact still require final-version review. Do not mark those gates closed.
       isolated extraction roots, including one path with spaces.
 - [x] Bind exact paper/package snapshot P at `c6020fd6...` and prepare its
       self-contained final-byte review request plus internal hostile precheck.
-- [ ] Obtain two independent reviews of the exact P PDF/package bytes, close or
-      descope every material finding, complete submission gates, and record
-      upload only after it actually occurs.
+- [ ] Obtain two independent reviews of the exact P-prime PDF/package bytes,
+      close or descope every material finding, complete submission gates, and
+      record upload only after it actually occurs.
 - [x] Recheck official CGO format rules, embedded fonts, page/reference boundary,
       PDF metadata, exact hashes, and foreign-root source rebuild under R8 local
       preflight. Do not call this R8 closure.

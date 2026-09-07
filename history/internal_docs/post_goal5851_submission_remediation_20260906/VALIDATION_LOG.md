@@ -565,3 +565,68 @@ archive_members=9
 `R5_FINAL_F2_REHEARSAL_REPORT.md` and `FREEZE_RECORD.md` now control R5.
 F2 is immutable. R4, R6, R7, and R8 remain open, and claim authorization
 remains false.
+
+## P-prime post-lead-remediation verification
+
+Timestamp: 2026-09-06T21:44:17-0400
+
+The independent lead review of old P was preserved byte-for-byte at SHA-256
+`c449a6c6eed4f177496a762b38f13434a09b1447aa3b3521db56c66b818d5ddd`.
+Its verdict is `REVISE_AND_REREVIEW_CHANGED_BYTES`. The resulting author-side
+P-prime is commit `818c2ed284cde8acae9a09b531b8bfed3bf925ee`, tree
+`59e6eaacadac711f8b0d93980b1bfbbd3d772dc7`.
+
+Exact candidate identities:
+
+```text
+main.tex=ef2a5387f8b54ee8b571688ce90f80d22350006e042e7124eb99eb190f97288f bytes=38521
+paper PDF=9bce71368ff0398efbc0d24685a80939fc691288663074ebf72ec9b20619013b bytes=140343
+delivery PDF=9bce71368ff0398efbc0d24685a80939fc691288663074ebf72ec9b20619013b bytes=140343
+source bundle=1d76d60b1f72487a414ef2fe649415938bc12a3ea6baedd65396b9378b4d90ed bytes=20699
+artifact=916cedbb7001c7aa43e66df3f992b543b7b3ca5a013f0f997790113a2e3738b8 bytes=180308 members=9
+```
+
+The author-side verification returned:
+
+```text
+tests.goal5852_submission_evidence_test: 14/14 PASS
+tests.goal5852_submission_evidence_test under python -O: 14/14 PASS
+CLAIM_LEDGER.json and STATUS.json parse: PASS
+claim_authorized flags: 21/21 false
+git diff --check: PASS
+P-prime diff from its parent under src/include/experiments/scripts/tests/artifact template: empty
+paper PDF and delivery PDF cmp: PASS
+PDF pages: 8
+PDF page size: US Letter
+fonts embedded: 12/12
+fonts with Unicode mappings: 12/12
+foreign-path source-bundle Tectonic build: exit 0, 8 pages, US Letter
+artifact isolated replay: four runs, normal and -O, all exit 0
+artifact replay outputs: four-way byte-identical
+artifact replay output=c47aaee24bea18be6b30eaae45a856e30c7a2a74bd5b50fe7daf0f741bdf0ee8
+PDF extracted-text private-identity scan: PASS
+source-bundle main.tex/references.bib identity against P-prime: PASS
+```
+
+Three operator-command failures were retained rather than hidden. A first PDF
+inspection command returned exit 127 only because `pdffonts` was not on PATH;
+the bundled Poppler binary then reported all 12 fonts embedded with Unicode
+mappings. A first source compile returned exit 1 because the temporary output
+directory had not been created; creating that directory made the same source
+bundle compile successfully. A first artifact replay returned exit 1 because
+shell redirection created `normal-a.json` inside the sealed artifact before the
+verifier started; the verifier correctly rejected the unexpected member. Four
+fresh corrected runs wrote output outside the artifact and all passed with the
+identical hash above.
+
+Hostile review of the uncommitted P-prime review request found one transcription
+error before publication: its Ada relation A/C post-import maximum was
+`1.866331`, while the frozen summary, verifier, R2 report, old-P lead review,
+and paper rounding all resolve from `1.865823`. The request was corrected to
+`1.865823`; no candidate paper, artifact, measured value, or claim changed.
+
+No GPU experiment, numerical table, frozen tool, native/production source, or
+artifact byte changed. These checks are author-side only. P-prime remains at
+zero of two independent acceptances; R7 and R8 remain open, no upload or
+submission receipt exists, and every public/manuscript claim authorization
+remains false.

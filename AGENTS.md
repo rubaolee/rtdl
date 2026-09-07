@@ -46,12 +46,19 @@ post-import are lifecycle diagnostics, not intrinsic-language speed claims.
 Post-import is adverse on all four rows and reaches `2.377129x`; relative to E,
 first-result medians regress about 8%--22% at entry and 16%--31% post-import.
 Those E comparisons are post hoc and non-gating, and both first-result endpoints
-are import/lifecycle-confounded. Reviews already received concern pre-final
-bytes; final PDF/package review and external human authoring evidence remain
-absent. Public/manuscript claim authorization remains false.
+are import/lifecycle-confounded. One independent lead review rejected old paper
+snapshot P and accepted its bounded numerical observations and artifact replay.
+The three major and four minor findings are remediated author-side in P-prime,
+commit `818c2ed284cde8acae9a09b531b8bfed3bf925ee`, tree
+`59e6eaacadac711f8b0d93980b1bfbbd3d772dc7`; changed P-prime bytes still have
+zero independent acceptances. Public/manuscript claim authorization remains
+false.
 
-The rewritten manuscript, final PDF/package pairing, final-byte review, and
-submission are still pending. F2 is immutable: any executable change before
+P-prime's exact PDF is `9bce71368ff0398efbc0d24685a80939fc691288663074ebf72ec9b20619013b`;
+the unchanged F2 artifact remains `916cedbb7001c7aa43e66df3f992b543b7b3ca5a013f0f997790113a2e3738b8`.
+The P-prime pair, source bundle and local preflight are complete. Two independent
+P-prime final-byte reviews, authenticated submission checks, upload and receipt
+are still pending. F2 is immutable: any executable change before
 the freeze requires a new candidate and complete rehearsal; after the freeze it
 is forbidden. The 2026-09-08 00:00 America/New_York development freeze and
 explicit external sending/submission authorization boundaries remain unchanged.

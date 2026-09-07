@@ -19356,3 +19356,27 @@ exact submission PDF.
 R8 remains open. There are still 0/2 independent R7 reviews and anonymity
 scans, no authenticated author/topic/conflict form check, no upload, no
 downloaded-byte comparison, and no submission receipt.
+
+## Old-P lead review and P-prime remediation (2026-09-06)
+
+One independent lead review accepted the bounded numerical observations and
+nine-member artifact replay but rejected old-P PDF bytes with three major and
+four minor findings. The original report is preserved at SHA-256
+`c449a6c6...d5ddd`; an additive erratum records two inaccuracies in the old R4
+report and R7 request without rewriting them.
+
+P-prime commit `818c2ed284cde8acae9a09b531b8bfed3bf925ee`, tree
+`59e6eaacadac711f8b0d93980b1bfbbd3d772dc7`, was pushed. It separates public
+status/optional expected-output checks, worker validation, steady and
+first-result endpoints, and post-loop receipts; defines the confounded
+lifecycle endpoints; narrows checker, fork, double-fault, Direct, predecessor,
+instrumentation, and artifact wording. No implementation, experiment, frozen
+tool, artifact, or numerical result changed.
+
+The exact P-prime PDF is 140,343 bytes at SHA-256 `9bce7136...013b`; its source
+bundle is 20,699 bytes at `1d76d60b...90ed`; the F2 artifact remains
+`916cedbb...38b8`. All eight pages were rendered and inspected, foreign-path
+source compilation passed, four isolated artifact replays were byte-identical,
+and frozen evidence tests passed 14/14 normally and under `-O`. These are
+author-side checks. P-prime has 0/2 independent acceptances; R7/R8, authenticated
+form checks, upload, receipt, and claim authorization remain open.

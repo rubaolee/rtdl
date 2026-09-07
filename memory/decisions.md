@@ -8618,3 +8618,22 @@ deterministic anonymous source-bundle rebuild. Bind the source bundle to
 Do not call R8 complete. Two independent R7 reviews and anonymity scans,
 finding closure, author/topic/conflict form data, upload authorization, exact
 upload, downloaded-byte verification, and a submission receipt remain required.
+
+## D253: supersede rejected old P with author-remediated P-prime (2026-09-06)
+
+Accept the independent lead verdict `REVISE_AND_REREVIEW_CHANGED_BYTES` for old
+P. Preserve its review, old PDF, old R4/R7 records, and exact identities. Treat
+its acceptance of bounded numerical observations and artifact replay as
+retained scope evidence, not as approval of changed paper bytes.
+
+Use P-prime commit `818c2ed284cde8acae9a09b531b8bfed3bf925ee`, tree
+`59e6eaacadac711f8b0d93980b1bfbbd3d772dc7`, as the current candidate. Its PDF
+SHA-256 is `9bce71368ff0398efbc0d24685a80939fc691288663074ebf72ec9b20619013b`;
+the paired nine-member artifact remains byte-identical at
+`916cedbb7001c7aa43e66df3f992b543b7b3ca5a013f0f997790113a2e3738b8`.
+
+The seven old-P findings are closed only at author-remediation scope. Two
+independent reviews must inspect these exact P-prime bytes; the old-P review and
+author-side prechecks count as zero P-prime acceptances. Until those reviews,
+authenticated form checks, upload verification, and a real receipt exist, keep
+R7/R8 open, all claim authorization false, and submission status false.
