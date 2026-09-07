@@ -2,7 +2,7 @@
   "schema": "rtdl.cgo2027.post_goal5851.claim_ledger.v1",
   "version": 1,
   "created_at_utc": "2026-09-06T20:35:00Z",
-  "updated_at_utc": "2026-09-07T07:49:56Z",
+  "updated_at_utc": "2026-09-07T08:00:41Z",
   "measured_implementation": {
     "commit": "d653fe4ad170c5b51fee309d653c9565944dcf2e",
     "tree": "d53af23a2599f9d6adb4ac0bfff39cd0ab31860b",
@@ -78,6 +78,22 @@
       "author_remediation_status": "SEVEN_FINDINGS_AUTHOR_REMEDIATED_PENDING_TWO_INDEPENDENT_R7_ACCEPTANCES",
       "independent_acceptances_received": 0,
       "commit_identity_record_location": "R7_PTRIPLEPRIME_FINAL_BYTES_REVIEW_REQUEST.md"
+    },
+    "paper_snapshot_p_quadruple_prime": {
+      "commit": "70a081e90c4c50ecf92d24741529de9859841c70",
+      "tree": "b4b1628345536976e2ed8fbb67ab5b4ff21fc802",
+      "parent": "b608f9aa5e4e04d083d8a2963d552e00287b47cd",
+      "main_tex_sha256": "22564330dea504e9f3005ce9cf9185c62306f47dc8e07c1a3bff430dec9d9dbc",
+      "references_bib_sha256": "71c379b4ea23a8eaa08e97f94a3c9569d703ea7cb99186b81e0df0f00d5e4dd6",
+      "pdf_sha256": "bb957c0969bbd92c6a4be952c4e40a4ce5a183bf565c5f54a19b410102c77aca",
+      "pdf_bytes": 153809,
+      "pdf_pages": 9,
+      "source_bundle_sha256": "e845010a64f8373dc40ac65f8cc42e4c4024687ce6fd1eb80b8fd4067a623266",
+      "source_bundle_bytes": 23504,
+      "artifact_sha256": "916cedbb7001c7aa43e66df3f992b543b7b3ca5a013f0f997790113a2e3738b8",
+      "author_remediation_status": "RESULT_ROUTE_CONTRIBUTION_CASE_COMPLETE_PENDING_TWO_INDEPENDENT_R7_ACCEPTANCES",
+      "independent_acceptances_received": 0,
+      "commit_identity_record_location": "R7_PQUADRUPLEPRIME_FINAL_BYTES_REVIEW_REQUEST.md"
     }
   },
   "common_evidence": {

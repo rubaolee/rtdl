@@ -1,5 +1,21 @@
 # Progress
 
+## CGO P-quadruple-prime result-route candidate (2026-09-07)
+
+The contribution pass is frozen at commit
+`70a081e90c4c50ecf92d24741529de9859841c70`, tree
+`b4b1628345536976e2ed8fbb67ab5b4ff21fc802`. The nine-page PDF SHA-256 is
+`bb957c0969bbd92c6a4be952c4e40a4ce5a183bf565c5f54a19b410102c77aca`;
+the normalized source bundle is `e845010a...a623266`; unchanged F2 remains
+`916cedbb...3738b8`. The paper now centers a bounded result-route contract and
+uses W1 role-valid versus route-valid effects, W2 logical accept versus
+physical ignore, and W3 `+1` to `+2` specialization exit as concrete compiler
+witnesses. Existing checks replayed 4/4; frozen artifact tests replayed 14/14
+normally and 14/14 under `python -O`; all nine PDF pages passed author-side
+render inspection. No executable code, experiment, threshold, or GPU result
+changed. R7 remains 0/2, all 24 claims remain unauthorized, no upload occurred,
+and authenticated R8 submission actions remain open.
+
 ## Goal5842 two-generation internal technical completion (2026-09-03)
 
 Exact V12 completed on RTX 2000 Ada and RTX A6000 Ampere at source commit

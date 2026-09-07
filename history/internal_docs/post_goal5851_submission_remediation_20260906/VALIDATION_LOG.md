@@ -807,3 +807,102 @@ also match.
 
 The candidate remains 0/2 independent acceptances. The local preflight and
 author remediation do not authorize a claim, upload, or submission.
+
+## P-quadruple-prime result-route contribution pass and preflight
+
+Date: 2026-09-07 America/New_York.
+
+The contribution directive was executed as a manuscript, literature-boundary,
+and existing-evidence pass. It changed no production/compiler/native source,
+experiment, script, test, workload, timer, estimator, threshold, or F2 byte,
+and it performed no GPU or remote-pod run.
+
+The new paper centers one bounded result-route relation: observable output
+obligations constrain admissible callback effects, trusted traversal
+interpretation, and fail-closed publication. W1 and W2 are source traces; W3
+is an existing source-to-wrapper component test. They are not new GPU
+experiments or a general semantic proof.
+
+The existing witness checks were replayed with the committed Python 3.12
+environment, `PYTHONPATH=src:.`, and `PYTHONDONTWRITEBYTECODE=1`:
+
+```text
+tests.goal5759_v4_triangle_reduction_target_test.Goal5759TriangleReductionTargetTests.test_count_intrinsic_requires_the_exact_standard_callback_ir
+tests.goal5760_v4_bounded_relation_test.Goal5760BoundedRelationTests.test_schema_and_wrapper_are_deterministic_app_neutral_true_optix
+tests.goal5760_v4_bounded_relation_test.Goal5760BoundedRelationTests.test_capacity_overflow_rejects_partial_result
+tests.goal5760_v4_bounded_relation_test.Goal5760BoundedRelationTests.test_duplicate_policy_is_explicit_and_canonical
+```
+
+Result: 4/4 PASS, exit 0, `Ran 4 tests in 0.017s`, `OK`. The selected
+source/test identities were:
+
+```text
+src/rtdsl/v4_bounded_relation.py
+  4ac50a83ffb80400c6b950150a5702633b3cafa0e43b0b54527f7db44949467a
+src/rtdsl/v4_triangle_reduction_optix_wrapper_codegen.py
+  f7d1f07b4462a6713a4bcda7aaf64f3a480575f1034059f3fbe61d640044eecb
+tests/goal5759_v4_triangle_reduction_target_test.py
+  3d44b0285afba026333e81abd4f262232db075b5b8150871c9fc14bab767101f
+tests/goal5760_v4_bounded_relation_test.py
+  faa1550b98990c771c20b516b808258edc96b5d0de49c9caca6bf5a9dd4b99fd
+```
+
+All four files and `src/rtdsl/v4_callback_ir.py` have zero diff from measured
+implementation M. The complete unchanged submission-evidence suite passed
+14/14 normally and 14/14 under `python -O`.
+
+Author-side PDF/source validation produced:
+
+```text
+Tectonic cached build: PASS, exit 0
+PDF: 9 pages, 612 x 792 pt US Letter, 153809 bytes
+PDF SHA-256: bb957c0969bbd92c6a4be952c4e40a4ce5a183bf565c5f54a19b410102c77aca
+paper PDF / delivery PDF cmp: PASS
+horizontal overfull boxes: 0
+vertical overfull boxes: 0
+unresolved citations/references: 0
+all exact pages rendered and visually inspected: 9/9 PASS
+fonts embedded / ToUnicode: 12/12 / 12/12 PASS
+PDF text/metadata private-identity scan: PASS
+normalized source twin-build cmp: PASS
+source bundle SHA-256: e845010a64f8373dc40ac65f8cc42e4c4024687ce6fd1eb80b8fd4067a623266
+source bundle bytes: 23504
+source bundle regular files: 2
+foreign-path source compile: PASS, exit 0, 9 pages, US Letter
+F2 artifact SHA-256: 916cedbb7001c7aa43e66df3f992b543b7b3ca5a013f0f997790113a2e3738b8
+F2 artifact bytes/members: 180308 / 9
+GPU execution: not performed
+claim_authorized values other than false: 0 of 24
+```
+
+Retained failed/intermediate states:
+
+1. The first PDF draft had five overfull boxes and was rejected. Text-level
+   edits removed them without changing the ACM template or deleting adverse
+   evidence.
+2. Initial `tar -czf` source archives differed because of gzip header time
+   metadata and were rejected. Normalized ustar archives compressed with
+   `gzip -n` were byte-identical.
+3. One orchestration JavaScript invocation was syntactically incomplete and
+   failed before any nested tool call. It modified nothing and generated no
+   evidence.
+
+The immutable candidate was committed as:
+
+```text
+commit=70a081e90c4c50ecf92d24741529de9859841c70
+tree=b4b1628345536976e2ed8fbb67ab5b4ff21fc802
+parent=b608f9aa5e4e04d083d8a2963d552e00287b47cd
+subject=Strengthen CGO result-route contribution
+main_tex_sha256=22564330dea504e9f3005ce9cf9185c62306f47dc8e07c1a3bff430dec9d9dbc
+references_bib_sha256=71c379b4ea23a8eaa08e97f94a3c9569d703ea7cb99186b81e0df0f00d5e4dd6
+pdf_sha256=bb957c0969bbd92c6a4be952c4e40a4ce5a183bf565c5f54a19b410102c77aca
+source_bundle_sha256=e845010a64f8373dc40ac65f8cc42e4c4024687ce6fd1eb80b8fd4067a623266
+```
+
+Commit-object extraction recovered every recorded deliverable identity. The
+candidate-parent diff is empty under `src/`, `include/`, `experiments/`,
+`scripts/`, `tests/`, and `paper/cgo2027/artifact_post_goal5851/`.
+
+P-quadruple-prime remains 0/2 independent acceptances. No public/manuscript
+claim is authorized, and no upload or submission occurred.
