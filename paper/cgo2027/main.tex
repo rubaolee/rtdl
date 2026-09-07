@@ -22,33 +22,33 @@ and Optimization}{March 20--24, 2027}{Salt Lake City, Utah, USA}
 \begin{document}
 
 \begin{abstract}
-Ray-tracing APIs expose fast traversal hardware through a callback protocol whose
-correctness depends on more than callback types: build-input topology, payload
-layout, lifecycle order, continuation rules, and the identity of the executable
-code must agree. Existing Python interfaces make the protocol accessible, but
-do not establish that a restricted user program and all of its generated native
-components form one admitted execution.
+Ray-tracing APIs expose fast traversal through callback protocols spanning
+roles, semantic and physical layouts, continuation, and executable identity.
+Existing systems offer strong local checks, Python access, and pipeline
+construction. The primary materials we examined, however, do not state the same
+joint admission condition over source, generated artifacts, loaded executable,
+and result publication.
 
-We present \rtdl, a bounded whole-protocol admission design for Python-authored
-ray-tracing computations. A typed callback schema, topology-specific trusted
-lowerers, executable-identity checks, and lifecycle gates jointly admit a small
-set of complete routes rather than accepting callbacks in isolation. The
-current implementation supports two stable public constructors and a bounded route
-corpus covering triangle, custom-AABB, round-linear-curve, and sphere leaves;
-this is not arbitrary Python or topology-generic lowering. A prospective
-sealed-snapshot exam selected a sphere any-hit counting composition and produced
-two real OptiX launches with 12/12 oracle checks. A separate checker, which does
-not import the compiler, validates five generated-code property classes in 20
-registered instances, but remains a finite target-structure checker.
+We present \rtdl, a bounded protocol-carrying compilation and admission design
+for Python-authored RT computations. It jointly checks five route seams:
+role/effect closure, semantic ownership, physical binding, fail-closed
+continuation, and executable identity. Typed effects reach hardware control only
+through trusted topology-specific wrappers. The implementation has two stable
+public constructors and a bounded corpus spanning triangle, custom-AABB, curve,
+and sphere leaves; it is not arbitrary Python, semantic inference, or generic
+topology lowering. A sealed-snapshot exam selected a sphere any-hit count and
+produced two OptiX launches with 12/12 oracle checks. A checker that does not
+import the compiler validates five generated-code property classes in 20
+registered instances, but only over finite target structures.
 
 Across two NVIDIA GPU generations, we evaluate 160 registered cells containing
 20,480 timed samples. At the prepared endpoint, public ahead-of-time \rtdl
 median latency is 1.077--1.175$\times$ a direct CUDA/OptiX implementation.
 First-result measurements are adverse: post-import \rtdl is
 1.560--1.837$\times$ a strong PyOptiX device-continuation baseline by median,
-with a 2.377$\times$ worst block. These results delimit the contribution:
-bounded protocol admission with near-direct prepared latency on two tasks, not
-intrinsic speedup, general lowering, or demonstrated usability.
+with a 2.377$\times$ worst block. Thus the contribution is bounded protocol
+admission with near-direct prepared latency on two tasks, not intrinsic speedup,
+general lowering, demonstrated usability, or a soundness theorem.
 \end{abstract}
 
 \begin{CCSXML}
@@ -78,43 +78,41 @@ still be unsafe or semantically wrong because it is paired with the wrong
 build-input kind, stale generated code, an incompatible payload, or an invalid
 lifecycle transition.
 
-Python bindings reduce API friction, but they do not eliminate this protocol
-problem. A Python user may assemble modules, program groups, shader-binding
-records, acceleration structures, streams, and buffers whose compatibility is
-represented only by convention. Conversely, a compiler that validates a
-restricted callback body but delegates the surrounding protocol to hand-written
-wrappers has proved only local compilation. The research question in this work
-is therefore:
+PyOptiX and SlangPy expose RT to Python; OWL and Luisa automate substantial
+pipeline construction; DXR payload qualifiers and Slang capabilities enforce
+stage and target constraints
+~\cite{nvidiaPyOptix,slangPy,nvidiaOWL,zheng2022luisa,microsoftDXRPAQ,slangCapabilities}.
+These are strong mechanisms. We instead ask how a compiler should gate one
+relation spanning locally checked callbacks, same-width application meanings,
+physical artifacts, device continuation, and the exact executable. The checked
+primary materials do not document that joint condition; in several cases the
+answer is unknown, not proven absent:
 
 \begin{quote}
-Can a restricted Python system admit an entire bounded ray-tracing protocol,
-including generated native code, executable identity, and lifecycle state,
-while retaining prepared-execution latency close to direct CUDA and OptiX?
+Can restricted Python admit a bounded RT route by jointly checking semantic,
+physical, continuation, and identity facts while retaining near-direct prepared
+latency?
 \end{quote}
 
-We answer for a deliberately narrow domain. \rtdl accepts a typed, restricted
-callback representation and maps admitted programs to compiler-owned,
-topology-specific lowerers. It records the source, PTX, ABI, and native symbols
-that constitute an executable route; checks lifecycle transitions before
-launch; exposes status before output; and supplies an independent offline
-checker for selected generated-code properties. The canonical plan is a
-non-executable specification. Executable lowering remains in the trusted
-topology-specific implementation. This distinction is central: our evidence
-does not establish an arbitrary callback compiler.
+For a narrow domain, \rtdl maps typed restricted callbacks to compiler-owned,
+topology-specific lowerers. It binds source, PTX, ABI, and native symbols; gates
+lifecycle transitions and output publication; and provides an independent
+offline checker for selected generated-code properties. Its canonical plan is
+non-executable, while concrete lowering remains trusted and topology-specific.
 
-This paper makes four contributions:
+This paper makes one core systems contribution, an implementation contribution,
+and a bounded evidence contribution:
 \begin{enumerate}[leftmargin=*,itemsep=1pt,topsep=2pt]
-  \item A \emph{whole-protocol admission model} that binds callback effects,
-  topology, ABI, executable identity, and lifecycle state into one bounded
-  route decision.
-  \item A concrete Python-to-OptiX implementation with two stable public
-  constructors, four leaf kinds in the bounded route corpus, and explicit
-  topology-specific lowerers in the trusted computing base (TCB).
-  \item A finite, compiler-independent checker and mutation evidence that expose
-  what is checked, what remains trusted, and where the current guarantees stop.
-  \item A preregistered two-generation evaluation of two tasks: prepared public
-  latency is 1.077--1.175$\times$ Direct, while adverse first-result and
-  incomplete-receipt results constrain the claim.
+  \item A \emph{protocol-carrying admitted executable}: one decision over five
+  cross-artifact relations gates materialization, native load, and publication.
+  \item A restricted-Python implementation in which typed callback effects are
+  flattened into an ABI and consumed by trusted topology-specific OptiX
+  wrappers. It has two stable public constructors and four leaf kinds in its
+  bounded corpus; the wrappers remain in the trusted computing base (TCB).
+  \item Finite mutation, sealed-composition, target checking, and two-generation
+  performance evidence. Prepared public latency is
+  1.077--1.175$\times$ Direct; adverse first-result, receipt, generality, and
+  authoring results delimit the contribution.
 \end{enumerate}
 
 \section{The Protocol Mismatch}
@@ -156,22 +154,23 @@ Table~\ref{tab:obligations} summarizes the obligations used here.
 
 Consider two acceleration-structure primitives at physical positions 0 and 1
 whose application identifiers are 10 and 20. Queries 100 and 101 should emit
-the pairs $(100,10)$ and $(101,20)$. In an executed defective route, the
-intersection callback instead placed the primitive position in attribute slot
-zero. The any-hit callback consumed that slot as an application identifier and
-returned $(100,0)$ and $(101,1)$. Every value remained a valid \texttt{u32};
-the acceleration structure, module, program groups, pipeline, shader binding
-table, and launch were legal. Typed OptiX and construction routes reached
-launch and returned the wrong rows.
+the pairs $(100,10)$ and $(101,20)$. If an intersection producer instead writes
+the physical position into attribute slot zero while the consumer interprets
+that slot as an application identifier, the apparent rows are $(100,0)$ and
+$(101,1)$. Every value remains a valid \texttt{u32}; width, slot, and row layout
+need not expose the semantic substitution. This is an illustrative witness, not
+a retained execution of the defective route.
 
 The defect is not a machine-type error but a disagreement over what the bits
-mean. In \rtdl, a fixed route contract says that attribute slot zero denotes an
-application identifier, while the compiled target description records the
-actual row source. Admission compares these authorities and rejects the
-disagreement before launch. The system does not infer which objects should
-match, and an application oracle is still necessary. Admission instead rejects
-the broken producer--consumer agreement independently of whether a test input
-happens to make primitive positions and identifiers differ.
+mean. In \rtdl, a trusted bounded-relation schema declares that attribute slot
+zero denotes an application identifier; the compiled relation contract carries
+that row source into a separately derived target projection. Admission compares
+the two compiler representations. Existing tests mutate only this fact and
+obtain \texttt{CP002\_ATTRIBUTE\_ABI\_OWNERSHIP\_MISMATCH}; an integrated
+projection mutation is rejected before native load. This proves check liveness,
+not automatic inference of application meaning or end-to-end execution of the
+illustrative defect. Both derivations remain in one compiler TCB, and a wrong
+but internally coherent trusted schema can pass.
 
 \subsection{Failure model}
 
@@ -183,14 +182,11 @@ required receipt or oracle evidence. The distinction prevents a status gate
 from being described as numerical correctness and prevents a generated plan
 from being described as an executable lowering.
 
-A focused mock reproduced a provider double fault: secondary bind or close
-failures can replace the primary exception and can lose cleanup retry ownership.
-The path releases no public output and was not observed in the retained
-successful GPU workers, but it remains unrepaired. The fork guard covers
-Python-managed forks that invoke the registered at-fork hook. A native fork
-that bypasses that hook can evade the cached-PID guard even if the child later
-uses the public API; inherited owners after such forks are outside the supported
-contract.
+A focused mock reproduced an unrepaired provider double fault: secondary bind or
+close failure can replace the primary exception and lose cleanup retry ownership.
+It released no output and did not occur in retained successful GPU workers. A
+native fork bypassing the registered Python at-fork hook can evade the cached-PID
+guard; inherited owners after such forks are unsupported.
 
 \section{Bounded Language and Admission}
 
@@ -261,6 +257,15 @@ any-hit role also requires an explicit delivery and continuation contract; the
 presence of that declaration does not prove order independence for arbitrary
 callback logic.
 
+The executable path makes the authority split explicit. Verification accepts a
+role-indexed typed effect and checks its exact fields. ABI lowering flattens the
+effect and assigns effect/status tags; a generated Numba device leaf writes
+those fields and tags. A trusted topology wrapper invokes the leaf, checks its
+tag and first-error state, and only then performs operations such as payload
+updates, \texttt{optixIgnoreIntersection()}, or fail-closed termination. Thus
+untrusted callback code does not directly issue traversal control, but the
+specialized wrapper remains trusted.
+
 \subsection{Fail-closed judgments}
 
 Expression checking derives $\Gamma \vdash e : \tau$. Statement checking also
@@ -313,9 +318,10 @@ implementation; it is not an independent proof of compiler correctness.
     Role/effect & Verified role topology and returned effects & Reverified
     compiled callback ABI variants & Common compiler TCB; no arbitrary effect
     inference \\
-    Semantic ABI & Fixed-route nominal slot and row-source contract plus machine
-    types & Generated route row sources and callback ABI & Evaluated attribute
-    slot zero; generic \texttt{u32} has no nominal meaning \\
+    Semantic ABI & Trusted family schema and fixed-route nominal row-source
+    declaration plus machine types & Compiled relation contract and callback
+    ABI & Same compiler TCB; meaning is declared, not inferred; generic
+    \texttt{u32} has no nominal meaning \\
     Physical ABI & Typed plan for geometry, buffers, hit channel, result, and
     reducer & Rebuilt target facts and bound storage & Exact-plan admission,
     not arbitrary physical synthesis \\
@@ -323,8 +329,9 @@ implementation; it is not an independent proof of compiler correctness.
     order & Status vocabulary, compiled continuation, runtime status gate &
     Bounded supported modes; not a confluence theorem \\
     Identity/lifecycle & Materializer-selected source/PTX/provider identity and
-    state machine & Loaded symbols, prepared objects, execution status, and
-    optional receipt & Identity binding is not semantic correctness \\
+    state machine & Loaded bytes, prepared objects, execution status, output
+    digest, and optional receipt & Hash equality is identity coherence, not
+    semantic correctness \\
     \bottomrule
   \end{tabularx}
 \end{table*}
@@ -339,13 +346,11 @@ and PTX, binds native symbols, constructs the program groups and shader-binding
 table, and records their identities. This design supplies a common admission
 surface while keeping concrete backend knowledge visible in the TCB.
 
-The distinction addresses a common overclaim. Sharing schema validation and
-lifecycle machinery does not imply that the device implementation is generic.
-In the prospective composition described in Section~\ref{sec:prospective}, the
-new sphere route required approximately 2,635 lines of topology-specific code
-and 28 modified compiler lines. That is evidence that the framework can admit
-a new trusted route without changing three sealed shared files, not evidence
-that a new topology is lowered automatically.
+Shared schema and lifecycle machinery do not make device code generic. The
+prospective sphere route in Section~\ref{sec:prospective} required about 2,635
+lines of topology-specific code and 28 modified compiler lines. It shows that a
+trusted route can reuse three sealed shared files, not automatic topology
+lowering.
 
 \subsection{Executable identity and lifecycle}
 \label{sec:lifecycle}
@@ -360,16 +365,13 @@ static verify $\rightarrow$ materialize/bind $\rightarrow$ prepare
 $\rightarrow$ execute/status gate $\rightarrow$ output $\rightarrow$ receipt.
 \end{center}
 
-The final public path checks native and compact status synchronously and, when
-the caller supplies an expected output, checks that value before return. The
-experiment then checks the returned value and digest against its worker oracle
-before accepting a sample or declaring the worker successful. The public path
-does \emph{not} rehash files from disk on every launch. Moreover, the original
-preregistered per-execution detailed-receipt requirement is not met: 4,096 timed
-executions in the main \rtdl arm are accompanied by 32 separate post-loop
-diagnostic executions, one retained detailed receipt per A worker. We therefore
-claim synchronous status and optional expected-output gating plus experimental
-output validation, not per-execution detailed-receipt coverage.
+The public path synchronously checks native and compact status and any supplied
+expected output before return; the experiment then checks value and digest
+against its worker oracle. It does not rehash disk files per launch. The
+preregistered per-execution receipt requirement is unmet: 4,096 timed A
+executions have only 32 separate post-loop diagnostic executions, one detailed
+receipt per A worker. We claim status/optional-output gating and experimental
+validation, not per-execution receipt coverage.
 
 \begin{figure*}[t]
 \centering
@@ -437,7 +439,7 @@ separates stable public constructors from the broader bounded route corpus.
     Bounded V4 corpus & 4 of 6 build-input enum values; all 4 leaf kinds (triangle, custom, curve, sphere) \\
     User-authored template & One bounded built-in-triangle template \\
     Prospective composition & One sealed-snapshot sphere composition \\
-    Human usability & No independent-user study or timing \\
+    Human usability & No independent-user authoring evidence or timing \\
     \bottomrule
   \end{tabular}
 \end{table}
@@ -449,56 +451,46 @@ trusted lowerer; a matching schema alone is insufficient.
 
 \section{Evaluation}
 
-We ask four questions: (1) do whole-protocol mutations reach the intended
-gates; (2) can a sealed shared framework admit one selected composition; (3)
-does a separate checker validate concrete generated artifacts without trusting
-the compiler's own projection; and (4) what performance cost does the public
-route impose at registered endpoints?
+We ask whether mutations reach intended gates, a sealed framework admits one
+selected composition, an independent checker validates generated artifacts, and
+the public route approaches direct performance at registered endpoints.
 
 \subsection{Earlier liveness and residual evidence}
 
-For two accepted fixed contracts, 19 single-leaf mutations exercised 19/19
-expected gates: seven role-and-effect, one semantic-ABI, seven physical-ABI, two
-continuation, and two identity mutations. This denominator is limited to those
-two contracts and those mutations; it is not combined with the later
-composition or checker experiments.
+For two fixed contracts, 19 single-leaf mutations exercised 19/19 expected
+gates: seven role/effect, one semantic-ABI, seven physical-ABI, two continuation,
+and two identity mutations. This denominator covers only those contracts and
+mutations and is not pooled with later experiments.
 
-We also examined typed residual failures against OptiX and OWL-style execution
-paths~\cite{nvidiaPyOptix,nvidiaOWL}. Three residuals produced complete
-wrong-output witnesses. A fourth supplied only a partial status-gated
-continuation/completeness witness. Checked executable identity adds supporting
-evidence. These are concrete failure observations, not five proved guarantees
-or general soundness theorems.
+Corrupting each target projection produced the expected sole reason before
+native-library load. For semantic ABI, this is mutation sensitivity, not an
+execution of the illustrative wrong-row route. Historical PyOptiX/OWL-style
+diagnostics lack independently verifiable execution records here and are not
+evidence about those systems' guarantees~\cite{nvidiaPyOptix,nvidiaOWL}. The
+19/19 result is neither soundness nor prevalence evidence.
 
 \subsection{Sealed-snapshot composition exam}
 \label{sec:prospective}
 
-Before revealing a future public randomness pulse, we fixed an author-defined
-challenge table of ten rows: seven built-in four-role rows and three custom
-six-role rows. All rows used already-supported primitive families; the three
-continuation variants all used a per-query count relation. The round-linear-curve
-any-hit-terminate row remained an eligible candidate; it was not selected. The
-pulse selected
+Before a public randomness pulse, we fixed an author-defined ten-row challenge:
+seven built-in four-role and three custom six-role rows. All used supported
+primitive families, and every continuation was a per-query count. The curve
+any-hit-terminate row remained eligible but unselected. The pulse selected
 \nolinkurl{builtin_sphere::any_hit_count_continue_u64_per_query}.
 
-The private custody record identifies the exact sealed historical source.
-Implementation changed no bytes in the three frozen schema, admission,
-and lifecycle files. The resulting route
-performed two true OptiX launches and passed 12/12 rational-oracle rows. The
-result demonstrates framework-level reuse of admission, identity, and lifecycle
-machinery for this selected composition. It does not establish an unbiased new
-application: the authors defined the challenge domain, every row recombined
-known primitives and topologies, and the selected route required substantial
-new topology-specific implementation.
+Private custody identifies the sealed source. No bytes changed in three frozen
+schema, admission, and lifecycle files. The route made two OptiX launches and
+passed 12/12 rational-oracle rows, showing reuse of admission, identity, and
+lifecycle for this composition. It is not an unbiased application: authors
+defined the domain, rows recombined known ingredients, and the selected route
+required substantial topology-specific code.
 
 \subsection{Independent finite checker}
 
-The offline checker imports no \rtdl module and rejects compiler-supplied
-projections as authority. It independently reads generated source, PTX/ABI
-metadata, symbols, and receipts. Across three route groups and four modes, it
-applied five property classes 20 times using 15 unique mutations. It checks
-selected lexical patterns and ordering constraints in generated target code
-rather than accepting compiler labels as authority.
+The offline checker imports no \rtdl module or compiler projection. It reads
+generated source, PTX/ABI metadata, symbols, and receipts. Across three route
+groups and four modes, it applied five property classes 20 times using 15 unique
+mutations, checking selected target-code patterns and ordering constraints.
 
 This checker is finite, not a verifier for arbitrary device control flow.
 During review, an out-of-authority in-memory probe inserted an unconditional
@@ -527,28 +519,21 @@ E & frozen predecessor control for \rtdl. \\
 \end{center}
 
 We ran the same registered matrix on an RTX~4090 (Ada) and RTX~3090 (Ampere).
-Each generation has eight blocks, two tasks, and five arms: 80 cells, with 128
-steady samples per cell. Across both generations this yields 160 cells and
-20,480 samples. A reported ratio is the median of eight within-block ratios of
-integer nanosecond measurements; lower is better. Raw times are not compared
-across machines. The steady timer encloses each prepared public action and ends
-at public return; worker output-and-digest validation follows outside that
-timer. Implementation-entry time starts immediately before implementation-specific
-imports and ends after the first result and worker output validation. Post-import
-time starts after those imports and ends at the same validation boundary. Pinned
-PyOptiX initializes CUDA context state during import, whereas \rtdl initializes
-it lazily later in the lifecycle; the two measurements therefore include
-different lifecycle work.
+Each generation has eight blocks, two tasks, five arms, 80 cells, and 128 steady
+samples per cell: 160 cells and 20,480 samples total. Ratios are medians of eight
+within-block ratios of integer nanoseconds; lower is better, and raw times are
+not compared across machines. The steady timer encloses a prepared public action
+through return; validation follows. Entry starts before implementation-specific
+imports, while post-import starts after them; both end after first-result
+validation. PyOptiX initializes CUDA during import, whereas \rtdl does so later,
+so these intervals include different lifecycle work.
 
-The registered primary criterion was prepared A/D median $\leq1.20$. There was
-no registered A/D maximum-block gate. A registered A/C implementation-entry
-criterion used median $\leq1.20$ and maximum $\leq1.35$, but the endpoint was
-revised after an adverse result and both available first-result endpoints remain
-import/lifecycle-confounded. We therefore treat A/C entry as a historical
-registered criterion but report it only as a diagnostic and make no positive
-entry-latency claim. Only prepared A/E was a registered regression gate;
-A/E first-result comparisons are post hoc, non-gating diagnostics. C/B
-competence used $\leq1.05$.
+The registered primary criterion was prepared A/D median $\leq1.20$, with no
+maximum-block gate. A/C entry used median $\leq1.20$ and maximum $\leq1.35$, but
+the endpoint was revised after an adverse result and both first-result endpoints
+remain confounded. We report A/C only diagnostically. Only prepared A/E was a
+registered regression gate; A/E first-result values are post hoc. C/B competence
+used $\leq1.05$.
 
 \subsection{Prepared execution results}
 
@@ -574,22 +559,17 @@ reported as dispersion rather than converted into a pass/fail criterion.
   \end{tabular}
 \end{table}
 
-Ahead-of-time cache-hit latency was measured separately over 20 observations.
-Median hits were 58.3--78.2~ms and hit/cold ratios were approximately
-1.04--2.02\%. A cache hit still includes cache lookup, validation, and load; it
-is not an initial compilation and is not part of the prepared public-execution
-endpoint.
+Across 20 observations, AOT cache-hit medians were 58.3--78.2~ms, about
+1.04--2.02\% of cold time. Hits still include lookup, validation, and load and
+are outside the prepared endpoint.
 
 \subsection{Adverse lifecycle results}
 
-Table~\ref{tab:lifecycle} preserves the unfavorable results. Every A/C
-post-import median is adverse, from 1.560$\times$ to 1.837$\times$, and the worst
-formal block is 2.377$\times$. The entry endpoint itself was revised after the
-adverse result, so neither entry nor post-import values support a confirmatory
-claim. Against predecessor E, A also regresses at first result by approximately
-8--22\% at entry and 16--31\% post-import, despite the registered prepared A/E
-comparison being favorable. This is evidence that protocol machinery and
-Python/native lifecycle work remain material before steady state.
+Every A/C post-import median is adverse, 1.560--1.837$\times$, with a
+2.377$\times$ worst block. Because entry was revised after the adverse result,
+neither endpoint supports a confirmatory claim. Against E, A also regresses by
+about 8--22\% at entry and 16--31\% post-import despite favorable prepared A/E,
+showing material pre-steady-state protocol and Python/native lifecycle work.
 
 \begin{table*}[t]
   \caption{Lifecycle ratios. A/C compares current \rtdl with the strong
@@ -623,64 +603,67 @@ in Section~\ref{sec:lifecycle}.
 
 \section{Programming Responsibility and Generality}
 
-The design separates three responsibilities. Users provide bounded callback
-intent and application data. Shared \rtdl machinery validates schemas,
-cross-role effects, ABI compatibility, executable identity, and lifecycle.
-Trusted per-topology lowerers remain responsible for concrete CUDA and
-OptiX code generation and binding. The runtime refuses to publish output when its
-status gates fail, while experiments may add application-level oracles.
+Users provide bounded callback intent and data; shared \rtdl machinery validates
+schemas, cross-role effects, ABI, identity, and lifecycle; trusted per-topology
+lowerers generate and bind CUDA/OptiX code. Failed status gates suppress output,
+while experiments may add application oracles.
 
-This decomposition is reusable beyond the present implementation. A system
-crossing from a managed language to an accelerator can adopt whole-protocol
-admission: name roles and effects, make semantic and physical ABI explicit,
-bind checked artifacts to loaded artifacts, and gate state transitions. The
-same principles can inform other Python GPU systems, shader languages, and
-foreign-function interfaces. What does not automatically transfer is the
-topology-specific lowerer or the finite checker vocabulary. Those components
-must be re-established for each backend.
+The implementation suggests, but does not validate elsewhere, a pattern for
+managed-language/accelerator boundaries: expose cross-component obligations,
+compare source and target projections, gate executable minting, bind admission
+to loaded bytes, and include asynchronous failure in publication. Lowerers,
+trusted semantics, and checker vocabularies must be re-established per domain.
 
 \section{Related Work}
 
-OptiX established a programmable ray-tracing pipeline~\cite{parker2010optix},
-and current OptiX, Vulkan, and DXR interfaces expose explicit pipeline and
-shader-group contracts~\cite{nvidiaOptix9Guide,khronosVulkanInterfaces,microsoftDXRPAQ}.
-PyOptiX-style bindings and OWL improve host-language access and construction
-ergonomics~\cite{nvidiaPyOptix,nvidiaOWL}; our focus is not replacing those APIs
-but admitting a bounded cross-stage protocol and binding it to executable
-identity.
+OptiX established programmable RT~\cite{parker2010optix}. Current OptiX, Vulkan,
+and DXR specify extensive local pipeline, interface, payload, and SBT rules
+~\cite{nvidiaOptix9Guide,khronosVulkanInterfaces,khronosVulkanRT,microsoftDXRPAQ}.
+DXR payload access qualifiers express per-stage reads/writes and enforce
+declaration rules, although local-copy access still carries a documented
+developer responsibility. Vulkan assigns applications SBT organization under
+its indexing rules. These are substantial guarantees, not unchecked APIs.
 
-Shader and heterogeneous programming systems provide richer compilation
-abstractions. Slang's capability system and modular shader work address
-composition and target restrictions~\cite{slangCapabilities,he2017shaderComponents,he2018slang}.
-Dr.Jit, LuisaRender, and CrossRT explore staged or cross-language generation
-for graphics and simulation~\cite{jakob2022drjit,zheng2022luisa,frolov2024crossrt}.
-\rtdl differs in its narrow emphasis on admitting the surrounding RT protocol,
-but its current topology-specific lowerers are less general than those systems'
-broader compilation ambitions.
+PyOptiX provides Python bindings for the OptiX host API, while SlangPy includes
+Python RT pipeline, hit-group, shader-table, and dispatch facilities
+~\cite{nvidiaPyOptix,slangPy}. OWL manages substantial OptiX construction, and
+Luisa automates resource dependency analysis and RT pipeline/SBT/launch work
+~\cite{nvidiaOWL,zheng2022luisa,luisaCompute}. The checked primary materials do
+not state the same joint five-seam admission condition; this source-bounded
+observation is not evidence that those systems cannot implement it.
 
-The protocol framing draws on typestate and interface theories
-~\cite{strom1986typestate,deAlfaro2001interfaceAutomata,honda2016multiparty} and
-on typed linking and FFI work~\cite{furr2005ffi,patterson2017linkingTypes}. Our
-finite generated-target checker is empirical and structural; it should not be confused
-with formal GPU verification such as GPUVerify~\cite{betts2012gpuverify}.
+Shader Components and Slang provide modular interfaces, specialization, and
+reflection; current Slang also infers and validates target, stage, API, and
+hardware capabilities, while shader cursors address cross-platform parameter
+layout and binding~\cite{he2017shaderComponents,he2018slang,slangCapabilities,slangShaderCursors}.
+Dr.Jit traces and optimizes broad Python/C++ computations through OptiX, and
+CrossRT generates cross-platform host/device RT code
+~\cite{jakob2022drjit,frolov2024crossrt}. \rtdl is narrower: it contributes a
+concrete route-level admission organization, not their language breadth,
+generation scope, or an exclusivity result.
+
+Typestate, interface automata, and multiparty session types provide general and
+often formally stronger models of state and global/local protocol compatibility
+~\cite{strom1986typestate,deAlfaro2001interfaceAutomata,honda2016multiparty}.
+Typed linking and FFI checking already relate rich cross-language and physical
+representations~\cite{furr2005ffi,patterson2017linkingTypes}. \rtdl specializes
+these concerns to five RT compiler/runtime seams and proves no new calculus or
+soundness theorem. Its finite target checker is empirical and structural, unlike
+formal GPU verification such as GPUVerify~\cite{betts2012gpuverify}.
 
 \section{Artifact}
 
-The candidate artifact is an evidence-only, nine-member archive generated from
-the final frozen tooling snapshot. It contains an anonymous evidence projection,
-summary, manifest, documentation, dependency/component inventory, and a Python
-verifier using only the standard library. Private provenance and export receipts
-remain in the separate custodial record and are not distributed in the anonymous
-archive. The projection records 160 formal cells, 20,480 steady samples, 1,024
-A-only instrumentation endpoints, 20 AOT samples, and eight competence records.
+The evidence-only nine-member archive contains an anonymous projection, summary,
+manifest, documentation, inventory, and standard-library Python verifier.
+Private provenance and export receipts remain outside it. The projection records
+160 formal cells, 20,480 steady samples, 1,024 A-only instrumentation endpoints,
+20 AOT samples, and eight competence records.
 
 Two clean exports were byte-identical. Replays in two fresh directories, one
-with spaces, passed under isolated normal and optimized Python modes. The archive bundles no
-third-party source, binary, dataset, CUDA/OptiX header, driver, key, or raw GPU
-archive. It therefore supports offline verification of the submitted evidence,
-not GPU rerun, product installation, or full reconstruction of private historical
-authorities. CUDA, OptiX, drivers, and GPU hardware are external requirements
-for new execution.
+with spaces, passed in isolated normal and optimized Python modes. The archive
+bundles no third-party code, data, CUDA/OptiX material, driver, key, or raw GPU
+archive. It verifies submitted evidence offline, not GPU rerun, installation, or
+private-history reconstruction; new execution needs external CUDA/OptiX and GPU.
 
 \section{Threats to Validity}
 
@@ -692,53 +675,48 @@ implementation or an application framework. Strong C is contract-equivalent at
 the output boundary but is neither byte-identical nor operation-identical to A.
 These observations do not identify intrinsic language overhead. Paired
 instrumentation overhead was measured only for A, not for the other arms.
+The same-width semantic-ABI example is illustrative: mutation tests establish
+check liveness, but no retained run executes its defective route. A trusted
+semantic schema may also be wrong while internally coherent.
 
 \paragraph{Internal validity.}
-Both tasks were used during system adaptation and tuning; they are not unseen
-confirmatory workloads. The implementation-entry endpoint was revised after an
-adverse observation, and both first-result endpoints include import and lifecycle
-effects. We preserve those outcomes rather than reinterpret them as a pass.
-Focused mocks reproduce the provider double-fault, which can replace the primary
-exception and lose cleanup retry ownership. Native forks that bypass the
-registered at-fork hook can evade the cached-PID guard even when the child later
-uses the public API. Neither unrepaired path produced public output or appeared
-in the retained successful GPU workers.
+Both tasks were used during adaptation and are not unseen workloads. Entry was
+revised after an adverse result, and both first-result endpoints include import
+and lifecycle effects; neither is reinterpreted as a pass. Mocks reproduce the
+provider double fault, which can replace the primary exception and lose cleanup
+retry ownership. Native forks bypassing the at-fork hook can evade the cached-PID
+guard. Neither unrepaired path produced output or appeared in retained GPU work.
 
 \paragraph{External validity.}
-Measurements cover two consumer NVIDIA generations and two exact tasks. We do
-not compare raw latency across machines. The prospective challenge domain was
-author defined, used known primitive and topology ingredients, and selected one
-composition. There is no independent human authoring study, no prevalence
-measurement, and no evidence for arbitrary Python or arbitrary Callback IR.
+Measurements cover two NVIDIA generations and two exact tasks; raw latency is
+not compared across machines. Authors defined the challenge domain from known
+ingredients and selected one composition. There is no independent-user authoring evidence,
+prevalence measure, or arbitrary-Python/IR evidence. Several related-work
+guarantee questions remain unknown; no first, only, or impossibility claim follows.
 
 \paragraph{Implementation trust.}
-Approximately 2,635 lines of new topology-specific code were required for the
-selected sphere route. These lowerers and wrappers are in the TCB. The
-independent checker covers finite target structures and missed an
-out-of-authority early-return probe for selected helper checks. Detailed
-per-execution receipts were not produced for the 4,096 timed A executions.
+The selected sphere route required about 2,635 lines of topology-specific TCB
+code. The finite checker missed an out-of-authority early-return probe for
+selected helpers. The 4,096 timed A executions lack per-execution receipts.
 
 \paragraph{Artifact scope.}
-The anonymous projection is derived evidence, not the raw private archives. Its
-verifier checks internal identities, counts, registered formulas, and disclosed
-rows, but cannot independently recreate GPU runs or historical custody. Private
-provenance remains available for confidential audit.
+The anonymous projection is derived evidence. Its verifier checks identities,
+counts, formulas, and disclosed rows, but cannot recreate GPU runs or custody;
+private provenance remains available for confidential audit.
 
 \section{Conclusion}
 
-\rtdl demonstrates bounded admission for a complete ray-tracing protocol,
-instead of checking callbacks in isolation. Shared schema, identity, and lifecycle machinery
-supports two stable public constructors and a four-leaf bounded corpus, while
-executable lowering remains topology-specific and trusted. Mutation,
-sealed-snapshot composition, and finite-checker evidence exercise this boundary
-without establishing general compiler soundness.
+\rtdl admits bounded RT routes as protocol-carrying executables. One decision
+compares five cross-artifact seams; typed effects reach hardware control only
+through trusted topology wrappers. Two public constructors and a four-leaf
+corpus exercise the design. Finite mutation, composition, and target checks
+support this boundary, not semantic inference, arbitrary lowering, novelty by
+absence, or general soundness.
 
-For two exact tasks on Ada and Ampere GPUs, the prepared public route costs
-1.077--1.175$\times$ direct CUDA/OptiX latency by median. First-result results
-are materially worse, with post-import A/C medians up to 1.837$\times$ and a
-2.377$\times$ worst block. The contribution is bounded whole-protocol admission
-with near-direct prepared latency and explicit TCB, receipt, generality, and
-lifecycle limits. Removing those limits is the next research problem.
+Across two tasks and GPU generations, prepared median latency is
+1.077--1.175$\times$ Direct; post-import A/C reaches 1.837$\times$ median and a
+2.377$\times$ worst block. This bounded compiler-system method has near-direct
+prepared latency and explicit TCB, receipt, generality, and lifecycle limits.
 
 \bibliographystyle{ACM-Reference-Format}
 \bibliography{references}

@@ -630,3 +630,73 @@ artifact byte changed. These checks are author-side only. P-prime remains at
 zero of two independent acceptances; R7 and R8 remain open, no upload or
 submission receipt exists, and every public/manuscript claim authorization
 remains false.
+
+## P-double-prime novelty remediation precommit validation
+
+Timestamp: 2026-09-06T23:28:33-0400.
+
+The novelty directive was executed without changing production, native,
+compiler, experiment, workload, test, F2 template, timer, estimator, or
+threshold code. Primary-source and current-source audits produced the N1--N3
+records; N4 changed only manuscript, bibliography, claim/control documentation,
+and generated delivery bytes.
+
+Failures and adverse intermediate states were retained:
+
+1. An initial read-only staging command containing `rm -rf` was rejected by the
+   execution policy before it ran. No repository or evidence file changed.
+2. An initial PDF-text command used `pdftotext` without its bundled absolute
+   path and returned exit 127. The bundled Poppler executable then succeeded.
+3. The first N2 test command omitted `PYTHONPATH=src:.`; two imports failed and
+   no tests ran. With the prescribed environment, the two complete modules ran
+   20 tests: 19 passed and one existing custody check errored because
+   `history/internal_docs/goal5797_s0_five_mechanism_ablation_preaction_20260823.json`
+   is absent. Six explicitly selected N2 mechanism/integrated checks then passed
+   in 0.045 seconds. The missing historical fixture was not repaired or hidden.
+4. One exploratory `jq` expression changed its input from the root object to an
+   array before reading `.claims`; it printed an intermediate zero and then
+   failed. The corrected query reported 24 total claims and zero authorization
+   values other than `false`.
+5. The first N4 PDF build succeeded but was nine pages and contained five small
+   horizontal and one vertical overfull box. It was rejected as a candidate.
+   Content-level deduplication, without changing the ACM template, margins, or
+   font sizes and without deleting adverse evidence, produced the accepted
+   eight-page layout.
+6. One attempted hash correction patch used an inexact expected line and was
+   rejected without changing the file. The exact line was then corrected and
+   both JSON control files parsed successfully.
+
+Final precommit results:
+
+```text
+Tectonic cached build: PASS, exit 0
+PDF: 8 pages, US Letter, 143803 bytes
+PDF SHA-256: a8d3194b07fbf0105b59944e8044da1769b9ca8877f92d3a93aa44f605b6aa84
+paper PDF / delivery PDF cmp: PASS
+horizontal overfull boxes: 0
+vertical overfull boxes: 0
+unresolved citations/references: 0
+all exact pages rendered and visually inspected: 8/8 PASS
+fonts embedded with Unicode mappings: 12/12 PASS
+private-identity scan over PDF text/metadata/source/bibliography: PASS
+normalized source twin-build cmp: PASS
+source bundle SHA-256: 5f2bbc858b0b783983d773e09d46be92b0b47ebc6f87e079c1dd855ac42f55df
+source bundle bytes: 20540
+source bundle regular files: 2
+foreign-path source compile: PASS, exit 0, 8 pages, US Letter
+tests.goal5852_submission_evidence_test: 14/14 PASS
+tests.goal5852_submission_evidence_test under python -O: 14/14 PASS
+working diff from starting HEAD under executable/frozen paths: empty
+F2 artifact SHA-256: 916cedbb7001c7aa43e66df3f992b543b7b3ca5a013f0f997790113a2e3738b8
+F2 artifact bytes/members: 180308 / 9
+GPU execution: not performed
+claim_authorized values other than false: 0 of 24
+```
+
+The source-bundle rebuild is a buildability check, not the exact submission PDF.
+The unchanged F2 archive is still only an offline evidence recount and does not
+reproduce the novelty literature audit, the illustrative semantic witness, or a
+GPU run. P-double-prime commit/tree identity and its final review request remain
+pending at this checkpoint. It has zero of two independent final-byte
+acceptances; R8, authenticated-form review, upload, downloaded-byte verification,
+and receipt remain open.

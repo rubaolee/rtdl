@@ -1,5 +1,18 @@
 # RTDL Codex Working Guide
 
+## Current owner-directed novelty work (2026-09-06)
+
+The user's latest instruction requires concrete literature evidence and a CGO
+compiler-contribution argument. Execute N0--N5 in
+[the novelty execution directive](history/internal_docs/lead_novelty_execution_directive_cgo2027_20260906.md).
+This supplements the post-Goal5851 directive below: preserve closed R-stages,
+M/E/F2, adverse evidence and the hard freeze. Use primary-source boundaries and
+existing implementation evidence; no new executable changes or GPU experiments
+are authorized by this work. Deliver the evidence tables, worked example,
+contribution argument and actual manuscript revision, then submit the new exact
+PDF bytes to the existing R7/R8 process. This instruction is not a novelty
+finding, final-byte acceptance or submission authorization.
+
 ## Current owner-delegated execution directive (2026-09-06)
 
 The user explicitly designated this review as the lead and required the main
