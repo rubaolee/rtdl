@@ -1,21 +1,43 @@
-# Manuscript Change Map for P-Quadruple-Prime
+# Manuscript Change Map for P-Quintuple-Prime
 
 Date: 2026-09-07 America/New_York.
 
-Status: `N4_PQUADRUPLEPRIME_COMPLETE_AUTHOR_SCOPE__NINE_PAGE_RENDER_MAPPED__INDEPENDENT_REVIEW_PENDING`.
+Status: `N4_PQUINTUPLEPRIME_THREE_QUESTION_CLOSURE_COMPLETE_AUTHOR_SCOPE__NINE_PAGE_RENDER_MAPPED__INDEPENDENT_REVIEW_PENDING`.
 
-The immediate baseline is P-triple-prime at commit
-`c26c88a69382d9786c2f5f77c6cdc6763fc51e7c`, tree
-`b45bae5d83ec9c803657b28132c677d514897bb3`, PDF SHA-256
-`2840d348459d2cdeba02cda3a4b17547ce83bc208876736f805a2f5682c3d303`.
-The replacement is the P-quadruple-prime manuscript/source candidate. This map
-preserves all seven P-triple-prime corrections and adds the result-route
-contribution pass. Exact new commit/tree and file identities are recorded by
-the candidate control report after the immutable candidate commit exists.
-P-quadruple-prime remains unauthorized until its exact bytes receive the
-required independent reviews.
+The immediate baseline is P-quadruple-prime at commit
+`70a081e90c4c50ecf92d24741529de9859841c70`, tree
+`b4b1628345536976e2ed8fbb67ab5b4ff21fc802`, PDF SHA-256
+`bb957c0969bbd92c6a4be952c4e40a4ce5a183bf565c5f54a19b410102c77aca`.
+The replacement is the P-quintuple-prime manuscript/source candidate. This map
+preserves the P-quadruple-prime result-route pass and all seven inherited
+P-triple-prime corrections, then closes the lead's final three-question
+argument. Exact new commit/tree and file identities are recorded by the
+candidate control report after the immutable candidate commit exists.
+P-quintuple-prime remains unauthorized until its exact bytes receive the
+required independent reviews. No prior review transfers to these changed
+bytes.
 
-## 1. Result-route contribution remediation
+## 1. Final three-question argument closure
+
+The final lead directive asks: what extra the compiler knows, what that makes
+it reject/generate/select, and what implementation increment remains over the
+strongest acknowledged prior mechanisms. The manuscript now answers those
+questions in the required causal order. This is a wording and evidence-linkage
+pass only; no implementation, experiment, frozen artifact, or numerical result
+changed, and no previously passed test was rerun.
+
+| Map ID | P-quadruple-prime residual gap | P-quintuple-prime action | Source/evidence | Main file location | Claim IDs | Final PDF pages |
+| --- | --- | --- | --- | --- | --- | ---: |
+| `TQC-01` | Table 1 stated the constraints but did not use a concrete compiler-decision verb in every row. | Makes the complete-relation row say the family verifier **rejects**, the triangle row say the generator **emits** the payload update and physical ignore, the exact-count row say the generator **selects** the intrinsic only under the exact-IR guard, and the application-ID row say admission **rejects** a schema/projection mismatch. | Existing W1--W3 source traces and component evidence; no new execution | Section 2.1, Table 1 | 001, 022--024 | 3 |
+| `TQC-02` | The paper disclosed both the general leaf path and measured exact-IR specialization but did not state their semantic connection tightly enough. | States that both implement the same known standard-count increment-and-continue behavior: the general path through leaf ABI plus wrapper and the specialization directly. It also states that the exact-IR guard selects trusted code rather than proving equivalence, and keeps recognizer/lowerer in the TCB. | Existing wrapper/lowering source and W2/W3 evidence; no new GPU equivalence claim | Section 3.2, Role-indexed effects | 003, 023 | 4 |
+| `TQC-03` | Related Work could still be read as treating different guarantee predicates as the contribution. | States that the contribution is the implemented connection from fixed result obligations to effect admission, trusted lowering, and publication checks, not predicate difference alone. It explicitly prices that design in restricted expressiveness and topology-specific trusted code and disclaims superiority over richer frameworks. | Existing N1 primary-source boundary audit and bounded implementation evidence | Section 7, Related Work | 001, 022--024 | 7 |
+
+The existing N1, N2, and N3 records already contained the required strongest-
+prior-system concessions, W1--W3 evidence boundaries, and general-versus-
+specialized-path explanation. They remain unchanged rather than creating a
+second theory or duplicate evidence record.
+
+## 2. Result-route contribution remediation retained from P-quadruple-prime
 
 | Map ID | P-triple-prime weakness | P-quadruple-prime action | Source/evidence | Main file location | Claim IDs | Final PDF pages |
 | --- | --- | --- | --- | --- | --- | ---: |
@@ -31,7 +53,7 @@ or adverse observation changed in this pass. W1/W2 are source traces and W3 is
 an existing source-to-wrapper component test; none is represented as a new GPU
 experiment.
 
-## 2. Seven-finding remediation map retained from P-triple-prime
+## 3. Seven-finding remediation map retained from P-triple-prime
 
 | Finding | P-double-prime proposition | P-triple-prime wording/action | N1/N2 source | Main file location | Claim IDs | Final PDF pages |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -43,7 +65,7 @@ experiment.
 | `PDP-06` | One sentence claimed neither double-fault nor native-fork path produced output. | States separately that the double-fault mock returned no public result and the native-fork probe accepted a public call through mock native code without GPU work; neither defect appeared in retained successful GPU workers. | N3 Section 7; retained hostile source review | Sections 2.3 and 9, Internal validity | 018, 019 | 2, 8 |
 | `PDP-07` | Dynamic stable SlangPy documentation was labeled 0.42.0. | Fixes comparison identity to v0.43.1 commit `2f6c4625...`; separates dynamic stable docs accessed 2026-09-07; acknowledges RT pipeline, binding/marshalling, caching, and lifecycle facilities while keeping joint Q1--Q6 `UNKNOWN`. | `RW-SC-05`, `SC-10A`, `SC-10B` | Introduction, Section 7, bibliography | 024 | 1, 7, 9 |
 
-## 3. Bibliography state
+## 4. Bibliography state
 
 | Map ID | Action | Reason/evidence | Final PDF page |
 | --- | --- | --- | --- |
@@ -54,9 +76,9 @@ All prior P-double-prime bibliography corrections remain inherited. Dynamic
 official documentation is cited as documentation, not peer-reviewed research.
 The RT-core survey remains mapping background only, never novelty-gap evidence.
 
-## 4. Mandatory disclosures preserved
+## 5. Mandatory disclosures preserved
 
-| Required disclosure | P-quadruple-prime PDF location | Status |
+| Required disclosure | P-quintuple-prime PDF location | Status |
 | --- | --- | --- |
 | Original per-call detailed-receipt requirement was not met | pp. 4, 8 | Preserved |
 | 4,096 timed A executions versus 32 separate diagnostic receipts | p. 4 | Preserved |
@@ -72,14 +94,16 @@ The RT-core survey remains mapping background only, never novelty-gap evidence.
 | Artifact is offline recount, not product install or GPU rerun | p. 8 | Preserved |
 | Measured routes are exact-IR specializations, not generic per-leaf execution | pp. 1, 4, 6, 9 | Preserved and made concrete with W3 |
 
-All nine P-quadruple-prime working pages were rendered and inspected before
+All nine P-quintuple-prime working pages were rendered and inspected before
 candidate freeze. No disclosure was removed to preserve a stronger sentence or
 the prior eight-page layout.
 
-## 5. Authorization state
+## 6. Authorization state
 
 All 24 claim entries remain `claim_authorized=false`. P-double-prime received
 one independent `REVISE_AND_REREVIEW_CHANGED_BYTES` verdict and zero
 acceptances. P-triple-prime preserved the seven author-side corrections but
-received no independent acceptance before this replacement. P-quadruple-prime
-starts at 0/2 independent acceptances; no upload or submission has occurred.
+received no independent acceptance. P-quadruple-prime then completed the
+result-route pass and also received no transferable acceptance before this
+replacement. P-quintuple-prime starts at 0/2 independent acceptances; no upload
+or submission has occurred.

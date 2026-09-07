@@ -153,23 +153,23 @@ arbitrary RT programs.
     RTDL constraint or transformation & Evidence boundary \\
     \midrule
     Complete bounded relation & Whether locally legal \texttt{TERMINATE} or
-    \texttt{IGNORE} fits this route & Family verification requires
-    \texttt{ACCEPT\_CONTINUE} returns; capacity failure publishes no partial
+    \texttt{IGNORE} fits this route & The family verifier rejects the route
+    unless returns are \texttt{ACCEPT\_CONTINUE}; capacity failure publishes no partial
     relation & Source rule and existing CPU checks; not a general enumeration
     theory \\
     Triangle all-hit count & Whether logical acceptance should physically
-    accept an intersection & Update payload, then call
+    accept an intersection & The generator emits a payload update, then calls
     \texttt{optixIgnoreIntersection()}; require single any-hit delivery and
     checked overflow & Generic and specialized lowering source; OptiX
     mechanisms are established, not invented here \\
     Standard count specialization & Whether same-shape \texttt{+1} and
-    \texttt{+2} callbacks may share a fixed intrinsic & Exact-IR guard;
-    changing \texttt{+1} to \texttt{+2} selects the general leaf path & Existing
+    \texttt{+2} callbacks may share a fixed intrinsic & The generator selects
+    the intrinsic only under its exact-IR guard; \texttt{+2} selects the general leaf path & Existing
     source-to-wrapper test replay; no GPU equivalence or general optimization
     theorem \\
     Relation application ID & Whether an attribute denotes physical index or
-    application ID despite equal \texttt{u32} width & Trusted schema,
-    compiled-contract projection, and mismatch rejection & Existing field
+    application ID despite equal \texttt{u32} width & Admission rejects a
+    mismatch between trusted schema and compiled-contract projection & Existing field
     mutation and mock; application intent is not inferred \\
     \bottomrule
   \end{tabularx}
@@ -308,13 +308,15 @@ checks role-indexed typed effects; ABI lowering flattens them and assigns
 effect/status tags; generated Numba leaves write those fields and tags; and
 trusted wrappers check them before issuing payload, ignore, or terminate
 operations. The evaluated standard routes also use trusted specializations
-guarded by exact callback IR. Triangle counting uses direct count/reduction
-entries, while bounded relation fuses intersection and row emission. These
+guarded by exact callback IR. For the exact standard count program, the
+specialized entry implements the known increment-and-continue behavior
+directly, while the general path obtains it through the leaf ABI and wrapper.
+Bounded relation similarly fuses intersection and row emission. These
 replace generic leaf calls and per-leaf effect-tag checks at specialized roles.
 Static schema, ABI, and identity admission remain, as do runtime failures and
 applicable overflow, capacity, and supplied expected-output checks. The
-specializations and wrappers are in the TCB; an IR digest selects a path rather
-than proving semantic preservation.
+exact-IR guard selects a trusted implementation; it does not establish semantic
+equivalence, and the recognizer and specialized lowering remain in the TCB.
 
 Specialization admission depends on program identity, not just role and ABI
 shape. An existing compiler test changes a count callback from
@@ -734,11 +736,14 @@ reflection; current Slang also infers and validates target, stage, API, and
 hardware capabilities, while shader cursors address cross-platform parameter
 layout and binding~\cite{he2017shaderComponents,he2018slang,slangCapabilities,slangShaderCursors}.
 These mechanisms already decide substantial stage and target compatibility.
-Their predicates do not by themselves decide the distinct result-route
-questions illustrated here: whether a complete route permits termination, or
-whether logical acceptance must be implemented by physical intersection
-rejection. This distinction does not imply that Slang could not be extended to
-express those predicates. Dr.Jit traces and optimizes broad Python/C++
+The proposed contribution is not the difference between predicates alone, but
+the implemented connection from fixed result obligations to effect admission,
+trusted lowering, and publication checks. It uses explicit family rules and
+guarded specializations at the cost of restricted expressiveness and
+topology-specific trusted code; our finite evidence evaluates that implementation
+and its costs without establishing superiority over richer frameworks. This
+does not imply that Slang could not be extended to express the same relation.
+Dr.Jit traces and optimizes broad Python/C++
 computations through OptiX, and CrossRT generates cross-platform host/device RT
 code~\cite{jakob2022drjit,frolov2024crossrt}. \rtdl is narrower than all of
 these systems in language and generation scope.
