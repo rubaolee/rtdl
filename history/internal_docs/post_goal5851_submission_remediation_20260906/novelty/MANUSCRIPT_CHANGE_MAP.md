@@ -1,68 +1,65 @@
-# Manuscript Change Map for P-double-prime
+# Manuscript Change Map for P-Triple-Prime
 
-Date: 2026-09-06 America/New_York.
+Date: 2026-09-07 America/New_York.
 
-Status: `N4_COMPLETE__FINAL_EIGHT_PAGE_RENDER_MAPPED`.
+Status: `N4_PTRIPLEPRIME_COMPLETE_AUTHOR_SCOPE__EIGHT_PAGE_RENDER_MAPPED__INDEPENDENT_REVIEW_PENDING`.
 
-Baseline wording is P-prime at commit
-`818c2ed284cde8acae9a09b531b8bfed3bf925ee`. Replacement wording is the
-working P-double-prime source and remains unauthorized until the actual
-P-double-prime bytes receive the required independent reviews.
+The baseline is P-double-prime at commit
+`b28076ad568d3b7b36cfa48b0c5846accff3cb95`, tree
+`2a63fecbcf09727dbe4e38f83edb253d80fa3cab`. The replacement is the
+P-triple-prime manuscript/source candidate. This map supersedes the prior
+P-double-prime map for current wording while preserving the committed
+P-double-prime bytes and review request. P-triple-prime remains unauthorized
+until its exact bytes receive the required independent reviews.
 
-## 1. Material claim changes
+## 1. Seven-finding remediation map
 
-| Map ID | P-prime wording or proposition | P-double-prime wording or action | N1/N2/N3 evidence | File/location | Claim ID | Final PDF page |
+| Finding | P-double-prime proposition | P-triple-prime wording/action | N1/N2 source | Main file location | Claim IDs | Final PDF pages |
 | --- | --- | --- | --- | --- | --- | --- |
-| `MCM-01` | "Existing Python interfaces ... do not establish" one admitted execution | Replaced with a source-bounded statement that existing systems provide strong checks, Python access, and construction; checked materials do not state the same joint condition | `RW-RT-01`--`RW-SC-08`; N3 Section 1 | `paper/cgo2027/main.tex:24-31` | `RELATED-WORK-EXACT-GUARANTEE-BOUNDARY-024` | 1 |
-| `MCM-02` | Python users assemble largely conventional pieces; question centered on admitting an "entire" protocol | Explicitly concedes PyOptiX/SlangPy, OWL/Luisa, DXR PAQs, and Slang capabilities; asks about the relation spanning semantic fields, physical artifacts, continuation, and exact executable | N1 Sections 3-5; N3 Section 1 | `paper/cgo2027/main.tex:81-95` | `NOVELTY-PROTOCOL-ADMITTED-EXECUTABLE-022`, `RELATED-WORK-EXACT-GUARANTEE-BOUNDARY-024` | 1 |
-| `MCM-03` | Four contributions could read as four independent innovations | Reorganized as one core systems contribution, one implementation method, and bounded validation evidence | N3 Sections 1 and 5 | `paper/cgo2027/main.tex:103-117` | `NOVELTY-PROTOCOL-ADMITTED-EXECUTABLE-022`, `METHOD-TYPED-EFFECT-TRUSTED-LOWERING-023` | 1--2 |
-| `MCM-04` | Defective semantic-ABI route was "executed," reached launch, and returned `(100,0),(101,1)` | Marks those rows as an illustrative same-width semantic substitution; expressly says no retained defective-route execution exists | N2 Sections 2 and 7 | `paper/cgo2027/main.tex:153-163` | `NOVELTY-PROTOCOL-ADMITTED-EXECUTABLE-022` | 2 |
-| `MCM-05` | Admission compares "authorities" and rejects disagreement before launch | States exact source: trusted relation schema -> compiled relation contract -> separately derived compiler projection; mutation rejects before native load; same compiler TCB and wrong coherent schema remain limitations | `PC-02_ATTRIBUTE_OWNER`; N2 Sections 3-5 | `paper/cgo2027/main.tex:165-174` | `NOVELTY-PROTOCOL-ADMITTED-EXECUTABLE-022` | 2 |
-| `MCM-06` | Typed effects described without one concrete hardware-operation chain | Adds verified effect -> deterministic ABI/status tag -> Numba leaf -> trusted wrapper -> payload/ignore/terminate chain | N2 Section 6; N3 `CONTRIB-TYPED-EFFECT-LOWERING` | `paper/cgo2027/main.tex:260-268` | `METHOD-TYPED-EFFECT-TRUSTED-LOWERING-023` | 3 |
-| `MCM-07` | Semantic target facts called generated route sources; identity phrasing could obscure limits | Names trusted family schema and compiled contract; states same-compiler derivation and that hash equality gives coherence, not semantics | N2 Sections 3, 4, 4.1 | `paper/cgo2027/main.tex:313-334` | `NOVELTY-PROTOCOL-ADMITTED-EXECUTABLE-022` | 4 |
-| `MCM-08` | Three PyOptiX/OWL-style residuals described as complete wrong-output witnesses | Removes those runs as affirmative evidence because independently verifiable records are not distributed; retains 19 mutations and integrated pre-load rejection only | N2 Section 7; N1 evidence vocabulary | `paper/cgo2027/main.tex:459-472` | `RELATED-WORK-EXACT-GUARANTEE-BOUNDARY-024` | 4--5 |
-| `MCM-09` | Decomposition described as reusable beyond implementation | Downgrades to a suggested design pattern and states that no other domain/backend was validated | N3 Section 2 | `paper/cgo2027/main.tex:611-617` | `NOVELTY-PROTOCOL-ADMITTED-EXECUTABLE-022` | 6 |
-| `MCM-10` | Related work mainly said RTDL had a different focus | Replaced with guarantee-level comparison that concedes PAQs, capabilities, SBT/pipeline automation, Python RT, reflection, staging, and formal protocol/linking antecedents | N1 full audit; N3 Section 3 | `paper/cgo2027/main.tex:619-654` | `RELATED-WORK-EXACT-GUARANTEE-BOUNDARY-024` | 6 |
-| `MCM-11` | Threats omitted the unexecuted witness, trusted semantic premise, and UNKNOWN literature cells | Adds all three limits and forbids first/only/impossibility inference | N1 Sections 2 and 7; N2 Sections 2 and 9 | `paper/cgo2027/main.tex:668-705` | `NOVELTY-PROTOCOL-ADMITTED-EXECUTABLE-022`, `RELATED-WORK-EXACT-GUARANTEE-BOUNDARY-024` | 7 |
-| `MCM-12` | Conclusion emphasized complete protocol admission | Names protocol-carrying admitted executables and five seams, while adding no semantic inference, arbitrary lowering, novelty-by-absence, or soundness claim | N3 Sections 1, 5, 8 | `paper/cgo2027/main.tex:709-720` | `NOVELTY-PROTOCOL-ADMITTED-EXECUTABLE-022`, `METHOD-TYPED-EFFECT-TRUSTED-LOWERING-023` | 7 |
+| `PDP-01` | The method and numbers could be read as every measured role executing through typed effect -> ABI/tag -> Numba leaf -> wrapper checks. | Describes that as the general/diagnostic path; discloses exact-IR guarded triangle direct count/reduction and relation fused intersection/row-emission paths, the per-leaf work they replace, retained checks, and specialization TCB; binds prepared numbers to those routes. | N2 Section 6; N3 Sections 2.2, 4.5 | `paper/cgo2027/main.tex`, Abstract, Introduction contribution 2, Section 3.2, Section 5.4, Conclusion | 003, 007--010, 023 | 1, 3, 6, 8 |
+| `PDP-02` | One decision was said to gate materialization, native load, and publication without distinguishing app-free warmup. | States that exact app-free runtime load/warm may precede admission; admission gates route return and subsequent per-route preparation/launch. Both mutation statements name the overlap-disabled configuration and native-library loader. | N2 Sections 4, 5; N3 Sections 1.2, 4.4 | Introduction contribution 1; Sections 2.2, 3.6, 5.1 | 002, 022 | 1, 2, 4, 5 |
+| `PDP-03` | Related work omitted PCC and could make validation-before-execution sound like the increment. | Adds Necula/Lee as a direct policy/proof-validation precedent; states that RTDL has no certificate, trusts its schema/compiler/lowerers/runtime, and contributes only a bounded RT-specific design/implementation with finite evidence. | `RW-PT-06`; N3 Sections 1, 3, 4.2 | Introduction contribution organization; Section 7; bibliography | 022, 024 | 1, 7, 8 |
+| `PDP-04` | Supporting documents generalized the materialized-program `ProtocolExecutionResult` checks to measured AOT execution. | Separates materialized-program result, measured AOT `RTDLExecutionResult`, post-return worker oracle, and post-loop diagnostic; keeps 4,096 timed calls versus 32 receipts and precise timer endpoints. | N2 Sections 4.1, 5; N3 Section 2.3 | Section 3.6 and Figure 1 | 002, 015, 022 | 4--5 |
+| `PDP-05` | All ten prospective candidates were described as per-query counts. | States one value per query: six counts and four first-accepted-hit Booleans; preserves seven built-in/three custom, selected sphere count/continue, unselected eligible curve terminate, two launches, and 12/12 oracle rows. | Frozen `CHALLENGE_TABLE.json` and `FINAL_AUTHORITY.json` | Section 5.2 | 004, 005 | 5 |
+| `PDP-06` | One sentence claimed neither double-fault nor native-fork path produced output. | States separately that the double-fault mock returned no public result and the native-fork probe accepted a public call through mock native code without GPU work; neither defect appeared in retained successful GPU workers. | N3 Section 7; retained hostile source review | Sections 2.3 and 9, Internal validity | 018, 019 | 2, 7 |
+| `PDP-07` | Dynamic stable SlangPy documentation was labeled 0.42.0. | Fixes comparison identity to v0.43.1 commit `2f6c4625...`; separates dynamic stable docs accessed 2026-09-07; acknowledges RT pipeline, binding/marshalling, caching, and lifecycle facilities while keeping joint Q1--Q6 `UNKNOWN`. | `RW-SC-05`, `SC-10A`, `SC-10B` | Introduction, Section 7, bibliography | 024 | 1, 6, 8 |
 
 ## 2. Bibliography changes
 
-| Map ID | Action | Reason/evidence | File/location | Final PDF page |
-| --- | --- | --- | --- | --- |
-| `MCM-B01` | Added current Vulkan RT/SBT specification entry | Distinguish general shader interfaces from RT SBT rules | `paper/cgo2027/references.bib`, `khronosVulkanRT` | 8 |
-| `MCM-B02` | Corrected Slang capabilities URL and added Shader Cursors | Current capabilities/reflection behavior cannot be inferred only from the 2018 paper | `paper/cgo2027/references.bib`, `slangCapabilities`, `slangShaderCursors` | 8 |
-| `MCM-B03` | Added current SlangPy documentation entry | Current Python RT pipeline/hit-group/SBT/dispatch capability must be acknowledged | `paper/cgo2027/references.bib`, `slangPy` | 8 |
-| `MCM-B04` | Added official LuisaCompute repository entry | Current Python frontend and runtime capabilities supplement the 2022 paper | `paper/cgo2027/references.bib`, `luisaCompute` | 8 |
-| `MCM-B05` | Corrected CrossRT author name order | Match arXiv v1 primary metadata | `paper/cgo2027/references.bib`, `frolov2024crossrt` | 7 |
+| Map ID | Action | Reason/evidence | Final PDF page |
+| --- | --- | --- | --- |
+| `MCM-P3-B01` | Replaces the dynamic `slangPy` 0.42.0 entry with `slangPyRelease` v0.43.1 and `slangPyDocs`. | Separates fixed release/source identity from mutable stable API/changelog documentation and acknowledges inherited 0.43.0 capabilities. | 8 |
+| `MCM-P3-B02` | Adds `necula1996safe` from the official USENIX record. | Direct precedent for policy-based validation of proof-carrying native code before execution. | 8 |
 
-Dynamic official documentation is cited as documentation, not presented as a
-peer-reviewed paper. The 2026 RT-core survey remains workload/mapping background
-only and is not used as evidence that a programming abstraction is absent.
+All prior P-double-prime bibliography corrections remain inherited. Dynamic
+official documentation is cited as documentation, not peer-reviewed research.
+The RT-core survey remains mapping background only, never novelty-gap evidence.
 
 ## 3. Mandatory disclosures preserved
 
-| Required disclosure | Current source location | Status before N5 |
+| Required disclosure | P-triple-prime PDF location | Status |
 | --- | --- | --- |
-| Original per-call detailed-receipt requirement was not met | `main.tex:371-375`, `main.tex:698-700`; PDF pp. 4, 7 | Preserved and rendered |
-| 4,096 timed A executions versus 32 separate diagnostic receipts | `main.tex:371-373`; PDF p. 4 | Preserved and rendered |
-| Prepared timer ends before worker oracle; first-result endpoint includes oracle | `main.tex:395-403`, `main.tex:525-528`; PDF pp. 5--6 | Preserved and rendered |
-| All post-import A/C rows adverse; maximum block 2.377129x (rounded 2.377x in prose/table) | `main.tex:568-572`, Table 6; PDF pp. 6--7 | Preserved and rendered |
-| M versus E first-result regressions, entry about 8-22%, post-import about 16-31%, post hoc/non-gating | `main.tex:570-572`, Table 6 caption; PDF pp. 6--7 | Preserved and rendered |
-| Import/lifecycle confounding | `main.tex:527-529`, `main.tex:681-685`; PDF pp. 5, 7 | Preserved and rendered |
-| Provider double-fault and native-fork limits | `main.tex:185-190`, `main.tex:686-688`; PDF pp. 2, 7 | Preserved and rendered |
-| Zero independent human authoring/prevalence evidence | `main.tex:442`, `main.tex:693-695`; PDF pp. 4, 7 | Preserved and rendered |
-| Goal5838 required about 2,635 topology-specific LOC and compiler changes | `main.tex:350-354`, `main.tex:698-700`; PDF pp. 4, 7 | Preserved and rendered |
-| Goal5840 checker is finite/structural and missed an early-return probe | `main.tex:488-501`, `main.tex:698-700`; PDF pp. 5, 7 | Preserved and rendered |
-| Artifact is offline recount, not product install or GPU rerun | `main.tex:654-666`, `main.tex:702-705`; PDF pp. 6--7 | Preserved and rendered |
+| Original per-call detailed-receipt requirement was not met | pp. 4, 7 | Preserved |
+| 4,096 timed A executions versus 32 separate diagnostic receipts | p. 4 | Preserved |
+| Prepared timer ends at return; worker oracle follows; first-result endpoint includes it | pp. 4--6 | Preserved |
+| All post-import A/C rows adverse; maximum block 2.377129x (2.377x in paper) | pp. 6--8 | Preserved |
+| M-versus-E first-result regressions, entry about 8--22%, post-import about 16--31%, post hoc/non-gating | pp. 6--7 | Preserved |
+| Import/lifecycle confounding | pp. 6--7 | Preserved |
+| Provider double-fault and native-fork limits | pp. 2, 7 | Preserved and corrected by path |
+| Zero independent-user authoring/prevalence evidence | pp. 4, 7 | Preserved |
+| Selected sphere route required about 2,635 topology-specific LOC and 28 compiler lines | pp. 4, 7 | Preserved |
+| Finite checker missed an early-return probe | pp. 5, 7 | Preserved |
+| A-only paired instrumentation scope | pp. 6--7 | Preserved |
+| Artifact is offline recount, not product install or GPU rerun | p. 7 | Preserved |
+| Measured routes are exact-IR specializations, not generic per-leaf execution | pp. 1, 3, 6, 8 | Added explicitly |
 
-All eight final-layout pages were rendered and inspected. Extracted PDF text was
-searched for the mandatory counts, ratios, scope statements, and unresolved
-limits. No disclosure above was removed to preserve a stronger positive sentence.
+All eight exact P-triple-prime pages were rendered and inspected. No disclosure
+was removed to preserve a stronger sentence or an eight-page layout.
 
 ## 4. Authorization state
 
-Claims 022-024 were added to `CLAIM_LEDGER.json` with
-`claim_authorized=false`. All prior claim flags remain false. This map is not a
-review acceptance. The page mapping above refers to the built P-double-prime
-working bytes; N5 records their immutable hash and Git identity.
+All 24 claim entries remain `claim_authorized=false`. P-double-prime received
+one independent `REVISE_AND_REREVIEW_CHANGED_BYTES` verdict and zero
+acceptances. Author-side remediation of its seven findings does not count as an
+acceptance. P-triple-prime starts at 0/2 independent acceptances; no upload or
+submission has occurred.

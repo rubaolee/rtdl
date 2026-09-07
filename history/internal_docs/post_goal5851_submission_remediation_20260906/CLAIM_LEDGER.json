@@ -2,7 +2,7 @@
   "schema": "rtdl.cgo2027.post_goal5851.claim_ledger.v1",
   "version": 1,
   "created_at_utc": "2026-09-06T20:35:00Z",
-  "updated_at_utc": "2026-09-07T03:31:00Z",
+  "updated_at_utc": "2026-09-07T07:10:17Z",
   "measured_implementation": {
     "commit": "d653fe4ad170c5b51fee309d653c9565944dcf2e",
     "tree": "d53af23a2599f9d6adb4ac0bfff39cd0ab31860b",
@@ -17,9 +17,9 @@
     "public_or_manuscript_claim_authorized": false
   },
   "review": {
-    "current_reviewer": "Independent lead review of old P plus Codex author-side P-prime and P-double-prime novelty remediation",
-    "current_review_version": "post_goal5851_pdoubleprime_author_scope_pending",
-    "external_final_bytes_review": "OLD_P_REVISE__PPRIME_SUPERSEDED_WHEN_PDOUBLEPRIME_EXISTS__PDOUBLEPRIME_PENDING_TWO_INDEPENDENT_REVIEWS",
+    "current_reviewer": "Independent lead review of P-double-prime plus Codex author-side P-triple-prime remediation",
+    "current_review_version": "post_goal5851_ptripleprime_author_remediated_pending_independent_review",
+    "external_final_bytes_review": "PDOUBLEPRIME_ONE_REVISE_ZERO_ACCEPT__PTRIPLEPRIME_PENDING_TWO_INDEPENDENT_ACCEPTANCES",
     "old_p_lead_review": {
       "path": "history/internal_docs/post_goal5851_submission_remediation_20260906/R7_LEAD_INDEPENDENT_FINAL_BYTES_REVIEW.md",
       "sha256": "c449a6c6eed4f177496a762b38f13434a09b1447aa3b3521db56c66b818d5ddd",
@@ -60,6 +60,22 @@
       "sha256": "2c56e0bc183a927bf6e3e24dfa69d5da02b04134af95dc110d051dc6da67a01e",
       "independent_reviews_required": 2,
       "independent_acceptances_received": 0
+    },
+    "p_double_prime_lead_review": {
+      "path": "history/internal_docs/post_goal5851_submission_remediation_20260906/R7_PDOUBLEPRIME_LEAD_INDEPENDENT_REVIEW_20260907.md",
+      "sha256": "8fa631c1c56076ea8fa6ac1a2f4085470cb2d63a63b2da74d4ac39a843ab20b7",
+      "verdict": "REVISE_AND_REREVIEW_CHANGED_BYTES",
+      "independent_acceptance": false
+    },
+    "paper_snapshot_p_triple_prime_precommit": {
+      "main_tex_sha256": "32c827349fe593f3030803a59d46056458d35c3d8733eb94a20818d57003bc32",
+      "references_bib_sha256": "71c379b4ea23a8eaa08e97f94a3c9569d703ea7cb99186b81e0df0f00d5e4dd6",
+      "pdf_sha256": "2840d348459d2cdeba02cda3a4b17547ce83bc208876736f805a2f5682c3d303",
+      "source_bundle_sha256": "26e80da4004761203a0e6542dcb9a186690768facaf12eee7400ecc519f2b16a",
+      "artifact_sha256": "916cedbb7001c7aa43e66df3f992b543b7b3ca5a013f0f997790113a2e3738b8",
+      "author_remediation_status": "SEVEN_FINDINGS_AUTHOR_REMEDIATED_PENDING_COMMIT_AND_INDEPENDENT_R7",
+      "independent_acceptances_received": 0,
+      "commit_identity_record_location": "R7_PTRIPLEPRIME_FINAL_BYTES_REVIEW_REQUEST.md"
     }
   },
   "common_evidence": {
@@ -137,14 +153,14 @@
     },
     {
       "claim_id": "ARCH-STATIC-ADMISSION-IDENTITY-002",
-      "candidate_sentence": "Before execution, RTDL checks the supported static protocol and binds execution to an admitted loaded-image identity.",
-      "scope": "Static admission, materialization, provider binding, and loaded-image identity for supported V4 paths.",
+      "candidate_sentence": "For supported routes, one decision checks five static cross-artifact relations before a materialized route is returned, and the accepted identity is carried into per-route preparation and interface-specific publication checks.",
+      "scope": "Static admission, materialization, per-route provider binding, and interface-specific publication for supported V4 paths; exact app-free native runtime load/warm may precede route admission.",
       "source_evidence": [
         {"path": "src/rtdsl/v4_rtdlexe.py", "sha256": "99fdc5c0f4462fe153e9659ba5f2d541e9876be76e11cebbf46ede8fa8cc6a34"},
         {"path": "src/rtdsl/v4_generic_family_lifecycle.py", "sha256": "d8b528ea0915eda2d4ce746ed31cac2411d813837945aa6f3e67008843620f38"}
       ],
-      "validation_phase": "Compile/admit/materialize/bind before execution; identity rechecked at supported public boundaries.",
-      "limitations": "No per-execution reread of disk bytes and no semantic proof merely from hashing an image.",
+      "validation_phase": "Compile/admit before materialized-route return; bind accepted identity during per-route preparation; apply the checks documented for each public interface.",
+      "limitations": "Exact app-free native runtime initialization may precede admission. The materialized-program and measured AOT prepared result paths perform different checks; there is no per-execution reread of disk bytes and no semantic proof from hashing an image.",
       "paper_destination": "Static admission and lifecycle section",
       "disposition": "RETAIN_WITH_LOADED_IMAGE_QUALIFIER",
       "claim_authorized": false,
@@ -152,14 +168,14 @@
     },
     {
       "claim_id": "ARCH-TCB-TOPOLOGY-LOWERING-003",
-      "candidate_sentence": "The trusted computing base includes topology-specific lowering and wrappers, the native provider runtime, driver, GPU, and host; the current compiler does not synthesize arbitrary topology lowering.",
+      "candidate_sentence": "The trusted computing base includes topology-specific lowering, measured exact-standard-IR specializations, the native provider runtime, driver, GPU, and host; the current compiler does not synthesize arbitrary topology lowering.",
       "scope": "Current supported sphere, triangle, curve, and relation-family routes.",
       "source_evidence": [
         {"path": "src/rtdsl/v4_family.py", "sha256": "060aaa5ab8f8810d88d7b2296a4ef2d7c98060ee80de8aeea8016044b55ce959"},
         {"path": "src/native/optix/rtdl_optix_v4_callback_poc.cpp", "sha256": "4e9c05bdc227c48ccc998b10ec382d84e041a8c268c1dff9ca04d987455045a7"}
       ],
       "validation_phase": "Source-bound architecture audit.",
-      "limitations": "The sealed schema/lifecycle layer alone produces no executable topology-generic native lowerer.",
+      "limitations": "The sealed schema/lifecycle layer alone produces no executable topology-generic native lowerer. Exact IR digests select trusted specializations but do not prove semantic preservation.",
       "paper_destination": "Architecture; TCB; Threats to validity",
       "disposition": "MANDATORY_LIMITATION",
       "claim_authorized": false,
@@ -167,13 +183,13 @@
     },
     {
       "claim_id": "EVAL-G5838-PROSPECTIVE-COMPOSITION-004",
-      "candidate_sentence": "One preregistered bounded composition exam selected builtin_sphere::any_hit_count_continue_u64_per_query and completed without changing the three frozen generic-core files.",
+      "candidate_sentence": "One preregistered ten-row bounded composition exam, containing seven built-in and three custom rows with six count and four terminate-on-first-hit Boolean results, selected builtin_sphere::any_hit_count_continue_u64_per_query and completed without changing the three frozen generic-core files.",
       "scope": "One narrow-domain prospective composition exam using already supported primitive roles and topology vocabulary.",
       "source_evidence": [
         {"path": "history/internal_docs/goal5838_generic_core_exam_20260902/FINAL_AUTHORITY.json", "sha256": "dafea025d8f9583cd186e914f6e2974b6aab2fdd59781a6d2a39087e0def7ce8"}
       ],
       "validation_phase": "Historical sealed-core exam authority.",
-      "limitations": "Prospective composition exam count is 1; unbiased new-application exam count is 0. Provider-specific implementation was allowed outside the three-file seal.",
+      "limitations": "Prospective composition exam count is 1; unbiased new-application exam count is 0. All rows recombined supported primitive/topology vocabulary, and provider-specific implementation was allowed outside the three-file seal.",
       "paper_destination": "Sealed-snapshot composition exam; Threats to Validity",
       "disposition": "RETAIN_AS_NARROW_EXAM",
       "claim_authorized": false,
@@ -181,13 +197,13 @@
     },
     {
       "claim_id": "EVAL-G5838-CANDIDATE-SELECTION-005",
-      "candidate_sentence": "builtin_round_linear_curve::any_hit_terminate_bool_per_query was an eligible candidate, whereas builtin_sphere::any_hit_count_continue_u64_per_query was the selected Goal5838 item.",
+      "candidate_sentence": "builtin_round_linear_curve::any_hit_terminate_bool_per_query was eligible but unselected, whereas builtin_sphere::any_hit_count_continue_u64_per_query was the selected count/continue item from the ten-row table.",
       "scope": "Goal5838 candidate/selection terminology only.",
       "source_evidence": [
         {"path": "history/internal_docs/goal5838_generic_core_exam_20260902/FINAL_AUTHORITY.json", "sha256": "dafea025d8f9583cd186e914f6e2974b6aab2fdd59781a6d2a39087e0def7ce8"}
       ],
       "validation_phase": "Authority field inspection.",
-      "limitations": "The eligible curve item must never be relabeled as the selected exam.",
+      "limitations": "The eligible curve item must never be relabeled as selected; count_relation=query_count denotes result cardinality and does not make all ten operations counts.",
       "paper_destination": "Sealed-snapshot composition exam",
       "disposition": "RETAIN_EXACT_IDENTITIES",
       "claim_authorized": false,
@@ -216,7 +232,7 @@
         {"archive_sha256": "c9128bae15da7ed3262c0bad96799e8cc56d1292c14f9af8713ea174cfc2cced"}
       ],
       "validation_phase": "Formal Goal5851 transaction plus R2 raw-to-projection independent recount.",
-      "limitations": "Exact path/workload/hardware observation; not intrinsic language overhead, universal parity, or a worst-block pass claim.",
+      "limitations": "Exact path/workload/hardware observation of the exact-IR guarded direct triangle count/reduction entries, not generic per-role Numba-leaf execution, intrinsic language overhead, universal parity, or a worst-block pass claim.",
       "paper_destination": "Prepared-performance main table",
       "disposition": "RETAIN_VERIFIED_R2__MAPPED_IN_R4__PENDING_R7",
       "claim_authorized": false,
@@ -231,7 +247,7 @@
         {"archive_sha256": "c9128bae15da7ed3262c0bad96799e8cc56d1292c14f9af8713ea174cfc2cced"}
       ],
       "validation_phase": "Formal Goal5851 transaction plus R2 raw-to-projection independent recount.",
-      "limitations": "Exact path/workload/hardware observation; Direct need not pay DSL admission costs and implementations are contract-equivalent rather than operation-identical.",
+      "limitations": "Exact path/workload/hardware observation of the exact-standard-IR fused relation intersection/row-emission route, not generic per-role Numba-leaf execution. Direct need not pay DSL admission costs and implementations are contract-equivalent rather than operation-identical.",
       "paper_destination": "Prepared-performance main table",
       "disposition": "RETAIN_VERIFIED_R2__MAPPED_IN_R4__PENDING_R7",
       "claim_authorized": false,
@@ -246,7 +262,7 @@
         {"archive_sha256": "7bbabfc8d1d9dfd3cc9bd701bd7f40e9f50c8ccfcbbac9504db43e9e42b7c2a2"}
       ],
       "validation_phase": "Formal Goal5851 transaction plus R2 raw-to-projection independent recount.",
-      "limitations": "Exact path/workload/hardware observation; not a cross-machine raw-time comparison.",
+      "limitations": "Exact path/workload/hardware observation of the exact-IR guarded direct triangle count/reduction entries, not generic per-role Numba-leaf execution or a cross-machine raw-time comparison.",
       "paper_destination": "Prepared-performance main table",
       "disposition": "RETAIN_VERIFIED_R2__MAPPED_IN_R4__PENDING_R7",
       "claim_authorized": false,
@@ -261,7 +277,7 @@
         {"archive_sha256": "7bbabfc8d1d9dfd3cc9bd701bd7f40e9f50c8ccfcbbac9504db43e9e42b7c2a2"}
       ],
       "validation_phase": "Formal Goal5851 transaction plus R2 raw-to-projection independent recount.",
-      "limitations": "Exact path/workload/hardware observation; not intrinsic language overhead or universal parity.",
+      "limitations": "Exact path/workload/hardware observation of the exact-standard-IR fused relation intersection/row-emission route, not generic per-role Numba-leaf execution, intrinsic language overhead, or universal parity.",
       "paper_destination": "Prepared-performance main table",
       "disposition": "RETAIN_VERIFIED_R2__MAPPED_IN_R4__PENDING_R7",
       "claim_authorized": false,
@@ -328,15 +344,15 @@
     },
     {
       "claim_id": "METHOD-RECEIPT-SCOPE-015",
-      "candidate_sentence": "The measured public prepared path synchronously rejects native and compact-status failures and checks a caller-supplied expected output before return when present; after public return, the experiment checks each returned output and digest against its worker oracle. Each formal A worker retains one separate post-loop diagnostic detailed receipt rather than one complete physical receipt per timed invocation.",
+      "candidate_sentence": "The materialized-program interface returns ProtocolExecutionResult after identity, status, digest, and receipt validation. The measured AOT prepared interface instead returns RTDLExecutionResult after synchronous native/compact failure handling and any supplied expected-output check; its ordinary fast result may omit digest and detailed receipt. The worker oracle runs after prepared return, and each formal A worker retains one separate post-loop diagnostic receipt.",
       "scope": "Goal5851 public prepared Arm A and its formal worker/archive behavior.",
       "source_evidence": [
         {"path": "src/rtdsl/v4_rtdlexe.py", "sha256": "99fdc5c0f4462fe153e9659ba5f2d541e9876be76e11cebbf46ede8fa8cc6a34"},
         {"path": "src/native/optix/rtdl_optix_v4_callback_poc.cpp", "sha256": "4e9c05bdc227c48ccc998b10ec382d84e041a8c268c1dff9ca04d987455045a7"},
         {"path": "experiments/goal5848_strong_baseline/worker.py", "sha256": "353faec5a4dd46ad00c0979f2bb544eb278460d8b55fdf054127853a03ca11e4"}
       ],
-      "validation_phase": "Native/compact status and optional supplied expected-output check before public return; worker output-and-digest oracle after the prepared steady timer; one separate post-loop diagnostic execution and receipt.",
-      "limitations": "The original written per-execution detailed-receipt requirement was not fulfilled. No wrong final GPU output was observed, but that does not repair literal protocol compliance.",
+      "validation_phase": "Interface-specific source audit; worker output-and-digest oracle after the prepared timer but inside the first-result endpoint; one separate post-loop diagnostic execution and receipt per A worker.",
+      "limitations": "The original written per-execution detailed-receipt requirement was not fulfilled: 4,096 timed A calls have 32 separate diagnostic receipts. No wrong final GPU output was observed, but that does not repair literal protocol compliance.",
       "paper_destination": "Lifecycle design; Evaluation methodology; Threats to validity",
       "disposition": "MANDATORY_SCOPE_CORRECTION",
       "claim_authorized": false,
@@ -379,7 +395,7 @@
         {"path": "src/rtdsl/v4_rtdlexe.py", "sha256": "99fdc5c0f4462fe153e9659ba5f2d541e9876be76e11cebbf46ede8fa8cc6a34"}
       ],
       "validation_phase": "Hostile source review and focused mock lifecycle reproduction.",
-      "limitations": "A focused mock reproduced the defect. No public output is produced and the path was not observed in retained successful GPU workers; universal cleanup and primary-root-cause preservation remain unsupported and unrepaired.",
+      "limitations": "The focused double-fault mock returned no public result and the defect was not observed in retained successful GPU workers; universal cleanup and primary-root-cause preservation remain unsupported and unrepaired. This says nothing about the separate native-fork mock.",
       "paper_destination": "Threats to validity / failure-semantics limitation",
       "disposition": "MANDATORY_LIMITATION__DO_NOT_CLAIM_UNIVERSAL_CLEANUP",
       "claim_authorized": false,
@@ -387,13 +403,13 @@
     },
     {
       "claim_id": "LIMIT-SUPPORTED-PROCESS-FORK-019",
-      "candidate_sentence": "The process-ownership guard covers Python-managed forks that invoke the registered at-fork hook.",
+      "candidate_sentence": "The process-ownership guard covers Python-managed forks that invoke the registered at-fork hook; a native-fork probe bypassed that hook and accepted a public call through a mock native implementation.",
       "scope": "Python-managed process creation paths that execute the registered hook.",
       "source_evidence": [
         {"path": "src/rtdsl/v4_rtdlexe.py", "sha256": "99fdc5c0f4462fe153e9659ba5f2d541e9876be76e11cebbf46ede8fa8cc6a34"}
       ],
       "validation_phase": "Source review plus supported Python lifecycle tests.",
-      "limitations": "A native fork that bypasses Python's hook can evade the cached-PID guard even if its child later invokes the public API; inherited owners after such forks are outside the supported contract.",
+      "limitations": "The accepted probe used a mock native implementation and executed no GPU work. The defect was not observed in retained successful GPU workers; inherited owners after native forks remain outside the supported contract.",
       "paper_destination": "Lifecycle contract and limitations",
       "disposition": "RETAIN_PYTHON_MANAGED_SCOPE_ONLY",
       "claim_authorized": false,
@@ -431,51 +447,52 @@
     },
     {
       "claim_id": "NOVELTY-PROTOCOL-ADMITTED-EXECUTABLE-022",
-      "candidate_sentence": "For its supported finite routes, RTDL represents role/effect closure, semantic attribute ownership, physical binding, fail-closed continuation, and checked executable identity as one declaration/projection admission decision used at materialization, native-load, and result-publication boundaries.",
+      "candidate_sentence": "For supported finite routes, RTDL represents role/effect closure, semantic attribute ownership, physical binding, fail-closed continuation, and executable identity in one declaration/projection decision made before a materialized route is returned; the accepted identity is carried through per-route preparation and interface-specific publication checks.",
       "scope": "Two stable public protocol families and explicitly implemented topology-specific OptiX lowerers at measured implementation M only.",
       "source_evidence": [
         {"path": "src/rtdsl/v4_callback_lifecycle.py", "sha256": "2038d50934578d63ca9503f8ddbee15098c7ebcead2e533337d4569be09313b0"},
         {"path": "src/rtdsl/v4_protocol_contract.py", "sha256": "e60f83f5a15df58de2f3f38b681331efb51b797c1b12628ebdaaf1c26a448973"},
-        {"path": "history/internal_docs/post_goal5851_submission_remediation_20260906/novelty/PROTOCOL_WITNESS_AND_DERIVATION.md", "sha256": "12c13d5cb11e3773c4aff37089aae47013f45b6b1d7cb636fe967ed9b6244aca"}
+        {"path": "history/internal_docs/post_goal5851_submission_remediation_20260906/novelty/PROTOCOL_WITNESS_AND_DERIVATION.md", "sha256": "b8bc76ecbcb3e156bb405c0b46575fb61696a73bb076246b7c37bb8dbe87112e"}
       ],
       "validation_phase": "Author-side source derivation, existing mutation replay, and manuscript remapping; independent final-byte review pending.",
-      "limitations": "Same-compiler derivations under trusted semantic schemas and topology-specific lowerers; no automatic inference of application intent, arbitrary topology synthesis, general algorithm, soundness theorem, first/only claim, or proof that another system cannot implement the mechanism.",
+      "limitations": "Exact app-free runtime load/warm may precede route admission. Same-compiler derivations, trusted semantic schemas, exact-IR specializations, and topology lowerers remain TCB; no PCC certificate, automatic intent inference, arbitrary topology synthesis, general algorithm, soundness theorem, first/only claim, or proof another system cannot implement it.",
       "paper_destination": "Abstract; Introduction; Protocol Mismatch; Bounded Language and Admission; Conclusion",
-      "disposition": "RETAIN_AS_BOUNDED_COMPILER_SYSTEMS_METHOD__PENDING_PDOUBLEPRIME_R7",
+      "disposition": "RETAIN_AS_BOUNDED_COMPILER_SYSTEMS_DESIGN__PENDING_PTRIPLEPRIME_R7",
       "claim_authorized": false,
-      "reviewer": "Codex author-side N1-N4; two independent P-double-prime final-byte reviews pending"
+      "reviewer": "Codex author-side P-triple-prime remediation; two independent P-triple-prime final-byte reviews pending"
     },
     {
       "claim_id": "METHOD-TYPED-EFFECT-TRUSTED-LOWERING-023",
-      "candidate_sentence": "Restricted callbacks return role-indexed typed effects that are flattened into a deterministic ABI; trusted topology-specific wrappers validate effect/status tags and perform the corresponding OptiX hardware operations.",
+      "candidate_sentence": "General restricted callbacks lower from role-indexed typed effects through a deterministic ABI and generated Numba leaves to trusted wrapper checks; the evaluated standard triangle and relation routes use disclosed exact-IR guarded direct/fused specializations.",
       "scope": "Implemented V4 callback IR, ABI, Numba leaf generation, and explicitly supported wrapper generators at M.",
       "source_evidence": [
         {"path": "src/rtdsl/v4_callback_ir.py", "sha256": "edf571196dde4a557b328b5a35fd65e2e57e63cf4a48180d1fa87dba363c1ec7"},
         {"path": "src/rtdsl/v4_callback_abi.py", "sha256": "3f4be4d998ee91600c6a1f4bba4fadbb435f23d193a49f4cbf6dc50522d74fb5"},
         {"path": "src/rtdsl/v4_callback_numba_codegen.py", "sha256": "4c72a5886dc43b0f5a3ccb71fd84c5ccb9076110f13813800f188132b69fc29f"},
-        {"path": "src/rtdsl/v4_triangle_reduction_optix_wrapper_codegen.py", "sha256": "f7d1f07b4462a6713a4bcda7aaf64f3a480575f1034059f3fbe61d640044eecb"}
+        {"path": "src/rtdsl/v4_triangle_reduction_optix_wrapper_codegen.py", "sha256": "f7d1f07b4462a6713a4bcda7aaf64f3a480575f1034059f3fbe61d640044eecb"},
+        {"path": "src/rtdsl/v4_bounded_relation_optix_wrapper_codegen.py", "sha256": "ef1a7ec9a54d150db11ea7aa1eecf87e536b9de7b982e5254b96c627afd533a2"}
       ],
       "validation_phase": "Author-side read-only lowering trace plus previously retained finite checker and GPU route evidence.",
-      "limitations": "An implementation method, not a new effect calculus. The canonical plan is non-executable, wrappers remain topology-specific TCB, and not every topology admits every language-level effect.",
+      "limitations": "An implementation method, not a new effect calculus. The measured specializations replace per-leaf calls/tag checks at specialized roles and remain TCB; their IR guards are selectors, not proofs. The canonical plan is non-executable and not every topology admits every language-level effect.",
       "paper_destination": "Abstract; Contributions; Role-indexed effects; Plan versus executable lowering; Conclusion",
-      "disposition": "RETAIN_AS_IMPLEMENTATION_METHOD__PENDING_PDOUBLEPRIME_R7",
+      "disposition": "RETAIN_AS_IMPLEMENTATION_METHOD__PENDING_PTRIPLEPRIME_R7",
       "claim_authorized": false,
-      "reviewer": "Codex author-side N2-N4; two independent P-double-prime final-byte reviews pending"
+      "reviewer": "Codex author-side P-triple-prime remediation; two independent P-triple-prime final-byte reviews pending"
     },
     {
       "claim_id": "RELATED-WORK-EXACT-GUARANTEE-BOUNDARY-024",
-      "candidate_sentence": "The checked primary materials document strong local checking, Python access, construction, staging, and generation capabilities, but do not state the same joint five-seam finite-route admission guarantee; for several systems the exact result remains unknown.",
-      "scope": "Only the named source versions and exact Q1-Q6 propositions in the N1 boundary audit, accessed 2026-09-06.",
+      "candidate_sentence": "The checked primary materials document strong local checking, Python access, construction, staging, generation, and validation-before-execution precedents, but do not state the same joint five-seam finite-route admission guarantee; for several systems the exact result remains unknown.",
+      "scope": "Only the named source versions and exact Q1-Q6 propositions in the N1 boundary audit, accessed 2026-09-06 and the fixed SlangPy/PCC recheck on 2026-09-07.",
       "source_evidence": [
-        {"path": "history/internal_docs/post_goal5851_submission_remediation_20260906/novelty/RELATED_WORK_BOUNDARIES.md", "sha256": "4ce0c48d7e0131d5d6ee2e3de531f4973136955c48dc8b6f7d4beb084c24c847"},
-        {"path": "history/internal_docs/post_goal5851_submission_remediation_20260906/novelty/CGO_CONTRIBUTION_ARGUMENT.md", "sha256": "caefe3edb19e0b305c1919e44dccdf57f97c6266516faba0365fe9f2e874dcbc"}
+        {"path": "history/internal_docs/post_goal5851_submission_remediation_20260906/novelty/RELATED_WORK_BOUNDARIES.md", "sha256": "739bca412ea29e1ed149566b9f32d30f262bfecfc55ca15bdb8888ed92c3c15d"},
+        {"path": "history/internal_docs/post_goal5851_submission_remediation_20260906/novelty/CGO_CONTRIBUTION_ARGUMENT.md", "sha256": "9cf76575d7fe69d6e862880fbec43f3be98fcc83ca6f97bd38f49742ff287a99"}
       ],
       "validation_phase": "Primary-source author/standards/project documentation audit; no opponent execution and no inference from silence.",
-      "limitations": "A source-bounded literature observation, not a first/only claim, systematic-review completeness claim, empirical negative, or proof that another system cannot implement equivalent checks. Dynamic documentation is not peer-reviewed research.",
+      "limitations": "PCC is a direct policy-validation precedent; RTDL has no proof certificate. SlangPy v0.43.1 already provides substantial RT, binding, cache, and lifecycle facilities. This is a source-bounded observation, not a first/only, exhaustive-review, empirical-negative, or impossibility claim; dynamic docs are not peer-reviewed research.",
       "paper_destination": "Abstract; Introduction; Related Work; External-validity threats",
-      "disposition": "RETAIN_SCOPED_UNKNOWN_AWARE_WORDING__PENDING_PDOUBLEPRIME_R7",
+      "disposition": "RETAIN_SCOPED_UNKNOWN_AWARE_WORDING__PENDING_PTRIPLEPRIME_R7",
       "claim_authorized": false,
-      "reviewer": "Codex author-side N1-N4; two independent P-double-prime final-byte reviews pending"
+      "reviewer": "Codex author-side P-triple-prime remediation; two independent P-triple-prime final-byte reviews pending"
     }
   ]
 }

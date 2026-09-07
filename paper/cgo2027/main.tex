@@ -32,11 +32,12 @@ and result publication.
 We present \rtdl, a bounded protocol-carrying compilation and admission design
 for Python-authored RT computations. It jointly checks five route seams:
 role/effect closure, semantic ownership, physical binding, fail-closed
-continuation, and executable identity. Typed effects reach hardware control only
-through trusted topology-specific wrappers. The implementation has two stable
-public constructors and a bounded corpus spanning triangle, custom-AABB, curve,
-and sphere leaves; it is not arbitrary Python, semantic inference, or generic
-topology lowering. A sealed-snapshot exam selected a sphere any-hit count and
+continuation, and executable identity. General typed effects reach hardware
+control through trusted wrappers; the evaluated routes use disclosed trusted
+exact-IR specializations. The implementation has two stable public constructors
+and a bounded corpus spanning triangle, custom-AABB, curve, and sphere leaves;
+it is not arbitrary Python, semantic inference, or generic topology lowering. A
+sealed-snapshot exam selected a sphere any-hit count and
 produced two OptiX launches with 12/12 oracle checks. A checker that does not
 import the compiler validates five generated-code property classes in 20
 registered instances, but only over finite target structures.
@@ -81,7 +82,7 @@ lifecycle transition.
 PyOptiX and SlangPy expose RT to Python; OWL and Luisa automate substantial
 pipeline construction; DXR payload qualifiers and Slang capabilities enforce
 stage and target constraints
-~\cite{nvidiaPyOptix,slangPy,nvidiaOWL,zheng2022luisa,microsoftDXRPAQ,slangCapabilities}.
+~\cite{nvidiaPyOptix,slangPyRelease,slangPyDocs,nvidiaOWL,zheng2022luisa,microsoftDXRPAQ,slangCapabilities}.
 These are strong mechanisms. We instead ask how a compiler should gate one
 relation spanning locally checked callbacks, same-width application meanings,
 physical artifacts, device continuation, and the exact executable. The checked
@@ -95,20 +96,22 @@ latency?
 \end{quote}
 
 For a narrow domain, \rtdl maps typed restricted callbacks to compiler-owned,
-topology-specific lowerers. It binds source, PTX, ABI, and native symbols; gates
-lifecycle transitions and output publication; and provides an independent
-offline checker for selected generated-code properties. Its canonical plan is
-non-executable, while concrete lowering remains trusted and topology-specific.
+topology-specific lowerers. It binds source, PTX, ABI, and native symbols;
+carries an accepted route identity into preparation and interface-specific
+publication checks; and provides an independent offline checker for selected
+generated-code properties. Its canonical plan is non-executable, while concrete
+lowering remains trusted and topology-specific.
 
 This paper makes one core systems contribution, an implementation contribution,
 and a bounded evidence contribution:
 \begin{enumerate}[leftmargin=*,itemsep=1pt,topsep=2pt]
-  \item A \emph{protocol-carrying admitted executable}: one decision over five
-  cross-artifact relations gates materialization, native load, and publication.
-  \item A restricted-Python implementation in which typed callback effects are
-  flattened into an ABI and consumed by trusted topology-specific OptiX
-  wrappers. It has two stable public constructors and four leaf kinds in its
-  bounded corpus; the wrappers remain in the trusted computing base (TCB).
+  \item A \emph{protocol-carrying admitted executable}: one decision checks five
+  cross-artifact relations before a materialized route is returned, and its
+  accepted identity is carried through per-route preparation and publication.
+  \item A restricted-Python implementation with typed effects, a deterministic
+  ABI, Numba leaves, and trusted wrappers. The measured standard routes use
+  trusted
+  exact-IR specializations; these and the topology wrappers remain in the TCB.
   \item Finite mutation, sealed-composition, target checking, and two-generation
   performance evidence. Prepared public latency is
   1.077--1.175$\times$ Direct; adverse first-result, receipt, generality, and
@@ -166,8 +169,9 @@ mean. In \rtdl, a trusted bounded-relation schema declares that attribute slot
 zero denotes an application identifier; the compiled relation contract carries
 that row source into a separately derived target projection. Admission compares
 the two compiler representations. Existing tests mutate only this fact and
-obtain \texttt{CP002\_ATTRIBUTE\_ABI\_OWNERSHIP\_MISMATCH}; an integrated
-projection mutation is rejected before native load. This proves check liveness,
+obtain \texttt{CP002\_ATTRIBUTE\_ABI\_OWNERSHIP\_MISMATCH}; with native
+initialization overlap disabled, an integrated projection mutation is rejected
+before the native-library loader is called. This proves check liveness,
 not automatic inference of application meaning or end-to-end execution of the
 illustrative defect. Both derivations remain in one compiler TCB, and a wrong
 but internally coherent trusted schema can pass.
@@ -183,10 +187,12 @@ from being described as numerical correctness and prevents a generated plan
 from being described as an executable lowering.
 
 A focused mock reproduced an unrepaired provider double fault: secondary bind or
-close failure can replace the primary exception and lose cleanup retry ownership.
-It released no output and did not occur in retained successful GPU workers. A
-native fork bypassing the registered Python at-fork hook can evade the cached-PID
-guard; inherited owners after such forks are unsupported.
+close failure can replace the primary exception and lose cleanup retry ownership;
+the mock returned no public result. A native-fork probe accepted a public call
+through a mock native implementation after bypassing the registered Python
+at-fork hook; it did not execute GPU work. Neither defect was observed in
+retained successful GPU workers, and inherited owners after such forks remain
+unsupported.
 
 \section{Bounded Language and Admission}
 
@@ -257,14 +263,18 @@ any-hit role also requires an explicit delivery and continuation contract; the
 presence of that declaration does not prove order independence for arbitrary
 callback logic.
 
-The executable path makes the authority split explicit. Verification accepts a
-role-indexed typed effect and checks its exact fields. ABI lowering flattens the
-effect and assigns effect/status tags; a generated Numba device leaf writes
-those fields and tags. A trusted topology wrapper invokes the leaf, checks its
-tag and first-error state, and only then performs operations such as payload
-updates, \texttt{optixIgnoreIntersection()}, or fail-closed termination. Thus
-untrusted callback code does not directly issue traversal control, but the
-specialized wrapper remains trusted.
+General callback lowering makes the authority split explicit. Verification
+checks role-indexed typed effects; ABI lowering flattens them and assigns
+effect/status tags; generated Numba leaves write those fields and tags; and
+trusted wrappers check them before issuing payload, ignore, or terminate
+operations. The evaluated standard routes also use trusted specializations
+guarded by exact callback IR. Triangle counting uses direct count/reduction
+entries, while bounded relation fuses intersection and row emission. These
+replace generic leaf calls and per-leaf effect-tag checks at specialized roles.
+Static schema, ABI, and identity admission remain, as do runtime failures and
+applicable overflow, capacity, and supplied expected-output checks. The
+specializations and wrappers are in the TCB; an IR digest selects a path rather
+than proving semantic preservation.
 
 \subsection{Fail-closed judgments}
 
@@ -356,8 +366,11 @@ lowering.
 \label{sec:lifecycle}
 
 The system binds hashes and shape metadata for generated source, PTX, ABI,
-native provider symbols, and the public route. Runtime preparation checks the
-binding before execution. The admitted lifecycle is:
+native provider symbols, and the public route. The exact app-free native runtime
+may be loaded and warmed before route admission, including concurrently with
+AOT artifact verification. Admission still gates acceptance of a materialized
+or loaded route and its subsequent per-route preparation. The admitted route
+lifecycle is:
 
 \begin{center}
 \small
@@ -365,13 +378,17 @@ static verify $\rightarrow$ materialize/bind $\rightarrow$ prepare
 $\rightarrow$ execute/status gate $\rightarrow$ output $\rightarrow$ receipt.
 \end{center}
 
-The public path synchronously checks native and compact status and any supplied
-expected output before return; the experiment then checks value and digest
-against its worker oracle. It does not rehash disk files per launch. The
-preregistered per-execution receipt requirement is unmet: 4,096 timed A
-executions have only 32 separate post-loop diagnostic executions, one detailed
-receipt per A worker. We claim status/optional-output gating and experimental
-validation, not per-execution receipt coverage.
+The materialized-program interface validates execution identity, native status,
+output digest, and traversal receipt before returning
+\texttt{ProtocolExecution}\allowbreak\texttt{Result}. The measured AOT path instead returns
+\texttt{RTDLExecutionResult}: it synchronously rejects native and
+compact-status failures and any supplied expected-output mismatch, but an
+ordinary fast result may omit a digest and detailed receipt. The worker checks
+value and digest after prepared return; for first result this is after the
+prepared timer but inside the endpoint. It does not rehash disk files per
+launch. The preregistered per-execution receipt requirement is unmet: 4,096
+timed A executions have only 32 separate post-loop diagnostic executions, one
+detailed receipt per A worker.
 
 \begin{figure*}[t]
 \centering
@@ -390,7 +407,7 @@ $\rightarrow$ executable-identity binding
 $\rightarrow$ OptiX build, prepare, and launch
 
 \medskip
-\textbf{Public execution}
+\textbf{Measured AOT prepared execution}
 $\rightarrow$ native status gate
 $\rightarrow$ compact status gate
 $\rightarrow$ supplied expected-output check, when present
@@ -413,7 +430,7 @@ receipts; it does not import the \rtdl compiler.
 topology-specific lowerer; that lowerer remains in the TCB.}
 \Description{Architecture in which untrusted restricted Python enters shared
 admission and a trusted topology-specific lowerer builds the OptiX executable.
-Public status and optional expected-output checks precede return; experiment
+Measured AOT status and optional expected-output checks precede return; experiment
 validation follows return; separate post-loop diagnostic and offline checker
 paths retain bounded evidence.}
 \label{fig:architecture}
@@ -462,8 +479,9 @@ gates: seven role/effect, one semantic-ABI, seven physical-ABI, two continuation
 and two identity mutations. This denominator covers only those contracts and
 mutations and is not pooled with later experiments.
 
-Corrupting each target projection produced the expected sole reason before
-native-library load. For semantic ABI, this is mutation sensitivity, not an
+With native-initialization overlap disabled, corrupting each target projection
+produced the expected sole reason before the native-library loader was called.
+For semantic ABI, this is mutation sensitivity, not an
 execution of the illustrative wrong-row route. Historical PyOptiX/OWL-style
 diagnostics lack independently verifiable execution records here and are not
 evidence about those systems' guarantees~\cite{nvidiaPyOptix,nvidiaOWL}. The
@@ -474,7 +492,8 @@ evidence about those systems' guarantees~\cite{nvidiaPyOptix,nvidiaOWL}. The
 
 Before a public randomness pulse, we fixed an author-defined ten-row challenge:
 seven built-in four-role and three custom six-role rows. All used supported
-primitive families, and every continuation was a per-query count. The curve
+primitive families and returned one value per query: six produced counts, and
+four produced Booleans by terminating on the first accepted hit. The curve
 any-hit-terminate row remained eligible but unselected. The pulse selected
 \nolinkurl{builtin_sphere::any_hit_count_continue_u64_per_query}.
 
@@ -527,6 +546,10 @@ through return; validation follows. Entry starts before implementation-specific
 imports, while post-import starts after them; both end after first-result
 validation. PyOptiX initializes CUDA during import, whereas \rtdl does so later,
 so these intervals include different lifecycle work.
+
+The reported prepared latencies measure the disclosed exact-standard-IR
+triangle and relation specializations, not execution of every role through the
+general Numba-leaf ABI.
 
 The registered primary criterion was prepared A/D median $\leq1.20$, with no
 maximum-block gate. A/C entry used median $\leq1.20$ and maximum $\leq1.35$, but
@@ -624,9 +647,11 @@ declaration rules, although local-copy access still carries a documented
 developer responsibility. Vulkan assigns applications SBT organization under
 its indexing rules. These are substantial guarantees, not unchecked APIs.
 
-PyOptiX provides Python bindings for the OptiX host API, while SlangPy includes
-Python RT pipeline, hit-group, shader-table, and dispatch facilities
-~\cite{nvidiaPyOptix,slangPy}. OWL manages substantial OptiX construction, and
+PyOptiX provides Python bindings for the OptiX host API. SlangPy v0.43.1
+includes Python RT pipeline, hit-group, shader-table, and dispatch facilities;
+its current documentation also records reflection-based binding/marshalling,
+caching, and lifecycle support
+~\cite{nvidiaPyOptix,slangPyRelease,slangPyDocs}. OWL manages substantial OptiX construction, and
 Luisa automates resource dependency analysis and RT pipeline/SBT/launch work
 ~\cite{nvidiaOWL,zheng2022luisa,luisaCompute}. The checked primary materials do
 not state the same joint five-seam admission condition; this source-bounded
@@ -641,6 +666,13 @@ CrossRT generates cross-platform host/device RT code
 ~\cite{jakob2022drjit,frolov2024crossrt}. \rtdl is narrower: it contributes a
 concrete route-level admission organization, not their language breadth,
 generation scope, or an exclusivity result.
+
+Proof-carrying code established consumer-side policy validation of a supplied
+safety proof before native execution~\cite{necula1996safe}. \rtdl has no proof
+certificate: schemas, compiler projections, topology lowerers, and runtime are
+trusted, while hashes establish identity rather than semantics. Its proposed
+increment is a bounded RT-specific design and implementation, not validation
+before execution.
 
 Typestate, interface automata, and multiparty session types provide general and
 often formally stronger models of state and global/local protocol compatibility
@@ -685,7 +717,9 @@ revised after an adverse result, and both first-result endpoints include import
 and lifecycle effects; neither is reinterpreted as a pass. Mocks reproduce the
 provider double fault, which can replace the primary exception and lose cleanup
 retry ownership. Native forks bypassing the at-fork hook can evade the cached-PID
-guard. Neither unrepaired path produced output or appeared in retained GPU work.
+guard. The double-fault mock returned no public result; the native-fork probe
+accepted a public call through a mock native implementation but ran no GPU work.
+Neither defect appeared in retained successful GPU workers.
 
 \paragraph{External validity.}
 Measurements cover two NVIDIA generations and two exact tasks; raw latency is
@@ -707,11 +741,13 @@ private provenance remains available for confidential audit.
 \section{Conclusion}
 
 \rtdl admits bounded RT routes as protocol-carrying executables. One decision
-compares five cross-artifact seams; typed effects reach hardware control only
-through trusted topology wrappers. Two public constructors and a four-leaf
-corpus exercise the design. Finite mutation, composition, and target checks
-support this boundary, not semantic inference, arbitrary lowering, novelty by
-absence, or general soundness.
+compares five cross-artifact seams before returning a materialized route, whose
+identity is carried into preparation and interface-specific publication checks.
+General callbacks use typed effects and trusted topology wrappers; the measured
+standard routes use disclosed exact-IR specializations in that TCB. Two public
+constructors and a four-leaf corpus exercise the design. Finite checks support
+this boundary, not semantic inference, arbitrary lowering, novelty by absence,
+proof-carrying safety, or general soundness.
 
 Across two tasks and GPU generations, prepared median latency is
 1.077--1.175$\times$ Direct; post-import A/C reaches 1.837$\times$ median and a

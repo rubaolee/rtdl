@@ -1,8 +1,10 @@
 # Protocol Witness and Fact Derivation
 
-Date checked: 2026-09-06 America/New_York.
+Date checked: 2026-09-07 America/New_York. This P-triple-prime pass preserves
+the earlier audit and corrects its lowering, initialization, and publication
+overgeneralizations.
 
-Status: `N2_COMPLETE_WITH_CLAIM_DOWNGRADE__AUTHOR_SCOPE__FINAL_REVIEW_PENDING`.
+Status: `N2_PTRIPLEPRIME_REMEDIATED__AUTHOR_SCOPE__INDEPENDENT_REVIEW_PENDING`.
 
 This report traces one RTDL protocol seam from requirement to representation,
 target-side fact, admission point, execution guard, and public result. It is a
@@ -106,12 +108,12 @@ from arbitrary code or prove that the schema author chose the right meaning.
 | Obligation ID | Declared value and source | Target extraction and actual object read | Comparison point | Failure behavior | Trusted premise | Positive/negative evidence | Not covered |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | `PC-01_ROLE_EFFECT` | `_declared_role_effects(program.callback)` walks verified callback IR | `_compiled_role_effects(abi)` reads `CompiledCallbackAbi.roles[*].effects` | `verify_protocol_contract`, `CP001_ROLE_EFFECT_MISMATCH` | Materialization raises `PL036_PROTOCOL_CONTRACT_REJECTED` before a materialized object is returned | IR verifier and ABI compiler faithfully represent role effects | Pure mutation test and integrated projection-mutation test pass at current HEAD | General equivalence of arbitrary callback code and generated device behavior |
-| `PC-02_ATTRIBUTE_OWNER` | Family-fixed declaration `attr0=verified_intersection_attribute0_item_id` | Reads `CompiledBoundedRelationContract.row_sources[1]`, copied from trusted emission schema | `CP002_ATTRIBUTE_ABI_OWNERSHIP_MISMATCH` | Same pre-materialization rejection; prepare also rechecks stored verdict before native load | Schema/provider declaration gives the intended semantic name; lowerer honors contract | CP002 mutation sensitivity passes at pure and integrated gates; correct mocked output is `(100,10),(101,20)` | Automatic inference of app meaning; an executed `(100,0),(101,1)` defect; independent target trust root |
+| `PC-02_ATTRIBUTE_OWNER` | Family-fixed declaration `attr0=verified_intersection_attribute0_item_id` | Reads `CompiledBoundedRelationContract.row_sources[1]`, copied from trusted emission schema | `CP002_ATTRIBUTE_ABI_OWNERSHIP_MISMATCH` | Same pre-materialization rejection; prepare rechecks the stored verdict before per-route preparation/launch. Exact app-free native runtime initialization may already be in progress. | Schema/provider declaration gives the intended semantic name; lowerer honors contract | CP002 mutation sensitivity passes at pure and integrated gates; with overlap disabled, the integrated mutation is rejected before the native-library loader; correct mocked output is `(100,10),(101,20)` | Automatic inference of app meaning; an executed `(100,0),(101,1)` defect; independent target trust root |
 | `PC-03_PHYSICAL` | `ProtocolPhysicalPlan` provides geometry family, output contract, reducer algebra, template ID, plus program protocol digest | `_compiled_protocol_facts` reads physical authority schema and compiled relation/reducer contract | `CP003_PHYSICAL_BINDING_MISMATCH`, grouped with family/task identity | `PL036` before object return | Trusted physical authority and contract describe the actual specialized lowerer | Single-field mutation and integrated gate pass | Proof that every topology-specific wrapper implements arbitrary plan semantics |
-| `PC-04_CONTINUATION` | Fixed `REQUIRE_COMPLETE_BEFORE_CONSUME` | `_compiled_protocol_facts` checks runtime status codes and fail-closed relation/reducer contract | `CP004_CONTINUATION_STATUS_MISMATCH` | `PL036` before load; during execute, nonzero device error/status blocks application result with `PL029` | Native wrapper reports status faithfully and host reads the complete status object | Mutation tests pass; execute source shows status check before result construction | A general progress theorem; recovery after failure; correctness of app oracle |
+| `PC-04_CONTINUATION` | Fixed `REQUIRE_COMPLETE_BEFORE_CONSUME` | `_compiled_protocol_facts` checks runtime status codes and fail-closed relation/reducer contract | `CP004_CONTINUATION_STATUS_MISMATCH` | `PL036` before route acceptance; during execute, nonzero native/compact status blocks a normal application result | Native wrapper reports status faithfully and host reads the applicable status object | Mutation tests pass; execute source shows status checks before result construction | A general progress theorem; recovery after failure; correctness of app oracle |
 | `PC-05_EXEC_ID` | `checked_executable_sha256` uses the just-produced executable digest | Projection receives that executable digest as `actual_executable_sha256` | `CP005_EXECUTABLE_IDENTITY_MISMATCH` | `PL036` before materialized object return | Digest function and compiler object identity are trusted | Identity mutation tests pass | Semantic correctness of equal bytes; independent derivation at the CP005 comparison itself |
 
-### 4.1 Why PC-05 is useful but limited
+### 4.1 Why PC-05 is useful but limited, by public interface
 
 At the contract-comparison point, declaration and projection both receive the
 same `executable_sha256` argument. CP005 is therefore primarily a substitution
@@ -121,38 +123,51 @@ implement the source semantics.
 The broader `ProtocolExecutableIdentity` is more informative. It binds the
 program identity, target, physical schema, compiled contract, ABI, generated
 executable, composed PTX, and native library digests
-(`v4_callback_lifecycle.py:625-676`). The native library is hashed before and
-after `ctypes.CDLL` load (`1180-1197`). Execution checks returned PTX and native
-library identities against the materialized identity (`1572-1577`), validates
-device status (`1578-1591`), validates output digest (`1592-1617`), and validates
-the traversal receipt (`1618-1690`) before constructing and returning the
-public result (`1691-1701`). These checks establish identity coherence and
-fail-closed publication for the implemented paths. Equal hashes still do not
-prove semantic correctness.
+(`v4_callback_lifecycle.py:625-676`). The exact library is hashed before and
+after `ctypes.CDLL` load (`1180-1197`). That statement applies to the
+materialized-program interface: it checks returned PTX and native identities,
+device status, output digest, and traversal receipt before returning a
+`ProtocolExecutionResult` (`1572-1701`).
 
-## 5. Admission and publication timeline
+The measured AOT prepared interface is different. Its ordinary fast path in
+`v4_rtdlexe.py:6254-6290,6535-6582` returns `RTDLExecutionResult` after its
+owner/process/thread/reentrancy checks, native and compact-status handling, and
+any supplied expected-output check. The ordinary fast result may have neither
+an output digest nor a detailed traversal receipt. In the Goal5848 worker, the
+returned value and digest oracle runs after the prepared-call timer but inside
+the first-result endpoint (`worker.py:453-466`); steady `_sample` likewise times
+the action before validating it. One separate post-loop diagnostic execution
+per Arm-A worker supplies a detailed receipt (`476-502`). Consequently, the
+formal population retained 4,096 timed Arm-A calls but only 32 separately
+executed detailed receipts, not one receipt for every timed call. Equal hashes
+still establish identity coherence, not semantic correctness.
+
+## 5. Admission, initialization, and publication timeline
 
 | Boundary | Actual check | Consequence |
 | --- | --- | --- |
 | IR verification | Role legality and exact effect fields/types in `v4_callback_ir.py:1247-1292` | Invalid callback IR is not verified. |
 | ABI compilation | Re-verifies the callback/physical authority and flattens role inputs, effect variants, status, tags, and symbols in `v4_callback_abi.py:344-435` | ABI cannot be minted from an arbitrary unverified dataclass. |
-| Target materialization | Builds specialized authority/contract/ABI/executable, forms protocol declaration/projection, compares five seams in `v4_protocol_contract.py:269-329` | A rejection raises `PL036` before `MaterializedProtocolProgram` is returned. |
-| Preparation/native load | Stored verdict is checked again at `v4_callback_lifecycle.py:1406-1413`; exact native bytes are checked around load | A rejected route does not load the native provider through this entry. |
-| Launch/result collection | Native status, PTX/native identities, output digest, and receipt are checked | Device failure or inconsistent identity cannot be published as a normal result. |
-| Public return | `ProtocolExecutionResult` is constructed only after the preceding checks | This is the implemented public publication boundary. |
-| Experiment worker oracle | Goal5848 workers compare expected outputs outside the compiler timer | This is experiment evidence, not a guarantee performed by every RTDL call. |
+| App-free runtime initialization | `begin_native_initialization` can start exact process-wide native loading/warming before route construction, and the formal worker starts provider initialization before `load_rtdlexe` (`v4_callback_lifecycle.py:477-512,1203-1285`; `worker.py:291-323`) | Initialization may overlap AOT artifact verification. It exposes no route handle and does not admit a route. |
+| Target materialization/admission | Builds specialized authority/contract/ABI/executable, forms protocol declaration/projection, and compares five seams in `v4_protocol_contract.py:269-329`; the decision occurs in materialization before object return | A rejection raises `PL036` before `MaterializedProtocolProgram` is returned. With overlap disabled, the integrated mutation tests reject before `_load_exact_native_library` is called. |
+| Per-route preparation | Joins or uses the exact warmed runtime, rechecks the accepted verdict, and binds the admitted route to its exact native/executable identities | App-free initialization alone does not authorize route preparation or launch. |
+| Materialized-program execution | Checks execution identity, native status, output digest, and traversal receipt | Only this interface returns `ProtocolExecutionResult` with that complete pre-return validation. |
+| Measured AOT prepared execution | Checks owner/process/thread/reentrancy boundaries, native/compact failures, and supplied expected output, then returns `RTDLExecutionResult` | Its ordinary fast result need not carry a digest or detailed receipt; do not generalize the materialized-program interface to this path. |
+| Worker oracle | After public return, validates output and digest. For first-result measurements it is after the prepared timer but inside the endpoint. | It is experiment logic, not a compiler guarantee or part of the prepared steady timer. |
+| Separate diagnostic | Executes once after the timed loop for each Arm-A worker and retains a detailed traversal receipt | It does not provide one detailed receipt for each of the preceding 128 timed calls. |
 
-The existing manuscript phrase "before launch" is safe only when tied to the
-specific materialization/prepare checks. It must not imply that every possible
-semantic defect is statically rejected or that the experiment oracle is part of
-the compiler.
+The phrase "before launch" is safe only when tied to route admission and
+per-route preparation. A phrase such as "before native load" is safe only for
+the tested mutation configuration with initialization overlap disabled and
+must name the native-library loader. Neither phrase may imply that every
+semantic defect is rejected or that the worker oracle is part of the compiler.
 
-## 6. One concrete typed-effect lowering chain
+## 6. General lowering and the two measured specializations
 
-The following is an actual source/code-generation path, not pseudocode. It is
-shown for the admitted triangle-reduction topology because that wrapper visibly
-consumes generated effect tags. It does not imply that every topology accepts
-every `EffectKind`.
+The general callback path below is actual source/code generation, not
+pseudocode. It is visible in the triangle diagnostic entries; it is not the hot
+entry used for the reported prepared triangle measurements. It also does not
+imply that every topology accepts every `EffectKind`.
 
 1. A callback return is represented as
    `ReturnEffectStatement(CallbackEffect(kind, fields))`
@@ -168,7 +183,7 @@ every `EffectKind`.
    contracts, stores flattened output fields, writes `out.effect_tag` and
    `status.effect_tag`, marks status success, and returns
    (`v4_callback_numba_codegen.py:370-408`).
-5. The triangle-reduction OptiX wrapper invokes that leaf. At
+5. A generic triangle diagnostic wrapper invokes that leaf. At
    `v4_triangle_reduction_optix_wrapper_codegen.py:386-430`, an admitted
    `ACCEPT_CONTINUE` tag updates the u64 payload and optional event; an admitted
    `IGNORE` tag follows its configured payload behavior; any unexpected tag
@@ -177,18 +192,29 @@ every `EffectKind`.
    `optixIgnoreIntersection()` so traversal continues without shrinking
    `tmax`.
 
-Thus the user callback returns a typed effect; a trusted topology-specific
-wrapper, not arbitrary callback code, performs the hardware control operation.
-The wrapper is part of the trusted computing base and remains specialized. The
-canonical plan is not itself executable and RTDL does not synthesize arbitrary
-wrappers from an unconstrained protocol graph.
+Thus the general route is typed effect -> deterministic ABI/tag -> generated
+Numba leaf -> trusted wrapper check -> hardware action. The evaluated standard
+routes partially evaluate that chain under exact callback-IR guards:
+
+| Path | Admission condition and actual execution | Retained checks | Replaced checks | Trust premise and source |
+| --- | --- | --- | --- | --- |
+| General callback / triangle diagnostic entries | Verified role/effect IR is flattened into the ABI; generated Numba leaves emit status/tags/fields; diagnostic wrapper entries interpret those tags before payload, ignore, or terminate operations. | IR, schema/ABI, executable identity, leaf status/effect validation, runtime failure checks | None in this path | Numba leaf and topology wrapper are trusted (`v4_callback_numba_codegen.py:370-408`; triangle wrapper `386-485`). These entries remain generated but are renamed diagnostic entries when the count specialization is selected. |
+| Measured triangle standard route | Exact callback IR SHA-256 plus checked-U64 reducer guard selects direct count/reduction raygen and any-hit entries. The hot any-hit increments payload directly and continues traversal; raygen reduces with checked overflow (`v4_triangle_reduction_optix_wrapper_codegen.py:129-141,463-534`). | Static callback/schema/ABI and executable-identity admission; native and compact failure handling; checked-U64 overflow; supplied expected-output check | Per-hit Numba leaf call and per-leaf status/effect-tag interpretation at the specialized roles | Exact standard IR and reducer guard, wrapper generator, and direct entries are TCB. The digest selects a known specialization; it is not a semantic proof. The measured runtime enters the replay/fast paths at `v4_rtdlexe.py:6254-6290,6304-6313,6412-6429`. |
+| Measured bounded-relation standard route | Exact standard relation callback is required, then intersection, counting/row emission, and continuation are fused in trusted OptiX entries (`v4_bounded_relation_optix_wrapper_codegen.py:40-58,194-198,293-375,416-427`). Generated leaf identities remain bound but are not called (`linked_role_symbols=False`). | Static schema/ABI/contract and identity admission; native status; row capacity and overflow; canonical output and supplied expected rows where configured | Per-role Numba leaf calls and per-role status/effect-tag interpretation in the fused roles | Exact-standard-IR recognizer, fused wrapper, row-orientation logic, and native/runtime connection are TCB. This does not establish arbitrary-callback lowering. |
+
+The measured prepared latencies therefore measure the two exact-standard-route
+specializations, not the cost of executing every role through the general
+Numba-leaf ABI. Trusted topology-specific wrappers, not arbitrary callback code,
+perform hardware control. The canonical plan is not executable, RTDL does not
+synthesize arbitrary wrappers from an unconstrained protocol graph, and these
+specializations are part of the TCB.
 
 ## 7. Evidence classification
 
 | Evidence class | Retained/current evidence | What it establishes | What it does not establish |
 | --- | --- | --- | --- |
 | Declaration/projection field mutation | `tests/goal5797_protocol_contract_test.py:61-118`; six selected checks replayed at current HEAD | Each of five comparison mechanisms is live; CP002 is sensitive to the semantic-owner name mismatch; ablation of that comparison changes this synthetic decision to accept | A real source program passed through the full public compiler and was rejected |
-| Integrated projection mutation | `tests/goal5795_v4_public_lifecycle_test.py:268-336`; selected test replayed at current HEAD | Corrupting each target projection at materialization makes the integrated gate reject before `_load_exact_native_library` | Independent target implementation or native/GPU execution of the defect |
+| Integrated projection mutation | `tests/goal5795_v4_public_lifecycle_test.py:268-336`; selected test replayed at current HEAD with native-initialization overlap disabled | Corrupting each target projection at materialization makes the integrated gate reject before `_load_exact_native_library` is called in that configuration | A prohibition on exact app-free runtime warmup before admission; independent target implementation or native/GPU execution of the defect |
 | Adjacent correct public control | `tests/goal5795_v4_public_lifecycle_test.py:337-361`; selected test replayed | Public lifecycle publishes mocked correct rows and carries accepted contract identity | Native OptiX correctness, since the owner is mocked |
 | Existing correct GPU authorities | Goal5848/5851 M evidence and F2 projection, identities retained elsewhere | The frozen evaluated paths produced expected outputs under their worker oracles and met the recorded gates | The illustrative wrong-output route; a general semantic theorem; a rerun in this audit |
 | Executed same-type wrong output | None retained for the `(100,0),(101,1)` route | Nothing | Cannot support "executed," "reached launch," or "returned wrong rows" wording |
@@ -225,6 +251,8 @@ source in this table.
 | `src/rtdsl/v4_callback_numba_codegen.py` | `4c72a5886dc43b0f5a3ccb71fd84c5ccb9076110f13813800f188132b69fc29f` |
 | `src/rtdsl/v4_bounded_relation_optix_wrapper_codegen.py` | `ef1a7ec9a54d150db11ea7aa1eecf87e536b9de7b982e5254b96c627afd533a2` |
 | `src/rtdsl/v4_triangle_reduction_optix_wrapper_codegen.py` | `f7d1f07b4462a6713a4bcda7aaf64f3a480575f1034059f3fbe61d640044eecb` |
+| `src/rtdsl/v4_rtdlexe.py` | `99fdc5c0f4462fe153e9659ba5f2d541e9876be76e11cebbf46ede8fa8cc6a34` |
+| `experiments/goal5848_strong_baseline/worker.py` | `353faec5a4dd46ad00c0979f2bb544eb278460d8b55fdf054127853a03ca11e4` |
 | `tests/goal5797_protocol_contract_test.py` | `a24b3a32204b57bbf2e4af3bf3860941d4938e99f3bb304b14ef3ca6a0b82554` |
 | `tests/goal5795_v4_public_lifecycle_test.py` | `abfd85654a1ec7aa867b87a4633762eb87f0776188f85a8a592c2f55bc425e31` |
 
@@ -240,16 +268,20 @@ the repository did not change the bytes listed above between M and this audit.
 | Physical schema and relation contract provider | Names semantic sources such as item ID | A wrong but internally coherent declaration can pass; semantics are not inferred from application intent. |
 | ABI compiler and specialized wrapper generators | Translate effects and route facts | They are in the TCB; topology-specific code remains substantial. |
 | Hash implementation and artifact custody | Tie compared/loaded bytes to identities | Hash equality is not semantic correctness. |
-| Native provider status and receipt production | Supports fail-closed public publication | Native/provider bugs or collusion are outside the finite checker proof. |
-| Worker oracle | Validates experiment outputs | It is post-execution experiment logic, not a compiler guarantee for all calls. |
+| Native provider status and receipt production | Supports fail-closed status handling and detailed evidence on the paths that request it | Native/provider bugs or collusion are outside the finite checker proof; an ordinary measured fast result need not include a detailed receipt. |
+| Worker oracle | Validates experiment outputs | It runs after prepared return; it is inside the first-result endpoint but after the prepared timer, and is not a compiler guarantee for all calls. |
 
 The strongest defensible statement is therefore: for the implemented bounded
 families, RTDL represents five named route seams, derives declaration and
 target projections through distinct compiler paths, rejects mismatches at the
-materialization/prepare boundary, and checks identity/status/output/receipt
-before public return. It does not independently infer application semantics,
-synthesize arbitrary topology lowerers, prove arbitrary semantic equivalence,
-or supply an executed wrong-output witness for the illustrative example.
+materialization/prepare boundary, and carries the accepted identity into
+per-route preparation and the checks implemented by each public interface. The
+materialized-program path validates identity/status/output/receipt before its
+return; the measured AOT prepared path has the narrower checks and evidence
+sequence stated in Sections 4.1 and 5. RTDL does not independently infer
+application semantics, synthesize arbitrary topology lowerers, prove arbitrary
+semantic equivalence, or supply an executed wrong-output witness for the
+illustrative example.
 
 ## 10. N2 conclusion and mandatory paper corrections
 
@@ -259,6 +291,9 @@ distinguish physical index from application ID. However, its wrong output must
 be marked illustrative. The paper must remove or rewrite every claim that the
 defective route was executed, reached launch, or returned the illustrative
 rows. It may retain the current, replayed facts that CP002 mutation is detected,
-the integrated projection mutation is rejected before native load, and the
-correct route has separate existing correctness evidence, with each evidence
-class named accurately.
+the integrated projection mutation is rejected before the native-library
+loader when initialization overlap is disabled, and the correct route has
+separate existing correctness evidence, with each evidence class named
+accurately. It must also identify the measured exact-IR specializations and
+distinguish the materialized-program result path, measured AOT prepared result,
+worker oracle, and separate diagnostic execution.

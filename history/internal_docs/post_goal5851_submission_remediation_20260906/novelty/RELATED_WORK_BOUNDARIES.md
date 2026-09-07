@@ -1,8 +1,9 @@
 # Related-Work Capability and Guarantee Boundaries
 
-Date checked: 2026-09-06 America/New_York.
+Date checked: 2026-09-07 America/New_York. The 2026-09-06 audit is retained
+below except where this P-triple-prime remediation explicitly supersedes it.
 
-Status: `N1_COMPLETE__AUTHOR_SCOPE__FINAL_REVIEW_PENDING`.
+Status: `N1_PTRIPLEPRIME_REMEDIATED__AUTHOR_SCOPE__INDEPENDENT_REVIEW_PENDING`.
 
 This is a primary-source boundary audit for the CGO 2027 RTDL manuscript. It
 does not prove novelty, authorize a claim, or report a new opponent experiment.
@@ -24,7 +25,7 @@ execution route by relating all of the following across its representations:
 | `Q3_PHYSICAL` | Geometry, query projection, result shape, and reduction/collection contract agree with the selected physical lowerer. |
 | `Q4_CONTINUATION` | Device failure and overflow state prevent incomplete output from becoming an application result. |
 | `Q5_IDENTITY` | The checked program is tied to the generated and loaded executable bytes used by the admitted route. |
-| `Q6_JOINT_ADMISSION` | The preceding relations are checked as one route-level admission condition before native load/launch or public result publication. |
+| `Q6_JOINT_ADMISSION` | The preceding relations are checked as one route-level admission condition before a materialized route is accepted and before its subsequent per-route preparation, launch, or result publication. Exact app-free native runtime loading or warming may precede admission. |
 
 This formulation is intentionally narrower than a general safety theorem. It
 does not ask whether a sufficiently careful application could implement the
@@ -64,10 +65,25 @@ paper wording. No row below supports "cannot," "impossible," "first," or
 | `RW-SC-02` | Slang, TOG 2018 | Slang provides modules, generics with interface constraints, associated types, extensions, static specialization, reflection, and compiler services for extensible shading systems. | These are strong language and interface mechanisms. The 2018 paper does not establish the exact joint Q1-Q6 guarantee. `Q6=UNKNOWN`. | State the narrower increment, if retained, as protocol admission across representations rather than modularity, generics, or reflection. |
 | `RW-SC-03` | Current Slang capability documentation, stable documentation checked 2026-09-06 | Slang capability requirements describe target, stage, API, and hardware constraints; requirements can be inferred and validated through public/interface methods and entry points. | Strong existing capability checking directly overlaps parts of Q1/Q3. The checked documentation does not describe application semantic ownership for same-width hit attributes or exact loaded-executable/result-publication admission. `Q2/Q4/Q5/Q6=UNKNOWN`. | The manuscript must acknowledge current Slang, not infer present limitations from the 2018 paper. RTDL must identify the concrete additional relation, not say "Slang leaves compatibility to users." |
 | `RW-SC-04` | Slang Shader Cursors documentation, current stable page checked 2026-09-06 | Reflection supplies target-specific type/layout information; shader cursors and parameter blocks support composable, cross-platform parameter binding without duplicating target-specific application logic. | Strong capability for physical layout/navigation. The guide presents an application/engine policy and implementation pattern; it does not claim to enforce the application's whole RT architecture or Q1-Q6. | Acknowledge that reflection and cursors solve substantial layout/binding work. RTDL's claimed increment, if any, is not cursor-based binding but admission of selected semantic/physical/continuation/identity relations. |
-| `RW-SC-05` | SlangPy current documentation and API reference, checked 2026-09-06; current stable documentation reports 0.42.0 | SlangPy offers a high-level Python API, automatic marshalling/reflection-based calls, and ray-tracing pipeline, hit-group, shader-table, and ray-dispatch APIs. | Strong Python and RT pipeline capability. The checked docs do not expressly establish or deny Q1-Q6 as one guarantee. Exact result: `UNKNOWN`. | Do not claim RTDL is the first Python route to hardware RT or that SlangPy is merely compute-only. The paper may say its checked SlangPy docs do not specify the same bounded route-level admission contract. |
+| `RW-SC-05` | SlangPy v0.43.1 release, exact source commit `2f6c4625fdd2b3bd812ca6cd2802cf98bd89b248`, plus dynamic stable API/changelog pages checked 2026-09-07 | SlangPy offers a high-level Python API, reflection-based marshalling and binding, ray-tracing pipelines, hit groups, shader tables, ray dispatch, module/shader/pipeline caching facilities, and device lifecycle/error-handling hooks. | Strong Python, RT construction, binding, caching, and lifecycle capabilities. The checked materials do not expressly establish or deny Q1-Q6 as one guarantee. Exact result: `UNKNOWN`. | Do not claim RTDL is the first Python route to hardware RT, that SlangPy is merely compute-only, or that its existing checks are absent. The paper may say the checked materials do not specify the same bounded route-level admission contract. |
 | `RW-SC-06` | LuisaRender, TOG 2022, especially Sections 3.2, 4.5, 6.1; LuisaCompute official repository checked 2026-09-06 | Luisa provides an embedded typed DSL, unified resource runtime, multiple backends, resource-use analysis, dependency scheduling, and automatic RT pipeline/SBT/parameter/launch construction. A Python frontend is present in the current repository. | Strong staged generation, runtime, and RT automation. No matched primary-source statement was found for Q2 semantic-owner comparison plus Q4/Q5/Q6. Exact result: `UNKNOWN`. | Explicitly concede automatic RT construction. The possible RTDL increment is the represented admission relation, not pipeline generation or Python embedding. |
 | `RW-SC-07` | Dr.Jit, TOG 2022 | Dr.Jit traces Python/C++ computations, including control flow, polymorphism, ray intersection and scene dependencies, and compiles/optimizes them through LLVM/OptiX. | Strong whole-program staging and dependency capture. Its differentiation caveats concern differentiable algorithms and are `NOT_SAME_Q`; they cannot evidence an RTDL gap. The checked paper does not settle exact Q1-Q6. | Compare compiler object and guarantee, not language breadth. RTDL is substantially less general; any claim must be about the bounded protocol relation it checks. |
 | `RW-SC-08` | CrossRT arXiv:2409.12617v1, 2024 | CrossRT transforms C++ classes into cross-platform host/device RT code and applies pattern-directed and algorithmic optimizations. It supports user extension and reports performance comparable to expert implementations. | Strong generation and optimization capability. Sections on extension and debugging describe user-modifiable generated code but do not prove absence of Q1-Q6. Exact guarantee remains `UNKNOWN`. | Acknowledge CrossRT's broader cross-platform generation. The manuscript may contrast RTDL's fail-closed admitted route only as a documented design difference, not superiority or impossibility. |
+
+### 4.1 SlangPy v0.43.1 capability recheck
+
+The earlier 2026-09-06 audit recorded version 0.42.0 from a dynamic
+documentation page. That historical observation is preserved but superseded
+for the candidate by the fixed v0.43.1 release and source identity above. The
+stable documentation is a separately dated, mutable source; it is not claimed
+to be an immutable rendering of that tag.
+
+| Capability group | Primary-source result | What remains unknown for Q1-Q6 |
+| --- | --- | --- |
+| RT pipeline, hit groups, shader table, dispatch | The stable API documents ray-tracing-pipeline creation with hit groups and payload/attribute sizes, shader-table creation and binding, ray-tracing pass encoding, and ray dispatch. | The checked API does not state that these objects participate in RTDL's exact joint route-admission relation. |
+| Reflection, marshalling, binding | The API exposes reflection cursors and type layouts; the v0.43.0 changelog records a native reflection/binding/tensor overhaul and value conversion/marshalling work inherited by v0.43.1. | These substantial checks do not by themselves settle application semantic ownership, continuation, executable identity, or their joint admission. |
+| Module, shader, pipeline cache and identity scope | The v0.43.0 changelog records `CacheWriter`, module caching, and persistent shader/pipeline caching, plus compilation reports. | Cache presence and compilation reporting do not establish the exact Q5 executable-identity relation or Q6 joint guarantee; those propositions remain `UNKNOWN`. |
+| Device callbacks and lifecycle/error handling | The API documents device-close callbacks; the v0.43.0 changelog records close/stack cleanup, cached-reflection-layout leak repair, device recording IDs, and an error for reuse of a finished command encoder. | These are positive lifecycle facilities, not evidence for or against the full Q1-Q6 route contract. |
 
 ## 5. Protocol, state, and linking research
 
@@ -78,6 +94,7 @@ paper wording. No row below supports "cannot," "impossible," "first," or
 | `RW-PT-03` | Honda, Yoshida, and Carbone, Multiparty Asynchronous Session Types, 2016 | A global protocol can be projected to communicating participants with safety/progress/fidelity results. | This is a close conceptual precedent for global-to-local role agreement. RTDL does not prove projection soundness or general communication progress; its target facts are separately derived in one compiler and checked for a fixed set of seams. | Use "inspired by" or "related to," not "generalizes" or "solves session typing for RT." |
 | `RW-PT-04` | Patterson and Ahmed, Linking Types, 2017 | Linking types express cross-language boundary behavior that ordinary source types may not capture. | This directly weakens any claim that cross-representation constraints are unprecedented. RTDL's possible increment is the concrete set of RT objects connected in an executable admission workflow, not the idea of typed linking. | Acknowledge that richer linking contracts already exist; no general linking theorem is claimed. |
 | `RW-PT-05` | Furr and Foster, FFI type checking, PLDI 2005 | Multi-language type inference relates OCaml and C representations, including offsets, tags, and GC effects, with soundness for a restricted subset. | Physical representation and semantic boundary checks already have strong precedents. RTDL adds a domain-specific relation among RT role/effect, attribute ownership, physical plan, continuation, and executable identity, but offers weaker theory. | Do not claim that existing FFI work checks only widths or cannot express semantics. |
+| `RW-PT-06` | Necula and Lee, proof-carrying code, OSDI 1996 | A code producer supplies native code and a safety proof against a consumer-defined policy; the consumer validates the proof before executing the code. | This is a direct precedent for policy-based admission before native execution. RTDL supplies no proof certificate: trusted schemas, compiler projections, topology lowerers, and runtime checks implement a bounded domain-specific relation, while hashes establish identity rather than semantics. | Do not claim validation-before-execution as new. Position RTDL as one concrete RT protocol design and implementation with finite evidence, not as a general proof system. |
 
 ## 6. Corrected use of the RT-core survey
 
@@ -101,11 +118,13 @@ itself remains unchanged.
 | Typed linking and FFI check only machine layouts. | False/unsupported. | Delete. Acknowledge richer cross-language relations and state that RTDL specializes the concrete RT artifact set without a new theorem. |
 | No existing work can implement an equivalent mechanism. | Unsupported and not required. | Prohibit. Ordinary code or another compiler could implement equivalent checks. |
 | The checked systems' primary materials do not document the same joint finite-route admission relation. | Supported only as a source-bounded observation, with several exact-Q results still `UNKNOWN`. | Retain with named sources, checked versions, and no exclusivity implication. |
+| Validation of a producer-supplied native program before execution is new. | False. Proof-carrying code is a direct policy-and-validation precedent. | Delete. State that RTDL has no proof certificate and contributes only its bounded RT-specific representation, enforcement points, implementation, and finite evidence. |
 
 ## 8. Source cards and search record
 
 All sources below are primary author, standards-body, official project, or
-publisher records. Access date is 2026-09-06 unless a publication date is shown.
+publisher records. Access date is 2026-09-06 unless a row says 2026-09-07 or a
+publication date is shown.
 The audit used source claims rather than third-party summaries.
 
 | Card | Primary source | Selected context | Use/exclusion decision |
@@ -119,7 +138,8 @@ The audit used source claims rather than third-party summaries.
 | `SC-07` | [Slang 2018 paper](https://graphics.cs.cmu.edu/projects/slang/he18_slang.pdf) | Generics, interfaces, modules, reflection, specialization | Selected for historical language mechanisms. |
 | `SC-08` | [Current Slang capabilities](https://docs.shader-slang.org/en/stable/external/slang/docs/user-guide/05-capabilities.html) | Requirement inference and target/stage/API validation | Selected; prevents stale limitations inferred from 2018. |
 | `SC-09` | [Slang Shader Cursors](https://docs.shader-slang.org/en/stable/shader-cursors.html) | Reflection-driven cross-platform binding and parameter blocks | Selected for current layout/binding capabilities and policy boundary. |
-| `SC-10` | [SlangPy documentation](https://slangpy.shader-slang.org/en/latest/) and [API reference](https://slangpy.shader-slang.org/en/latest/src/api_reference.html) | Python functional API and ray-tracing pipeline/SBT/dispatch APIs | Selected; exact Q1-Q6 remains unknown. |
+| `SC-10A` | [SlangPy v0.43.1 release](https://github.com/shader-slang/slangpy/releases/tag/v0.43.1) and [exact source commit](https://github.com/shader-slang/slangpy/commit/2f6c4625fdd2b3bd812ca6cd2802cf98bd89b248) | Fixed candidate-comparison version/source identity; checked 2026-09-07 | Selected as version identity. The v0.43.1 release is a wheel-availability patch, so inherited capabilities were checked in the v0.43.0 changelog and stable API rather than inferred from this release note alone. |
+| `SC-10B` | [SlangPy stable API reference](https://slangpy.shader-slang.org/en/stable/src/api_reference.html) and [v0.43.0 changelog](https://slangpy.shader-slang.org/en/stable/changelog.html#version-0-43-0-july-13-2026) | RT pipeline/hit-group/SBT/dispatch; reflection/marshalling/binding; caches; lifecycle/error handling; checked 2026-09-07 | Selected as dynamic official documentation, not represented as immutable v0.43.1-tag documentation. Exact joint Q1-Q6 remains `UNKNOWN`. |
 | `SC-11` | [LuisaRender paper](https://luisa-render.com/static/paper/paper.pdf) and [LuisaCompute repository](https://github.com/LuisaGroup/LuisaCompute) | Typed DSL, runtime, dependencies, RT construction, Python frontend | Selected; automatic RT construction must be conceded. |
 | `SC-12` | [Dr.Jit paper](https://d38rqfq1h7iukm.cloudfront.net/media/papers/Jakob2022DrJit.pdf) | Whole-computation tracing, OptiX lowering, dependency capture | Selected; differentiation limitation excluded as `NOT_SAME_Q`. |
 | `SC-13` | [CrossRT v1](https://arxiv.org/abs/2409.12617v1) | Cross-platform host/device generation, optimization, extension | Selected; no categorical negative inferred. |
@@ -129,6 +149,7 @@ The audit used source claims rather than third-party summaries.
 | `SC-17` | [Linking Types paper](https://dbp.io/pubs/2017/linking-types-snapl.pdf) | Types for cross-language linking behavior | Selected as cross-representation antecedent. |
 | `SC-18` | [FFI type-checking paper](https://www.cs.tufts.edu/~jfoster/papers/cs-tr-4627.pdf) | Cross-language representation/GC reasoning | Selected as physical/semantic boundary antecedent. |
 | `SC-19` | [RT-core survey](https://arxiv.org/abs/2603.28771v1) | Application mappings and profitability | Background only; excluded from novelty-gap evidence. |
+| `SC-20` | [Necula and Lee OSDI 1996 paper, Section 2](https://www.usenix.org/legacy/publications/library/proceedings/osdi96/full_papers/necula/html/node2.html) and [USENIX record](https://www.usenix.org/conference/osdi-96/safe-kernel-extensions-without-run-time-checking) | Consumer policy, producer-supplied proof, consumer-side proof validation before native execution | Selected as a direct admission-method precedent. It does not establish RTDL's particular RT relation, and RTDL does not provide proof-carrying code. |
 
 ## 9. Quotation and inference audit
 
@@ -142,9 +163,10 @@ papers, and old non-goals are not projected forward into current systems.
 ## 10. N1 conclusion
 
 N1 supports a narrower, defensible problem statement, not an exclusivity claim.
-Nearby systems already provide Python access, RT construction, shader
+Nearby systems and prior methods already provide Python access, RT construction, shader
 modularity, reflection/layout support, capability checks, staged generation,
-and formal models of protocols and linking. The checked primary sources do not
+formal models of protocols and linking, and proof-validated native-code
+admission. The checked primary sources do not
 state the same finite Q1-Q6 route-level admission guarantee, but for several
 systems that result is `UNKNOWN`, not a demonstrated absence. RTDL therefore
 must earn its contribution through the concrete representation and enforcement

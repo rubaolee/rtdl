@@ -1,256 +1,264 @@
 # CGO Contribution Argument
 
-Date: 2026-09-06 America/New_York.
+Date: 2026-09-07 America/New_York.
 
-Status: `N3_COMPLETE__SYSTEMS_METHOD_CLAIM__FINAL_REVIEW_PENDING`.
+Status: `N3_PTRIPLEPRIME_REMEDIATED__SYSTEMS_DESIGN__INDEPENDENT_REVIEW_PENDING`.
 
-This document joins the primary-source comparison in
+This document joins the primary-source capability audit in
 `RELATED_WORK_BOUNDARIES.md` (N1) with the implementation trace in
 `PROTOCOL_WITNESS_AND_DERIVATION.md` (N2). It is an author-scope argument, not
-an independent novelty opinion or claim authorization.
+an independent novelty opinion, final-byte acceptance, or claim authorization.
 
-## 1. Paper-ready argument
+## 1. The four questions the contribution must answer
 
-### Problem
+### 1.1 What do existing components already solve?
 
-Programming an RT pipeline is not only a matter of typing each callback or
-calling a host API. A finite route also depends on relations distributed across
-callback roles, payload and intersection-attribute meanings, geometry and query
-projections, generated wrapper behavior, device failure continuation, and the
-executable that is ultimately loaded. A same-width substitution can preserve
-ordinary ABI validity while changing application meaning. A locally valid
-shader, SBT, or host call therefore does not by itself imply that the selected
-pieces form the intended application result route.
+Existing work covers much of the mechanism space. DXR payload access
+qualifiers and Slang capabilities check important stage, target, API, and
+hardware relations. Vulkan specifies shader-interface and SBT validity.
+Shader Components and Slang provide modularity, specialization, reflection,
+and layout facilities. OWL, SlangPy, Luisa, Dr.Jit, and CrossRT provide Python
+access, RT construction, staging, or code generation. Typestate, interface
+automata, session types, linking types, and FFI checking provide stronger
+general protocol or boundary theories than RTDL. Proof-carrying code (PCC)
+already established consumer-side validation of a producer-supplied proof
+against a policy before native execution (`RW-PT-06`).
 
-This is not a claim that existing APIs or languages provide no safety. DXR has
-stage-indexed payload access qualifiers; Vulkan specifies interface and SBT
-validity; Slang provides interfaces, reflection, specialization, and current
-capability checking; OWL, SlangPy, Luisa, Dr.Jit, and CrossRT provide substantial
-construction, staging, or generation facilities. Protocol types, linking types,
-and FFI work provide stronger general theories for stateful interaction and
-cross-language boundaries than RTDL. The narrower observation is that the
-checked primary sources do not document the same joint finite-route admission
-relation. For several systems this is `UNKNOWN`, not a proof of absence.
+RTDL therefore does not claim Python access to RT, pipeline/SBT construction,
+typed effects, hashing, validation-before-execution, or general protocol
+reasoning as new. The exact joint Q1-Q6 guarantee remains `UNKNOWN` for several
+nearby systems after the N1 primary-source audit; source silence is not
+inability and supports no first/only claim. Evidence IDs: `RW-RT-01`--`05`,
+`RW-SC-01`--`08`, and `RW-PT-01`--`06`.
 
-### Core design contribution (`CONTRIB-PROTOCOL-UNIT`)
+### 1.2 What does RTDL add?
 
-RTDL treats a bounded RT route as a protocol-carrying compilation and admission
-unit. For each supported family, it records and jointly compares five concrete
-relations:
+RTDL's core design is a **protocol-carrying admitted executable** for fixed RT
+families. One route contract explicitly represents and relates:
 
-1. callback role/effect closure;
-2. payload or intersection-attribute semantic ownership;
-3. task and physical geometry/output/reducer binding;
-4. fail-closed device-status continuation; and
-5. checked-program/executable identity.
+1. callback roles and permitted effects;
+2. nominal payload or intersection-attribute ownership;
+3. task, geometry, output, and reducer binding;
+4. fail-closed continuation/status requirements; and
+5. checked-program and executable identity.
 
-The key design choice is not the use of equality checks or hashes. It is the
-placement of a shared route contract across representations that are normally
-validated or assembled separately, and the use of its decision at the actual
-materialization, native-load, and public-result lifecycle boundaries. This
-makes a finite cross-artifact relation explicit and auditable instead of leaving
-it as an informal invariant distributed among Python code, generated device
-code, wrapper templates, and runtime convention.
+The compiler defines where each fact originates, extracts a declaration and a
+separately represented compiled projection, canonicalizes them, and applies one
+five-relation decision before returning a materialized route. The accepted
+identity is then carried through per-route preparation and the publication
+checks implemented by each interface. Exact app-free native runtime loading or
+warming may start before admission; it exposes no admitted route and does not
+authorize per-route preparation or launch. Evidence IDs: `PC-01`--`PC-05` and
+N2 Sections 4--5.
 
-The current implementation derives a declaration from the verified program and
-a projection from compiled ABI/physical-contract artifacts, canonicalizes and
-compares the five seams, and refuses to return a materialized route on mismatch.
-Before public result construction it additionally checks generated/native
-identity, device status, output digest, and traversal receipt. These are
-separate derivations within one compiler, not independent trust roots. Trusted
-semantic declarations and specialized lowerers remain in the TCB.
+The same-width N2 witness makes the design concrete. Attribute zero can legally
+hold physical `primitive_index:u32` or application `item_id:u32`; width and
+layout alone cannot distinguish them. A trusted relation schema names the
+intended source, a compiled contract carries it, and the route decision detects
+representation drift. The bad rows are illustrative, not an executed defective
+route. Both derivations remain in one compiler and depend on the trusted schema,
+so this is consistency under a premise, not semantic inference or proof.
 
-### Implementation method (`CONTRIB-TYPED-EFFECT-LOWERING`)
+### 1.3 Why is this organization worth studying?
 
-Restricted Python callbacks return typed effects rather than directly invoking
-RT hardware operations. The compiler checks role-specific effect variants and
-fields, flattens them into a deterministic callback ABI with effect/status tags,
-and emits Numba device leaves. A trusted topology-specific OptiX wrapper invokes
-the leaf, validates its effect/status, and performs the corresponding hardware
-operation, such as payload update, traversal continuation via
-`optixIgnoreIntersection()`, or fail-closed termination.
+The contribution is not that five checks happen to differ. It is the concrete
+systems choice to turn facts otherwise spread among restricted Python IR,
+callback ABI, physical contracts, generated OptiX programs, runtime state, and
+executable custody into one inspectable route object with named comparison and
+enforcement points. That organization makes authority, representation drift,
+trusted code, and fail-closed obligations explicit and auditable.
 
-This split puts user computation in a restricted, typed language while keeping
-hardware control in a reviewed lowerer. It also exposes exactly where the
-compiler's guarantee ends: the canonical plan is descriptive, not executable;
-specialized lowerers and wrapper templates are trusted; RTDL does not synthesize
-an arbitrary lowerer from an arbitrary protocol graph.
+This is useful research evidence only to the extent demonstrated here: two
+public protocol families, finite mutations, one sealed composition exercise, a
+finite independent structural checker, two exact GPU tasks on two generations,
+and reproducible offline recount. Another compiler or ordinary wrapper could
+adopt equivalent assertions. RTDL offers a concrete domain-specific design and
+implementation experience, not an impossibility result or new validation idea.
+Evidence IDs: `EVIDENCE-BOUNDED-VALIDATION`, N2 Sections 6--9, and N1's Q table.
 
-### Evidence contribution (`EVIDENCE-BOUNDED-VALIDATION`)
+### 1.4 What are the costs and guarantees?
 
-The evidence is deliberately finite:
+The guarantee is bounded representation consistency and fail-closed behavior at
+the documented boundaries for the implemented routes, assuming trusted schemas,
+compiler projections, exact-IR recognizers, topology lowerers, runtime, and
+native provider. Digests bind identity; they do not prove semantics. RTDL
+provides no PCC certificate, soundness theorem, arbitrary-topology synthesis,
+or independent target trust root.
 
-- mutation checks show that each of five seams is live and that an integrated
-  projection mismatch is rejected before native load;
-- the independent finite checker inspects generated artifacts for the sealed
-  challenge but is not a semantic proof;
-- one sealed-snapshot extension demonstrates reuse over a finite matrix, while
-  also requiring about 2,635 lines of topology-specific code and compiler
-  changes;
-- two GPU generations validate exact prepared routes and bounded overhead;
-- the artifact independently recounts retained projections but cannot rerun the
-  GPU or prove novelty.
+The implementation cost is substantial. The sealed extension required about
+2,635 topology-specific LOC plus compiler changes. The measured routes use
+trusted exact-standard-IR specializations. The materialized-program and measured
+AOT prepared interfaces have different publication evidence. The formal A
+population has 4,096 timed calls but only 32 separate post-loop detailed
+receipts. First-result/post-import evidence is adverse and lifecycle-confounded,
+and there is no independent human authoring study. Evidence IDs:
+`CONTRIB-TYPED-EFFECT-LOWERING`, `EVIDENCE-BOUNDED-VALIDATION`, and N2 Sections
+4.1, 5, 6, and 9.
 
-The illustrative `primitive_index:u32` versus application `item_id:u32` witness
-explains why machine typing alone is insufficient. It was not retained as an
-executed defective route and must not be described as one.
+## 2. One design, one implementation method, finite evidence
 
-### Claim level
+### 2.1 Core design (`CONTRIB-PROTOCOL-UNIT`)
 
-The defensible contribution is a compiler-system design and implementation
-method for jointly admitting finite RT callback routes. It is not a new general
-analysis algorithm, type calculus, soundness theorem, automatic profitable-RT
-mapping method, arbitrary-topology compiler, or proof that another system
-cannot implement equivalent checks. No "first" or "unique" wording is needed.
+For a fixed RT family, the shared route contract connects role/effect closure,
+nominal attribute ownership, physical/result/reducer binding, continuation, and
+executable identity. One decision checks those five relations before a
+materialized route is returned. The accepted identity continues into per-route
+preparation and interface-specific publication checks. This is the proposed
+systems-design contribution.
 
-## 2. What remains after removing RT names?
+It is not a claim that the declarations are independent authorities. The
+semantic schema is trusted and both projections are produced inside one
+compiler. A wrong but internally coherent schema can pass. The design catches
+represented disagreement; it does not infer application intent.
 
-The reusable idea is a **protocol-carrying admitted executable**:
+### 2.2 Implementation method (`CONTRIB-TYPED-EFFECT-LOWERING`)
 
-1. represent cross-component obligations that are not implied by each local
-   component type;
-2. derive a source-side declaration and a target-artifact projection;
-3. compare them before minting/loading an executable capability;
-4. bind the accepted decision to actual executable identities; and
-5. make asynchronous failure/partial-output state part of the public-result
-   admission boundary.
+The general path verifies restricted Python callback effects, flattens them into
+a deterministic ABI with status/effect tags, generates Numba leaves, and lets a
+trusted topology wrapper interpret those results before issuing hardware
+operations. The evaluated standard routes additionally use trusted exact-IR
+specializations:
 
-This pattern could apply to split host/device accelerator systems, RPC stubs,
-storage accelerators, packet-processing pipelines, or generated foreign
-interfaces. That is a design implication, not demonstrated generality. RTDL
-evaluates it only for its bounded RT families and one backend/runtime stack.
+| Evaluated path | Actual hot execution | General work replaced | Checks retained |
+| --- | --- | --- | --- |
+| Triangle reduction | Exact callback IR plus checked-U64 reducer selects direct count/reduction raygen and any-hit entries. | Per-hit Numba leaf calls and per-leaf effect-tag checks at specialized roles. | Static schema/ABI/identity admission, native/compact failure handling, checked overflow, and supplied expected output. |
+| Bounded relation | Exact standard relation IR selects fused intersection, counting/row emission, and continuation. Generated leaf identities remain bound but are not called. | Per-role leaf calls and effect-tag interpretation in fused roles. | Static schema/ABI/contract/identity admission, native status, capacity/overflow, canonical rows, and supplied expected rows. |
+
+These exact-IR recognizers and specialized wrappers are part of the TCB. An IR
+digest selects a known implementation path; it is not a semantic-preservation
+proof. The canonical compilation plan remains descriptive, not executable, and
+RTDL does not synthesize arbitrary wrappers from arbitrary protocol graphs. The
+reported prepared latencies measure these specialized standard routes, not the
+cost of executing every role through the general Numba-leaf ABI.
+
+### 2.3 Interface and evidence boundaries
+
+| Interface or phase | What actually happens | Prohibited generalization |
+| --- | --- | --- |
+| Materialized-program `ProtocolExecutionResult` | Execution identity, native/device status, output digest, and traversal receipt are validated before return. | The measured AOT calls all use this interface. |
+| Measured AOT prepared `RTDLExecutionResult` | Owner/process/thread/reentrancy boundaries, native/compact failures, and supplied expected output are checked synchronously. Ordinary fast results may omit digest and detailed receipt. | Every fast return carries a detailed receipt or rehashes all disk artifacts. |
+| Worker oracle | Output and digest are checked after prepared return; for first-result it is after the prepared timer but within the endpoint. | The oracle is an automatic compiler guarantee or part of the prepared steady timer. |
+| Separate diagnostic | One post-loop execution per Arm-A worker retains detailed evidence. | Each of the preceding 128 timed calls has its own retained detailed receipt. |
 
 ## 3. Increment over close concepts
 
-| Existing concept/capability | What it already solves | RTDL's narrower increment | What RTDL does not add |
+| Existing concept or capability | What it already solves | RTDL's narrower increment | What RTDL does not add |
 | --- | --- | --- | --- |
-| DXR PAQs and Slang capabilities | Stage access, target/stage/API/hardware requirements, compiler validation | Connects selected role/effect facts with application-named attribute ownership, physical/result contract, continuation, and executable identity in one finite route decision | New stage capability system or better general shader typing |
-| Shader Components, Slang interfaces, reflection/cursors | Modular shader interfaces, specialization, parameter layout and binding support | Uses a route rather than a component/type as the admitted unit and carries the decision into native-load/publication lifecycle | New module/generic/reflection mechanism |
-| OWL, SlangPy, Luisa, Dr.Jit, CrossRT | Python access, pipeline/SBT management, staging, code generation, dependency analysis, cross-platform lowering | Makes a particular semantic/physical/identity relation explicit and fail-closed for supported RTDL families | Broader language, broader platform support, or proof those systems cannot add the relation |
-| Typestate and interface automata | General state/protocol and component compatibility models | Concrete engineering projection into RT callback/compiler/runtime artifacts | New state calculus, refinement algorithm, or formal compatibility result |
-| Session types | Global protocol and local projection with formal safety/progress results | A fixed route declaration/projection check in a real split compiler/runtime stack | General projection theorem, communication fidelity, or progress theorem |
-| Typed linking and FFI checking | Cross-language behavior and physical/semantic representation reasoning | Binds an RT-specific set of roles, attributes, physical plans, continuation and actual executable bytes | New general linking type or FFI soundness theorem |
+| PCC | Policy-based admission of native binaries through validation of a supplied proof. | No proof certificate; instead, one bounded RT-specific route representation and selected compiler/runtime checks. | Validation-before-execution, proof-carrying safety, or a formal semantic theorem. |
+| DXR PAQs and Slang capabilities | Stage accesses and target/stage/API/hardware requirements with compiler validation. | Connects selected role/effect facts to nominal attribute ownership, physical/result contract, continuation, and exact executable identity in one finite decision. | A new stage-capability system or better general shader typing. |
+| Shader Components, Slang interfaces, reflection/cursors | Modular interfaces, specialization, parameter layout, marshalling, and binding. | Uses a bounded RT route rather than one component/type as the represented admission unit. | New modules, generics, reflection, marshalling, or caching. |
+| OWL, SlangPy, Luisa, Dr.Jit, CrossRT | Python RT access, pipeline/SBT management, staging, code generation, dependency analysis, and cross-platform lowering. | Makes a particular semantic/physical/continuation/identity relation explicit for the supported RTDL families. | A broader language/platform or proof those systems cannot implement the relation. |
+| Typestate, interface automata, session types | General state/protocol, compatibility, projection, and formal safety/progress machinery. | A finite engineering projection into a split RT compiler/runtime's concrete artifacts and lifecycle. | A state calculus, refinement algorithm, projection theorem, fidelity, or progress proof. |
+| Linking types and FFI checking | Rich cross-language behavior and physical/semantic representation checks. | Binds one RT-specific set of roles, attributes, physical plans, continuation, and executable bytes. | A general linking type or FFI soundness theorem. |
 
-## 4. Six hostile reviewer questions
+## 4. Hostile reviewer questions
 
-### 4.1 Existing local types, capabilities, and layouts already do this
+### 4.1 Existing types, layouts, and capabilities already do this
 
-They do important parts. DXR PAQs express per-stage payload reads/writes; Slang
-capabilities validate target/stage/API/hardware requirements; reflection and
-shader cursors address layout/binding; Vulkan specifies extensive interface and
-SBT constraints. RTDL must not relabel those as absent.
+They solve important parts and the paper must say so. The N2 mismatch is a
+nominal relation not implied by width/layout alone: two distinct meanings fit
+the same `u32` slot. RTDL's trusted schema and route projection expose that
+particular cross-representation assertion. This does not infer intent and does
+not supersede PAQs, Slang capabilities, reflection, or SBT validation.
 
-The N2 mismatch falls in a relation not implied by width/layout alone: attribute
-slot zero can legally contain either a physical primitive index or an
-application item ID, both `u32`. RTDL's emission schema assigns an application
-semantic source, the compiled contract carries it, and the admission check
-compares it with the program-side route declaration. This remains dependent on
-a trusted semantic declaration; RTDL does not infer intent.
+### 4.2 Is this just PCC, typestate, typed linking, FFI checking, and hashes?
 
-### 4.2 Typestate, interface automata, or session types can represent this
+Those are direct foundations and often stronger theories. PCC in particular
+prevents any claim that policy validation before native execution is new. RTDL's
+increment is only the concrete bounded RT design: which five facts are carried,
+where they are extracted, where one route decision is made, and how its identity
+is connected to preparation and interface-specific publication. Hashes provide
+identity coherence, not semantic correctness.
 
-Yes, they can represent significant parts and offer stronger formal machinery.
-RTDL's contribution is not a proof that those theories are inapplicable. Its
-choice is an implementation specialization: a finite set of RT-specific facts
-is projected from compiler artifacts and enforced at concrete materialization,
-load, and publication points. The paper should present the formal work as
-foundation and describe RTDL as a systems realization with a narrower theorem
-surface: none.
+### 4.3 Why not add assertions to OWL, SlangPy, or an ordinary wrapper?
 
-### 4.3 Why not add assertions to OWL, Slang, or an ordinary wrapper?
+A careful developer could, and another system could adopt this design. The
+research question is whether an explicit protocol-carrying executable makes the
+distributed authorities and obligations more inspectable and enforceable in a
+real compiler/runtime. RTDL supplies one implementation and finite evidence. If
+reviewers consider that only systems integration, the paper must accept that
+classification rather than manufacture novelty or performance causality.
 
-A careful developer could add equivalent assertions, and another compiler
-could adopt this design. The research value cannot rest on impossibility.
+### 4.4 Is the common gate really before native load and every result?
 
-Scattered assertions, however, do not automatically define which artifact is
-authoritative, how facts are normalized across source/ABI/physical/runtime
-representations, which decision gates executable minting and native load, or
-how that decision remains bound to the bytes and fail-closed output. RTDL's
-method packages those choices into one explicit admission object and lifecycle.
-The implementation demonstrates that organization for two public protocol
-families. If reviewers judge this merely a configuration-consistency wrapper,
-the paper must accept that limited systems contribution; no stronger theorem is
-available.
+No. Exact app-free native runtime loading/warming may begin before admission,
+including concurrently with AOT artifact verification. Admission still gates
+acceptance of a materialized route and subsequent per-route preparation and
+launch. Only overlap-disabled mutation tests establish rejection before the
+native-library loader. Publication evidence also differs between the
+materialized-program and measured AOT prepared interfaces, as Section 2.3
+states.
 
-### 4.4 Is this just typed linking or FFI checking plus hashes?
+### 4.5 Is every measured callback executed through the advertised generic ABI?
 
-Typed linking and FFI research already show how to express rich cross-language
-and representation properties. Hashing is also standard. RTDL's increment is
-the selected domain model and where it is enforced: callback role/effect
-closure, semantic attribute ownership, physical geometry/output contract,
-device continuation, and actual RT executable lifecycle are one admitted unit.
-
-Hash equality contributes identity coherence only. It does not show that the
-source is correct, that the compiler preserved semantics, or that two equal
-semantic names match application intent. The paper must state all three limits.
-
-### 4.5 Is this a new analysis algorithm or type theorem?
-
-No. The comparison is deterministic canonical equality over five finite seams;
-the callback verifier uses conventional type/effect checks; the independent
-checker is finite and structural. The contribution is a compiler-system design
-and its integration/evaluation, not a new general algorithm or soundness
-theorem. Mathematical notation may summarize the contract but must not imply a
-formal result that was not proved.
+No. The generic typed-effect/Numba-leaf path is implemented, but the reported
+triangle and bounded-relation prepared latencies use the exact-standard-IR
+specializations in Section 2.2. Those specializations remove leaf invocations
+and per-leaf effect-tag checks in specialized roles while retaining the listed
+static and runtime checks. They are trusted implementation code and a cost, not
+evidence of automatic arbitrary-program lowering.
 
 ### 4.6 Is semantic-name comparison circular self-certification?
 
-It would be circular if both sides simply copied one mapping and equality were
-presented as semantic proof. The implementation is somewhat stronger but still
-limited: the public declaration is derived from the verified protocol program;
-the target projection reads separately compiled ABI and physical/relation
-contract objects; mutations between them are detected. Yet both paths belong to
-the same compiler and the attribute meaning originates in a trusted schema.
-
-Therefore the check proves representation consistency under that premise, not
-truth of the premise. The manuscript should say "separately derived compiler
-representations" rather than "independent trust roots," and "admission under a
-trusted semantic contract" rather than "semantic correctness proof."
+It would be circular if equality were presented as semantic proof. RTDL is
+narrower: declaration and target projection are separately represented and
+mutations between them are detected, but both are produced by one compiler and
+the intended meaning begins in a trusted schema. The result is consistency
+under that premise, not truth of the premise.
 
 ## 5. Contribution-to-evidence matrix
 
 | ID | Proposed contribution statement | N1 boundary | N2 mechanism/evidence | Required limitation |
 | --- | --- | --- | --- | --- |
-| `CONTRIB-PROTOCOL-UNIT` | RTDL organizes five dispersed RT route obligations into a common declaration/projection admission unit used at lifecycle gates. | No checked close source documents the same exact unit; many exact-Q cells remain `UNKNOWN`. | `PC-01` through `PC-05`; materialization and publication trace | Domain-specific, finite, same-compiler derivations, trusted schema/lowerers, no exclusivity |
-| `CONTRIB-TYPED-EFFECT-LOWERING` | Restricted callbacks return typed effects; trusted topology lowerers map accepted tags to RT hardware operations. | Role/effect/capability and code-generation precedents are strong. | Actual IR -> ABI -> Numba leaf -> OptiX wrapper chain in N2 Section 6 | Implementation method, not new effect theory; lowerers remain topology-specific TCB |
-| `EVIDENCE-BOUNDED-VALIDATION` | Mutation, finite checking, sealed extension, two-generation performance and replayable recount support feasibility. | Does not decide novelty against other systems. | Existing tests and M/E/F2/P' authorities | Finite scope, adverse results retained, no human study, no wrong-route execution |
+| `CONTRIB-PROTOCOL-UNIT` | RTDL organizes five dispersed RT route obligations into one declaration/projection decision and carries the accepted identity into later route stages. | PCC and protocol/linking systems establish broader antecedents; exact Q1-Q6 remains `UNKNOWN` for several close systems. | `PC-01`--`PC-05`; N2 admission/initialization timeline | Domain-specific and finite; app-free warmup may precede admission; same-compiler derivations; trusted schema/lowerers; no exclusivity. |
+| `CONTRIB-TYPED-EFFECT-LOWERING` | General callbacks lower through typed effects/ABI/Numba leaves/wrappers; measured standard routes use disclosed exact-IR specializations. | Existing languages already provide typed interfaces, specialization, and generation. | N2 Section 6 branch table and frozen M source | Implementation method, not new effect theory; specialization TCB; no arbitrary-lowerer claim. |
+| `EVIDENCE-BOUNDED-VALIDATION` | Mutation, finite checking, sealed composition, two-generation exact-task measurements, and replayable recount support feasibility. | Does not decide novelty against other systems. | Existing M/E/F2 evidence and N2 classification | Finite scope, adverse results retained, no human study, no executed wrong-route witness, no formal semantics. |
 
 ## 6. Claims to retain, narrow, or delete
 
 | Disposition | Claim |
 | --- | --- |
-| Retain, bounded | RTDL implements a joint admission contract for five named seams in its supported finite RT routes. |
-| Retain, bounded | Typed callback effects are lowered through a deterministic ABI and consumed by trusted topology-specific wrappers at hardware-control points. |
-| Retain, evidence-only | Mutation tests demonstrate liveness of the five checks; integrated projection corruption is blocked before native load. |
-| Retain, evidence-only | Frozen two-generation results bound overhead for the exact evaluated paths; they do not prove general performance. |
-| Narrow | Checked nearby primary sources do not document the same Q1-Q6 guarantee; for several systems the exact answer remains unknown. |
+| Retain, bounded | RTDL implements one route-level admission decision over five named seams for its supported finite families. |
+| Retain, bounded | The accepted route identity is carried into per-route preparation and interface-specific publication checks. |
+| Retain, implementation | General typed effects lower through a deterministic ABI and trusted wrappers; reported routes use disclosed exact-IR specializations. |
+| Retain, evidence-only | With native-initialization overlap disabled, integrated projection mutations are rejected before the native-library loader. |
+| Retain, evidence-only | Frozen two-generation results bound overhead only for the exact specialized prepared routes. |
+| Narrow | Checked nearby primary sources do not document the same Q1-Q6 guarantee; several exact answers remain `UNKNOWN`. |
 | Delete | Existing Python RT interfaces merely expose raw calls or cannot provide whole-route checks. |
-| Delete | Existing systems do not manage pipelines/SBTs or do not check cross-stage payload constraints. |
+| Delete | Validation-before-native-execution, typed effects, hashes, or protocol reasoning are new. |
+| Delete | Every measured role executes through a Numba leaf and per-leaf effect-tag check. |
+| Delete | Every public interface returns only after digest and detailed receipt validation. |
 | Delete | The illustrative `(100,0),(101,1)` defective route was executed. |
-| Delete | RTDL is the first/only system capable of this mechanism. |
-| Delete | The protocol contract or finite checker proves semantic correctness or arbitrary-topology generality. |
+| Delete | RTDL is first/only, proves semantic correctness, or supports arbitrary topology lowering. |
 
-## 7. Cost and tradeoff disclosure
+## 7. Cost and adverse-evidence disclosure
 
-The method's current cost is material and part of the contribution boundary.
-The sealed extension required approximately 2,635 lines of topology-specific
-code plus compiler modifications after the nominal generic core was frozen.
-The canonical compilation plan remains non-executable. Specialized wrapper
-generators, trusted semantic schemas, native provider behavior, and lifecycle
-checks form a sizable TCB. There is no independent human authoring study.
+The canonical lowering plan is not executable. The sealed extension required
+about 2,635 topology-specific LOC and compiler changes. Trusted semantic
+schemas, exact-IR guards, wrapper generators, runtime/provider behavior, and
+lifecycle checks form a sizable TCB. There is no independent human authoring or
+prevalence evidence.
 
-The performance evidence supports prepared-route overhead bounds on two NVIDIA
-GPU generations, but first-result/post-import measurements are adverse and
-confounded by lifecycle placement. Per-call detailed receipts were not retained
-for the 4,096 timed Arm-A calls. These costs do not erase the design result, but
-they prohibit claims of automatic arbitrary extension, generally negligible
-startup cost, or demonstrated ease of use.
+The performance evidence supports prepared-route overhead bounds for two exact
+tasks on two NVIDIA generations. It does not show that generic Numba-leaf
+execution has the same cost. All post-import A/C rows are adverse, including a
+2.377129x worst block. Relative-to-E first-result medians regress about 8%--22%
+at implementation entry and 16%--31% post-import; those comparisons are post
+hoc and non-gating, and both endpoints are lifecycle/import-confounded. The
+formal timed Arm-A population contains 4,096 calls but only 32 separate
+post-loop detailed receipts. A-only instrumentation cannot qualify B/C.
+
+The finite checker missed an early-return probe before repair, the double-fault
+mock returned no public result, and the native-fork probe accepted a public call
+through a mock native implementation without GPU work. Neither defect appeared
+in retained successful GPU workers. These facts narrow the evidence; they do not
+repair runtime defects.
 
 ## 8. N3 verdict
 
-The work supports **one bounded compiler-systems contribution**, implemented by
-a typed-effect/specialized-lowering method and backed by finite evidence. It is
-potentially suitable for CGO if the manuscript is rewritten around this exact
-increment and the final bytes survive independent review. The argument does not
-support a new general type theory, automatic lowerer synthesis, universal Python
-RT safety, or categorical superiority over the named systems.
+The work supports **one bounded compiler-systems design**, one concrete
+implementation method, and finite evaluation evidence. It may be suitable for
+CGO only if the manuscript states these exact boundaries and the P-triple-prime
+bytes survive independent review. This author-side argument does not establish
+novelty, authorize a claim, or support a new theory, arbitrary compiler,
+universal Python RT safety, or categorical superiority over named systems.
