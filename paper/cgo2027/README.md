@@ -1,164 +1,110 @@
 # CGO 2027 anonymous manuscript workspace
 
-`main.tex` and `main.pdf` are the current P-quintuple-prime manuscript
-candidate. The paper is organized around a bounded result-route contract:
-fixed output obligations constrain callback effects, trusted traversal
-interpretation, and fail-closed result publication. Shared
-schema/identity/lifecycle checks and topology-specific trusted lowering are
-the implementation. The final argument closure makes concrete
-reject/generate/select decisions, the general-versus-specialized connection,
-and the restricted-expressiveness/topology-TCB cost explicit. It does not
-claim arbitrary Python, arbitrary Callback IR, topology-generic lowering,
-intrinsic language speedup, broad usability, or a representative unseen-
-application study.
+`main.tex` and `main.pdf` are the current P-sextuple-prime manuscript
+candidate. The paper presents RTDL as a restricted-Python DSL and compiler for
+bounded computations that repurpose ray-tracing hardware. The author selects
+the geometric mapping and owns application semantics; for supported fixed
+families, RTDL relates declared result obligations to role/effect admission,
+typed data and ABI contracts, trusted traversal-action generation, executable
+identity, and fail-closed result publication.
 
-The exact candidate PDF is nine US-Letter pages with SHA-256
-`34dad89878f7a283662e51059d1b81c4d266198657e0d4db065f0c3df2c41385`.
-Every page of these bytes has been rendered and inspected. The PDF has no
-overfull boxes, unresolved references, clipping, or overlap. The exact bytes
-passed the current author-side anonymity scan.
-This is a final-review candidate, not a submission record or claim
-authorization.
+The manuscript makes four bounded contribution claims:
 
-## Frozen evidence identities
+1. a restricted-Python programming model for immutable records, typed role
+   functions, and manifests;
+2. typed Callback IR plus whole-protocol admission;
+3. generated Numba leaves, trusted topology wrappers, exact-IR
+   specializations, and prepared runtime binding; and
+4. V4 application/case-study evidence with explicit source-custody levels.
 
-- Measured implementation M:
-  `d653fe4ad170c5b51fee309d653c9565944dcf2e`, tree
-  `d53af23a2599f9d6adb4ac0bfff39cd0ab31860b`.
-- Predecessor E:
-  `12ab1bc0a8ebbcefe42e93c677a151c04c3ba3c8`, tree
-  `aa8b9b12a7bf9cf4395cb71e4fb8e6eb0f169ab6`.
-- Final tooling snapshot F2:
-  `9771facece4ccd807e26c15b21892b9d0a701d32`, tree
-  `11c62c28bdebcc7d437f8ab3326635af0832ce48`.
-- Rejected old paper/package snapshot P:
-  `c6020fd63097b35b5294778cf54c2fb84c879ad6`, tree
-  `dc4b78ba3ec0f7816f87b87fdd74353c806caced`. Its independent lead verdict was
-  `REVISE_AND_REREVIEW_CHANGED_BYTES`.
-- Superseded P-prime snapshot:
-  `818c2ed284cde8acae9a09b531b8bfed3bf925ee`, tree
-  `59e6eaacadac711f8b0d93980b1bfbbd3d772dc7`.
-- Superseded P-double-prime snapshot (independent `REVISE`):
-  `b28076ad568d3b7b36cfa48b0c5846accff3cb95`, tree
-  `2a63fecbcf09727dbe4e38f83edb253d80fa3cab`.
-- Superseded P-triple-prime snapshot:
-  `c26c88a69382d9786c2f5f77c6cdc6763fc51e7c`, tree
-  `b45bae5d83ec9c803657b28132c677d514897bb3`.
-- Superseded P-quadruple-prime snapshot:
-  `70a081e90c4c50ecf92d24741529de9859841c70`, tree
-  `b4b1628345536976e2ed8fbb67ab5b4ff21fc802`.
-- Current P-quintuple-prime snapshot:
-  `41bbec66c6f9f8f770d18075fb9dacbed16d499d`, tree
-  `135f2bc214927acdb305cf2edd2c5ef98690b4a2`.
+It does not claim arbitrary Python, arbitrary Callback IR, arbitrary-topology
+synthesis, independent-user ease of use, a broad performance win, or that
+prior systems cannot implement related guarantees. Whole-protocol/result-route
+checking is one compiler contribution inside the DSL story, not the entire
+paper theme.
 
-Two exact tasks passed the machine numerical contract independently on RTX
-4090 Ada and RTX 3090 Ampere. The main performance observation is prepared
-public RTDL/Direct; no A/D worst-block gate exists. The original written
-per-execution detailed-receipt requirement was not fulfilled: 4,096 timed
-Arm-A calls have 32 separate post-loop diagnostic receipts. Synchronous
-native/compact status and optional supplied expected-output checks occur before
-public return; worker output-and-digest validation occurs afterward. No wrong
-output was observed in the retained final GPU samples.
+## Current exact candidate
 
-Implementation-entry is not an authorized positive performance claim.
-Post-import is adverse on all four rows and reaches `2.377129x`. Relative to
-E, first-result medians regress about 8%-22% at entry and 16%-31% post-import;
-those rows are post hoc and non-gating. Both first-result endpoints are
-lifecycle/import-confounded. The paired ON/OFF instrumentation study measured
-Arm A only.
-
-## Artifact state
-
-`artifact_post_goal5851/` is the committed template and verifier-source root,
-not an exporter output directory. Final tooling snapshot F2 was recovered
-from a clean remote checkout and passed the complete normal/optimized
-regression matrix, two byte-identical repository-external exports, existing-
-root rejection, and isolated normal plus optimized replay.
-
-The exact anonymous delivery pair is:
-
-| Deliverable | SHA-256 |
+| Object | Exact identity |
 | --- | --- |
-| `output/pdf/rtdl_cgo2027_submission_candidate.pdf` | `34dad89878f7a283662e51059d1b81c4d266198657e0d4db065f0c3df2c41385` |
-| `output/artifact/rtdl-cgo2027-artifact.tar.gz` | `916cedbb7001c7aa43e66df3f992b543b7b3ca5a013f0f997790113a2e3738b8` |
+| Candidate commit | `7959b325e4f42efc42b773fd363d3c5e9dedb1e1` |
+| Candidate tree | `b6f738e135050cafb8923c84ef33aa2665e2b749` |
+| Candidate parent | `8dfdc810c9c23f259b20c511caf69d250f2b86ce` |
+| `main.tex` | 60,755 bytes; SHA-256 `a339ace8ec2f071cd85c2416e9f67b5d76ae533d43a41a96dbfa2f6647be7de0` |
+| `references.bib` | 21,953 bytes; SHA-256 `bb0b71ae0fec49492888fbc9252ed412897cb2d4d7f1e33008f902cdb3b74e61` |
+| Exact PDF | 182,617 bytes; SHA-256 `a1772fc41809deb91f64466fc0cccb9557023c143d99d361b4f3b9aa38ad36f0` |
+| Source bundle | 29,176 bytes; SHA-256 `a49ea4aedc2b96084eefddf2ee987e20e968b59416c678caa30c5ab0c4606afa` |
+| Unchanged F2 artifact | 180,308 bytes; SHA-256 `916cedbb7001c7aa43e66df3f992b543b7b3ca5a013f0f997790113a2e3738b8` |
 
-The nine-member archive is 180,308 bytes. The P-prime author-side remediation
-replayed these exact bytes from two fresh extraction roots, including one with
-spaces, in normal and optimized isolated Python. All four outputs were
-byte-identical and reconstructed 160
-formal cells, 20,480 steady samples, 1,024 Arm-A instrumentation workers, 20
-AOT qualifications, and eight competence workers. The package explicitly says
-that this is an offline evidence recount, not a GPU rerun or product install.
+The measured implementation remains M commit
+`d653fe4ad170c5b51fee309d653c9565944dcf2e`, tree
+`d53af23a2599f9d6adb4ac0bfff39cd0ab31860b`. Predecessor E remains
+`12ab1bc0a8ebbcefe42e93c677a151c04c3ba3c8`. Frozen offline tooling F2
+remains commit `9771facece4ccd807e26c15b21892b9d0a701d32`, tree
+`11c62c28bdebcc7d437f8ab3326635af0832ce48`.
 
-An additional anonymous source-custody bundle is at
-`output/source/rtdl-cgo2027-source.tar.gz`, 23,637 bytes, SHA-256
-`f9e70fd7e709eeb611ba740628654379866e638d3534c9ddb94a3b8c0f3ea30a`.
-It contains only exact-P-quintuple-prime `main.tex` and `references.bib`. Two normalized builds
-were byte-identical, and extraction plus Tectonic compilation succeeded from a
-foreign path containing spaces. It is not presumed to be a required HotCRP
-upload.
+The candidate-parent diff is empty under `src/`, `include/`, `experiments/`,
+`scripts/`, `tests/`, and `paper/cgo2027/artifact_post_goal5851/`. No compiler,
+runtime, native code, app, workload, timer, estimator, threshold, test, GPU
+evidence, or F2 byte changed for P-sextuple-prime.
 
-Detailed controls are in:
+## Evidence boundary
 
-```text
-history/internal_docs/post_goal5851_submission_remediation_20260906/
-  CLAIM_LEDGER.json
-  R2_SUBMISSION_EVIDENCE_REPORT.md
-  R3_CONTROL_AND_CUSTODY_CORRECTION_LEDGER.md
-  R4_MANUSCRIPT_REWRITE_AND_RENDER_REPORT.md
-  R5_FINAL_F2_REHEARSAL_REPORT.md
-  R6_FINAL_DELIVERY_PAIR_AND_REPLAY_REPORT.md
-  R7_FINAL_BYTES_REVIEW_REQUEST.md
-  R7_INTERNAL_HOSTILE_PRECHECK.md
-  R7_LEAD_INDEPENDENT_FINAL_BYTES_REVIEW.md
-  R7_OLD_P_CONTROL_RECORD_ERRATUM.md
-  R7_PPRIME_LEAD_REMEDIATION_REPORT.md
-  R7_PPRIME_FINAL_BYTES_REVIEW_REQUEST.md
-  R7_PDOUBLEPRIME_FINAL_BYTES_REVIEW_REQUEST.md
-  R7_PDOUBLEPRIME_LEAD_INDEPENDENT_REVIEW_20260907.md
-  R7_PTRIPLEPRIME_REMEDIATION_REPORT.md
-  R7_PTRIPLEPRIME_FINAL_BYTES_REVIEW_REQUEST.md
-  R7_PQUADRUPLEPRIME_FINAL_BYTES_REVIEW_REQUEST.md
-  R7_PQUINTUPLEPRIME_FINAL_BYTES_REVIEW_REQUEST.md
-  R8_LOCAL_PREFLIGHT_REPORT.md
-  R8_PPRIME_LOCAL_PREFLIGHT_REPORT.md
-  R8_PDOUBLEPRIME_LOCAL_PREFLIGHT_REPORT.md
-  R8_PTRIPLEPRIME_LOCAL_PREFLIGHT_REPORT.md
-  R8_PQUADRUPLEPRIME_LOCAL_PREFLIGHT_REPORT.md
-  R8_PQUINTUPLEPRIME_LOCAL_PREFLIGHT_REPORT.md
-  FREEZE_RECORD.md
-  STATUS.json
-  novelty/THREE_QUESTION_CLOSURE_RESPONSE_20260907.md
-  novelty/
-```
+The final M evaluation contains two exact tasks run independently on RTX 4090
+Ada and RTX 3090 Ampere. Prepared public RTDL/Direct latency ratios are
+`1.077--1.175x`; these are overhead ratios, not intrinsic-language speedups.
+The original written per-execution detailed-receipt requirement was not met:
+4,096 timed Arm-A calls have 32 separate post-loop diagnostic receipts. All
+post-import rows are adverse and reach `2.377129x`; predecessor first-result
+comparisons are post hoc and lifecycle-confounded. Instrumentation evidence
+qualifies Arm A only.
 
-## Remaining gates
+Historical V4 evidence records nine application mappings and thirteen selected
+paper lanes. Exact application-source hashes survive for Particle Tracking,
+Triangle Counting, and LibRTS; the other six mappings have archive-level audit
+records only because their individual sources and the frozen 10.8 MB archive
+are absent from the current checkout. The separate historical 34-row
+V2-direct/V4 authority records 16 row-local median passes, 18 failures, 11
+confidence-interval wins, 10 losses, and 13 uncertain rows. It is not a
+PyOptiX comparison and is not pooled with final M.
 
-Old P received one independent `REVISE` verdict. Its findings were remediated
-author-side in P-prime, and P-double-prime then rewrote the novelty and
-contribution argument. Independent lead review of P-double-prime returned one
-major and six minor findings and no acceptance. P-triple-prime corrected those
-seven findings author-side. P-quadruple-prime preserves those corrections and
-makes the result-route relation, W1--W3 compiler witnesses, direct
-PCC/Slang/FFI comparisons, and RQ1--RQ4 evaluation structure explicit.
-P-quintuple-prime closes the three-question argument with explicit compiler
-decisions, a general/specialized semantic bridge, and the design's trusted-code
-cost. R7 requires two independent reviews of the exact P-quintuple-prime PDF
-and unchanged F2 archive. No earlier review approves these changed bytes. R8
-still requires final independent anonymity,
-bibliography, link, hash, upload, and submission-receipt checks. No upload has
-occurred, and `public_or_manuscript_claim_authorized` remains false.
+The nine-member F2 archive performs offline recount of retained evidence. It
+does not rerun GPU work, install RTDL, verify novelty, or reconstruct missing
+private history.
 
-The current R7 request is
-`history/internal_docs/post_goal5851_submission_remediation_20260906/R7_PQUINTUPLEPRIME_FINAL_BYTES_REVIEW_REQUEST.md`.
-The P-prime through P-quintuple-prime remediation and local preflight are
-author-side checks, not independent reviews, and do not close R7.
+## Local validation
 
-Local R8 checks for P-quintuple-prime that do not depend on reviewers or
-authenticated submission state have passed. R8 itself remains open because
-R7, two independent anonymity scans, HotCRP author/topic/conflict fields,
-upload, downloaded-byte verification, and a real submission receipt remain
-pending.
+| Check | Result |
+| --- | --- |
+| Cached Tectonic build | PASS |
+| Page count and size | 12 pages, 612 x 792 pt US Letter |
+| Main-content boundary | Main content ends on page 11; references begin on page 11 |
+| Paper/delivery PDF identity | Byte-identical |
+| Horizontal/vertical overfull boxes | 0 / 0 |
+| Unresolved citations/references | 0 |
+| Embedded/subset/Unicode fonts | 12/12 / 12/12 / 12/12 |
+| Render inspection | All 12 pages inspected; no clipping, overlap, blank page, missing glyph, or unreadable table |
+| Local anonymity scan | PASS for tested private paths and identities |
+| Source custody | Twin normalized bundles byte-identical; foreign-path build passed |
+
+BibTeX emits nonfatal completeness warnings for inherited conference records
+and the in-press survey. That is not a zero-warning build claim. Independent
+bibliography, live-link, content, novelty, and anonymity review remains open.
+
+## Review and submission state
+
+The exact review request is
+`history/internal_docs/post_goal5851_submission_remediation_20260906/R7_PSEXTUPLEPRIME_FINAL_BYTES_REVIEW_REQUEST.md`.
+The author-side preflight is
+`history/internal_docs/post_goal5851_submission_remediation_20260906/R8_PSEXTUPLEPRIME_LOCAL_PREFLIGHT_REPORT.md`.
+Detailed current state is in `STATUS.json` and the 28-entry `CLAIM_LEDGER.json`
+in the same control directory.
+
+P-sextuple-prime has zero of two required independent exact-byte acceptances.
+No earlier candidate review transfers. All claim authorization flags remain
+false. Authenticated submission-form checks, independent anonymity review,
+upload, downloaded-byte verification, and a submission receipt remain open.
+No upload or submission has occurred.
 
 The hard executable-code freeze is 2026-09-08 00:00 America/New_York. After
 that point, only frozen-tool execution, manuscript/bibliography edits, claim

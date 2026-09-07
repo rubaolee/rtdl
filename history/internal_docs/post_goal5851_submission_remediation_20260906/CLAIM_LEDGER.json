@@ -2,7 +2,7 @@
   "schema": "rtdl.cgo2027.post_goal5851.claim_ledger.v1",
   "version": 1,
   "created_at_utc": "2026-09-06T20:35:00Z",
-  "updated_at_utc": "2026-09-07T12:21:58Z",
+  "updated_at_utc": "2026-09-07T12:31:19Z",
   "measured_implementation": {
     "commit": "d653fe4ad170c5b51fee309d653c9565944dcf2e",
     "tree": "d53af23a2599f9d6adb4ac0bfff39cd0ab31860b",
@@ -116,6 +116,32 @@
       "sha256": "47702aa496f805bb4c0edff12c60d04877a051de77094ddcca5e302e0e16f580",
       "independent_reviews_required": 2,
       "independent_acceptances_received": 0
+    },
+    "paper_snapshot_p_sextuple_prime": {
+      "commit": "7959b325e4f42efc42b773fd363d3c5e9dedb1e1",
+      "tree": "b6f738e135050cafb8923c84ef33aa2665e2b749",
+      "parent": "8dfdc810c9c23f259b20c511caf69d250f2b86ce",
+      "main_tex_sha256": "a339ace8ec2f071cd85c2416e9f67b5d76ae533d43a41a96dbfa2f6647be7de0",
+      "references_bib_sha256": "bb0b71ae0fec49492888fbc9252ed412897cb2d4d7f1e33008f902cdb3b74e61",
+      "pdf_sha256": "a1772fc41809deb91f64466fc0cccb9557023c143d99d361b4f3b9aa38ad36f0",
+      "pdf_bytes": 182617,
+      "pdf_pages": 12,
+      "source_bundle_sha256": "a49ea4aedc2b96084eefddf2ee987e20e968b59416c678caa30c5ab0c4606afa",
+      "source_bundle_bytes": 29176,
+      "artifact_sha256": "916cedbb7001c7aa43e66df3f992b543b7b3ca5a013f0f997790113a2e3738b8",
+      "application_evidence_matrix_sha256": "9ffba6ef1dd5a076febabe742380f1554749bf9a13ebd5d1f25e875a811d9cd3",
+      "dsl_first_execution_report_sha256": "11ca44801b228d163c64d884c433ccd3c780f554ae09bea9b37fedd033881b7d",
+      "author_remediation_status": "DSL_FIRST_REPURPOSED_RT_REWRITE_COMPLETE_PENDING_TWO_INDEPENDENT_R7_ACCEPTANCES",
+      "independent_acceptances_received": 0,
+      "commit_identity_record_location": "R7_PSEXTUPLEPRIME_FINAL_BYTES_REVIEW_REQUEST.md"
+    },
+    "p_sextuple_prime_review_request": {
+      "path": "history/internal_docs/post_goal5851_submission_remediation_20260906/R7_PSEXTUPLEPRIME_FINAL_BYTES_REVIEW_REQUEST.md",
+      "sha256": "c0d5fe4f37525e8a98f70eef28d04bd77f89e45e7c26a14b6ca43f5882d5adbc",
+      "independent_reviews_required": 2,
+      "independent_acceptances_received": 0,
+      "earlier_candidate_reviews_transfer": false,
+      "author_local_preflight_counts_as_acceptance": false
     }
   },
   "common_evidence": {

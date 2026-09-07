@@ -987,3 +987,39 @@ used the installed Poppler binary and produced the 12/12 result above.
 P-quintuple-prime starts at 0/2 independent exact-byte acceptances. The author
 closure and local preflight count as zero. No claim is authorized, no upload
 was attempted, and no submission receipt exists.
+
+## P-sextuple-prime DSL-first candidate and local preflight (2026-09-07)
+
+The two owner directives for a DSL-first paper and a bounded repurposed-RT
+problem statement were applied without changing compiler/runtime/native code,
+apps, experiments, tests, workloads, thresholds, evidence, or F2. The immutable
+candidate is commit `7959b325e4f42efc42b773fd363d3c5e9dedb1e1`, tree
+`b6f738e135050cafb8923c84ef33aa2665e2b749`, parent
+`8dfdc810c9c23f259b20c511caf69d250f2b86ce`.
+
+The exact `main.tex` SHA-256 is
+`a339ace8ec2f071cd85c2416e9f67b5d76ae533d43a41a96dbfa2f6647be7de0`;
+the bibliography SHA-256 is
+`bb0b71ae0fec49492888fbc9252ed412897cb2d4d7f1e33008f902cdb3b74e61`.
+The paper and delivery PDFs are byte-identical, 182,617 bytes, and SHA-256
+`a1772fc41809deb91f64466fc0cccb9557023c143d99d361b4f3b9aa38ad36f0`.
+The normalized two-file source bundle is 29,176 bytes at SHA-256
+`a49ea4aedc2b96084eefddf2ee987e20e968b59416c678caa30c5ab0c4606afa`.
+F2 remains byte-identical at SHA-256
+`916cedbb7001c7aa43e66df3f992b543b7b3ca5a013f0f997790113a2e3738b8`.
+
+Author-side validation passed a cached Tectonic build, 12-page US-Letter page
+and layout checks, zero horizontal or vertical overfull boxes, zero unresolved
+citations/references, 12/12 embedded/subset/Unicode fonts, all-page visual
+inspection, tested private-identity scanning, twin normalized source builds,
+and a foreign-path source compile. BibTeX retained disclosed nonfatal
+completeness warnings. No unchanged test was rerun and no GPU ran by directive.
+
+The claim ledger contains 28 unique claims, zero authorized. The exact R7
+request is `R7_PSEXTUPLEPRIME_FINAL_BYTES_REVIEW_REQUEST.md`, SHA-256
+`c0d5fe4f37525e8a98f70eef28d04bd77f89e45e7c26a14b6ca43f5882d5adbc`.
+The author-local R8 preflight is
+`R8_PSEXTUPLEPRIME_LOCAL_PREFLIGHT_REPORT.md`, SHA-256
+`e65a4533418adc2ba15bedddd160139bf20a3c98fca19cc7f1008f730dfbb701`.
+R7 remains 0/2; no earlier review transfers. No claim is authorized, no upload
+was attempted, and no submission receipt exists.

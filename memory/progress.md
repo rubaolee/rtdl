@@ -19419,3 +19419,22 @@ source compilation passed, four isolated artifact replays were byte-identical,
 and frozen evidence tests passed 14/14 normally and under `-O`. These are
 author-side checks. P-prime has 0/2 independent acceptances; R7/R8, authenticated
 form checks, upload, receipt, and claim authorization remain open.
+
+## P-sextuple-prime DSL-first checkpoint (2026-09-07)
+
+The current immutable paper candidate is commit `7959b325e...`, tree
+`b6f738e135...`. It reframes the submission around RTDL as a restricted-Python
+DSL/compiler, treats whole-protocol/result-route checking as one contribution,
+and adds a concrete supported DSL example, explicit author/compiler ownership,
+typed IR and lowering structure, a nine-application E1/E2 evidence matrix,
+mixed historical performance disclosure, and stronger adjacent-work credit.
+
+The exact 12-page PDF is 182,617 bytes at SHA-256 `a1772fc4...36f0`; the
+two-file source bundle is 29,176 bytes at `a49ea4ae...6afa`; unchanged F2 is
+`916cedbb...38b8`. Author-side build, render, font, anonymity, custody, and
+foreign-path checks passed. No implementation/evidence/F2 byte changed, no GPU
+ran, and no unchanged test was rerun. The 28 claims remain unauthorized.
+
+Current gate: exact-byte R7 request ready, 0/2 independent acceptances. R8 is
+local preflight only. No authenticated submission-form check, upload,
+downloaded-byte verification, or submission receipt exists.
