@@ -18,7 +18,11 @@ from pathlib import Path
 import threading
 
 from .aabb_index import prepare_aabb_index_2d_columns
-from .optix_runtime import _load_optix_library
+from .optix_runtime import (
+    _load_optix_library,
+    prepare_optix_aabb_box_queries_2d,
+    prepare_optix_aabb_point_queries_2d,
+)
 from .physical_execution_provenance import OptixTraversalAuditSession
 from .v4_box_relation_callback import compile_callback, physical_schema
 from .v4_typed_physical_schema import verify_typed_physical_schema
@@ -98,6 +102,7 @@ class PreparedVerifiedAabbRelationCountV4:
         self._authority = authority
         self._prepared = prepare_aabb_index_2d_columns(
             indexed_columns, backend="optix")
+        self._prepared_queries = None
         self._closed = False
         self._pid = os.getpid()
         self._thread = threading.get_ident()
@@ -109,6 +114,24 @@ class PreparedVerifiedAabbRelationCountV4:
             "physical_lowering": (
                 "canonical_v4_aabb_relation_to_device_scalar_count_v1"),
         })
+
+    def bind_queries(self, *, point_queries=None, box_queries=None) -> None:
+        """Bind one immutable query batch for repeated native execution."""
+
+        self._guard()
+        if self._prepared_queries is not None:
+            raise RuntimeError("prepared AABB relation-count queries are already bound")
+        if (point_queries is None) == (box_queries is None):
+            raise ValueError("bind exactly one point or box query batch")
+        if point_queries is not None:
+            if self._authority.algebra is not AabbCountAlgebra.POINT_CONTAINS:
+                raise ValueError("point queries require the point-contains algebra")
+            prepared = prepare_optix_aabb_point_queries_2d(point_queries)
+        else:
+            if self._authority.algebra is not AabbCountAlgebra.RANGE_CONTAINS:
+                raise ValueError("box queries require the range-contains algebra")
+            prepared = prepare_optix_aabb_box_queries_2d(box_queries)
+        self._prepared_queries = prepared
 
     def _guard(self) -> None:
         if self._closed:
@@ -126,35 +149,61 @@ class PreparedVerifiedAabbRelationCountV4:
             "physical_lowering": (
                 "canonical_v4_aabb_relation_to_device_scalar_count_v1"),
             "execution_count": self._execution_count,
+            "prepared_query_batch_bound": self._prepared_queries is not None,
+            "prepared_query_count": (
+                0 if self._prepared_queries is None else self._prepared_queries.count
+            ),
             "process_bound": True,
             "thread_bound": True,
             "nonserializable": True,
             "prepare_seconds_reported_separately": True,
         }
 
-    def execute_count(self, *, point_queries=(), box_queries=()) -> dict[str, object]:
+    def execute_count(
+        self, *, point_queries=None, box_queries=None,
+    ) -> dict[str, object]:
         self._guard()
         operation = (
             "point_contains"
             if self._authority.algebra is AabbCountAlgebra.POINT_CONTAINS
             else "range_contains"
         )
-        if operation == "point_contains" and box_queries:
+        if self._prepared_queries is not None and (
+            point_queries is not None or box_queries is not None
+        ):
+            raise ValueError("bound prepared queries reject per-execution query inputs")
+        if (
+            operation == "point_contains"
+            and box_queries is not None
+            and len(box_queries) != 0
+        ):
             raise ValueError("point-count authority rejects box queries")
-        if operation == "range_contains" and point_queries:
+        if (
+            operation == "range_contains"
+            and point_queries is not None
+            and len(point_queries) != 0
+        ):
             raise ValueError("range-count authority rejects point queries")
         audit = OptixTraversalAuditSession.open(
             library=self._library, library_path=self._native_path)
         try:
-            result = self._prepared.count(
-                point_queries=point_queries, box_queries=box_queries,
-                operation=operation)
+            if self._prepared_queries is not None:
+                result = self._prepared.count_prepared_queries(
+                    self._prepared_queries, operation=operation)
+                query_count = self._prepared_queries.count
+            else:
+                point_values = () if point_queries is None else point_queries
+                box_values = () if box_queries is None else box_queries
+                result = self._prepared.count(
+                    point_queries=point_values, box_queries=box_values,
+                    operation=operation)
+                query_count = len(point_values) + len(box_values)
             value = int(result["counts"][operation])
             receipt = audit.finish(
                 semantic_digest=_digest({
                     "authority": self._authority.authority_nonce,
                     "algebra": self._authority.algebra.value,
-                    "query_count": len(point_queries) + len(box_queries),
+                    "query_count": query_count,
                     "native": self._native_sha256,
                 }),
                 output_digest=_digest({"count": value}),
@@ -183,8 +232,12 @@ class PreparedVerifiedAabbRelationCountV4:
         if self._closed:
             return
         self._guard()
-        self._prepared.close()
-        self._closed = True
+        try:
+            if self._prepared_queries is not None:
+                self._prepared_queries.close()
+        finally:
+            self._prepared.close()
+            self._closed = True
 
     def __enter__(self):
         self._guard()

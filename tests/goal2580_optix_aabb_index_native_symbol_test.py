@@ -47,6 +47,7 @@ class OptixAabbIndexNativeSymbolTest(unittest.TestCase):
         self.assertIn("OPTIX_AABB_INDEX_RANGE_INTERSECTS = 3", wrapper)
 
     def test_contract_documents_optix_row_output_boundary(self) -> None:
+        wrapper = (ROOT / "src/rtdsl/optix_runtime.py").read_text(encoding="utf-8")
         self.assertEqual(
             rt.AABB_INDEX_2D_CONTRACT["backend_status"]["optix"],
             "native_count_point_contains_range_contains_range_intersects_point_contains_rows_and_range_intersection_rows",
@@ -56,6 +57,10 @@ class OptixAabbIndexNativeSymbolTest(unittest.TestCase):
         self.assertIn("prepare_optix_aabb_index_2d", rt.__all__)
         self.assertIn("prepare_optix_aabb_point_queries_2d", rt.__all__)
         self.assertIn("prepare_optix_aabb_box_queries_2d", rt.__all__)
+        self.assertIn(
+            "prepared OptiX AABB query layout does not match the operation",
+            wrapper,
+        )
         self.assertIn("PreparedOptixAabbIndex2D", rt.__all__)
         self.assertIn("PreparedOptixAabbQueries2D", rt.__all__)
 

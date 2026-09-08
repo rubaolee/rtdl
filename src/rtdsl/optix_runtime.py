@@ -16907,14 +16907,18 @@ class PreparedOptixAabbIndex2D:
             raise ValueError("count_prepared_queries requires a PreparedOptixAabbQueries2D")
         if queries._closed:
             raise RuntimeError("prepared OptiX AABB query handle is closed")
-        if queries.count == 0:
-            return 0
         normalized = (operation if operation is not None else queries.operation).lower().replace("-", "_")
         if normalized not in _OPTIX_AABB_INDEX_OPERATION_CODES:
             raise ValueError(
                 "unsupported OptiX AABB_INDEX_QUERY_2D operation: "
                 f"{operation}"
             )
+        if normalized != queries.operation:
+            raise ValueError(
+                "prepared OptiX AABB query layout does not match the operation"
+            )
+        if queries.count == 0:
+            return 0
         lib = _load_optix_library()
         count_symbol = _find_optional_backend_symbol(
             lib,

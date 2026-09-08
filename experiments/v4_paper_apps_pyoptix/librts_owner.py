@@ -173,6 +173,11 @@ class PublicPyOptixLibRTSCountOwner:
             runtime, (1,), np.dtype(np.uint32)
         )
         self.device_params = runtime.cp.cuda.alloc(PARAM_DTYPE.itemsize)
+        self.query_operation: str | None = None
+        self.query_device: tuple[Any, ...] = ()
+        self.query_count = 0
+        self.query_counts = None
+        self.query_status = None
         self._closed = False
 
     @classmethod
@@ -281,21 +286,54 @@ class PublicPyOptixLibRTSCountOwner:
         if self._closed:
             raise RuntimeError("LibRTS PyOptiX owner is closed")
 
+    def bind_queries(self, *, operation: str, queries: Iterable[Any]) -> None:
+        """Retain one normalized device query batch for prepared replay."""
+
+        self._guard()
+        if self.query_operation is not None:
+            raise RuntimeError("LibRTS PyOptiX queries are already bound")
+        query_host = normalize_queries(operation, queries)
+        query_count = int(query_host[0].size)
+        cp = self.runtime.cp
+        with self.stream:
+            self.query_device = tuple(cp.asarray(column) for column in query_host)
+            self.query_counts = cp.zeros(query_count, dtype=cp.uint32)
+            self.query_status = cp.zeros(1, dtype=cp.uint32)
+        self.stream.synchronize()
+        self.query_operation = operation
+        self.query_count = query_count
+
     def execute_count(
         self,
         *,
-        operation: str,
-        queries: Iterable[Any],
+        operation: str | None = None,
+        queries: Iterable[Any] | None = None,
         expected_count: int | None = None,
     ) -> LibRTSCountResult:
         self._guard()
         cp = self.runtime.cp
-        query_host = normalize_queries(operation, queries)
-        query_count = int(query_host[0].size)
-        with self.stream:
+        if self.query_operation is not None:
+            if queries is not None:
+                raise ValueError("bound PyOptiX queries reject per-execution inputs")
+            if operation is not None and operation != self.query_operation:
+                raise ValueError("bound PyOptiX query operation differs")
+            operation = self.query_operation
+            query_device = self.query_device
+            query_count = self.query_count
+            counts = self.query_counts
+            status = self.query_status
+        else:
+            if operation is None or queries is None:
+                raise ValueError("unbound PyOptiX execution requires operation and queries")
+            query_host = normalize_queries(operation, queries)
+            query_count = int(query_host[0].size)
             query_device = tuple(cp.asarray(column) for column in query_host)
             counts = cp.zeros(query_count, dtype=cp.uint32)
             status = cp.zeros(1, dtype=cp.uint32)
+        assert operation is not None and counts is not None and status is not None
+        with self.stream:
+            counts.fill(0)
+            status.fill(0)
             params = self.host_params[0]
             params["traversable"] = np.uint64(self.traversable)
             for name, column in zip(
@@ -359,6 +397,11 @@ class PublicPyOptixLibRTSCountOwner:
         self._closed = True
         self.stream = None
         self.device_params = None
+        self.query_operation = None
+        self.query_device = ()
+        self.query_count = 0
+        self.query_counts = None
+        self.query_status = None
         self.host_params_keepalive = None
         self.host_params = None
         self.host_total_keepalive = None

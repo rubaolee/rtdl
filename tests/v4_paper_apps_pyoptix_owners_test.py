@@ -116,6 +116,16 @@ class V4PaperAppsPyOptixOwnersTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             normalize_indexed_columns(bad)
 
+    def test_librts_worker_binds_queries_symmetrically_before_execute(self) -> None:
+        source = (
+            Path(__file__).resolve().parents[1]
+            / "scripts/v4_paper_apps_pyoptix_worker.py"
+        ).read_text(encoding="utf-8")
+        body = source[source.index("def _librts_case"):source.index("def _prepare_case")]
+        self.assertEqual(body.count("owner.bind_queries("), 2)
+        self.assertIn("result = owner.execute_count()", body)
+        self.assertNotIn("queries=data[\"queries\"]", body[body.index("def execute()", body.index("else:")):])
+
     def test_owner_modules_do_not_import_rtdl(self) -> None:
         root = Path(__file__).resolve().parents[1]
         for name in (

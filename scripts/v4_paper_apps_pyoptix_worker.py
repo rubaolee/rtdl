@@ -473,9 +473,10 @@ def _librts_case(
             if operation == "point_contains"
             else {"box_queries": data["queries"]}
         )
+        owner.bind_queries(**kwargs)
 
         def execute() -> dict[str, Any]:
-            result = owner.execute_count(**kwargs)
+            result = owner.execute_count()
             value = int(result["count"])
             if value != int(data["expected_count"]):
                 raise RuntimeError("LibRTS V4 full-app output mismatch")
@@ -507,11 +508,11 @@ def _librts_case(
             data["indexed"],
             prebuilt_ptx=_prebuilt_ptx(config, "librts"),
         )
+        owner.bind_queries(operation=operation, queries=data["queries"])
 
         def execute() -> dict[str, Any]:
             result = owner.execute_count(
                 operation=operation,
-                queries=data["queries"],
                 expected_count=int(data["expected_count"]),
             )
             if result.device_status:
@@ -532,6 +533,7 @@ def _librts_case(
         metadata = {
             "path_class": "public_pyoptix_custom_aabb_device_count",
             "private_rtdl_native_called": False,
+            "prepared_query_columns": True,
             "ptx_sha256": hashlib.sha256(owner.ptx).hexdigest(),
         }
     return execute, owner.close, metadata

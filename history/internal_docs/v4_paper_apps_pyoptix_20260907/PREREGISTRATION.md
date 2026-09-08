@@ -187,3 +187,31 @@ time only already committed and successfully rehearsed tools may execute. Old
 M/E/F2 evidence remains immutable and is not pooled. This transaction does not
 authorize public/manuscript performance, usability, nine-app completion,
 submission, or upload claims.
+
+## Pre-freeze prepared-query residency successor
+
+The first complete formal transaction at commit
+`f6936f47291ad28825244d2cb3c996c62193a57d` retained all 192 workers,
+reported zero retry/discard, passed exact output parity, and independently
+recounted. It also exposed adverse prepared costs: V4/PyOptiX was about 9.68x
+for LibRTS point containment and 16.20x for range containment. Those bytes and
+results remain immutable and are not pooled with a successor.
+
+Source inspection identified repeated query preparation inside the timed V4
+execute path: every replay normalized 100,000 Python rows, packed a native host
+buffer, and recreated the native device query allocation. The existing generic
+OptiX runtime already supports an app-neutral prepared AABB query handle. The
+successor may expose that handle through the public AABB index/count owner and
+bind the registered immutable query batch once during preparation. The public
+PyOptiX owner must symmetrically normalize, upload, and retain the same query
+columns during its preparation. Both execute paths then consume their retained
+query columns and still return the same checked U64 scalar.
+
+This successor changes no application predicate, input, output, OptiX device
+program, native traversal kernel, block order, endpoint definition, repetition
+count, warmup count, estimator, or performance threshold. Complete timing still
+includes query binding; first-result and prepared timing still begin after
+explicit preparation. It requires a new clean commit/tree, config, passing
+eight-process dry run, complete 192-worker transaction, independent recount,
+and separately named archive. The first transaction remains adverse evidence
+even if the successor improves performance.

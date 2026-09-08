@@ -316,6 +316,55 @@ class OptixAabbIndex2D:
             ),
         }
 
+    def count_prepared_queries(
+        self,
+        queries: Any,
+        *,
+        operation: str,
+    ) -> dict[str, Any]:
+        """Count one native-resident query batch against the prepared index."""
+
+        operations = _normalize_requested_operations(operation)
+        _validate_optix_operations(operations)
+        if len(operations) != 1:
+            raise ValueError("prepared AABB query count requires exactly one operation")
+        name = operations[0]
+        query_count = int(getattr(queries, "count", -1))
+        if query_count < 0:
+            raise TypeError("prepared AABB queries must expose a non-negative count")
+        if getattr(queries, "operation", None) != name:
+            raise ValueError("prepared AABB query layout does not match the operation")
+        query_start = time.perf_counter()
+        value = int(self.prepared.count_prepared_queries(queries, operation=name))
+        query_sec = time.perf_counter() - query_start
+        return {
+            "primitive": AABB_INDEX_2D_CONTRACT["primitive"],
+            "contract": "generic_prepared_aabb_index_query_2d",
+            "backend": self.backend,
+            "prepared": True,
+            "prepared_queries": True,
+            "operation": name,
+            "counts": {name: value},
+            "candidate_checks": None,
+            "query_counts": {
+                "point_queries": query_count if name == "point_contains" else 0,
+                "box_queries": query_count if name != "point_contains" else 0,
+            },
+            "index": {
+                "indexed_boxes": len(self.boxes),
+                "native_index": "optix_custom_aabb_gas",
+            },
+            "run_phases": {
+                "query_aabb_index_2d_sec": query_sec,
+            },
+            "rt_core_accelerated": True,
+            "native_engine_customization": False,
+            "claim_boundary": (
+                "Generic OptiX AABB_INDEX_QUERY_2D count over a prepared native "
+                "query batch; no application predicate or result semantics are added."
+            ),
+        }
+
     def intersection_rows(
         self,
         query_boxes: Iterable[Any],

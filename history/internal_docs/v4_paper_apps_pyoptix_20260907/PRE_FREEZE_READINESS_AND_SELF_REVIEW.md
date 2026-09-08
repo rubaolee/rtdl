@@ -123,7 +123,8 @@ zero; no requirement claims one detailed receipt per call.
 - Recovered source manifest independently regenerated: 9 applications, 134
   files, directory digest
   `a2cdb9f9f83a49485f8964c9ae8391ed9531c9b7f25bfe4cf16164c594bfa0cb`.
-- Focused experiment suite: 27 tests passed.
+- Focused experiment suite: 28 tests passed after the symmetric prepared-query
+  residency successor; related generic AABB tests add nine passing checks.
 - Directly relevant pre-existing runtime-input, AABB-count, triangle-device,
   and public Particle owner tests: 26 tests passed with
   `PYTHONPATH=src:scripts:tests:.`.
