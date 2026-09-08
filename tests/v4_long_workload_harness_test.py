@@ -4,6 +4,7 @@ import tempfile
 import unittest
 
 from scripts import v4_long_workload_controller as controller
+from scripts import v4_long_workload_independent_recount as recount
 from scripts import v4_long_workload_worker as worker
 
 
@@ -48,6 +49,40 @@ def _config():
 
 
 class V4LongWorkloadHarnessTest(unittest.TestCase):
+    def test_independent_recount_validates_registered_machine_projection(self):
+        common = {
+            "registered_machine": {
+                "cuda_visible_devices": "0",
+                "gpu": {
+                    "name": "GPU", "uuid": "uuid", "driver": "driver",
+                    "compute_capability": "8.6",
+                },
+            },
+            "python_version": "3.12.3",
+            "python_executable": "/venv/bin/python",
+        }
+        observed = {
+            **common["registered_machine"],
+            "hostname": "pod",
+            "platform": "Linux",
+            "python": common["python_version"],
+            "python_executable": common["python_executable"],
+        }
+        recount.validate_worker_machine(observed, common, ordinal=0)
+
+        invalid = []
+        changed_gpu = {**observed, "gpu": {**observed["gpu"], "uuid": "other"}}
+        invalid.append(changed_gpu)
+        invalid.append({**observed, "python": "3.11.0"})
+        invalid.append({**observed, "unexpected": "not-authorized"})
+        missing = dict(observed)
+        del missing["platform"]
+        invalid.append(missing)
+        for value in invalid:
+            with self.subTest(value=value):
+                with self.assertRaises(RuntimeError):
+                    recount.validate_worker_machine(value, common, ordinal=0)
+
     def test_formal_schedule_has_exact_population_and_balanced_pair_order(self):
         schedule = controller.build_schedule(_config(), mode="formal")
         self.assertEqual(len(schedule), 240)

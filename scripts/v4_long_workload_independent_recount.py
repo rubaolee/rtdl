@@ -25,6 +25,9 @@ BLOCK_ORDERS = (
     ("old_v4", "new_v4", "pyoptix"),
     ("pyoptix", "new_v4", "old_v4"),
 )
+WORKER_MACHINE_SUPPLEMENTAL_FIELDS = frozenset({
+    "hostname", "platform", "python", "python_executable",
+})
 
 
 def sha256(path: Path) -> str:
@@ -81,6 +84,28 @@ def read_journal(path: Path) -> list[dict[str, Any]]:
 def require(condition: bool, message: str) -> None:
     if not condition:
         raise RuntimeError(message)
+
+
+def validate_worker_machine(
+    observed: object, common: Mapping[str, Any], *, ordinal: int,
+) -> None:
+    registered = common.get("registered_machine")
+    require(isinstance(observed, Mapping),
+            f"worker machine is not an object: {ordinal}")
+    require(isinstance(registered, Mapping),
+            "formal config lacks a registered machine")
+    expected_fields = set(registered) | WORKER_MACHINE_SUPPLEMENTAL_FIELDS
+    require(set(observed) == expected_fields,
+            f"worker machine fields differ: {ordinal}")
+    require(all(observed.get(key) == value for key, value in registered.items()),
+            f"worker registered machine projection differs: {ordinal}")
+    require(observed.get("python") == common.get("python_version"),
+            f"worker machine Python version differs: {ordinal}")
+    require(observed.get("python_executable") == common.get("python_executable"),
+            f"worker machine Python executable differs: {ordinal}")
+    for field in ("hostname", "platform"):
+        require(isinstance(observed.get(field), str) and bool(observed[field]),
+                f"worker machine {field} is invalid: {ordinal}")
 
 
 def main() -> int:
@@ -182,8 +207,10 @@ def main() -> int:
         require(type(pid) is int and pid > 0 and pid not in process_ids,
                 f"worker PID is invalid or reused: {expected_row['ordinal']}")
         process_ids.add(pid)
-        require(worker.get("machine") == config["common"]["registered_machine"],
-                f"worker machine differs: {expected_row['ordinal']}")
+        validate_worker_machine(
+            worker.get("machine"), config["common"],
+            ordinal=expected_row["ordinal"],
+        )
         identity = worker.get("implementation_identity")
         registered = config["implementations"][expected_row["arm"]]
         require(isinstance(identity, Mapping),
