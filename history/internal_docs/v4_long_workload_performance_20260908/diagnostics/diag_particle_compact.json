@@ -1,0 +1,104 @@
+{
+  "app": "particle_tracking",
+  "config_sha256": "c9f3c9d2c1a73447e23c0fec9e3abe27d0864e8c0fe4039d7e190cbcd2595e41",
+  "formal_evidence": false,
+  "inclusive_nested_counters": {
+    "provenance.CapturedTraversalObservation.build_receipt": {
+      "calls": 16,
+      "inclusive_ms_per_call": 0.0775715625,
+      "inclusive_ms_total": 1.241145,
+      "inclusive_ns": 1241145
+    },
+    "provenance.OptixTraversalAuditSession.capture": {
+      "calls": 16,
+      "inclusive_ms_per_call": 0.084362375,
+      "inclusive_ms_total": 1.349798,
+      "inclusive_ns": 1349798
+    },
+    "provenance.OptixTraversalAuditSession.finish": {
+      "calls": 16,
+      "inclusive_ms_per_call": 0.16728225,
+      "inclusive_ms_total": 2.676516,
+      "inclusive_ns": 2676516
+    },
+    "provenance.OptixTraversalAuditSession.open": {
+      "calls": 16,
+      "inclusive_ms_per_call": 0.0285945625,
+      "inclusive_ms_total": 0.457513,
+      "inclusive_ns": 457513
+    },
+    "provenance._captured_snapshot_items": {
+      "calls": 16,
+      "inclusive_ms_per_call": 0.0464843125,
+      "inclusive_ms_total": 0.743749,
+      "inclusive_ns": 743749
+    },
+    "provenance._classify_snapshot": {
+      "calls": 16,
+      "inclusive_ms_per_call": 0.00540275,
+      "inclusive_ms_total": 0.086444,
+      "inclusive_ns": 86444
+    },
+    "provenance._registered_loaded_provider_identity": {
+      "calls": 16,
+      "inclusive_ms_per_call": 0.004481875,
+      "inclusive_ms_total": 0.07171,
+      "inclusive_ns": 71710
+    }
+  },
+  "input_identity": {
+    "input_sha256": "7f21844610c4c9ad8ccdf6ec6961de28d6f1099af8b1bf0e37e41bf53fb55743"
+  },
+  "maximum_ns": 1302157,
+  "median_ns": 1018599,
+  "method": {
+    "device_semantics_matched_with_pyoptix": true,
+    "device_source_shared_with_pyoptix": false,
+    "path_class": "v4_public_paper_app_prepared_owner",
+    "private_checker_off_path": false,
+    "restricted_callback_compile_in_complete": true,
+    "rtdlexe_lifecycle_used": false
+  },
+  "minimum_ns": 994358,
+  "notes": [
+    "Inclusive counters overlap and must not be summed.",
+    "Instrumentation changes timing and these samples are diagnostic only.",
+    "The script profiles the existing public V4 app front door after one warmup."
+  ],
+  "operation": null,
+  "output_sha256": "81dea3f2ad83c6c239a372d699b6133a088fe7171356b298b9aeace4074370c7",
+  "pooling_into_formal_transaction_forbidden": true,
+  "profile_output": "build-long-p2/particle_compact.prof",
+  "profile_text": "build-long-p2/particle_compact.txt",
+  "registered_config_source_commit": "c5c8be48b743aa001e9c16c3344cc97c200600d1",
+  "registered_config_source_tree": "e3bb0001f4c2d1e3171ab0431c0479500dfc7136",
+  "repetitions": 16,
+  "runtime_source_identity": {
+    "commit": "c5c8be48b743aa001e9c16c3344cc97c200600d1",
+    "diff_sha256": "f240189b7cea0e8ce79b03e7b296da65a19e17dc3024e15069c226a6fb562c5b",
+    "root": "/workspace/rtdl-v4-long-perf-dev",
+    "status": "M Paper-reproduction-apps/goal5753-held-out-particle-tracking/v4_whole_app.py\n M src/native/optix/rtdl_optix_api.cpp\n M src/native/optix/rtdl_optix_cuda_helpers.cu\n M src/native/optix/rtdl_optix_v4_callback_poc.cpp\n M src/native/optix/rtdl_optix_v4_product_status.h\n M src/rtdsl/physical_execution_provenance.py\n M src/rtdsl/v4_aabb_relation_count_lowering.py\n M src/rtdsl/v4_triangle_prepared_runtime.py\n M tests/goal5776_v4_triangle_device_columns_test.py\n?? build-long-p2/CONFIG_DIAGNOSTIC.json\n?? build-long-p2/librtdl_optix.so\n?? build-long-p2/particle_compact.prof\n?? build-long-p2/particle_compact.txt",
+    "tree": "e3bb0001f4c2d1e3171ab0431c0479500dfc7136"
+  },
+  "samples_ns": [
+    1302157,
+    1063430,
+    1017869,
+    1021118,
+    1028698,
+    1014218,
+    1008559,
+    1008488,
+    1013049,
+    1024769,
+    1019329,
+    1039009,
+    1010739,
+    1039759,
+    1007118,
+    994358
+  ],
+  "schema": "rtdl.v4_long_workload.hot_path_diagnostic.v1",
+  "script_sha256": "28e82589b1e1d44e354b0545f92c96f09bbf1b5b9482ea74ee832ed6fd73edbe",
+  "warmups": 1
+}

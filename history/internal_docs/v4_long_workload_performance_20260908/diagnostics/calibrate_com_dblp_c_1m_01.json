@@ -1,0 +1,90 @@
+{
+  "config_sha256": "29a070b67d9756dda08dd8be6a006bc77be8990a1e584a8295e322c2fdba2e38",
+  "dataset": "com-dblp",
+  "edge_file": "/workspace/rtdl-v4-paper-apps-run/data/DATA/triangle/com-dblp.edge",
+  "edge_file_sha256": "e9647564c1ca96589cc52314cabf5569ec80b9f5d697578a55d47fbe7aafca67",
+  "expected_triangle_count": 2224385,
+  "formal_evidence": false,
+  "machine": {
+    "cuda_visible_devices": "0",
+    "hostname": "4735c6e75b0c",
+    "python": "3.12.3"
+  },
+  "matched": true,
+  "max_relation_rows": 1000000,
+  "maximum_segment_primitives": 133208,
+  "maximum_segment_queries": 572716,
+  "observed_triangle_count": 2224385,
+  "phase_ns": {
+    "close": 50312,
+    "input_load_and_graph_contract": 696699428,
+    "pyoptix_owner_prepare": 2420802275,
+    "single_natural_graph_action": 1562101881
+  },
+  "pooling_into_formal_transaction_forbidden": true,
+  "schema": "rtdl.v4_long_workload.triangle_c_calibration.v1",
+  "script_sha256": "236765cc1606b270be4777428287761ef6483ce5d595f6acb4659aeb33adde86",
+  "segment_count": 8,
+  "segments": [
+    {
+      "checked_u64": 180067,
+      "device_status": 0,
+      "primitive_count": 133208,
+      "query_count": 572716,
+      "segment_id": 0
+    },
+    {
+      "checked_u64": 202707,
+      "device_status": 0,
+      "primitive_count": 129958,
+      "query_count": 504429,
+      "segment_id": 1
+    },
+    {
+      "checked_u64": 221774,
+      "device_status": 0,
+      "primitive_count": 128644,
+      "query_count": 458362,
+      "segment_id": 2
+    },
+    {
+      "checked_u64": 234880,
+      "device_status": 0,
+      "primitive_count": 127718,
+      "query_count": 430442,
+      "segment_id": 3
+    },
+    {
+      "checked_u64": 251009,
+      "device_status": 0,
+      "primitive_count": 125860,
+      "query_count": 410450,
+      "segment_id": 4
+    },
+    {
+      "checked_u64": 506802,
+      "device_status": 0,
+      "primitive_count": 128865,
+      "query_count": 381276,
+      "segment_id": 5
+    },
+    {
+      "checked_u64": 445705,
+      "device_status": 0,
+      "primitive_count": 128000,
+      "query_count": 359824,
+      "segment_id": 6
+    },
+    {
+      "checked_u64": 181441,
+      "device_status": 0,
+      "primitive_count": 104432,
+      "query_count": 296001,
+      "segment_id": 7
+    }
+  ],
+  "source_commit": "c5c8be48b743aa001e9c16c3344cc97c200600d1",
+  "source_tree": "e3bb0001f4c2d1e3171ab0431c0479500dfc7136",
+  "total_segment_primitives": 1006685,
+  "total_segment_queries": 3413500
+}

@@ -1,0 +1,23 @@
+{
+  "config_sha256": "26d3ad432773d3666157fb2620711df849dda6c03eae40c32e54adeb80de09d3",
+  "formal_evidence": false,
+  "input_identity": {
+    "dataset": "com-dblp",
+    "edge_file_sha256": "e9647564c1ca96589cc52314cabf5569ec80b9f5d697578a55d47fbe7aafca67",
+    "expected_triangle_count": 2224385,
+    "paper_algorithm": "RT-2A1"
+  },
+  "native_library_sha256": "138bfbbeda8a2dac817b3a430722f3efb5e4a7501b46174fe6fad3e02c85c80b",
+  "pooling_into_formal_transaction_forbidden": true,
+  "positive_control": {
+    "per_ray_host_materialized": false,
+    "physical_executor_classification": "optix_traversal_observed",
+    "query_count": 572716,
+    "reduced_output": 180067,
+    "triangle_count": 133208
+  },
+  "ray_failure": "V4 ray device-column IDs are not canonical launch order",
+  "schema": "rtdl.v4_long_workload.fused_triangle_id_gpu_diagnostic.v1",
+  "status": "PASS__BOTH_FUSED_ID_FAILURES_AND_POSITIVE_CONTROL",
+  "triangle_failure": "V4 triangle device-column IDs are not canonical launch order"
+}

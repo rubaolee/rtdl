@@ -1,0 +1,72 @@
+{
+  "app": "particle_tracking",
+  "arm": "pyoptix",
+  "config_sha256": "26d3ad432773d3666157fb2620711df849dda6c03eae40c32e54adeb80de09d3",
+  "formal_evidence": false,
+  "input_identity": {
+    "input_sha256": "7f21844610c4c9ad8ccdf6ec6961de28d6f1099af8b1bf0e37e41bf53fb55743"
+  },
+  "maximum_ns": 492583,
+  "median_ns": 464143,
+  "method": {
+    "device_semantics_matched_with_v4": true,
+    "device_source_shared_with_v4": false,
+    "path_class": "public_pyoptix_semantically_matched_particle_program",
+    "private_rtdl_native_called": false,
+    "ptx_sha256": "53cd6c9a45b5bc9e4d7cb2259a2426cf22434db7a647e23ff66706a068af685e"
+  },
+  "minimum_ns": 452502,
+  "notes": [
+    "One fresh process owns exactly one arm.",
+    "No profiler or nested timer instrumentation is installed.",
+    "This is a diagnostic, not a preregistered paired-block result."
+  ],
+  "operation": null,
+  "output_sha256": "81dea3f2ad83c6c239a372d699b6133a088fe7171356b298b9aeace4074370c7",
+  "pooling_into_formal_transaction_forbidden": true,
+  "repetitions": 32,
+  "runtime_source_identity": {
+    "commit": "c5c8be48b743aa001e9c16c3344cc97c200600d1",
+    "diff_sha256": "9a9c70b9d396983a1b5dbc87a3463c19c082eb0baa0a050b63e33391a3f33cdf",
+    "root": "/workspace/rtdl-v4-long-perf-dev",
+    "status": "M Paper-reproduction-apps/goal5753-held-out-particle-tracking/v4_whole_app.py\n M experiments/v4_paper_apps_pyoptix/particle_adapter.py\n M src/native/optix/rtdl_optix_api.cpp\n M src/native/optix/rtdl_optix_cuda_helpers.cu\n M src/native/optix/rtdl_optix_v4_callback_poc.cpp\n M src/native/optix/rtdl_optix_v4_product_status.h\n M src/rtdsl/physical_execution_provenance.py\n M src/rtdsl/v4_aabb_relation_count_lowering.py\n M src/rtdsl/v4_public_builtin_triangle.py\n M src/rtdsl/v4_triangle_prepared_runtime.py\n M src/rtdsl/v4_triangle_reduction_device_runtime.py\n M tests/goal5775_loaded_provider_identity_test.py\n M tests/goal5776_v4_triangle_device_columns_test.py\n?? build-long-p2/CONFIG_DIAGNOSTIC.json\n?? build-long-p2/librtdl_optix.so\n?? build-long-p2/particle_compact.json\n?? build-long-p2/particle_compact.prof\n?? build-long-p2/particle_compact.txt\n?? build-long-p2/wall_graph_pyoptix_pre_program_reuse.json\n?? build-long-p2/wall_graph_v4_pre_program_reuse.json\n?? build-long-p2/wall_librts_point_pyoptix_p1.json\n?? build-long-p2/wall_librts_point_pyoptix_p2.json\n?? build-long-p2/wall_librts_point_pyoptix_p3.json\n?? build-long-p2/wall_librts_point_v4_p1.json\n?? build-long-p2/wall_librts_point_v4_p2.json\n?? build-long-p2/wall_librts_point_v4_p3.json\n?? build-long-p2/wall_librts_range_pyoptix_p1.json\n?? build-long-p2/wall_librts_range_pyoptix_p2.json\n?? build-long-p2/wall_librts_range_pyoptix_p3.json\n?? build-long-p2/wall_librts_range_v4_p1.json\n?? build-long-p2/wall_librts_range_v4_p2.json\n?? build-long-p2/wall_librts_range_v4_p3.json\n?? build-long-p2/wall_particle_pyoptix_1.json\n?? build-long-p2/wall_particle_pyoptix_2.json\n?? build-long-p2/wall_particle_pyoptix_3.json\n?? build-long-p2/wall_particle_pyoptix_p3.json\n?? build-long-p2/wall_particle_pyoptix_p4.json\n?? build-long-p2/wall_particle_pyoptix_p5.json\n?? build-long-p2/wall_particle_v4_1.json\n?? build-long-p2/wall_particle_v4_2.json\n?? build-long-p2/wall_particle_v4_3.json\n?? build-long-p2/wall_particle_v4_p3.json\n?? build-long-p2/wall_particle_v4_p4.json\n?? build-long-p2/wall_particle_v4_p5.json\n?? diagnose_fused_triangle_id_failures.py\n?? diagnose_prepared_wall.py\n?? diagnose_triangle_id_validation.py",
+    "tree": "e3bb0001f4c2d1e3171ab0431c0479500dfc7136"
+  },
+  "samples_ns": [
+    492583,
+    478214,
+    473443,
+    483204,
+    489983,
+    471954,
+    468843,
+    465493,
+    462063,
+    454433,
+    467823,
+    471103,
+    464263,
+    463043,
+    459193,
+    461103,
+    461123,
+    464023,
+    452502,
+    460533,
+    468883,
+    464293,
+    459643,
+    462493,
+    472524,
+    466063,
+    460873,
+    456712,
+    461683,
+    491424,
+    453833,
+    458973
+  ],
+  "schema": "rtdl.v4_long_workload.prepared_wall_diagnostic.v1",
+  "script_sha256": "95d8fb56e14785422f8a5bf52c09efded3de46bce66ff14bd8725fb46854e320",
+  "warmups": 1
+}

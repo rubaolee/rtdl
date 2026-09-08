@@ -1,0 +1,109 @@
+{
+  "app": "librts",
+  "config_sha256": "29a070b67d9756dda08dd8be6a006bc77be8990a1e584a8295e322c2fdba2e38",
+  "formal_evidence": false,
+  "inclusive_nested_counters": {
+    "pathlib.Path.resolve": {
+      "calls": 48,
+      "inclusive_ms_per_call": 3.0303038125,
+      "inclusive_ms_total": 145.454583,
+      "inclusive_ns": 145454583
+    },
+    "provenance.CapturedTraversalObservation.build_receipt": {
+      "calls": 16,
+      "inclusive_ms_per_call": 0.154568,
+      "inclusive_ms_total": 2.473088,
+      "inclusive_ns": 2473088
+    },
+    "provenance.OptixTraversalAuditSession.capture": {
+      "calls": 16,
+      "inclusive_ms_per_call": 2.9432786875,
+      "inclusive_ms_total": 47.092459,
+      "inclusive_ns": 47092459
+    },
+    "provenance.OptixTraversalAuditSession.finish": {
+      "calls": 16,
+      "inclusive_ms_per_call": 3.1084395625,
+      "inclusive_ms_total": 49.735033,
+      "inclusive_ns": 49735033
+    },
+    "provenance.OptixTraversalAuditSession.open": {
+      "calls": 16,
+      "inclusive_ms_per_call": 6.4139806875,
+      "inclusive_ms_total": 102.623691,
+      "inclusive_ns": 102623691
+    },
+    "provenance._captured_snapshot_items": {
+      "calls": 16,
+      "inclusive_ms_per_call": 0.094418875,
+      "inclusive_ms_total": 1.510702,
+      "inclusive_ns": 1510702
+    },
+    "provenance._classify_snapshot": {
+      "calls": 16,
+      "inclusive_ms_per_call": 0.00675575,
+      "inclusive_ms_total": 0.108092,
+      "inclusive_ns": 108092
+    },
+    "provenance._loaded_provider_sha256": {
+      "calls": 16,
+      "inclusive_ms_per_call": 2.887774625,
+      "inclusive_ms_total": 46.204394,
+      "inclusive_ns": 46204394
+    },
+    "provenance.captured_traversal_observation_from_snapshot": {
+      "calls": 16,
+      "inclusive_ms_per_call": 2.919141375,
+      "inclusive_ms_total": 46.706262,
+      "inclusive_ns": 46706262
+    }
+  },
+  "input_identity": {
+    "cache_json_sha256": "428b1fe1600db318e86c8f1e77861eef7a46a15b1e95441f37a6c528f99f2c74",
+    "cache_npz_sha256": "64f8e9d4f567c4e694ab1da67a74299f588880c47696d82dcc56e4369cfca0b5",
+    "expected_count": 105826,
+    "operation": "range_contains",
+    "query_sha256": "0b7f2e6e21f3dca821f8913823cd59a20c47be0c5c0426268d4c42b38acf2c46"
+  },
+  "maximum_ns": 20905291,
+  "median_ns": 9134308,
+  "method": {
+    "path_class": "v4_fixed_aabb_count_specialization",
+    "private_checker_off_path": false
+  },
+  "minimum_ns": 8526022,
+  "notes": [
+    "Inclusive counters overlap and must not be summed.",
+    "Instrumentation changes timing and these samples are diagnostic only.",
+    "The script profiles the existing public V4 app front door after one warmup."
+  ],
+  "operation": "range_contains",
+  "output_sha256": "ce12d9de8ed2fb51211f9c192801f0c32744edd6d18e9576b453afcc4f37b687",
+  "pooling_into_formal_transaction_forbidden": true,
+  "profile_output": "/workspace/diag_librts_range.prof",
+  "profile_text": "/workspace/diag_librts_range.txt",
+  "repetitions": 16,
+  "samples_ns": [
+    8862830,
+    8683846,
+    9029555,
+    9302403,
+    9239061,
+    8555722,
+    8629704,
+    20905291,
+    9283402,
+    9493769,
+    8727946,
+    9273643,
+    9027295,
+    10133417,
+    10011942,
+    8526022
+  ],
+  "schema": "rtdl.v4_long_workload.hot_path_diagnostic.v1",
+  "script_sha256": "b90af806c7bd4b693644fa079021afd9796d19cac465edca02b30a6e1cf628c5",
+  "source_commit": "c5c8be48b743aa001e9c16c3344cc97c200600d1",
+  "source_tree": "e3bb0001f4c2d1e3171ab0431c0479500dfc7136",
+  "warmups": 1
+}

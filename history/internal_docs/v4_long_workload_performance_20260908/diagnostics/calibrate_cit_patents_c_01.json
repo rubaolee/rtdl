@@ -1,0 +1,845 @@
+{
+  "config_sha256": "29a070b67d9756dda08dd8be6a006bc77be8990a1e584a8295e322c2fdba2e38",
+  "dataset": "cit-Patents",
+  "edge_file": "/workspace/rtdl-v4-paper-apps-run/data/DATA/triangle/cit-Patents.edge",
+  "edge_file_sha256": "c5b2c9203eeabb46414965755c33befdb1810e71cb51155eb940a68a6179d855",
+  "expected_triangle_count": 7515023,
+  "formal_evidence": false,
+  "machine": {
+    "cuda_visible_devices": "0",
+    "hostname": "4735c6e75b0c",
+    "python": "3.12.3"
+  },
+  "matched": true,
+  "maximum_segment_primitives": 286197,
+  "maximum_segment_queries": 821437,
+  "observed_triangle_count": 7515023,
+  "phase_ns": {
+    "close": 37401,
+    "input_load_and_graph_contract": 14988504068,
+    "pyoptix_owner_prepare": 3760368021,
+    "single_natural_graph_action": 11488526682
+  },
+  "pooling_into_formal_transaction_forbidden": true,
+  "schema": "rtdl.v4_long_workload.triangle_c_calibration.v1",
+  "script_sha256": "5d5abd857d412aeba11f1e53dc7442bb02cb2769866741e4f3cbc7fc31adcf2a",
+  "segment_count": 116,
+  "segments": [
+    {
+      "checked_u64": 64976,
+      "device_status": 0,
+      "primitive_count": 286197,
+      "query_count": 821437,
+      "segment_id": 0
+    },
+    {
+      "checked_u64": 35882,
+      "device_status": 0,
+      "primitive_count": 152225,
+      "query_count": 452662,
+      "segment_id": 1
+    },
+    {
+      "checked_u64": 40249,
+      "device_status": 0,
+      "primitive_count": 162403,
+      "query_count": 499075,
+      "segment_id": 2
+    },
+    {
+      "checked_u64": 41903,
+      "device_status": 0,
+      "primitive_count": 169367,
+      "query_count": 526733,
+      "segment_id": 3
+    },
+    {
+      "checked_u64": 41546,
+      "device_status": 0,
+      "primitive_count": 171797,
+      "query_count": 539522,
+      "segment_id": 4
+    },
+    {
+      "checked_u64": 47827,
+      "device_status": 0,
+      "primitive_count": 180599,
+      "query_count": 576859,
+      "segment_id": 5
+    },
+    {
+      "checked_u64": 49841,
+      "device_status": 0,
+      "primitive_count": 188241,
+      "query_count": 612141,
+      "segment_id": 6
+    },
+    {
+      "checked_u64": 52782,
+      "device_status": 0,
+      "primitive_count": 192208,
+      "query_count": 629099,
+      "segment_id": 7
+    },
+    {
+      "checked_u64": 54800,
+      "device_status": 0,
+      "primitive_count": 197984,
+      "query_count": 665745,
+      "segment_id": 8
+    },
+    {
+      "checked_u64": 59002,
+      "device_status": 0,
+      "primitive_count": 206560,
+      "query_count": 711436,
+      "segment_id": 9
+    },
+    {
+      "checked_u64": 64436,
+      "device_status": 0,
+      "primitive_count": 212616,
+      "query_count": 727719,
+      "segment_id": 10
+    },
+    {
+      "checked_u64": 64568,
+      "device_status": 0,
+      "primitive_count": 217014,
+      "query_count": 761469,
+      "segment_id": 11
+    },
+    {
+      "checked_u64": 68974,
+      "device_status": 0,
+      "primitive_count": 221894,
+      "query_count": 786258,
+      "segment_id": 12
+    },
+    {
+      "checked_u64": 71074,
+      "device_status": 0,
+      "primitive_count": 226401,
+      "query_count": 818495,
+      "segment_id": 13
+    },
+    {
+      "checked_u64": 37427,
+      "device_status": 0,
+      "primitive_count": 114250,
+      "query_count": 415749,
+      "segment_id": 14
+    },
+    {
+      "checked_u64": 37926,
+      "device_status": 0,
+      "primitive_count": 116571,
+      "query_count": 430710,
+      "segment_id": 15
+    },
+    {
+      "checked_u64": 39326,
+      "device_status": 0,
+      "primitive_count": 117193,
+      "query_count": 437199,
+      "segment_id": 16
+    },
+    {
+      "checked_u64": 41210,
+      "device_status": 0,
+      "primitive_count": 119510,
+      "query_count": 451638,
+      "segment_id": 17
+    },
+    {
+      "checked_u64": 41761,
+      "device_status": 0,
+      "primitive_count": 120646,
+      "query_count": 453830,
+      "segment_id": 18
+    },
+    {
+      "checked_u64": 42885,
+      "device_status": 0,
+      "primitive_count": 122904,
+      "query_count": 473698,
+      "segment_id": 19
+    },
+    {
+      "checked_u64": 43589,
+      "device_status": 0,
+      "primitive_count": 124234,
+      "query_count": 479483,
+      "segment_id": 20
+    },
+    {
+      "checked_u64": 45986,
+      "device_status": 0,
+      "primitive_count": 124566,
+      "query_count": 476508,
+      "segment_id": 21
+    },
+    {
+      "checked_u64": 46379,
+      "device_status": 0,
+      "primitive_count": 126094,
+      "query_count": 483261,
+      "segment_id": 22
+    },
+    {
+      "checked_u64": 48626,
+      "device_status": 0,
+      "primitive_count": 126653,
+      "query_count": 486197,
+      "segment_id": 23
+    },
+    {
+      "checked_u64": 50384,
+      "device_status": 0,
+      "primitive_count": 128447,
+      "query_count": 498054,
+      "segment_id": 24
+    },
+    {
+      "checked_u64": 50368,
+      "device_status": 0,
+      "primitive_count": 128293,
+      "query_count": 497892,
+      "segment_id": 25
+    },
+    {
+      "checked_u64": 43322,
+      "device_status": 0,
+      "primitive_count": 112439,
+      "query_count": 458488,
+      "segment_id": 26
+    },
+    {
+      "checked_u64": 38752,
+      "device_status": 0,
+      "primitive_count": 101377,
+      "query_count": 430543,
+      "segment_id": 27
+    },
+    {
+      "checked_u64": 37941,
+      "device_status": 0,
+      "primitive_count": 101921,
+      "query_count": 434697,
+      "segment_id": 28
+    },
+    {
+      "checked_u64": 41478,
+      "device_status": 0,
+      "primitive_count": 104816,
+      "query_count": 448731,
+      "segment_id": 29
+    },
+    {
+      "checked_u64": 40445,
+      "device_status": 0,
+      "primitive_count": 104713,
+      "query_count": 448242,
+      "segment_id": 30
+    },
+    {
+      "checked_u64": 43441,
+      "device_status": 0,
+      "primitive_count": 106819,
+      "query_count": 454291,
+      "segment_id": 31
+    },
+    {
+      "checked_u64": 44418,
+      "device_status": 0,
+      "primitive_count": 108741,
+      "query_count": 459119,
+      "segment_id": 32
+    },
+    {
+      "checked_u64": 45269,
+      "device_status": 0,
+      "primitive_count": 110116,
+      "query_count": 463470,
+      "segment_id": 33
+    },
+    {
+      "checked_u64": 47768,
+      "device_status": 0,
+      "primitive_count": 112336,
+      "query_count": 472902,
+      "segment_id": 34
+    },
+    {
+      "checked_u64": 47999,
+      "device_status": 0,
+      "primitive_count": 114411,
+      "query_count": 478529,
+      "segment_id": 35
+    },
+    {
+      "checked_u64": 52275,
+      "device_status": 0,
+      "primitive_count": 117241,
+      "query_count": 494298,
+      "segment_id": 36
+    },
+    {
+      "checked_u64": 53027,
+      "device_status": 0,
+      "primitive_count": 118856,
+      "query_count": 501795,
+      "segment_id": 37
+    },
+    {
+      "checked_u64": 54585,
+      "device_status": 0,
+      "primitive_count": 119210,
+      "query_count": 505246,
+      "segment_id": 38
+    },
+    {
+      "checked_u64": 54272,
+      "device_status": 0,
+      "primitive_count": 119259,
+      "query_count": 501842,
+      "segment_id": 39
+    },
+    {
+      "checked_u64": 56444,
+      "device_status": 0,
+      "primitive_count": 120680,
+      "query_count": 507462,
+      "segment_id": 40
+    },
+    {
+      "checked_u64": 57117,
+      "device_status": 0,
+      "primitive_count": 121772,
+      "query_count": 513876,
+      "segment_id": 41
+    },
+    {
+      "checked_u64": 60326,
+      "device_status": 0,
+      "primitive_count": 123914,
+      "query_count": 524986,
+      "segment_id": 42
+    },
+    {
+      "checked_u64": 59081,
+      "device_status": 0,
+      "primitive_count": 124199,
+      "query_count": 525406,
+      "segment_id": 43
+    },
+    {
+      "checked_u64": 64114,
+      "device_status": 0,
+      "primitive_count": 127551,
+      "query_count": 543956,
+      "segment_id": 44
+    },
+    {
+      "checked_u64": 62587,
+      "device_status": 0,
+      "primitive_count": 126755,
+      "query_count": 542553,
+      "segment_id": 45
+    },
+    {
+      "checked_u64": 63230,
+      "device_status": 0,
+      "primitive_count": 127989,
+      "query_count": 546043,
+      "segment_id": 46
+    },
+    {
+      "checked_u64": 64779,
+      "device_status": 0,
+      "primitive_count": 128815,
+      "query_count": 552003,
+      "segment_id": 47
+    },
+    {
+      "checked_u64": 68273,
+      "device_status": 0,
+      "primitive_count": 131533,
+      "query_count": 567661,
+      "segment_id": 48
+    },
+    {
+      "checked_u64": 69198,
+      "device_status": 0,
+      "primitive_count": 131979,
+      "query_count": 566022,
+      "segment_id": 49
+    },
+    {
+      "checked_u64": 72020,
+      "device_status": 0,
+      "primitive_count": 132318,
+      "query_count": 571367,
+      "segment_id": 50
+    },
+    {
+      "checked_u64": 70406,
+      "device_status": 0,
+      "primitive_count": 133328,
+      "query_count": 580574,
+      "segment_id": 51
+    },
+    {
+      "checked_u64": 67996,
+      "device_status": 0,
+      "primitive_count": 133238,
+      "query_count": 581604,
+      "segment_id": 52
+    },
+    {
+      "checked_u64": 70792,
+      "device_status": 0,
+      "primitive_count": 134983,
+      "query_count": 592842,
+      "segment_id": 53
+    },
+    {
+      "checked_u64": 72303,
+      "device_status": 0,
+      "primitive_count": 135575,
+      "query_count": 595149,
+      "segment_id": 54
+    },
+    {
+      "checked_u64": 72137,
+      "device_status": 0,
+      "primitive_count": 135059,
+      "query_count": 595912,
+      "segment_id": 55
+    },
+    {
+      "checked_u64": 74504,
+      "device_status": 0,
+      "primitive_count": 136977,
+      "query_count": 607644,
+      "segment_id": 56
+    },
+    {
+      "checked_u64": 71889,
+      "device_status": 0,
+      "primitive_count": 137890,
+      "query_count": 615050,
+      "segment_id": 57
+    },
+    {
+      "checked_u64": 75357,
+      "device_status": 0,
+      "primitive_count": 139265,
+      "query_count": 627853,
+      "segment_id": 58
+    },
+    {
+      "checked_u64": 77096,
+      "device_status": 0,
+      "primitive_count": 139741,
+      "query_count": 625677,
+      "segment_id": 59
+    },
+    {
+      "checked_u64": 78278,
+      "device_status": 0,
+      "primitive_count": 141198,
+      "query_count": 632009,
+      "segment_id": 60
+    },
+    {
+      "checked_u64": 77786,
+      "device_status": 0,
+      "primitive_count": 141278,
+      "query_count": 634577,
+      "segment_id": 61
+    },
+    {
+      "checked_u64": 78422,
+      "device_status": 0,
+      "primitive_count": 141866,
+      "query_count": 638638,
+      "segment_id": 62
+    },
+    {
+      "checked_u64": 77493,
+      "device_status": 0,
+      "primitive_count": 140627,
+      "query_count": 635840,
+      "segment_id": 63
+    },
+    {
+      "checked_u64": 80013,
+      "device_status": 0,
+      "primitive_count": 143915,
+      "query_count": 662624,
+      "segment_id": 64
+    },
+    {
+      "checked_u64": 79090,
+      "device_status": 0,
+      "primitive_count": 142727,
+      "query_count": 650561,
+      "segment_id": 65
+    },
+    {
+      "checked_u64": 80860,
+      "device_status": 0,
+      "primitive_count": 142636,
+      "query_count": 651468,
+      "segment_id": 66
+    },
+    {
+      "checked_u64": 80284,
+      "device_status": 0,
+      "primitive_count": 144839,
+      "query_count": 663463,
+      "segment_id": 67
+    },
+    {
+      "checked_u64": 83936,
+      "device_status": 0,
+      "primitive_count": 144791,
+      "query_count": 660529,
+      "segment_id": 68
+    },
+    {
+      "checked_u64": 84462,
+      "device_status": 0,
+      "primitive_count": 144748,
+      "query_count": 661596,
+      "segment_id": 69
+    },
+    {
+      "checked_u64": 82554,
+      "device_status": 0,
+      "primitive_count": 144147,
+      "query_count": 662577,
+      "segment_id": 70
+    },
+    {
+      "checked_u64": 82194,
+      "device_status": 0,
+      "primitive_count": 145220,
+      "query_count": 666371,
+      "segment_id": 71
+    },
+    {
+      "checked_u64": 83799,
+      "device_status": 0,
+      "primitive_count": 144613,
+      "query_count": 664242,
+      "segment_id": 72
+    },
+    {
+      "checked_u64": 85523,
+      "device_status": 0,
+      "primitive_count": 145758,
+      "query_count": 671555,
+      "segment_id": 73
+    },
+    {
+      "checked_u64": 84970,
+      "device_status": 0,
+      "primitive_count": 146099,
+      "query_count": 677481,
+      "segment_id": 74
+    },
+    {
+      "checked_u64": 83278,
+      "device_status": 0,
+      "primitive_count": 143874,
+      "query_count": 663975,
+      "segment_id": 75
+    },
+    {
+      "checked_u64": 88709,
+      "device_status": 0,
+      "primitive_count": 146288,
+      "query_count": 678325,
+      "segment_id": 76
+    },
+    {
+      "checked_u64": 84561,
+      "device_status": 0,
+      "primitive_count": 146357,
+      "query_count": 687159,
+      "segment_id": 77
+    },
+    {
+      "checked_u64": 88576,
+      "device_status": 0,
+      "primitive_count": 147771,
+      "query_count": 699050,
+      "segment_id": 78
+    },
+    {
+      "checked_u64": 85486,
+      "device_status": 0,
+      "primitive_count": 145779,
+      "query_count": 689323,
+      "segment_id": 79
+    },
+    {
+      "checked_u64": 88032,
+      "device_status": 0,
+      "primitive_count": 145795,
+      "query_count": 686938,
+      "segment_id": 80
+    },
+    {
+      "checked_u64": 89204,
+      "device_status": 0,
+      "primitive_count": 146887,
+      "query_count": 706069,
+      "segment_id": 81
+    },
+    {
+      "checked_u64": 88213,
+      "device_status": 0,
+      "primitive_count": 147383,
+      "query_count": 715184,
+      "segment_id": 82
+    },
+    {
+      "checked_u64": 90932,
+      "device_status": 0,
+      "primitive_count": 149726,
+      "query_count": 734100,
+      "segment_id": 83
+    },
+    {
+      "checked_u64": 86954,
+      "device_status": 0,
+      "primitive_count": 148749,
+      "query_count": 733365,
+      "segment_id": 84
+    },
+    {
+      "checked_u64": 90092,
+      "device_status": 0,
+      "primitive_count": 147798,
+      "query_count": 738012,
+      "segment_id": 85
+    },
+    {
+      "checked_u64": 93876,
+      "device_status": 0,
+      "primitive_count": 146542,
+      "query_count": 726450,
+      "segment_id": 86
+    },
+    {
+      "checked_u64": 86354,
+      "device_status": 0,
+      "primitive_count": 146070,
+      "query_count": 736723,
+      "segment_id": 87
+    },
+    {
+      "checked_u64": 90725,
+      "device_status": 0,
+      "primitive_count": 145865,
+      "query_count": 741547,
+      "segment_id": 88
+    },
+    {
+      "checked_u64": 85578,
+      "device_status": 0,
+      "primitive_count": 146620,
+      "query_count": 756794,
+      "segment_id": 89
+    },
+    {
+      "checked_u64": 87245,
+      "device_status": 0,
+      "primitive_count": 146806,
+      "query_count": 758865,
+      "segment_id": 90
+    },
+    {
+      "checked_u64": 89546,
+      "device_status": 0,
+      "primitive_count": 145891,
+      "query_count": 752541,
+      "segment_id": 91
+    },
+    {
+      "checked_u64": 89489,
+      "device_status": 0,
+      "primitive_count": 145536,
+      "query_count": 752227,
+      "segment_id": 92
+    },
+    {
+      "checked_u64": 85162,
+      "device_status": 0,
+      "primitive_count": 144711,
+      "query_count": 757405,
+      "segment_id": 93
+    },
+    {
+      "checked_u64": 44242,
+      "device_status": 0,
+      "primitive_count": 73622,
+      "query_count": 385503,
+      "segment_id": 94
+    },
+    {
+      "checked_u64": 45402,
+      "device_status": 0,
+      "primitive_count": 73829,
+      "query_count": 390683,
+      "segment_id": 95
+    },
+    {
+      "checked_u64": 89867,
+      "device_status": 0,
+      "primitive_count": 145886,
+      "query_count": 765973,
+      "segment_id": 96
+    },
+    {
+      "checked_u64": 47351,
+      "device_status": 0,
+      "primitive_count": 72996,
+      "query_count": 382673,
+      "segment_id": 97
+    },
+    {
+      "checked_u64": 43795,
+      "device_status": 0,
+      "primitive_count": 72364,
+      "query_count": 386744,
+      "segment_id": 98
+    },
+    {
+      "checked_u64": 88420,
+      "device_status": 0,
+      "primitive_count": 144087,
+      "query_count": 766028,
+      "segment_id": 99
+    },
+    {
+      "checked_u64": 88336,
+      "device_status": 0,
+      "primitive_count": 142590,
+      "query_count": 755383,
+      "segment_id": 100
+    },
+    {
+      "checked_u64": 85257,
+      "device_status": 0,
+      "primitive_count": 141236,
+      "query_count": 756283,
+      "segment_id": 101
+    },
+    {
+      "checked_u64": 77411,
+      "device_status": 0,
+      "primitive_count": 138793,
+      "query_count": 748588,
+      "segment_id": 102
+    },
+    {
+      "checked_u64": 78813,
+      "device_status": 0,
+      "primitive_count": 139173,
+      "query_count": 768462,
+      "segment_id": 103
+    },
+    {
+      "checked_u64": 38265,
+      "device_status": 0,
+      "primitive_count": 70753,
+      "query_count": 396246,
+      "segment_id": 104
+    },
+    {
+      "checked_u64": 36249,
+      "device_status": 0,
+      "primitive_count": 70158,
+      "query_count": 395286,
+      "segment_id": 105
+    },
+    {
+      "checked_u64": 68219,
+      "device_status": 0,
+      "primitive_count": 136927,
+      "query_count": 759852,
+      "segment_id": 106
+    },
+    {
+      "checked_u64": 72308,
+      "device_status": 0,
+      "primitive_count": 138437,
+      "query_count": 774375,
+      "segment_id": 107
+    },
+    {
+      "checked_u64": 35531,
+      "device_status": 0,
+      "primitive_count": 69660,
+      "query_count": 396768,
+      "segment_id": 108
+    },
+    {
+      "checked_u64": 34690,
+      "device_status": 0,
+      "primitive_count": 68921,
+      "query_count": 386799,
+      "segment_id": 109
+    },
+    {
+      "checked_u64": 66229,
+      "device_status": 0,
+      "primitive_count": 133940,
+      "query_count": 742043,
+      "segment_id": 110
+    },
+    {
+      "checked_u64": 62057,
+      "device_status": 0,
+      "primitive_count": 132708,
+      "query_count": 753448,
+      "segment_id": 111
+    },
+    {
+      "checked_u64": 62695,
+      "device_status": 0,
+      "primitive_count": 131137,
+      "query_count": 742940,
+      "segment_id": 112
+    },
+    {
+      "checked_u64": 61888,
+      "device_status": 0,
+      "primitive_count": 130865,
+      "query_count": 743378,
+      "segment_id": 113
+    },
+    {
+      "checked_u64": 59640,
+      "device_status": 0,
+      "primitive_count": 127831,
+      "query_count": 721696,
+      "segment_id": 114
+    },
+    {
+      "checked_u64": 58314,
+      "device_status": 0,
+      "primitive_count": 128109,
+      "query_count": 735313,
+      "segment_id": 115
+    }
+  ],
+  "source_commit": "c5c8be48b743aa001e9c16c3344cc97c200600d1",
+  "source_tree": "e3bb0001f4c2d1e3171ab0431c0479500dfc7136",
+  "total_segment_primitives": 15853615,
+  "total_segment_queries": 69850749
+}

@@ -1,0 +1,46 @@
+{
+  "app": "triangle_counting",
+  "arm": "v4",
+  "config_sha256": "118642dfde9b2a257bb052507dcaa681910cd7895c4ab4721479114e538f9318",
+  "formal_evidence": false,
+  "input_identity": {
+    "dataset": "com-dblp",
+    "edge_file_sha256": "e9647564c1ca96589cc52314cabf5569ec80b9f5d697578a55d47fbe7aafca67",
+    "expected_triangle_count": 2224385,
+    "paper_algorithm": "RT-2A1"
+  },
+  "maximum_ns": 518278252,
+  "median_ns": 506715389,
+  "method": {
+    "device_columns_preserved": true,
+    "path_class": "v4_standard_callback_general_leaf_device_columns",
+    "post_traversal_reduction": "cupy_checked_u64_weighted_sum_device",
+    "private_checker_off_path": false,
+    "standard_count_fast_control_used": false
+  },
+  "minimum_ns": 505192486,
+  "notes": [
+    "One fresh process owns exactly one arm.",
+    "No profiler or nested timer instrumentation is installed.",
+    "This is a diagnostic, not a preregistered paired-block result."
+  ],
+  "operation": null,
+  "output_sha256": "ffc4373270ebfb830803df134ca09bf0aa265de91c409d104588408a0273f1f5",
+  "pooling_into_formal_transaction_forbidden": true,
+  "repetitions": 3,
+  "runtime_source_identity": {
+    "commit": "c5c8be48b743aa001e9c16c3344cc97c200600d1",
+    "diff_sha256": "9a9c70b9d396983a1b5dbc87a3463c19c082eb0baa0a050b63e33391a3f33cdf",
+    "root": "/workspace/rtdl-v4-long-perf-dev",
+    "status": "M Paper-reproduction-apps/goal5753-held-out-particle-tracking/v4_whole_app.py\n M experiments/v4_paper_apps_pyoptix/particle_adapter.py\n M src/native/optix/rtdl_optix_api.cpp\n M src/native/optix/rtdl_optix_cuda_helpers.cu\n M src/native/optix/rtdl_optix_v4_callback_poc.cpp\n M src/native/optix/rtdl_optix_v4_product_status.h\n M src/rtdsl/physical_execution_provenance.py\n M src/rtdsl/v4_aabb_relation_count_lowering.py\n M src/rtdsl/v4_public_builtin_triangle.py\n M src/rtdsl/v4_triangle_prepared_runtime.py\n M src/rtdsl/v4_triangle_reduction_device_runtime.py\n M tests/goal5775_loaded_provider_identity_test.py\n M tests/goal5776_v4_triangle_device_columns_test.py\n?? build-long-p2/CONFIG_DIAGNOSTIC.json\n?? build-long-p2/librtdl_optix.so\n?? build-long-p2/particle_compact.json\n?? build-long-p2/particle_compact.prof\n?? build-long-p2/particle_compact.txt\n?? build-long-p2/wall_graph_pyoptix_pre_program_reuse.json\n?? build-long-p2/wall_graph_v4_pre_program_reuse.json\n?? build-long-p2/wall_librts_point_pyoptix_p1.json\n?? build-long-p2/wall_librts_point_pyoptix_p2.json\n?? build-long-p2/wall_librts_point_pyoptix_p3.json\n?? build-long-p2/wall_librts_point_v4_p1.json\n?? build-long-p2/wall_librts_point_v4_p2.json\n?? build-long-p2/wall_librts_point_v4_p3.json\n?? build-long-p2/wall_librts_range_pyoptix_p1.json\n?? build-long-p2/wall_librts_range_pyoptix_p2.json\n?? build-long-p2/wall_librts_range_pyoptix_p3.json\n?? build-long-p2/wall_librts_range_v4_p1.json\n?? build-long-p2/wall_librts_range_v4_p2.json\n?? build-long-p2/wall_librts_range_v4_p3.json\n?? build-long-p2/wall_particle_pyoptix_1.json\n?? build-long-p2/wall_particle_pyoptix_2.json\n?? build-long-p2/wall_particle_pyoptix_3.json\n?? build-long-p2/wall_particle_pyoptix_p3.json\n?? build-long-p2/wall_particle_pyoptix_p4.json\n?? build-long-p2/wall_particle_pyoptix_p5.json\n?? build-long-p2/wall_particle_v4_1.json\n?? build-long-p2/wall_particle_v4_2.json\n?? build-long-p2/wall_particle_v4_3.json\n?? build-long-p2/wall_particle_v4_p3.json\n?? build-long-p2/wall_particle_v4_p4.json\n?? build-long-p2/wall_particle_v4_p5.json\n?? diagnose_prepared_wall.py\n?? diagnose_triangle_id_validation.py",
+    "tree": "e3bb0001f4c2d1e3171ab0431c0479500dfc7136"
+  },
+  "samples_ns": [
+    518278252,
+    505192486,
+    506715389
+  ],
+  "schema": "rtdl.v4_long_workload.prepared_wall_diagnostic.v1",
+  "script_sha256": "95d8fb56e14785422f8a5bf52c09efded3de46bce66ff14bd8725fb46854e320",
+  "warmups": 1
+}

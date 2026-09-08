@@ -1,0 +1,32 @@
+{
+  "compute_capability": [
+    8,
+    6
+  ],
+  "cuda_include": "/usr/local/cuda-12.8/targets/x86_64-linux/include",
+  "data_root": "/workspace/rtdl-v4-paper-apps-run/data/DATA",
+  "native_library_path": "/workspace/rtdl-v4-long-perf-native-p5/librtdl_optix.so",
+  "native_library_sha256": "138bfbbeda8a2dac817b3a430722f3efb5e4a7501b46174fe6fad3e02c85c80b",
+  "optix_include": "/workspace/rtdl-v4-paper-apps-run/optix-dev/include",
+  "optix_sdk": "8.0.0",
+  "pyoptix_prebuilt_ptx": {
+    "librts": {
+      "path": "/workspace/rtdl-v4-paper-apps-run/prebuilt-ptx-c5c8be48b/librts.ptx",
+      "sha256": "d7c820d87231edde81b93906136d972a8a7d570025d02bade0257578a8a0dfe7",
+      "source_sha256": "4d71a0d3d0b052cb68305e5b6b138a8df83c90c3a33184e66088e7296d218598"
+    },
+    "particle_tracking": {
+      "path": "/workspace/rtdl-v4-paper-apps-run/prebuilt-ptx-c5c8be48b/particle_tracking.ptx",
+      "sha256": "53cd6c9a45b5bc9e4d7cb2259a2426cf22434db7a647e23ff66706a068af685e",
+      "source_sha256": "955c4124df87eeb53c8558f5210f7ff5d45b2608f9b58639738f39d764ee590b"
+    },
+    "triangle_counting": {
+      "path": "/workspace/rtdl-v4-paper-apps-run/prebuilt-ptx-c5c8be48b/triangle_counting.ptx",
+      "sha256": "ba2723d6d23cc6c055ced00437a79c56c12aae0116ae27601ac62a388cc428e1",
+      "source_sha256": "857b5e6dc5254894130d36deae3f4439d964bb0ec74211f2c199f2fb513b581f"
+    }
+  },
+  "source_commit": "c5c8be48b743aa001e9c16c3344cc97c200600d1",
+  "source_root": "/workspace/rtdl-v4-long-perf-dev",
+  "source_tree": "e3bb0001f4c2d1e3171ab0431c0479500dfc7136"
+}

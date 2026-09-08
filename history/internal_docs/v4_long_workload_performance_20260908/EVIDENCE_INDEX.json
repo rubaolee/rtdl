@@ -1,0 +1,168 @@
+{
+  "schema": "rtdl.v4_long_workload_performance.evidence_index.v1",
+  "created_at": "2026-09-08T09:28:10-04:00",
+  "status": "PASS__METHOD_AND_TARGET__MANUSCRIPT_LOCAL_PREFLIGHT_PASS__FINAL_REVIEW_PENDING",
+  "claim_authorization": {
+    "internal_technical_result_complete": true,
+    "manuscript_integration_complete": true,
+    "manuscript_local_build_and_render_review_complete": true,
+    "independent_final_bytes_review_complete": false,
+    "public_or_manuscript_claim_authorized": false,
+    "submission_authorized": false
+  },
+  "source": {
+    "commit": "02e84374fc092d2bb916cca633eda9592b4ecf07",
+    "tree": "8aad15d686bbc9e1c3b11df998898a0a063a01f1",
+    "branch": "codex/cgo-goal5836-handoff",
+    "clean_and_pushed_before_formal_worker_zero": true
+  },
+  "machine": {
+    "gpu_name": "NVIDIA RTX A4500",
+    "gpu_uuid": "GPU-5dbda20d-af85-650e-7250-10b265a77143",
+    "compute_capability": "8.6",
+    "driver": "550.127.05",
+    "gpu_memory_mib": 20470,
+    "cuda_visible_devices": "0",
+    "cpu_affinity": [
+      8
+    ],
+    "gpu_clocks_locked": false
+  },
+  "runtime": {
+    "python": "3.12.3",
+    "python_executable_sha256": "1d3cf64f97cadc79fdc6fe2496a21b7b456cb94211978cfef5a65f616af74fd5",
+    "optix_sdk": "8.0.0",
+    "pyoptix": "9.1.0",
+    "numpy": "2.4.4",
+    "numba": "0.65.1",
+    "cupy_cuda12x": "14.0.1"
+  },
+  "implementation_identities": {
+    "successor_native_library_sha256": "5edb9ec3e542b64bf0696c6df9a164448aecd6b5b51f1fdd78ba6e8c791dd2af",
+    "successor_native_build_manifest_sha256": "14d536e2c76f560e8151106f66e3427f97c14ce411d567d3299972e58a0d8d4b",
+    "particle_rtdlexe_sha256": "30080cdc1941db620e6c4c288c199df028f6df0bb2f605814c1dac136e374e5a",
+    "triangle_rtdlexe_sha256": "f8554f9e339f526424b09a619071c9e7bd64318f1e78b1c9dcadf129dcc17463",
+    "old_v4_commit": "c5c8be48b743aa001e9c16c3344cc97c200600d1",
+    "old_v4_tree": "e3bb0001f4c2d1e3171ab0431c0479500dfc7136",
+    "old_v4_native_library_sha256": "719ac27d884c93634f8b3a9ed2936b95d6231fccb437da7da62448adf2ec15ba",
+    "pyoptix_extension_sha256": "0a05db8ccb565ec513a391809bd8b539ccefdd25bd7b75a573ffc7bc5ad55933",
+    "pyoptix_ptx_manifest_sha256": "8752fbd1be888be7419bafd44f8458fee4951358ca1bf8e17c17a6e7a4dc1dbb"
+  },
+  "transaction_files": {
+    "formal_config": {
+      "archive_member": "rtdl-v4-long-perf-successor-02e84374f-affinity/FORMAL_CONFIG_02E84374F_A4500_CPU8_V2.json",
+      "sha256": "491d399343fee27fbf97f6a72837ff38b4b7d04fa5324525cf3b3780caf72e1d"
+    },
+    "dry_run_summary": {
+      "archive_member": "rtdl-v4-long-perf-successor-02e84374f-affinity/DRY_RUN_V2/DRY_RUN_SUMMARY.json",
+      "sha256": "ce980f2863dcf6898af835514b3bd32166b7e8673c78fc3f7a20c64df4ad34d2",
+      "status": "PASS",
+      "worker_count": 15
+    },
+    "preregistration": {
+      "archive_member": "rtdl-v4-long-perf-successor-02e84374f-affinity/PREREGISTRATION_V2.json",
+      "sha256": "6099e46ef0b0ffa1048f7ea375c9a3b2df247ec9c7b6164936bf24edd7074d7a",
+      "status": "FROZEN_BEFORE_FORMAL_WORKER_ZERO",
+      "canonical_schedule_payload_sha256": "4edf6fbf341a6a911714768c45ed39d2c5b5a706d1177c3b65b109377587f2f3"
+    },
+    "formal_schedule": {
+      "archive_member": "rtdl-v4-long-perf-successor-02e84374f-affinity/FORMAL_V2/SCHEDULE.json",
+      "byte_sha256": "806ce7d42cc7abb120fd035f76adeb09a13c4615b7f48f7de416d35495d73e69"
+    },
+    "formal_progress": {
+      "archive_member": "rtdl-v4-long-perf-successor-02e84374f-affinity/FORMAL_V2/CONTROLLER_PROGRESS.jsonl",
+      "sha256": "6d1cbf3f7299a991c2b0bf4a57d68987cbbf749228a6d02fbb5ee5d0663faeb6"
+    },
+    "formal_summary": {
+      "archive_member": "rtdl-v4-long-perf-successor-02e84374f-affinity/FORMAL_V2/FORMAL_SUMMARY.json",
+      "sha256": "74c8196f6e6f8e3fc13f1d4bce312087950d1e38571909042815ff6470d0672d",
+      "status": "PASS"
+    },
+    "independent_recount": {
+      "archive_member": "rtdl-v4-long-perf-successor-02e84374f-affinity/INDEPENDENT_RECOUNT_V2.json",
+      "sha256": "41d8be77bec044694489e42597bc2c9774ac2a9077a2214f66c674a0dbc69c50",
+      "status": "PASS__METHOD_AND_TARGET",
+      "project_modules_imported": false
+    }
+  },
+  "formal_counts": {
+    "registered_unit_count": 5,
+    "registered_endpoint_count": 2,
+    "registered_arm_count": 3,
+    "paired_blocks_per_row": 8,
+    "formal_worker_count": 240,
+    "distinct_process_id_count": 240,
+    "valid_paired_cell_count": 80,
+    "retained_timed_sample_count": 1248,
+    "warmup_count": 120,
+    "retry_count": 0,
+    "discard_count": 0,
+    "timeout_count": 0,
+    "output_mismatch_count": 0,
+    "rows_meeting_engineering_target": 10,
+    "registered_row_count": 10
+  },
+  "input_and_output_identities": {
+    "particle_tracking": {
+      "input_sha256": "7f21844610c4c9ad8ccdf6ec6961de28d6f1099af8b1bf0e37e41bf53fb55743",
+      "output_sha256": "81dea3f2ad83c6c239a372d699b6133a088fe7171356b298b9aeace4074370c7"
+    },
+    "triangle_counting_com_dblp": {
+      "edge_file_sha256": "e9647564c1ca96589cc52314cabf5569ec80b9f5d697578a55d47fbe7aafca67",
+      "expected_triangle_count": 2224385,
+      "output_sha256": "ffc4373270ebfb830803df134ca09bf0aa265de91c409d104588408a0273f1f5"
+    },
+    "librts_parks": {
+      "cache_npz_sha256": "64f8e9d4f567c4e694ab1da67a74299f588880c47696d82dcc56e4369cfca0b5",
+      "cache_json_sha256": "428b1fe1600db318e86c8f1e77861eef7a46a15b1e95441f37a6c528f99f2c74",
+      "point_query_sha256": "736e2f3acc5c2875ca1a787a87b16f6fdf9216251e0d231df78bce1e9bb68ff9",
+      "point_output_sha256": "b790372024c23e8882fafb893a1c2a6216f4aeaf8f8b090d29d817794c701243",
+      "range_query_sha256": "0b7f2e6e21f3dca821f8913823cd59a20c47be0c5c0426268d4c42b38acf2c46",
+      "range_output_sha256": "ce12d9de8ed2fb51211f9c192801f0c32744edd6d18e9576b453afcc4f37b687"
+    },
+    "triangle_counting_cit_patents_4m": {
+      "edge_file_sha256": "c5b2c9203eeabb46414965755c33befdb1810e71cb51155eb940a68a6179d855",
+      "expected_triangle_count": 7515023,
+      "output_sha256": "f3a9d76129db60b207374aef74b6d5abb6a126a6d4fc7bc88b830a7fc1995e2c"
+    }
+  },
+  "archives": {
+    "passing_affinity_successor": {
+      "path": "history/internal_docs/v4_long_workload_performance_20260908/raw/rtdl-v4-long-perf-successor-02e84374f-affinity-final.tar.gz",
+      "sha256": "ef2ca7890c9d415dc1edbe71966aabc512209c9d8608d4eaf460c7c1fddf8bdc",
+      "bytes": 730851,
+      "member_count": 1049,
+      "deterministic_second_archive_byte_equal": true
+    },
+    "unlocked_adverse_successor": {
+      "path": "history/internal_docs/v4_long_workload_performance_20260908/raw/rtdl-v4-long-perf-successor-0c3420f42-unlocked-adverse.tar.gz",
+      "sha256": "924f970e4d29778b8c53d81c57bbb725e2641bd66be54c6a6584c343760bdf09",
+      "pooled_into_passing_transaction": false
+    },
+    "affinity_diagnostic": {
+      "path": "history/internal_docs/v4_long_workload_performance_20260908/raw/rtdl-v4-affinity-diagnostic-0c3420f42.tar.gz",
+      "sha256": "5c8abbd60d1f2edd07b4fb6f7931d639ada6d44f7ed87e5c5a5535fade3c8f03",
+      "formal_evidence": false
+    },
+    "first_aot_adverse_transaction": {
+      "path": "history/internal_docs/v4_long_workload_performance_20260908/raw/rtdl-v4-long-perf-f8dcd81da-final-240.tar.gz",
+      "sha256": "07170d396da193829ce2695b50f1064c750a6efbba7d993e2f7e0b6d1f6d7ce8",
+      "pooled_into_passing_transaction": false
+    }
+  },
+  "manuscript_draft": {
+    "main_tex_path": "paper/cgo2027/main.tex",
+    "main_tex_sha256": "0d29d05d04a0919d0c5b26c98861b17647fbc2256298990f6ab5b52a8de3f7a0",
+    "main_pdf_path": "paper/cgo2027/main.pdf",
+    "main_pdf_sha256": "3887bf1abb21068be057d13b012eddd7b9977e06ce53daf75b0eca84af4874c0",
+    "main_pdf_bytes": 183937,
+    "main_pdf_pages": 12,
+    "page_size": "US Letter 612 x 792 pt",
+    "overfull_log_entries": 0,
+    "unresolved_citations_or_references": 0,
+    "rendered_pages_reviewed": 12,
+    "anonymous_private_identity_scan_passed": true,
+    "independent_final_bytes_review_complete": false
+  },
+  "claim_boundary": "Evidence supports only the five registered units and controlled RTX A4500 condition. It does not establish arbitrary Python or Callback IR, arbitrary topology synthesis, all nine applications, CPU or clock invariance, peak memory, easier authoring, intrinsic language overhead, or broad practical performance."
+}

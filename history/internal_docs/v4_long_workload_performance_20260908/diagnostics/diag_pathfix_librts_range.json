@@ -1,0 +1,104 @@
+{
+  "app": "librts",
+  "config_sha256": "29a070b67d9756dda08dd8be6a006bc77be8990a1e584a8295e322c2fdba2e38",
+  "formal_evidence": false,
+  "inclusive_nested_counters": {
+    "provenance.CapturedTraversalObservation.build_receipt": {
+      "calls": 16,
+      "inclusive_ms_per_call": 0.0738658125,
+      "inclusive_ms_total": 1.181853,
+      "inclusive_ns": 1181853
+    },
+    "provenance.OptixTraversalAuditSession.capture": {
+      "calls": 16,
+      "inclusive_ms_per_call": 0.07558825,
+      "inclusive_ms_total": 1.209412,
+      "inclusive_ns": 1209412
+    },
+    "provenance.OptixTraversalAuditSession.finish": {
+      "calls": 16,
+      "inclusive_ms_per_call": 0.1543068125,
+      "inclusive_ms_total": 2.468909,
+      "inclusive_ns": 2468909
+    },
+    "provenance.OptixTraversalAuditSession.open": {
+      "calls": 16,
+      "inclusive_ms_per_call": 0.026688875,
+      "inclusive_ms_total": 0.427022,
+      "inclusive_ns": 427022
+    },
+    "provenance._captured_snapshot_items": {
+      "calls": 16,
+      "inclusive_ms_per_call": 0.04572625,
+      "inclusive_ms_total": 0.73162,
+      "inclusive_ns": 731620
+    },
+    "provenance._classify_snapshot": {
+      "calls": 16,
+      "inclusive_ms_per_call": 0.0036095625,
+      "inclusive_ms_total": 0.057753,
+      "inclusive_ns": 57753
+    },
+    "provenance._registered_loaded_provider_identity": {
+      "calls": 16,
+      "inclusive_ms_per_call": 0.004157625,
+      "inclusive_ms_total": 0.066522,
+      "inclusive_ns": 66522
+    }
+  },
+  "input_identity": {
+    "cache_json_sha256": "428b1fe1600db318e86c8f1e77861eef7a46a15b1e95441f37a6c528f99f2c74",
+    "cache_npz_sha256": "64f8e9d4f567c4e694ab1da67a74299f588880c47696d82dcc56e4369cfca0b5",
+    "expected_count": 105826,
+    "operation": "range_contains",
+    "query_sha256": "0b7f2e6e21f3dca821f8913823cd59a20c47be0c5c0426268d4c42b38acf2c46"
+  },
+  "maximum_ns": 522875,
+  "median_ns": 372971,
+  "method": {
+    "path_class": "v4_fixed_aabb_count_specialization",
+    "private_checker_off_path": false
+  },
+  "minimum_ns": 366740,
+  "notes": [
+    "Inclusive counters overlap and must not be summed.",
+    "Instrumentation changes timing and these samples are diagnostic only.",
+    "The script profiles the existing public V4 app front door after one warmup."
+  ],
+  "operation": "range_contains",
+  "output_sha256": "ce12d9de8ed2fb51211f9c192801f0c32744edd6d18e9576b453afcc4f37b687",
+  "pooling_into_formal_transaction_forbidden": true,
+  "profile_output": "/workspace/diag_pathfix_librts_range.prof",
+  "profile_text": "/workspace/diag_pathfix_librts_range.txt",
+  "registered_config_source_commit": "c5c8be48b743aa001e9c16c3344cc97c200600d1",
+  "registered_config_source_tree": "e3bb0001f4c2d1e3171ab0431c0479500dfc7136",
+  "repetitions": 16,
+  "runtime_source_identity": {
+    "commit": "c5c8be48b743aa001e9c16c3344cc97c200600d1",
+    "diff_sha256": "2d15ca60c16999643714f203d03c18bdc33af3e296282e7c0f5cad66bc37fc95",
+    "root": "/workspace/rtdl-v4-long-perf-dev",
+    "status": "M src/rtdsl/physical_execution_provenance.py\n M src/rtdsl/v4_aabb_relation_count_lowering.py",
+    "tree": "e3bb0001f4c2d1e3171ab0431c0479500dfc7136"
+  },
+  "samples_ns": [
+    522875,
+    389511,
+    378381,
+    375590,
+    373041,
+    373241,
+    371150,
+    372901,
+    374820,
+    370600,
+    397981,
+    371031,
+    366740,
+    366891,
+    366860,
+    368051
+  ],
+  "schema": "rtdl.v4_long_workload.hot_path_diagnostic.v1",
+  "script_sha256": "28e82589b1e1d44e354b0545f92c96f09bbf1b5b9482ea74ee832ed6fd73edbe",
+  "warmups": 1
+}

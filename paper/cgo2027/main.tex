@@ -44,15 +44,16 @@ selects guarded standard-route specialization.
 
 The implementation exposes two stable constructors and a bounded corpus over
 triangle, custom-AABB, curve, and sphere leaves. A historical audit covers nine
-project-authored V4 mappings. A frozen public-PyOptiX comparison covered selected
-stages from three mappings (four operation units); all twelve complete, first-execute,
-and prepared observations were slower (1.080--75.533$\times$). Separately, two
-exact standard routes were 1.077--1.175$\times$ Direct when prepared, while
-post-import medians were 1.560--1.837$\times$ a strong PyOptiX baseline, with a
-2.377$\times$ worst block. A sealed composition and a finite independent checker
-provide bounded compiler evidence. \rtdl does not infer profitable mappings,
-accept arbitrary Python, synthesize arbitrary topologies, prove application
-semantics, or establish easier authoring or broad practical performance.
+project-authored V4 mappings. An initial public-PyOptiX comparison covered
+selected stages from three mappings (four operation units); all twelve
+complete, first-execute, and prepared observations were slower
+(1.080--75.533$\times$). A separately identified remediation then put all ten
+registered complete/prepared rows over those units and one long graph scale
+within a 1.20$\times$-median/1.35$\times$-maximum engineering envelope; the
+8.8--9.3,s graph row was 1.057$\times$. Separately, two exact standard routes
+were 1.077--1.175$\times$ Direct when prepared. \rtdl does not infer profitable
+mappings, accept arbitrary Python, synthesize arbitrary topologies, prove
+application semantics, or establish easier authoring or broad performance.
 \end{abstract}
 
 \begin{CCSXML}
@@ -131,10 +132,11 @@ This paper makes four contributions:
   topology-specific wrappers and exact-IR specialization, plus a prepared
   identity-checked runtime. The lowerers and specializers remain in the TCB.
   \item We reconstruct nine project-authored V4 mappings and evaluate bounded
-  mutation, composition, target checking, lifecycle, and performance. A
-  selected-stage 3/9 comparison is adverse at all twelve endpoints; two separate
-  exact-route experiments bound prepared overhead near Direct. Receipt,
-  startup, coverage, generality, and authoring limits remain explicit.
+  mutation, composition, target checking, lifecycle, and performance. An
+  adverse selected-stage 3/9 comparison motivates a separately identified
+  deployment remediation; ten registered successor rows meet its engineering
+  envelope, including one multi-second graph computation. Receipt, startup,
+  coverage, generality, and authoring limits remain explicit.
 \end{enumerate}
 
 \section{RTDL by Example and Programming Model}
@@ -856,63 +858,48 @@ in Section~\ref{sec:lifecycle}.
 \subsection{Application-route cost against public PyOptiX}
 \label{sec:app-pyoptix}
 
-A separate frozen transaction at source \texttt{c5c8be48b} compared registered
-complete, first-execute, and prepared endpoints on one RTX A4500 (CC 8.6,
-driver 550.127.05, OptiX 8.0, PyOptiX 9.1). Three of nine mappings yielded four
-selected-stage units: one Particle
-Tracking transition, RT-2A1 triangle counting, and LibRTS point/range counts.
-Inputs contained 3,392,530 triangles and 5,000 Particle queries, com-dblp, and
-11,544,398 LibRTS boxes with 100,000 queries per operation. The other six lacked
-a frozen output-equivalent PyOptiX owner; RayJoin also lacked its registered six
-full output tables. They remain in the denominator.
+An initial frozen $A_0$/PyOptiX transaction on this RTX A4500 covered selected
+stages from three of nine mappings: Particle, RT-2A1, and LibRTS point/range.
+All twelve complete, first-execute, and prepared ratios were adverse:
+1.080--10.208$\times$ complete, 2.732--75.533$\times$ first-execute, and
+1.379--39.083$\times$ prepared. We preserve this result rather than replacing
+it with the successor.
 
-Both arms consumed identical derived-input identities and returned equal public
-outputs. Public PyOptiX owned the full host/device route; its handwritten CUDA
-was precompiled to hash-bound PTX. Each endpoint used eight paired fresh-process
-blocks, four per arm order. Ratios are medians of within-block ratios; arm times
-are separate medians and need not divide to that ratio. All 192 workers finished
-without retry or discard.
+Remediation removed repeated compilation, materialization, and receipt work and
+reused identity-bound executable families. A new transaction was frozen before
+worker zero. Successor RTDL ($A_s$) and PyOptiX ($C$) both exclude offline
+compilation. Complete includes deployment through close; prepared reuses state
+after one untimed warmup. Each row has eight paired fresh-process blocks, four
+per order; the envelope is median $\leq1.20$ and every block $\leq1.35$.
 
 \begin{table*}[t]
-  \caption{Frozen RTX A4500 application routes. Each endpoint cell is
-  V4/PyOptiX ms; ratio [block min--max]. Lower is better. ``Complete'' starts
-  after shared preprocessing and ``First'' after preparation. All outputs
-  matched; all twelve ratios are adverse to V4.}
+  \caption{Remediated RTX A4500 routes. Each endpoint is $A_s/C$ ms; paired
+  ratio [block min--max]; paired $A_s/A_0$. Lower is better; $A_0$ is immutable
+  old V4. All ten rows meet the registered envelope.}
   \label{tab:app-pyoptix-results}
   \scriptsize
   \centering
-  \begin{tabularx}{\textwidth}{@{}p{.15\textwidth}XXX@{}}
+  \begin{tabular}{@{}lrrl@{}}
     \toprule
-    Unit & Complete & First execute & Prepared \\
+    Unit & Complete & Prepared & Output \\
     \midrule
-    Particle & 24020.112/2405.894; 10.208 [9.559--10.676] & 54.817/0.728; 75.533 [57.803--82.877] & 18.035/0.476; 37.928 [35.338--41.236] \\
-    Triangle RT-2A1 & 11847.933/3508.170; 3.411 [3.292--3.591] & 3516.714/1312.973; 2.732 [2.449--2.806] & 602.856/437.096; 1.379 [1.300--1.415] \\
-    LibRTS point & 5502.395/4147.360; 1.312 [1.061--2.021] & 10.796/0.902; 12.059 [9.440--17.776] & 8.916/0.230; 38.467 [34.687--41.240] \\
-    LibRTS range & 4565.787/4173.109; 1.080 [1.009--1.196] & 12.352/0.890; 13.422 [12.182--23.731] & 9.140/0.233; 39.083 [34.129--42.385] \\
+    Particle & 449.2/2401.6; .185 [.112--.201]; .019 & .402/.542; .773 [.684--.840]; .013 & $5000\!\times\!3$ U32 \\
+    com-dblp/1M & 3764.2/3636.3; 1.055 [.952--1.165]; .328 & 478.4/435.1; 1.100 [1.050--1.183]; .807 & 2,224,385 \\
+    LibRTS point & 1448.3/4433.5; .323 [.292--.357]; .375 & .256/.251; .999 [.733--1.110]; .024 & 112,729 \\
+    LibRTS range & 1629.4/4451.7; .365 [.331--.420]; .405 & .252/.259; .985 [.612--1.243]; .027 & 105,826 \\
+    cit-Patents/4M & 12712.2/12257.5; 1.038 [1.003--1.058]; .455 & 9347.9/8802.2; 1.057 [1.038--1.084]; .867 & 7,515,023 \\
     \bottomrule
-  \end{tabularx}
+  \end{tabular}
 \end{table*}
 
-Outputs were an ordered $5000\mathbin{\times}3$ \texttt{u32} Particle matrix
-and \texttt{u64} counts 2,224,385, 112,729, and 105,826. Complete is not
-raw-domain end to end: loaders first supply an encoded Particle mesh and
-queries, oriented/deduplicated graph CSR, or cached LibRTS index/query columns.
-First execute begins after preparation; prepared adds one untimed warmup. Timed
-calls include status/oracle checks, digest, and evidence projection. PyOptiX
-PTX compilation is excluded, while V4 Particle/graph compilation is included
-in complete.
-
-Physical work differs too. Particle V4 canonicalizes ignored any-hit candidates
-before one logical closest-hit; PyOptiX uses native closest-hit. Per graph
-segment, V4 rebuilds GAS and pipeline state, while PyOptiX retains pipeline
-objects but rebuilds GAS. LibRTS contrasts a general AoS multi-operation route
-with compact SoA kernels, fast-trace preference, and one stream. These are
-source-established differences, not causal allocations or unavoidable DSL
-costs. The closest result is triangle prepared at 1.379$\times$; LibRTS's
-near-one complete ratios hide seconds of preparation and coexist with
-38.467--39.083$\times$ prepared cost. The study establishes tested-stage
-functional feasibility, not speedup, end-to-end parity, broad coverage, or
-easier authoring.
+All 240 workers had distinct PIDs, equal outputs, CPU-8 affinity, and zero
+retry/discard/timeout; an independent recount reconstructed all 80 cells. The
+preselected cit-Patents row executes 28 segments and 69,850,749 physical
+queries: prepared $A_s/C$ is 9.348/8.802~s and 1.057$\times$; other rows are
+subsecond. Complete starts from derived inputs. Particle is a fixed app-shaped
+specialization; Graph and LibRTS use typed families but retain app-owned
+encoding and oracles. The result covers five units and one host condition, not
+the six unmeasured mappings or an app-independent engine.
 
 \section{Limitations and Broader Implications}
 
@@ -1040,9 +1027,9 @@ Python from fresh directories. It bundles no third-party code, raw GPU archive,
 or CUDA/OptiX material and performs offline recount, not GPU rerun,
 installation, or private-history reconstruction.
 
-The application transaction is retained separately from this nine-member
-archive. Its worker records support offline statistical recount, but it does
-not include all raw-domain inputs or rerun application oracles.
+Application transactions are separate. The 1,049-file successor archive
+supports clean-checkout recount of hashes, identities, outputs, and statistics,
+not offline GPU rerun or inclusion of every raw input.
 
 \section{Threats to Validity}
 
@@ -1051,9 +1038,8 @@ Prepared A/D excludes authoring, cold compilation, and first use. Direct D is a
 named contract-equivalent implementation, not a proven latency lower bound;
 strong C is output-equivalent but not operation-identical. These observations
 do not isolate intrinsic language overhead, and paired instrumentation covers A
-only. Application complete starts after domain-encoding loaders and first
-execute after preparation; compilation, physical routes, and timed validation
-differ, with no causal ablation.
+only. Application complete starts after loaders; the successor excludes offline
+compilation from both arms, but routes and timed validation still differ.
 The same-width semantic-ABI example is illustrative: mutation tests establish
 check liveness, but no retained run executes its defective route. A trusted
 semantic schema may also be wrong while internally coherent.
@@ -1064,20 +1050,23 @@ adverse result; both first-result endpoints remain lifecycle-confounded and are
 not reinterpreted as passes. Mocks show that a provider double fault can replace
 the primary exception and lose retry ownership, while a native fork can evade
 the cached-PID guard. Neither mock ran GPU work or appeared in retained workers.
+CPU 8 was selected after a disclosed scheduling diagnosis; an unlocked
+successor failed two short-row worst-block gates. GPU clocks were not locked.
 
 \paragraph{External validity.}
 Synthetic measurements cover two NVIDIA generations and two exact tasks without
-cross-machine raw-time comparison. The application study covers selected stages
-from 3/9 apps, four units, and one RTX A4500; all twelve rows are adverse, six apps are unexecuted,
-and inputs are derived representations. Authors defined the challenge domain
-and selected one composition. There is no independent-user, prevalence, or
-arbitrary-Python/IR evidence and no first/only/impossibility claim. Although all
-nine entry points were recovered, six lack retained historical per-file
-identities and the original archive; older V2/V4 timings are not pooled with M.
+cross-machine raw-time comparison. The remediated application study covers
+selected stages from 3/9 apps, four original units, one long graph scale, and
+one RTX A4500. Six apps are unexecuted; inputs are derived; peak memory was not
+captured. There is no independent-user, prevalence, or arbitrary-Python/IR
+evidence. Six recovered entry points also lack retained historical per-file
+identities and the original archive; older timings are not pooled with M.
 
 \paragraph{Implementation trust.}
 The sphere route required about 2,635 topology-specific TCB lines; the finite
 checker missed an early-return probe; 4,096 timed A calls lack per-call receipts.
+The application remediation adds trusted executable-family and admission code;
+Particle still relies on an app-shaped fixed standard-library native route.
 
 \paragraph{Artifact scope.}
 The derived anonymous projection checks identities, counts, formulas, and rows,
@@ -1102,11 +1091,13 @@ where these components compose and where application responsibility remains;
 they do not prove arbitrary generalization or usability. Across two exact tasks
 and two GPU generations, prepared median latency is
 1.077--1.175$\times$ Direct, while post-import comparison reaches
-1.837$\times$ median and a 2.377$\times$ worst block. Selected-stage application V4/PyOptiX is
-adverse at all twelve endpoints, including 1.379$\times$ graph prepared and
-37.928--39.083$\times$ Particle/LibRTS prepared. This establishes bounded
-functional feasibility while exposing route/lifecycle debt, not broad practical
-performance or an authoring-productivity advantage.
+1.837$\times$ median and a 2.377$\times$ worst block. An initial selected-stage
+application transaction was adverse at all twelve endpoints. Its separately
+identified remediation put all ten registered complete/prepared rows within a
+1.20$\times$-median/1.35$\times$-maximum envelope; the multi-second graph row
+was 1.057$\times$ public PyOptiX. This establishes practical cost for the tested
+bounded families and preserves substantial coverage, trust, and authoring
+limits; it is not broad performance or productivity evidence.
 
 \bibliographystyle{ACM-Reference-Format}
 \bibliography{references}

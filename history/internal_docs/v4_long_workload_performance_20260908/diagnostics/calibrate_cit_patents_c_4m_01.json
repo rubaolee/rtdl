@@ -1,0 +1,230 @@
+{
+  "config_sha256": "29a070b67d9756dda08dd8be6a006bc77be8990a1e584a8295e322c2fdba2e38",
+  "dataset": "cit-Patents",
+  "edge_file": "/workspace/rtdl-v4-paper-apps-run/data/DATA/triangle/cit-Patents.edge",
+  "edge_file_sha256": "c5b2c9203eeabb46414965755c33befdb1810e71cb51155eb940a68a6179d855",
+  "expected_triangle_count": 7515023,
+  "formal_evidence": false,
+  "machine": {
+    "cuda_visible_devices": "0",
+    "hostname": "4735c6e75b0c",
+    "python": "3.12.3"
+  },
+  "matched": true,
+  "max_relation_rows": 4000000,
+  "maximum_segment_primitives": 896130,
+  "maximum_segment_queries": 3212681,
+  "observed_triangle_count": 7515023,
+  "phase_ns": {
+    "close": 55442,
+    "input_load_and_graph_contract": 14649540515,
+    "pyoptix_owner_prepare": 2485800031,
+    "single_natural_graph_action": 10046567634
+  },
+  "pooling_into_formal_transaction_forbidden": true,
+  "schema": "rtdl.v4_long_workload.triangle_c_calibration.v1",
+  "script_sha256": "236765cc1606b270be4777428287761ef6483ce5d595f6acb4659aeb33adde86",
+  "segment_count": 28,
+  "segments": [
+    {
+      "checked_u64": 141107,
+      "device_status": 0,
+      "primitive_count": 600825,
+      "query_count": 1773174,
+      "segment_id": 0
+    },
+    {
+      "checked_u64": 181117,
+      "device_status": 0,
+      "primitive_count": 710004,
+      "query_count": 2255255,
+      "segment_id": 1
+    },
+    {
+      "checked_u64": 231020,
+      "device_status": 0,
+      "primitive_count": 809368,
+      "query_count": 2733999,
+      "segment_id": 2
+    },
+    {
+      "checked_u64": 279969,
+      "device_status": 0,
+      "primitive_count": 896130,
+      "query_count": 3212681,
+      "segment_id": 3
+    },
+    {
+      "checked_u64": 165182,
+      "device_status": 0,
+      "primitive_count": 480253,
+      "query_count": 1816365,
+      "segment_id": 4
+    },
+    {
+      "checked_u64": 184580,
+      "device_status": 0,
+      "primitive_count": 501547,
+      "query_count": 1925449,
+      "segment_id": 5
+    },
+    {
+      "checked_u64": 182826,
+      "device_status": 0,
+      "primitive_count": 470556,
+      "query_count": 1884977,
+      "segment_id": 6
+    },
+    {
+      "checked_u64": 163305,
+      "device_status": 0,
+      "primitive_count": 418269,
+      "query_count": 1785961,
+      "segment_id": 7
+    },
+    {
+      "checked_u64": 185454,
+      "device_status": 0,
+      "primitive_count": 445604,
+      "query_count": 1874020,
+      "segment_id": 8
+    },
+    {
+      "checked_u64": 214159,
+      "device_status": 0,
+      "primitive_count": 474566,
+      "query_count": 2003181,
+      "segment_id": 9
+    },
+    {
+      "checked_u64": 232968,
+      "device_status": 0,
+      "primitive_count": 490565,
+      "query_count": 2071730,
+      "segment_id": 10
+    },
+    {
+      "checked_u64": 254710,
+      "device_status": 0,
+      "primitive_count": 511110,
+      "query_count": 2184555,
+      "segment_id": 11
+    },
+    {
+      "checked_u64": 279897,
+      "device_status": 0,
+      "primitive_count": 529158,
+      "query_count": 2285624,
+      "segment_id": 12
+    },
+    {
+      "checked_u64": 283228,
+      "device_status": 0,
+      "primitive_count": 538855,
+      "query_count": 2365507,
+      "segment_id": 13
+    },
+    {
+      "checked_u64": 298846,
+      "device_status": 0,
+      "primitive_count": 553873,
+      "query_count": 2476224,
+      "segment_id": 14
+    },
+    {
+      "checked_u64": 311979,
+      "device_status": 0,
+      "primitive_count": 564969,
+      "query_count": 2541064,
+      "segment_id": 15
+    },
+    {
+      "checked_u64": 320247,
+      "device_status": 0,
+      "primitive_count": 574117,
+      "query_count": 2628116,
+      "segment_id": 16
+    },
+    {
+      "checked_u64": 333146,
+      "device_status": 0,
+      "primitive_count": 578906,
+      "query_count": 2651073,
+      "segment_id": 17
+    },
+    {
+      "checked_u64": 337570,
+      "device_status": 0,
+      "primitive_count": 580344,
+      "query_count": 2677253,
+      "segment_id": 18
+    },
+    {
+      "checked_u64": 347332,
+      "device_status": 0,
+      "primitive_count": 586195,
+      "query_count": 2753857,
+      "segment_id": 19
+    },
+    {
+      "checked_u64": 356381,
+      "device_status": 0,
+      "primitive_count": 589791,
+      "query_count": 2842291,
+      "segment_id": 20
+    },
+    {
+      "checked_u64": 357276,
+      "device_status": 0,
+      "primitive_count": 589159,
+      "query_count": 2934550,
+      "segment_id": 21
+    },
+    {
+      "checked_u64": 353094,
+      "device_status": 0,
+      "primitive_count": 585182,
+      "query_count": 3009747,
+      "segment_id": 22
+    },
+    {
+      "checked_u64": 354162,
+      "device_status": 0,
+      "primitive_count": 583584,
+      "query_count": 3051791,
+      "segment_id": 23
+    },
+    {
+      "checked_u64": 353159,
+      "device_status": 0,
+      "primitive_count": 573273,
+      "query_count": 3047111,
+      "segment_id": 24
+    },
+    {
+      "checked_u64": 298957,
+      "device_status": 0,
+      "primitive_count": 555804,
+      "query_count": 3068434,
+      "segment_id": 25
+    },
+    {
+      "checked_u64": 270815,
+      "device_status": 0,
+      "primitive_count": 543666,
+      "query_count": 3053433,
+      "segment_id": 26
+    },
+    {
+      "checked_u64": 242537,
+      "device_status": 0,
+      "primitive_count": 517942,
+      "query_count": 2943327,
+      "segment_id": 27
+    }
+  ],
+  "source_commit": "c5c8be48b743aa001e9c16c3344cc97c200600d1",
+  "source_tree": "e3bb0001f4c2d1e3171ab0431c0479500dfc7136",
+  "total_segment_primitives": 15853615,
+  "total_segment_queries": 69850749
+}

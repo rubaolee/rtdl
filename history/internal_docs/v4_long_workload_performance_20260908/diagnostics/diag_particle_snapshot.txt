@@ -1,0 +1,112 @@
+         89432 function calls (89368 primitive calls) in 0.077 seconds
+
+   Ordered by: cumulative time
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+       16    0.000    0.000    0.077    0.005 v4_paper_apps_pyoptix_worker.py:323(execute)
+       16    0.000    0.000    0.076    0.005 v4_whole_app.py:319(execute)
+       16    0.006    0.000    0.075    0.005 v4_triangle_prepared_runtime.py:214(execute)
+       48    0.007    0.000    0.060    0.001 {built-in method builtins.any}
+    80016    0.052    0.000    0.052    0.000 v4_triangle_prepared_runtime.py:299(<genexpr>)
+    96/32    0.000    0.000    0.003    0.000 diagnose_prepared_hot_path.py:43(measured)
+       16    0.000    0.000    0.003    0.000 physical_execution_provenance.py:1220(finish)
+      112    0.002    0.000    0.002    0.000 {method 'reduce' of 'numpy.ufunc' objects}
+       64    0.000    0.000    0.001    0.000 __init__.py:183(dumps)
+       16    0.000    0.000    0.001    0.000 fromnumeric.py:2548(all)
+       16    0.000    0.000    0.001    0.000 physical_execution_provenance.py:1192(capture)
+       16    0.000    0.000    0.001    0.000 fromnumeric.py:86(_wrapreduction_any_all)
+       64    0.000    0.000    0.001    0.000 encoder.py:183(encode)
+       96    0.001    0.000    0.001    0.000 {method 'update' of '_hashlib.HASH' objects}
+       16    0.000    0.000    0.001    0.000 physical_execution_provenance.py:1055(build_receipt)
+       64    0.001    0.000    0.001    0.000 encoder.py:205(iterencode)
+       16    0.000    0.000    0.001    0.000 physical_execution_provenance.py:393(_captured_traversal_observation_from_frozen_provider_identity)
+       16    0.000    0.000    0.001    0.000 particle_adapter.py:140(observe_v4_particle_result)
+       80    0.001    0.000    0.001    0.000 {built-in method numpy.ascontiguousarray}
+       16    0.000    0.000    0.001    0.000 v4_triangle_prepared_runtime.py:30(_bulk_u32x3_digest)
+       16    0.000    0.000    0.001    0.000 v4_triangle_optix_runtime.py:106(_bindings)
+       32    0.000    0.000    0.001    0.000 v4_triangle_optix_runtime.py:61(_digest)
+       16    0.000    0.000    0.001    0.000 particle_adapter.py:23(_output_digest)
+       16    0.000    0.000    0.001    0.000 physical_execution_provenance.py:341(_captured_snapshot_items)
+       48    0.000    0.000    0.001    0.000 numeric.py:2535(array_equal)
+       16    0.000    0.000    0.001    0.000 physical_execution_provenance.py:221(_stable_digest)
+       16    0.000    0.000    0.001    0.000 v4_typed_physical_schema.py:357(plan_sha256)
+      128    0.000    0.000    0.000    0.000 v4_triangle_optix_runtime.py:123(<genexpr>)
+       16    0.000    0.000    0.000    0.000 diagnose_prepared_hot_path.py:91(measured_open)
+       16    0.000    0.000    0.000    0.000 physical_execution_provenance.py:1126(open)
+       16    0.000    0.000    0.000    0.000 v4_typed_physical_schema.py:942(_sha)
+       64    0.000    0.000    0.000    0.000 {method 'all' of 'numpy.ndarray' objects}
+       16    0.000    0.000    0.000    0.000 _shape_base_impl.py:625(column_stack)
+       64    0.000    0.000    0.000    0.000 _methods.py:64(_all)
+     1152    0.000    0.000    0.000    0.000 {built-in method builtins.isinstance}
+       32    0.000    0.000    0.000    0.000 physical_execution_provenance.py:319(_call_status)
+       16    0.000    0.000    0.000    0.000 v4_typed_physical_schema.py:566(verify_buffer_bindings)
+     2080    0.000    0.000    0.000    0.000 physical_execution_provenance.py:1071(<genexpr>)
+      528    0.000    0.000    0.000    0.000 physical_execution_provenance.py:350(<genexpr>)
+       16    0.000    0.000    0.000    0.000 physical_execution_provenance.py:356(_captured_snapshot_dict)
+       96    0.000    0.000    0.000    0.000 {built-in method _hashlib.openssl_sha256}
+       48    0.000    0.000    0.000    0.000 _internal.py:280(data_as)
+       48    0.000    0.000    0.000    0.000 __init__.py:49(create_string_buffer)
+       48    0.000    0.000    0.000    0.000 _ctypeslib.py:520(as_array)
+      208    0.000    0.000    0.000    0.000 {built-in method numpy.asarray}
+      240    0.000    0.000    0.000    0.000 enum.py:202(__get__)
+       32    0.000    0.000    0.000    0.000 {method 'any' of 'numpy.ndarray' objects}
+       48    0.000    0.000    0.000    0.000 __init__.py:517(cast)
+       32    0.000    0.000    0.000    0.000 random.py:889(getrandbits)
+       96    0.000    0.000    0.000    0.000 {method 'hexdigest' of '_hashlib.HASH' objects}
+       32    0.000    0.000    0.000    0.000 _methods.py:55(_any)
+       32    0.000    0.000    0.000    0.000 v4_triangle_prepared_runtime.py:188(_check)
+       16    0.000    0.000    0.000    0.000 v4_paper_apps_pyoptix_worker.py:50(_traversal_projection)
+      464    0.000    0.000    0.000    0.000 {method 'append' of 'list' objects}
+      384    0.000    0.000    0.000    0.000 {built-in method builtins.getattr}
+       16    0.000    0.000    0.000    0.000 v4_triangle_prepared_runtime.py:196(lifecycle_receipt)
+       16    0.000    0.000    0.000    0.000 physical_execution_provenance.py:365(_classify_snapshot)
+       16    0.000    0.000    0.000    0.000 v4_typed_physical_schema.py:1009(_unique_by)
+      128    0.000    0.000    0.000    0.000 v4_triangle_prepared_runtime.py:317(<genexpr>)
+       32    0.000    0.000    0.000    0.000 {built-in method posix.urandom}
+      240    0.000    0.000    0.000    0.000 {method 'get' of 'dict' objects}
+       16    0.000    0.000    0.000    0.000 physical_execution_provenance.py:174(_registered_loaded_provider_identity)
+      256    0.000    0.000    0.000    0.000 {built-in method time.perf_counter_ns}
+       96    0.000    0.000    0.000    0.000 {method 'encode' of 'str' objects}
+       32    0.000    0.000    0.000    0.000 {built-in method posix.getpid}
+       48    0.000    0.000    0.000    0.000 _internal.py:263(__init__)
+       16    0.000    0.000    0.000    0.000 pathlib.py:748(is_absolute)
+      240    0.000    0.000    0.000    0.000 enum.py:1292(value)
+       32    0.000    0.000    0.000    0.000 physical_execution_provenance.py:415(<genexpr>)
+      176    0.000    0.000    0.000    0.000 {built-in method builtins.len}
+       48    0.000    0.000    0.000    0.000 {built-in method numpy.array}
+       64    0.000    0.000    0.000    0.000 encoder.py:105(__init__)
+       32    0.000    0.000    0.000    0.000 <frozen abc>:117(__instancecheck__)
+       16    0.000    0.000    0.000    0.000 physical_execution_provenance.py:276(_register_audit_abi)
+       16    0.000    0.000    0.000    0.000 _shape_base_impl.py:621(_column_stack_dispatcher)
+       16    0.000    0.000    0.000    0.000 {method 'acquire' of '_thread.lock' objects}
+       64    0.000    0.000    0.000    0.000 {method 'join' of 'str' objects}
+       32    0.000    0.000    0.000    0.000 {built-in method _abc._abc_instancecheck}
+       16    0.000    0.000    0.000    0.000 shape_base.py:206(_arrays_for_stack_dispatcher)
+       48    0.000    0.000    0.000    0.000 {built-in method builtins.hasattr}
+       96    0.000    0.000    0.000    0.000 {built-in method numpy.asanyarray}
+        1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
+       16    0.000    0.000    0.000    0.000 physical_execution_provenance.py:240(physical_program_bundle_id)
+       32    0.000    0.000    0.000    0.000 {method 'cast' of 'memoryview' objects}
+       16    0.000    0.000    0.000    0.000 {method 'astype' of 'numpy.ndarray' objects}
+       48    0.000    0.000    0.000    0.000 {built-in method _ctypes.POINTER}
+       16    0.000    0.000    0.000    0.000 {method 'intersection' of 'set' objects}
+      112    0.000    0.000    0.000    0.000 v4_typed_physical_schema.py:572(<lambda>)
+       16    0.000    0.000    0.000    0.000 physical_execution_provenance.py:107(_require_sha256)
+       16    0.000    0.000    0.000    0.000 {method 'to_bytes' of 'int' objects}
+       16    0.000    0.000    0.000    0.000 pathlib.py:437(__str__)
+       48    0.000    0.000    0.000    0.000 numeric.py:2516(_array_equal_dispatcher)
+       48    0.000    0.000    0.000    0.000 {built-in method sys.audit}
+       16    0.000    0.000    0.000    0.000 {built-in method _ctypes.byref}
+       16    0.000    0.000    0.000    0.000 {method 'startswith' of 'str' objects}
+       32    0.000    0.000    0.000    0.000 {method '__exit__' of '_thread.lock' objects}
+       32    0.000    0.000    0.000    0.000 {built-in method time.perf_counter}
+       16    0.000    0.000    0.000    0.000 <string>:2(__init__)
+       32    0.000    0.000    0.000    0.000 {built-in method builtins.id}
+       32    0.000    0.000    0.000    0.000 {built-in method from_bytes}
+       32    0.000    0.000    0.000    0.000 {built-in method _thread.get_ident}
+       16    0.000    0.000    0.000    0.000 v4_triangle_prepared_runtime.py:77(_raise)
+       16    0.000    0.000    0.000    0.000 {method 'items' of 'dict' objects}
+       16    0.000    0.000    0.000    0.000 {method 'release' of '_thread.lock' objects}
+       16    0.000    0.000    0.000    0.000 fromnumeric.py:2543(_all_dispatcher)
+       16    0.000    0.000    0.000    0.000 multiarray.py:197(concatenate)
+        7    0.000    0.000    0.000    0.000 diagnose_prepared_hot_path.py:59(<lambda>)

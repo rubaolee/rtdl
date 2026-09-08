@@ -1,0 +1,160 @@
+{
+  "config_sha256": "47ee28a7223a8b6646d8403fdad6a5c69b701e3ca04a1f997127a090a2106429",
+  "controller_sha256": "832c4bb891b74c7ac7fa02b67a4e5203df1dfb94ccb7dd93ec4fec8ce195ed15",
+  "mode": "dry-run",
+  "rows": [
+    {
+      "arm": "old_v4",
+      "block": null,
+      "endpoint": "prepared",
+      "ordinal": 0,
+      "position": 0,
+      "repetitions": 1,
+      "unit_id": "particle_tracking",
+      "warmups": 0
+    },
+    {
+      "arm": "new_v4",
+      "block": null,
+      "endpoint": "prepared",
+      "ordinal": 1,
+      "position": 1,
+      "repetitions": 1,
+      "unit_id": "particle_tracking",
+      "warmups": 0
+    },
+    {
+      "arm": "pyoptix",
+      "block": null,
+      "endpoint": "prepared",
+      "ordinal": 2,
+      "position": 2,
+      "repetitions": 1,
+      "unit_id": "particle_tracking",
+      "warmups": 0
+    },
+    {
+      "arm": "old_v4",
+      "block": null,
+      "endpoint": "prepared",
+      "ordinal": 3,
+      "position": 0,
+      "repetitions": 1,
+      "unit_id": "triangle_counting__com_dblp__rt_2a1",
+      "warmups": 0
+    },
+    {
+      "arm": "new_v4",
+      "block": null,
+      "endpoint": "prepared",
+      "ordinal": 4,
+      "position": 1,
+      "repetitions": 1,
+      "unit_id": "triangle_counting__com_dblp__rt_2a1",
+      "warmups": 0
+    },
+    {
+      "arm": "pyoptix",
+      "block": null,
+      "endpoint": "prepared",
+      "ordinal": 5,
+      "position": 2,
+      "repetitions": 1,
+      "unit_id": "triangle_counting__com_dblp__rt_2a1",
+      "warmups": 0
+    },
+    {
+      "arm": "old_v4",
+      "block": null,
+      "endpoint": "prepared",
+      "ordinal": 6,
+      "position": 0,
+      "repetitions": 1,
+      "unit_id": "librts__parks__point_contains",
+      "warmups": 0
+    },
+    {
+      "arm": "new_v4",
+      "block": null,
+      "endpoint": "prepared",
+      "ordinal": 7,
+      "position": 1,
+      "repetitions": 1,
+      "unit_id": "librts__parks__point_contains",
+      "warmups": 0
+    },
+    {
+      "arm": "pyoptix",
+      "block": null,
+      "endpoint": "prepared",
+      "ordinal": 8,
+      "position": 2,
+      "repetitions": 1,
+      "unit_id": "librts__parks__point_contains",
+      "warmups": 0
+    },
+    {
+      "arm": "old_v4",
+      "block": null,
+      "endpoint": "prepared",
+      "ordinal": 9,
+      "position": 0,
+      "repetitions": 1,
+      "unit_id": "librts__parks__range_contains",
+      "warmups": 0
+    },
+    {
+      "arm": "new_v4",
+      "block": null,
+      "endpoint": "prepared",
+      "ordinal": 10,
+      "position": 1,
+      "repetitions": 1,
+      "unit_id": "librts__parks__range_contains",
+      "warmups": 0
+    },
+    {
+      "arm": "pyoptix",
+      "block": null,
+      "endpoint": "prepared",
+      "ordinal": 11,
+      "position": 2,
+      "repetitions": 1,
+      "unit_id": "librts__parks__range_contains",
+      "warmups": 0
+    },
+    {
+      "arm": "old_v4",
+      "block": null,
+      "endpoint": "prepared",
+      "ordinal": 12,
+      "position": 0,
+      "repetitions": 1,
+      "unit_id": "triangle_counting__cit_patents__rt_2a1__4m",
+      "warmups": 0
+    },
+    {
+      "arm": "new_v4",
+      "block": null,
+      "endpoint": "prepared",
+      "ordinal": 13,
+      "position": 1,
+      "repetitions": 1,
+      "unit_id": "triangle_counting__cit_patents__rt_2a1__4m",
+      "warmups": 0
+    },
+    {
+      "arm": "pyoptix",
+      "block": null,
+      "endpoint": "prepared",
+      "ordinal": 14,
+      "position": 2,
+      "repetitions": 1,
+      "unit_id": "triangle_counting__cit_patents__rt_2a1__4m",
+      "warmups": 0
+    }
+  ],
+  "schema": "rtdl.v4_long_workload.schedule.v1",
+  "worker_count": 15,
+  "worker_sha256": "2124be513972ad6a50d175e2d899542fa83bfa77a165dcd9a4c08ecc839efbd5"
+}

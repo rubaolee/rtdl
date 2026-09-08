@@ -1,0 +1,58 @@
+{
+  "formal_config_fragment": {
+    "artifact_path": "/tmp/rtdl-v4-particle-rtdlexe-cdb677ddc-artifact/30080cdc1941db620e6c4c288c199df028f6df0bb2f605814c1dac136e374e5a.rtdlexe",
+    "deployment_id": "successor-cdb677ddc/particle/a4500",
+    "expected_artifact_sha256": "30080cdc1941db620e6c4c288c199df028f6df0bb2f605814c1dac136e374e5a",
+    "expected_independent_oracle_sha256": "7351cc39534961f5c0626cbf6f6e6039305ca200307bca63decc06ce4f810c99",
+    "expected_input_sha256": "7f21844610c4c9ad8ccdf6ec6961de28d6f1099af8b1bf0e37e41bf53fb55743",
+    "expected_native_sha256": "5edb9ec3e542b64bf0696c6df9a164448aecd6b5b51f1fdd78ba6e8c791dd2af",
+    "expected_orientation_authority_sha256": "196c63b5a73c3bf5c786f862c65ec5c7c0461ff1fb87798118f1319a3d1411b9",
+    "expected_protocol_decision_sha256": "c51b58ed2340892cecc698141ddc71279df6e080b6ae2a1f2e58bdcca755cab6",
+    "expected_template_semantic_sha256": "4378dddd0e3089517d16a295c00d7172e0327f52e8715424d6c834da53076fbb"
+  },
+  "input": {
+    "data_root": "/workspace/rtdl-v4-paper-apps-run/data/DATA",
+    "independent_oracle_sha256": "7351cc39534961f5c0626cbf6f6e6039305ca200307bca63decc06ce4f810c99",
+    "input_sha256": "7f21844610c4c9ad8ccdf6ec6961de28d6f1099af8b1bf0e37e41bf53fb55743",
+    "route_independent_expected": true
+  },
+  "product": {
+    "arbitrary_user_dsl_generalization_claimed": false,
+    "artifact_bytes": 30376,
+    "artifact_path": "/tmp/rtdl-v4-particle-rtdlexe-cdb677ddc-artifact/30080cdc1941db620e6c4c288c199df028f6df0bb2f605814c1dac136e374e5a.rtdlexe",
+    "artifact_sha256": "30080cdc1941db620e6c4c288c199df028f6df0bb2f605814c1dac136e374e5a",
+    "compile_inside_measurement": false,
+    "protocol_decision_sha256": "c51b58ed2340892cecc698141ddc71279df6e080b6ae2a1f2e58bdcca755cab6",
+    "ptx_bytes": 8201,
+    "ptx_sha256": "ee229b3588ad40cc6994e96e78643bbb4d03991284ef0590c07565152e526cc9",
+    "specialization_scope": "STRICT_INTERIOR_STANDARD_LIBRARY_SPECIALIZATION_ONLY",
+    "template_semantic_sha256": "4378dddd0e3089517d16a295c00d7172e0327f52e8715424d6c834da53076fbb"
+  },
+  "runtime": {
+    "numba_version": "0.65.1",
+    "numpy_version": "2.4.4",
+    "python_executable": "/workspace/rtdl-v4-paper-apps-run/venv/bin/python",
+    "python_version": "3.12.3"
+  },
+  "schema": "rtdl.v4_long_workload.particle_rtdlexe_build.v1",
+  "source": {
+    "builder_path": "/tmp/rtdl-v4-long-recount-bf7550f82/scripts/v4_long_workload_build_particle_rtdlexe.py",
+    "builder_sha256": "f7ef93f988ca5c06fef0467e81d8d9b0d7a63a2236ff3af916e8214875aaf270",
+    "commit": "cdb677ddce53eb53063c32667e113b9b72d3ae70",
+    "root": "/tmp/rtdl-v4-long-recount-bf7550f82",
+    "tree": "c72e1ebfcf3c3d98463fe178edbf7333e6ea2645"
+  },
+  "status": "PASS__BUILT_AND_PUBLIC_LOAD_VERIFIED__NO_EXECUTE",
+  "target": {
+    "compute_capability": "8.6",
+    "cuda_include": "/usr/local/cuda-12.8/targets/x86_64-linux/include",
+    "native_path": "/workspace/rtdl-v4-long-perf-successor-5f07cce58/librtdl_optix.so",
+    "native_sha256": "5edb9ec3e542b64bf0696c6df9a164448aecd6b5b51f1fdd78ba6e8c791dd2af",
+    "nvcc_path": "/usr/local/cuda-12.8/bin/nvcc",
+    "nvcc_sha256": "59e4e55f9a38b78c590df1e28a69dad91052958f18a03868ca4a547c043fbba7",
+    "optix_include": "/workspace/rtdl-v4-paper-apps-run/optix-dev/include",
+    "optix_sdk": "8.0.0",
+    "provider": "optix",
+    "target_sha256": "cae9e65bfba23bbcfb9cd8feabc77001015ae23b45747b6791552ce86990f50c"
+  }
+}

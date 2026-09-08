@@ -1,0 +1,15 @@
+{
+  "compute_capability": [
+    8,
+    6
+  ],
+  "cuda_include": "/usr/local/cuda-12.8/targets/x86_64-linux/include",
+  "data_root": "/workspace/rtdl-v4-paper-apps-run/data/DATA",
+  "native_library_path": "/workspace/rtdl-v4-long-perf-native-p4/librtdl_optix.so",
+  "native_library_sha256": "cc3df548706003fde818fc8a72852a9945fc29059ff3238cfebe1cbbc7ab4e8c",
+  "optix_include": "/workspace/rtdl-v4-paper-apps-run/optix-dev/include",
+  "optix_sdk": "8.0.0",
+  "source_commit": "c5c8be48b743aa001e9c16c3344cc97c200600d1",
+  "source_root": "/workspace/rtdl-v4-long-perf-dev",
+  "source_tree": "e3bb0001f4c2d1e3171ab0431c0479500dfc7136"
+}

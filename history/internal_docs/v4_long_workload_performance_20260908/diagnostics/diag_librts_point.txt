@@ -1,0 +1,111 @@
+         12410 function calls (12282 primitive calls) in 0.164 seconds
+
+   Ordered by: cumulative time
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+       16    0.000    0.000    0.164    0.010 v4_paper_apps_pyoptix_worker.py:478(execute)
+       16    0.000    0.000    0.164    0.010 v4_aabb_relation_count_lowering.py:162(execute_count)
+       48    0.000    0.000    0.153    0.003 diagnose_prepared_hot_path.py:63(measured_resolve)
+       48    0.000    0.000    0.152    0.003 pathlib.py:1230(resolve)
+   112/32    0.000    0.000    0.115    0.004 diagnose_prepared_hot_path.py:42(measured)
+       16    0.000    0.000    0.112    0.007 diagnose_prepared_hot_path.py:90(measured_open)
+       16    0.000    0.000    0.111    0.007 physical_execution_provenance.py:1104(open)
+       48    0.000    0.000    0.094    0.002 <frozen posixpath>:431(realpath)
+       48    0.001    0.000    0.092    0.002 <frozen posixpath>:440(_joinrealpath)
+      192    0.090    0.000    0.090    0.000 {built-in method posix.lstat}
+       16    0.000    0.000    0.067    0.004 physical_execution_provenance.py:134(_loaded_provider_sha256)
+       48    0.000    0.000    0.058    0.001 pathlib.py:837(stat)
+       48    0.056    0.001    0.058    0.001 {built-in method posix.stat}
+       16    0.000    0.000    0.048    0.003 physical_execution_provenance.py:1198(finish)
+       16    0.000    0.000    0.045    0.003 physical_execution_provenance.py:1170(capture)
+       16    0.000    0.000    0.045    0.003 physical_execution_provenance.py:393(captured_traversal_observation_from_snapshot)
+       16    0.000    0.000    0.003    0.000 aabb_index.py:319(count_prepared_queries)
+       16    0.003    0.000    0.003    0.000 optix_runtime.py:16903(count_prepared_queries)
+       96    0.000    0.000    0.002    0.000 pathlib.py:447(__fspath__)
+      128    0.001    0.000    0.002    0.000 pathlib.py:437(__str__)
+       16    0.000    0.000    0.002    0.000 physical_execution_provenance.py:1033(build_receipt)
+       64    0.000    0.000    0.002    0.000 __init__.py:183(dumps)
+       96    0.000    0.000    0.002    0.000 pathlib.py:551(drive)
+       64    0.000    0.000    0.001    0.000 encoder.py:183(encode)
+  576/528    0.000    0.000    0.001    0.000 {built-in method posix.fspath}
+       16    0.001    0.000    0.001    0.000 physical_execution_provenance.py:341(_captured_snapshot_items)
+       96    0.000    0.000    0.001    0.000 pathlib.py:407(_load_parts)
+       16    0.000    0.000    0.001    0.000 physical_execution_provenance.py:221(_stable_digest)
+       64    0.001    0.000    0.001    0.000 encoder.py:205(iterencode)
+       96    0.001    0.000    0.001    0.000 pathlib.py:387(_parse_path)
+      192    0.001    0.000    0.001    0.000 <frozen posixpath>:71(join)
+       32    0.000    0.000    0.001    0.000 v4_aabb_relation_count_lowering.py:36(_digest)
+       32    0.000    0.000    0.001    0.000 {built-in method builtins.any}
+       96    0.000    0.000    0.001    0.000 pathlib.py:1159(__init__)
+     1712    0.001    0.000    0.001    0.000 {built-in method builtins.isinstance}
+       48    0.000    0.000    0.001    0.000 pathlib.py:380(with_segments)
+       32    0.000    0.000    0.000    0.000 physical_execution_provenance.py:319(_call_status)
+       96    0.000    0.000    0.000    0.000 pathlib.py:357(__init__)
+       48    0.000    0.000    0.000    0.000 <frozen posixpath>:416(abspath)
+      528    0.000    0.000    0.000    0.000 physical_execution_provenance.py:350(<genexpr>)
+     2080    0.000    0.000    0.000    0.000 physical_execution_provenance.py:1049(<genexpr>)
+       16    0.000    0.000    0.000    0.000 v4_paper_apps_pyoptix_worker.py:39(_digest)
+       96    0.000    0.000    0.000    0.000 <frozen posixpath>:60(isabs)
+       16    0.000    0.000    0.000    0.000 physical_execution_provenance.py:356(_captured_snapshot_dict)
+       96    0.000    0.000    0.000    0.000 <frozen posixpath>:138(splitroot)
+       48    0.000    0.000    0.000    0.000 __init__.py:49(create_string_buffer)
+      288    0.000    0.000    0.000    0.000 <frozen posixpath>:41(_get_sep)
+      384    0.000    0.000    0.000    0.000 {built-in method sys.intern}
+       32    0.000    0.000    0.000    0.000 random.py:889(getrandbits)
+       64    0.000    0.000    0.000    0.000 {built-in method _hashlib.openssl_sha256}
+       96    0.000    0.000    0.000    0.000 pathlib.py:429(_format_parsed_parts)
+       96    0.000    0.000    0.000    0.000 pathlib.py:1166(__new__)
+      288    0.000    0.000    0.000    0.000 {method 'startswith' of 'str' objects}
+       48    0.000    0.000    0.000    0.000 <frozen posixpath>:408(normpath)
+       16    0.000    0.000    0.000    0.000 pathlib.py:519(__eq__)
+      432    0.000    0.000    0.000    0.000 {built-in method builtins.getattr}
+      320    0.000    0.000    0.000    0.000 {built-in method builtins.len}
+      464    0.000    0.000    0.000    0.000 {method 'append' of 'list' objects}
+       16    0.000    0.000    0.000    0.000 v4_paper_apps_pyoptix_worker.py:50(_traversal_projection)
+      384    0.000    0.000    0.000    0.000 {built-in method time.perf_counter_ns}
+       64    0.000    0.000    0.000    0.000 {method 'hexdigest' of '_hashlib.HASH' objects}
+       32    0.000    0.000    0.000    0.000 pathlib.py:484(_str_normcase)
+      192    0.000    0.000    0.000    0.000 {method 'partition' of 'str' objects}
+       32    0.000    0.000    0.000    0.000 {built-in method posix.urandom}
+      160    0.000    0.000    0.000    0.000 {method 'join' of 'str' objects}
+      192    0.000    0.000    0.000    0.000 {method 'endswith' of 'str' objects}
+       96    0.000    0.000    0.000    0.000 {method 'split' of 'str' objects}
+       16    0.000    0.000    0.000    0.000 aabb_index.py:1734(_normalize_requested_operations)
+       16    0.000    0.000    0.000    0.000 v4_aabb_relation_count_lowering.py:136(_guard)
+       16    0.000    0.000    0.000    0.000 physical_execution_provenance.py:365(_classify_snapshot)
+      160    0.000    0.000    0.000    0.000 {method 'get' of 'dict' objects}
+       16    0.000    0.000    0.000    0.000 aabb_index.py:1740(_validate_operations)
+      192    0.000    0.000    0.000    0.000 {built-in method _stat.S_ISLNK}
+       16    0.000    0.000    0.000    0.000 physical_execution_provenance.py:276(_register_audit_abi)
+       96    0.000    0.000    0.000    0.000 {built-in method __new__ of type object at 0xa44b40}
+       64    0.000    0.000    0.000    0.000 encoder.py:105(__init__)
+       64    0.000    0.000    0.000    0.000 {method 'encode' of 'str' objects}
+       48    0.000    0.000    0.000    0.000 {built-in method posix._path_normpath}
+       32    0.000    0.000    0.000    0.000 <frozen abc>:117(__instancecheck__)
+       16    0.000    0.000    0.000    0.000 {built-in method posix.getpid}
+        1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
+       16    0.000    0.000    0.000    0.000 aabb_index.py:1746(_validate_optix_operations)
+       16    0.000    0.000    0.000    0.000 enum.py:202(__get__)
+       96    0.000    0.000    0.000    0.000 pathlib.py:560(root)
+       32    0.000    0.000    0.000    0.000 {built-in method _abc._abc_instancecheck}
+       16    0.000    0.000    0.000    0.000 physical_execution_provenance.py:107(_require_sha256)
+       32    0.000    0.000    0.000    0.000 {built-in method _ctypes.byref}
+       16    0.000    0.000    0.000    0.000 aabb_columns.py:84(__len__)
+       48    0.000    0.000    0.000    0.000 {method 'extend' of 'list' objects}
+       96    0.000    0.000    0.000    0.000 pathlib.py:569(_tail)
+       16    0.000    0.000    0.000    0.000 optix_runtime.py:31162(_find_optional_backend_symbol)
+       32    0.000    0.000    0.000    0.000 {method '__exit__' of '_thread.lock' objects}
+       32    0.000    0.000    0.000    0.000 {built-in method time.perf_counter}
+       32    0.000    0.000    0.000    0.000 {built-in method from_bytes}
+       16    0.000    0.000    0.000    0.000 <string>:2(__init__)
+       32    0.000    0.000    0.000    0.000 {built-in method builtins.id}
+       48    0.000    0.000    0.000    0.000 {built-in method sys.audit}
+       16    0.000    0.000    0.000    0.000 aabb_index.py:1741(<genexpr>)
+       16    0.000    0.000    0.000    0.000 {method 'lower' of 'str' objects}
+       16    0.000    0.000    0.000    0.000 enum.py:1292(value)
+       16    0.000    0.000    0.000    0.000 {method 'replace' of 'str' objects}
+       16    0.000    0.000    0.000    0.000 optix_runtime.py:31192(_check_status)
+       16    0.000    0.000    0.000    0.000 {built-in method _thread.get_ident}
+       16    0.000    0.000    0.000    0.000 physical_execution_provenance.py:412(<genexpr>)
+       16    0.000    0.000    0.000    0.000 aabb_index.py:1747(<genexpr>)
+        9    0.000    0.000    0.000    0.000 diagnose_prepared_hot_path.py:58(<lambda>)

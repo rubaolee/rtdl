@@ -1,0 +1,116 @@
+{
+  "schema": "rtdl.v4_long_workload_performance.status.v1",
+  "updated_at": "2026-09-08T09:43:00-04:00",
+  "authorization": {
+    "owner_authorized_after_prior_freeze": true,
+    "scope": "existing Particle, graph triangle-counting, and LibRTS performance remediation, strong public-PyOptiX comparison, necessary experiment tooling, and matching evidence/manuscript work",
+    "unrelated_language_development_authorized": false,
+    "external_sending_authorized": false,
+    "submission_authorized": false
+  },
+  "immutable_predecessors": {
+    "measured_source_m": "d653fe4ad170c5b51fee309d653c9565944dcf2e",
+    "predecessor_e": "12ab1bc0a8ebbcefe42e93c677a151c04c3ba3c8",
+    "offline_artifact_f2": "9771facece4ccd807e26c15b21892b9d0a701d32",
+    "application_baseline_source": "c5c8be48b743aa001e9c16c3344cc97c200600d1"
+  },
+  "pod": {
+    "gpu": "NVIDIA RTX A4500",
+    "gpu_uuid": "GPU-5dbda20d-af85-650e-7250-10b265a77143",
+    "compute_capability": "8.6",
+    "driver": "550.127.05",
+    "memory_mib": 20470,
+    "same_gpu_as_application_baseline_transaction": true
+  },
+  "state": {
+    "baseline_profile_started": true,
+    "old_input_profile_complete": true,
+    "registered_provider_path_candidate_implemented": true,
+    "registered_provider_path_candidate_unit_tests_passed": true,
+    "strong_c_graph_calibration_complete": true,
+    "strong_c_graph_candidate": "cit-Patents__max_relation_rows_4000000",
+    "candidate_source_commit": "02e84374fc092d2bb916cca633eda9592b4ecf07",
+    "candidate_source_tree": "8aad15d686bbc9e1c3b11df998898a0a063a01f1",
+    "candidate_source_clean_and_pushed": true,
+    "triangle_rtdlexe_artifact_sha256": "f8554f9e339f526424b09a619071c9e7bd64318f1e78b1c9dcadf129dcc17463",
+    "formal_cpu_affinity": {
+      "cpu_ids": [
+        8
+      ],
+      "worker_preflight_and_postflight_fail_closed": true,
+      "independent_recount_required": true
+    },
+    "long_workload_inputs_frozen": true,
+    "preregistration_frozen": true,
+    "formal_worker_zero_started": true,
+    "formal_measurement_complete": true,
+    "formal_worker_count": 240,
+    "formal_valid_paired_cell_count": 80,
+    "formal_retained_timed_sample_count": 1248,
+    "formal_warmup_count": 120,
+    "formal_retry_count": 0,
+    "formal_discard_count": 0,
+    "formal_timeout_count": 0,
+    "independent_recount_complete": true,
+    "independent_recount_status": "PASS__METHOD_AND_TARGET",
+    "performance_target_met_for_all_four_original_units": true,
+    "performance_target_met_for_all_ten_registered_rows": true,
+    "long_prepared_compute_target_met_by": [
+      "triangle_counting__cit_patents__rt_2a1__4m"
+    ],
+    "manuscript_evidence_integration_complete": true,
+    "manuscript_local_build_and_render_review_complete": true,
+    "lead_independent_review_complete": false,
+    "final_bytes_review_complete": false,
+    "manuscript_claim_authorized": false
+  },
+  "formal_evidence": {
+    "config_sha256": "491d399343fee27fbf97f6a72837ff38b4b7d04fa5324525cf3b3780caf72e1d",
+    "dry_run_summary_sha256": "ce980f2863dcf6898af835514b3bd32166b7e8673c78fc3f7a20c64df4ad34d2",
+    "preregistration_sha256": "6099e46ef0b0ffa1048f7ea375c9a3b2df247ec9c7b6164936bf24edd7074d7a",
+    "formal_schedule_file_sha256": "806ce7d42cc7abb120fd035f76adeb09a13c4615b7f48f7de416d35495d73e69",
+    "formal_progress_sha256": "6d1cbf3f7299a991c2b0bf4a57d68987cbbf749228a6d02fbb5ee5d0663faeb6",
+    "formal_summary_sha256": "74c8196f6e6f8e3fc13f1d4bce312087950d1e38571909042815ff6470d0672d",
+    "independent_recount_sha256": "41d8be77bec044694489e42597bc2c9774ac2a9077a2214f66c674a0dbc69c50",
+    "archive_path": "history/internal_docs/v4_long_workload_performance_20260908/raw/rtdl-v4-long-perf-successor-02e84374f-affinity-final.tar.gz",
+    "archive_sha256": "ef2ca7890c9d415dc1edbe71966aabc512209c9d8608d4eaf460c7c1fddf8bdc",
+    "archive_bytes": 730851,
+    "archive_member_count": 1049
+  },
+  "manuscript_draft": {
+    "main_tex_sha256": "0d29d05d04a0919d0c5b26c98861b17647fbc2256298990f6ab5b52a8de3f7a0",
+    "main_pdf_sha256": "3887bf1abb21068be057d13b012eddd7b9977e06ce53daf75b0eca84af4874c0",
+    "main_pdf_bytes": 183937,
+    "main_pdf_pages": 12,
+    "page_size": "US Letter 612 x 792 pt",
+    "overfull_log_entries": 0,
+    "unresolved_citations_or_references": 0,
+    "rendered_pages_reviewed": 12,
+    "anonymous_private_identity_scan_passed": true
+  },
+  "engineering_acceptance": {
+    "paired_median_ratio_max": 1.2,
+    "every_block_ratio_max": 1.35,
+    "paired_blocks": 8,
+    "a_first_blocks": 4,
+    "c_first_blocks": 4,
+    "adverse_or_failed_rows_must_be_retained": true
+  },
+  "notes": [
+    "All work before preregistration is diagnostic and cannot be pooled into formal evidence.",
+    "A strong-C computation lasting at least one second is a workload target, not a performance pass condition.",
+    "The pre-existing references.bib dead-link correction is unrelated and must not enter executable commits.",
+    "Profiler-instrumented path-repair timings are diagnostic and not formal performance evidence.",
+    "cit-Patents strong-C selection used three fresh processes, one untimed warmup and one timed natural action each; median action time was 8.718832513 seconds.",
+    "The provider-path candidate preserves public external path resolution and all native audit/output checks.",
+    "The first unlocked 240-worker transaction at 0c3420f42 retained all rows and failed two worst-block gates: Particle prepared 1.462108x and LibRTS range prepared 1.563658x. It remains immutable adverse evidence.",
+    "A separate eight-block non-evidence diagnosis with taskset CPU 8 reduced those prepared worst-block ratios to 0.946571x and 1.013219x without changing workload, timer, output, or GPU code.",
+    "Commit 02e84374f makes exact one-CPU affinity part of config, preregistration, worker pre/post machine evidence, controller validation, and independent recount. The 15-worker dry run passed before formal worker zero.",
+    "The fresh FORMAL_V2 transaction completed 240/240 workers and 80/80 paired cells with exact outputs, exact CPU {8} pre/post affinity, zero retry/discard/timeout, and all ten rows within the preregistered engineering envelope.",
+    "A different clean checkout independently reconstructed every journal, verified every raw-file hash and input/output identity, imported no project module, and returned PASS__METHOD_AND_TARGET.",
+    "Only cit-Patents/4M supplies a multi-second prepared natural computation. Particle and LibRTS prepared rows remain sub-millisecond fixed-cost regressions, not broad long-workload evidence.",
+    "CPU 8 was selected after a disclosed diagnostic; GPU clocks could not be locked. The result supports the registered controlled-host condition, not invariance over arbitrary CPUs or clocks.",
+    "The successor evidence is integrated into a new 12-page local manuscript draft. Cached Tectonic build, all-page rendering, table inspection, and tested private-identity scans pass.",
+    "Formal technical acceptance and local manuscript integration do not authorize public wording or submission. The new exact bytes still require independent final-byte review and submission controls."
+  ]
+}
