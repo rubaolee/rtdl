@@ -59,7 +59,14 @@ RTDLEXE_AOT_REQUIRED_SYMBOLS = (
     "rtdl_optix_v4_destroy_prepared_triangle_reduction_callback_v2",
 )
 RTDLEXE_EXPORT_MAP = ROOT / "src/native/optix/rtdlexe_exports.map"
+OPTIX_WORKLOADS = ROOT / "src/native/optix/rtdl_optix_workloads.cpp"
 HEADER_SUFFIXES = frozenset({".h", ".hpp", ".inl", ".cuh"})
+_AABB_INDEX_PTX_SYMBOLS = (
+    "__raygen__aabb_index_query",
+    "__miss__aabb_index_miss",
+    "__intersection__aabb_index_exact",
+    "__anyhit__aabb_index_count",
+)
 
 
 def _validate_output_paths(*paths: Path) -> None:
@@ -96,6 +103,98 @@ def _capture(command: list[str], *, required: bool = True) -> str:
         raise RuntimeError(
             f"command failed ({completed.returncode}): {command!r}: {output}")
     return output
+
+
+def _extract_aabb_index_count_source() -> bytes:
+    text = OPTIX_WORKLOADS.read_text(encoding="utf-8")
+    start_marker = 'static const char* kAabbIndexCountKernelSrc = R"CUDA(\n'
+    end_marker = '\n)CUDA";'
+    start = text.find(start_marker)
+    if start < 0:
+        raise RuntimeError("AABB index device-source start marker is missing")
+    start += len(start_marker)
+    end = text.find(end_marker, start)
+    if end < 0:
+        raise RuntimeError("AABB index device-source end marker is missing")
+    source = text[start:end] + "\n"
+    for symbol in _AABB_INDEX_PTX_SYMBOLS:
+        if symbol not in source:
+            raise RuntimeError(f"AABB index device source lacks entry point: {symbol}")
+    return source.encode("utf-8")
+
+
+def _embedded_ptx_translation_unit(ptx: bytes) -> bytes:
+    rows = []
+    for offset in range(0, len(ptx), 16):
+        rows.append("    " + ", ".join(
+            f"0x{value:02x}" for value in ptx[offset:offset + 16]) + ",")
+    text = "\n".join((
+        "#include <cstddef>",
+        "",
+        'extern "C" __attribute__((visibility("hidden")))',
+        "const unsigned char* rtdl_optix_embedded_aabb_index_count_ptx_v1(",
+        "        std::size_t* byte_count) {",
+        "    static const unsigned char ptx[] = {",
+        *rows,
+        "    };",
+        "    if (byte_count != nullptr) *byte_count = sizeof(ptx);",
+        "    return ptx;",
+        "}",
+        "",
+    ))
+    return text.encode("ascii")
+
+
+def _prepare_embedded_aabb_index_count_ptx(
+    *, directory: Path, nvcc: Path, host_compiler: Path,
+    optix_include: Path, cuda_include: Path, capability: tuple[int, int],
+) -> tuple[Path, dict[str, object]]:
+    directory.mkdir(parents=True, exist_ok=False)
+    source_path = directory / "aabb_index_count_kernel.cu"
+    ptx_path = directory / "aabb_index_count_kernel.ptx"
+    compile_log = directory / "aabb_index_count_nvcc.log"
+    translation_unit = directory / "aabb_index_count_embedded_ptx.cpp"
+    source = _extract_aabb_index_count_source()
+    source_path.write_bytes(source)
+    command = [
+        str(nvcc), "-ccbin", str(host_compiler), "-ptx", "--std=c++14",
+        "-allow-unsupported-compiler", "-O3",
+        f"-arch=compute_{capability[0]}{capability[1]}",
+        f"-I{optix_include}", f"-I{cuda_include}",
+        str(source_path), "-o", str(ptx_path),
+    ]
+    completed = subprocess.run(
+        command, cwd=ROOT, text=True, stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT, check=False)
+    compile_log.write_text(completed.stdout, encoding="utf-8", newline="\n")
+    if completed.returncode:
+        raise RuntimeError(
+            f"AABB index AOT PTX compile failed ({completed.returncode}); "
+            f"see {compile_log}")
+    ptx = ptx_path.read_bytes()
+    if not ptx:
+        raise RuntimeError("AABB index AOT PTX compile produced no bytes")
+    for symbol in _AABB_INDEX_PTX_SYMBOLS:
+        if symbol.encode("ascii") not in ptx:
+            raise RuntimeError(f"AABB index AOT PTX lacks entry point: {symbol}")
+    translation_unit.write_bytes(_embedded_ptx_translation_unit(ptx))
+    result = {
+        "schema": "rtdl.v4.embedded_optix_program.v1",
+        "program": "aabb_index_count_2d",
+        "source_path": str(source_path),
+        "source_sha256": _sha(source_path),
+        "ptx_path": str(ptx_path),
+        "ptx_sha256": _sha(ptx_path),
+        "ptx_bytes": len(ptx),
+        "translation_unit_path": str(translation_unit),
+        "translation_unit_sha256": _sha(translation_unit),
+        "compile_log_path": str(compile_log),
+        "compile_log_sha256": _sha(compile_log),
+        "compile_command": command,
+        "entry_points": list(_AABB_INDEX_PTX_SYMBOLS),
+        "runtime_source_compilation_required": False,
+    }
+    return translation_unit, result
 
 
 def _source_inventory() -> list[dict[str, object]]:
@@ -311,6 +410,32 @@ def build(args) -> dict[str, object]:
         raise RuntimeError(
             "OptiX header version differs from --expected-optix-sdk: "
             f"header={optix_version}, expected={expected_optix_version}")
+    embed_aabb_ptx = bool(getattr(args, "embed_aabb_index_count_ptx", False))
+    embedded_directory = getattr(args, "embedded_program_directory", None)
+    if embed_aabb_ptx and aot_runtime:
+        raise ValueError(
+            "the minimal .rtdlexe provider does not include AABB index workloads")
+    if embed_aabb_ptx != (embedded_directory is not None):
+        raise ValueError(
+            "--embed-aabb-index-count-ptx and --embedded-program-directory "
+            "must be supplied together")
+    embedded_translation_unit = None
+    embedded_program = None
+    if embed_aabb_ptx:
+        embedded_translation_unit, embedded_program = (
+            _prepare_embedded_aabb_index_count_ptx(
+                directory=embedded_directory.expanduser().resolve(),
+                nvcc=nvcc,
+                host_compiler=host_compiler,
+                optix_include=optix_include,
+                cuda_include=cuda_include,
+                capability=capability,
+            )
+        )
+    compiled_translation_units = (
+        (*translation_units, embedded_translation_unit)
+        if embedded_translation_unit is not None else translation_units
+    )
     source_inventory = _source_inventory()
     optix_header_inventory = _header_inventory(optix_include)
     cuda_header_inventory = _header_inventory(cuda_include)
@@ -379,6 +504,11 @@ def build(args) -> dict[str, object]:
             "section_garbage_collection": True,
             "source_compiler_entry_points_exported": False,
         })
+    if embedded_program is not None:
+        identity.update({
+            "schema": "rtdl.v4.optix_native_build_input.v4",
+            "embedded_optix_programs": [embedded_program],
+        })
     build_id = _build_input_id(identity)
     descriptor, temporary_name = tempfile.mkstemp(
         prefix=f".{output.name}.", suffix=".partial", dir=output.parent)
@@ -419,7 +549,7 @@ def build(args) -> dict[str, object]:
         f"-arch=sm_{capability[0]}{capability[1]}",
         "-Xcompiler", ",".join(compiler_section_options),
         *aot_link_options,
-        *(str(path) for path in translation_units),
+        *(str(path) for path in compiled_translation_units),
         *(f"-L{path}" for path in library_dirs),
         "-lcuda", *runtime_compiler_libraries, *geos_libraries,
         "-o", str(temporary_output),
@@ -487,7 +617,18 @@ def build(args) -> dict[str, object]:
                 identity["host_compiler_version"] \
             or _gpu_identity() != (gpu_identity, observed_capability) \
             or _header_inventory(optix_include) != optix_header_inventory \
-            or _header_inventory(cuda_include) != cuda_header_inventory:
+            or _header_inventory(cuda_include) != cuda_header_inventory \
+            or (
+                embedded_program is not None
+                and any(
+                    _sha(Path(str(embedded_program[key])))
+                    != embedded_program[key.replace("_path", "_sha256")]
+                    for key in (
+                        "source_path", "ptx_path", "translation_unit_path",
+                        "compile_log_path",
+                    )
+                )
+            ):
         output.unlink()
         raise RuntimeError("build input identity changed during native build")
     reproduction_command = [
@@ -542,6 +683,12 @@ def build(args) -> dict[str, object]:
             "unexpected_exported_symbols": unexpected,
             "all_exports_allowlisted": True,
         })
+    if embedded_program is not None:
+        result.update({
+            "schema": "rtdl.v4.optix_native_snapshot_build.v4",
+            "status": "PASS__FRESH_NATIVE_WITH_EMBEDDED_AABB_INDEX_PTX",
+            "embedded_optix_programs": [embedded_program],
+        })
     try:
         _write_json(manifest, result)
     except Exception:
@@ -570,6 +717,15 @@ def main() -> None:
         "--rtdlexe-aot-runtime", action="store_true",
         help=("build the minimal relation/triangle .rtdlexe provider image; "
               "implies --lazy-nvrtc and strict exported-symbol allowlisting"),
+    )
+    parser.add_argument(
+        "--embed-aabb-index-count-ptx", action="store_true",
+        help=("compile the generic AABB-index OptiX program during the native "
+              "build and embed the exact PTX bytes in the provider image"),
+    )
+    parser.add_argument(
+        "--embedded-program-directory", type=Path,
+        help="create-only evidence directory for embedded device programs",
     )
     args = parser.parse_args()
     result = build(args)

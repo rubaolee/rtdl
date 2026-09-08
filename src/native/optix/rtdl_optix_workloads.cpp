@@ -17491,10 +17491,40 @@ extern "C" __global__ void __anyhit__aabb_index_count() {
 }
 )CUDA";
 
+#if defined(__GNUC__)
+extern "C" const unsigned char* rtdl_optix_embedded_aabb_index_count_ptx_v1(
+    size_t* byte_count) __attribute__((weak));
+#endif
+
+static std::string aabb_index_count_2d_ptx()
+{
+#if defined(__GNUC__)
+    if (rtdl_optix_embedded_aabb_index_count_ptx_v1 != nullptr) {
+        size_t byte_count = 0u;
+        const unsigned char* bytes =
+            rtdl_optix_embedded_aabb_index_count_ptx_v1(&byte_count);
+        if (!bytes || byte_count == 0u)
+            throw std::runtime_error("embedded AABB index PTX is empty");
+        std::string ptx(reinterpret_cast<const char*>(bytes), byte_count);
+        for (const char* symbol : {
+                "__raygen__aabb_index_query",
+                "__miss__aabb_index_miss",
+                "__intersection__aabb_index_exact",
+                "__anyhit__aabb_index_count"}) {
+            if (ptx.find(symbol) == std::string::npos)
+                throw std::runtime_error(
+                    std::string("embedded AABB index PTX lacks entry point: ") + symbol);
+        }
+        return ptx;
+    }
+#endif
+    return compile_to_ptx(kAabbIndexCountKernelSrc, "aabb_index_count_kernel.cu");
+}
+
 static void ensure_aabb_index_count_2d_pipeline()
 {
     std::call_once(g_aabb_index_count.init, [&]() {
-        std::string ptx = compile_to_ptx(kAabbIndexCountKernelSrc, "aabb_index_count_kernel.cu");
+        std::string ptx = aabb_index_count_2d_ptx();
         g_aabb_index_count.pipe = build_pipeline(
             get_optix_context(), ptx,
             "__raygen__aabb_index_query",
