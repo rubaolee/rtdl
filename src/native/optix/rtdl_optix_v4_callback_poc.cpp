@@ -2024,7 +2024,39 @@ struct V4PreparedBuiltinTriangle {
     CUdeviceptr back_values = 0;
     CUdeviceptr boundary_owner = 0;
     uint32_t primitive_count = 0;
+    size_t execution_capacity = 0;
+    std::array<std::unique_ptr<DevPtr>, 7> query_columns;
+    std::array<std::unique_ptr<DevPtr>, 3> output_columns;
+    std::array<std::unique_ptr<DevPtr>, 4> diagnostic_columns;
+    std::unique_ptr<DevPtr> status;
+    std::unique_ptr<DevPtr> counters;
+    std::unique_ptr<DevPtr> parameters;
     std::mutex execution_mutex;
+
+    void ensure_execution_capacity(size_t query_count) {
+        if (query_count <= execution_capacity) return;
+        std::array<std::unique_ptr<DevPtr>, 7> next_queries;
+        std::array<std::unique_ptr<DevPtr>, 3> next_outputs;
+        std::array<std::unique_ptr<DevPtr>, 4> next_diagnostics;
+        for (auto& column : next_queries)
+            column = std::make_unique<DevPtr>(sizeof(float) * query_count);
+        for (auto& column : next_outputs)
+            column = std::make_unique<DevPtr>(sizeof(uint32_t) * query_count);
+        for (auto& column : next_diagnostics)
+            column = std::make_unique<DevPtr>(sizeof(uint32_t) * query_count);
+        auto next_status = std::make_unique<DevPtr>(
+            sizeof(V4FormalLaunchStatus) * query_count);
+        auto next_counters = std::make_unique<DevPtr>(sizeof(uint64_t) * 7);
+        auto next_parameters = std::make_unique<DevPtr>(sizeof(V4TriangleParams));
+        query_columns = std::move(next_queries);
+        output_columns = std::move(next_outputs);
+        diagnostic_columns = std::move(next_diagnostics);
+        status = std::move(next_status);
+        counters = std::move(next_counters);
+        parameters = std::move(next_parameters);
+        execution_capacity = query_count;
+    }
+
     ~V4PreparedBuiltinTriangle() {
         if (front_values) cuMemFree(front_values);
         if (back_values) cuMemFree(back_values);
@@ -2171,17 +2203,24 @@ static void execute_v4_prepared_builtin_triangle_callback(
                 (qdx[index] == 0.0f && qdy[index] == 0.0f && qdz[index] == 0.0f))
             throw std::runtime_error("V4 prepared built-in triangle query is invalid");
     }
-    DevPtr qox_d(sizeof(float) * query_count), qoy_d(sizeof(float) * query_count),
-        qoz_d(sizeof(float) * query_count), qdx_d(sizeof(float) * query_count),
-        qdy_d(sizeof(float) * query_count), qdz_d(sizeof(float) * query_count),
-        qtmax_d(sizeof(float) * query_count), out0(sizeof(uint32_t) * query_count),
-        out1(sizeof(uint32_t) * query_count), out2(sizeof(uint32_t) * query_count),
-        observed_primitive(sizeof(uint32_t) * query_count),
-        observed_kind(sizeof(uint32_t) * query_count),
-        observed_bx(sizeof(float) * query_count),
-        observed_by(sizeof(float) * query_count),
-        status(sizeof(V4FormalLaunchStatus) * query_count),
-        counters(sizeof(uint64_t) * 7);
+    prepared->ensure_execution_capacity(query_count);
+    DevPtr& qox_d = *prepared->query_columns[0];
+    DevPtr& qoy_d = *prepared->query_columns[1];
+    DevPtr& qoz_d = *prepared->query_columns[2];
+    DevPtr& qdx_d = *prepared->query_columns[3];
+    DevPtr& qdy_d = *prepared->query_columns[4];
+    DevPtr& qdz_d = *prepared->query_columns[5];
+    DevPtr& qtmax_d = *prepared->query_columns[6];
+    DevPtr& out0 = *prepared->output_columns[0];
+    DevPtr& out1 = *prepared->output_columns[1];
+    DevPtr& out2 = *prepared->output_columns[2];
+    DevPtr& observed_primitive = *prepared->diagnostic_columns[0];
+    DevPtr& observed_kind = *prepared->diagnostic_columns[1];
+    DevPtr& observed_bx = *prepared->diagnostic_columns[2];
+    DevPtr& observed_by = *prepared->diagnostic_columns[3];
+    DevPtr& status = *prepared->status;
+    DevPtr& counters = *prepared->counters;
+    DevPtr& parameter_device = *prepared->parameters;
     upload(qox_d.ptr, qox.data(), query_count); upload(qoy_d.ptr, qoy.data(), query_count);
     upload(qoz_d.ptr, qoz.data(), query_count); upload(qdx_d.ptr, qdx.data(), query_count);
     upload(qdy_d.ptr, qdy.data(), query_count); upload(qdz_d.ptr, qdz.data(), query_count);
@@ -2213,7 +2252,6 @@ static void execute_v4_prepared_builtin_triangle_callback(
     parameters.observed_barycentric_y = reinterpret_cast<float*>(observed_by.ptr);
     parameters.status = reinterpret_cast<V4FormalLaunchStatus*>(status.ptr);
     parameters.role_counters = reinterpret_cast<unsigned long long*>(counters.ptr);
-    DevPtr parameter_device(sizeof(parameters));
     upload(parameter_device.ptr, &parameters, 1);
     rtdl_optix_bind_traversal_audit_context(
         "v4_builtin_triangle_callback_ir_four_role_composed", prepared->accel.handle);

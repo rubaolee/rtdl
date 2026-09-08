@@ -215,3 +215,34 @@ explicit preparation. It requires a new clean commit/tree, config, passing
 eight-process dry run, complete 192-worker transaction, independent recount,
 and separately named archive. The first transaction remains adverse evidence
 even if the successor improves performance.
+
+## Pre-freeze built-in-triangle execution-buffer residency successor
+
+The first complete formal transaction and the prepared-query-residency
+transaction retain their own immutable source, config, worker, and summary
+identities. Neither transaction may be discarded or pooled with this
+successor. Their Particle Tracking observations identify a separate generic
+runtime cost: every call through `V4PreparedBuiltinTriangle` allocates fresh
+device buffers for seven query columns, three public output columns, four
+diagnostic columns, per-query status, counters, and launch parameters. The
+competent PyOptiX arm already retains equivalent execution storage in its
+prepared owner.
+
+This successor may retain capacity-bounded device execution buffers inside
+the app-neutral prepared built-in-triangle owner and reuse them under the
+owner's existing process/thread/non-reentrant guard. It may resize only when a
+later query batch exceeds retained capacity. It changes no callback source,
+typed IR, effect admission, composed PTX, traversal configuration, application
+predicate, query bytes, public U32x3 output, fail-closed status checks,
+diagnostic receipt, oracle, endpoint, block order, repetition count, warmup
+count, estimator, or performance threshold. It adds no Particle identity or
+application dispatch to native/runtime code.
+
+The expected mechanism is removal of repeated `cuMemAlloc`/`cuMemFree` work,
+not a guaranteed speedup. The complete endpoint still includes owner
+preparation; first-result still includes first capacity allocation; prepared
+timing follows the registered warmup and may reuse retained capacity in both
+arms. Authority requires a new clean commit/tree, fresh native and PTX
+manifests, a passing eight-process dry run before the executable freeze, a
+wholly fresh 192-worker transaction, an independent recount, and a separately
+named archive. All adverse outcomes remain reportable evidence.

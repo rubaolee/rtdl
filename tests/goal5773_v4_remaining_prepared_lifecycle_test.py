@@ -122,6 +122,28 @@ class Goal5773RemainingPreparedLifecycleTest(unittest.TestCase):
             ):
                 self.assertNotIn(forbidden, source, (module.__name__, forbidden))
 
+    def test_builtin_triangle_owner_retains_generic_execution_capacity(self):
+        core = (
+            Path(__file__).resolve().parents[1]
+            / "src/native/optix/rtdl_optix_v4_callback_poc.cpp"
+        ).read_text(encoding="utf-8")
+        owner = core[
+            core.index("struct V4PreparedBuiltinTriangle"):
+            core.index("static std::mutex g_v4_builtin_triangle_registry_mutex")
+        ]
+        self.assertIn("size_t execution_capacity = 0", owner)
+        self.assertIn("void ensure_execution_capacity(size_t query_count)", owner)
+        self.assertIn("query_count <= execution_capacity", owner)
+        self.assertIn("std::array<std::unique_ptr<DevPtr>, 7> query_columns", owner)
+        execute = core[
+            core.index("static void execute_v4_prepared_builtin_triangle_callback"):
+            core.index("static void destroy_v4_prepared_builtin_triangle_callback")
+        ]
+        self.assertIn("prepared->ensure_execution_capacity(query_count)", execute)
+        self.assertNotIn("DevPtr qox_d(", execute)
+        for forbidden in ("particle", "tracking", "tetra", "neighbor"):
+            self.assertNotIn(forbidden, owner.lower())
+
 
 if __name__ == "__main__":
     unittest.main()
