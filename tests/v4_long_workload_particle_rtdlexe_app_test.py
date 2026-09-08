@@ -161,6 +161,20 @@ class ParticleRTDLExecutableAppTest(unittest.TestCase):
         )
         loaded.prepare.assert_called_once()
         prevalidate.assert_called_once()
+        prevalidate_args = prevalidate.call_args.args
+        prevalidate_expected = prevalidate.call_args.kwargs["expected_u32x3"]
+        self.assertEqual(len(prevalidate_args), 7)
+        for column in prevalidate_args:
+            self.assertEqual(column.shape, (5_000,))
+            self.assertEqual(column.dtype, np.dtype("<f4"))
+            self.assertTrue(column.flags.owndata)
+            self.assertTrue(column.flags.c_contiguous)
+            self.assertFalse(column.flags.writeable)
+        self.assertEqual(prevalidate_expected.shape, (5_000, 3))
+        self.assertEqual(prevalidate_expected.dtype, np.dtype("<u4"))
+        self.assertTrue(prevalidate_expected.flags.owndata)
+        self.assertTrue(prevalidate_expected.flags.c_contiguous)
+        self.assertFalse(prevalidate_expected.flags.writeable)
         self.assertIs(prepared.admitted_input, admitted)
         self.assertEqual(prepared.native_library_sha256, native)
         prepared.close()

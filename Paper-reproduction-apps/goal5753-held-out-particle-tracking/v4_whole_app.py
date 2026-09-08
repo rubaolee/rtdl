@@ -512,7 +512,8 @@ def prepare_v4_rtdlexe(
     front_values = np.ascontiguousarray(data["front_values"], dtype=np.uint32)
     back_values = np.ascontiguousarray(data["back_values"], dtype=np.uint32)
     queries = np.ascontiguousarray(data["queries"], dtype=np.float32)
-    expected = np.ascontiguousarray(data["expected"], dtype=np.uint32)
+    expected = np.array(
+        data["expected"], dtype=np.uint32, order="C", copy=True)
     if queries.shape != (5_000, 7) or expected.shape != (5_000, 3):
         raise ValueError(
             "Particle RTDL executable requires the declared 5,000-query shape"
@@ -542,8 +543,13 @@ def prepare_v4_rtdlexe(
             back_values_u32=back_values,
         ))
         columns = tuple(
-            np.ascontiguousarray(queries[:, index]) for index in range(7)
+            np.array(
+                queries[:, index], dtype=np.float32, order="C", copy=True)
+            for index in range(7)
         )
+        for column in columns:
+            column.setflags(write=False)
+        expected.setflags(write=False)
         admitted = prevalidate_particle_rtdlexe_exact_core_input(
             *columns, expected_u32x3=expected)
         return PreparedParticleTrackingV4RTDLExecutable(
