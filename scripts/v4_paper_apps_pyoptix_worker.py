@@ -318,7 +318,47 @@ def _particle_case(
             / "Paper-reproduction-apps/goal5753-held-out-particle-tracking/v4_whole_app.py",
             "v4_pyoptix_worker_particle_app",
         )
-        owner = app.prepare_v4(**_rtdl_runtime(config), prepared_input=data)
+        rtdlexe = config.get("particle_rtdlexe")
+        if rtdlexe is None:
+            owner = app.prepare_v4(**_rtdl_runtime(config), prepared_input=data)
+            method = {
+                "path_class": "v4_public_paper_app_prepared_owner",
+                "device_source_shared_with_pyoptix": False,
+                "device_semantics_matched_with_pyoptix": True,
+                "private_checker_off_path": False,
+                "rtdlexe_lifecycle_used": False,
+                "restricted_callback_compile_in_complete": True,
+            }
+        else:
+            if not isinstance(rtdlexe, Mapping):
+                raise TypeError("Particle RTDL executable config must be a mapping")
+            required = {
+                "artifact_path", "deployment_id",
+                "expected_artifact_sha256", "expected_native_sha256",
+                "expected_protocol_decision_sha256",
+                "expected_template_semantic_sha256",
+                "expected_input_sha256", "expected_independent_oracle_sha256",
+                "expected_orientation_authority_sha256",
+            }
+            if set(rtdlexe) != required:
+                raise ValueError("Particle RTDL executable config fields differ")
+            owner = app.prepare_v4_rtdlexe(
+                native_library_path=config["native_library_path"],
+                prepared_input=data,
+                **dict(rtdlexe),
+            )
+            method = {
+                "path_class": "v4_public_paper_app_verified_rtdlexe_owner",
+                "device_source_shared_with_pyoptix": False,
+                "device_semantics_matched_with_pyoptix": True,
+                "private_checker_off_path": False,
+                "rtdlexe_lifecycle_used": True,
+                "restricted_callback_compile_in_complete": False,
+                "specialization_scope": (
+                    "STRICT_INTERIOR_STANDARD_LIBRARY_SPECIALIZATION_ONLY"
+                ),
+                "arbitrary_user_dsl_generalization_claimed": False,
+            }
 
         def execute() -> dict[str, Any]:
             observed = adapter.observe_v4_particle_result(
@@ -330,14 +370,7 @@ def _particle_case(
             observed["detailed_receipt_retention_count"] = 0
             return observed
 
-        metadata = {
-            "path_class": "v4_public_paper_app_prepared_owner",
-            "device_source_shared_with_pyoptix": False,
-            "device_semantics_matched_with_pyoptix": True,
-            "private_checker_off_path": False,
-            "rtdlexe_lifecycle_used": False,
-            "restricted_callback_compile_in_complete": True,
-        }
+        metadata = method
     else:
         ptx = _prebuilt_ptx(config, "particle_tracking")
         owner = adapter.prepare_pyoptix_particle(data, prebuilt_ptx=ptx)

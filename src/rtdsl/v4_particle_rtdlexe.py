@@ -1308,11 +1308,13 @@ class LoadedParticleRTDLExecutable:
         self, *, artifact_path: Path, artifact_sha256: str,
         native_image: _VerifiedNativeImage, api: _ParticleNativeApi,
         ptx: bytes, ptx_sha256: str, descriptor: Mapping[str, object],
+        orientation_authority_sha256: str,
     ) -> None:
         self.artifact_path = artifact_path
         self.artifact_sha256 = artifact_sha256
         self.ptx_sha256 = ptx_sha256
         self.descriptor = dict(descriptor)
+        self.orientation_authority_sha256 = orientation_authority_sha256
         self._ptx = ptx
         self._native_image = native_image
         self._api = api
@@ -1874,7 +1876,10 @@ def load_particle_rtdlexe(
         return LoadedParticleRTDLExecutable(
             artifact_path=path, artifact_sha256=expected,
             native_image=image, api=api, ptx=ptx,
-            ptx_sha256=str(artifact["ptx_sha256"]), descriptor=descriptor)
+            ptx_sha256=str(artifact["ptx_sha256"]), descriptor=descriptor,
+            orientation_authority_sha256=str(
+                protocol["orientation_authority_sha256"]),
+        )
     except BaseException:
         image.close()
         raise

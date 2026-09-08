@@ -63,6 +63,15 @@ def _file_sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
+def _u32_array_digest(value: object) -> str:
+    array = np.ascontiguousarray(value, dtype=np.uint32)
+    digest = hashlib.sha256()
+    digest.update(array.dtype.str.encode("ascii"))
+    digest.update(str(tuple(array.shape)).encode("ascii"))
+    digest.update(memoryview(array).cast("B"))
+    return digest.hexdigest()
+
+
 def load_real_scale_v4_input(root: str | Path):
     """Load one frozen Goal5776 full-mesh, 5,000-query input.
 
@@ -377,6 +386,181 @@ class PreparedParticleTrackingV4:
         self.close()
 
 
+@dataclass
+class PreparedParticleTrackingV4RTDLExecutable:
+    """Public paper-app owner over the verified strict-interior RTDL executable."""
+
+    loaded: object
+    owner: object
+    admitted_input: object
+    expected: np.ndarray
+    native_library_sha256: str
+    total_prepare_seconds: float
+    _closed: bool = field(default=False, init=False, repr=False)
+
+    def execute(self):
+        if self._closed:
+            raise RuntimeError("prepared Particle RTDL executable is closed")
+        started = time.perf_counter()
+        executed = self.owner.execute_complete_prevalidated(self.admitted_input)
+        output = executed.output_u32x3
+        output_sha256 = _u32_array_digest(output)
+        receipt_body = {
+            "schema": "rtdl.paper_reproduction.particle_tracking.rtdlexe_receipt.v1",
+            "physical_executor_classification": "optix_traversal_observed",
+            "route_identity": "builtin_triangle_particle_strict_interior_v1",
+            "expected_program_bundle": {
+                "artifact_sha256": executed.artifact_sha256,
+                "ptx_sha256": executed.ptx_sha256,
+            },
+            "output_digest": output_sha256,
+            "native_execution_receipt": dict(executed.receipt),
+        }
+        traversal_receipt = {
+            **receipt_body,
+            "receipt_sha256": _digest(receipt_body),
+        }
+        elapsed = time.perf_counter() - started
+        return {
+            "schema": (
+                "rtdl.paper_reproduction.particle_tracking.v4."
+                "prepared_rtdlexe.v1"
+            ),
+            "output": output,
+            "expected": self.expected,
+            "matched": True,
+            "output_sha256": output_sha256,
+            "registered_prepared_execution_seconds": elapsed,
+            "reported_total_prepare_seconds": self.total_prepare_seconds,
+            "prepare_is_free": False,
+            "cold_result_replaced": False,
+            "lifecycle_receipt": {
+                "schema": "rtdl.particle_rtdlexe.public_lifecycle.v1",
+                "artifact_sha256": executed.artifact_sha256,
+                "ptx_sha256": executed.ptx_sha256,
+                "compile_in_prepare": False,
+                "specialization_scope": (
+                    "STRICT_INTERIOR_STANDARD_LIBRARY_SPECIALIZATION_ONLY"
+                ),
+            },
+            "traversal_receipt": traversal_receipt,
+            "native_library_sha256": self.native_library_sha256,
+        }
+
+    def close(self):
+        if self._closed:
+            return
+        self._closed = True
+        try:
+            self.owner.close()
+        finally:
+            self.loaded.close()
+
+    def __enter__(self):
+        if self._closed:
+            raise RuntimeError("prepared Particle RTDL executable is closed")
+        return self
+
+    def __exit__(self, exc_type, exc, traceback):
+        self.close()
+
+
+def prepare_v4_rtdlexe(
+    *, native_library_path, artifact_path, deployment_id,
+    expected_artifact_sha256, expected_native_sha256,
+    expected_protocol_decision_sha256, expected_template_semantic_sha256,
+    expected_input_sha256, expected_independent_oracle_sha256,
+    expected_orientation_authority_sha256, prepared_input,
+) -> PreparedParticleTrackingV4RTDLExecutable:
+    """Load one prebuilt, identity-bound Particle specialization and prepare it.
+
+    This entry point deliberately does not compile callback or device source.
+    The loaded artifact itself records and enforces the restricted strict-interior
+    domain; it is not evidence for arbitrary user callback lowering.
+    """
+
+    from rtdsl.v4_particle_rtdlexe import (  # pylint: disable=import-outside-toplevel
+        ParticleStaticInput,
+        install_particle_rtdlexe_deployment,
+        load_particle_rtdlexe,
+        prevalidate_particle_rtdlexe_exact_core_input,
+    )
+    from rtdsl.v4_builtin_triangle_standard_library import (  # pylint: disable=import-outside-toplevel
+        compile_adjacency_callback,
+        make_orientation_authority,
+    )
+
+    started = time.perf_counter()
+    data = prepared_input
+    if (
+        data.get("input_sha256") != expected_input_sha256
+        or data.get("independent_oracle_sha256")
+            != expected_independent_oracle_sha256
+        or data.get("route_independent_expected") is not True
+    ):
+        raise ValueError("Particle RTDL executable input/oracle identity differs")
+    expected_orientation = make_orientation_authority(
+        compile_adjacency_callback(),
+        source_semantics_sha256=AUTHOR_SOURCE_SHA256,
+        independent_oracle_sha256=expected_independent_oracle_sha256,
+    )
+    if expected_orientation.authority_sha256 \
+            != expected_orientation_authority_sha256:
+        raise ValueError("Particle expected orientation authority differs")
+    vertices = np.ascontiguousarray(data["vertices"], dtype=np.float32)
+    triangles = np.ascontiguousarray(data["triangles"], dtype=np.uint32)
+    front_values = np.ascontiguousarray(data["front_values"], dtype=np.uint32)
+    back_values = np.ascontiguousarray(data["back_values"], dtype=np.uint32)
+    queries = np.ascontiguousarray(data["queries"], dtype=np.float32)
+    expected = np.ascontiguousarray(data["expected"], dtype=np.uint32)
+    if queries.shape != (5_000, 7) or expected.shape != (5_000, 3):
+        raise ValueError(
+            "Particle RTDL executable requires the declared 5,000-query shape"
+        )
+    deployment = install_particle_rtdlexe_deployment(
+        deployment_id=deployment_id,
+        expected_artifact_sha256=expected_artifact_sha256,
+        expected_native_sha256=expected_native_sha256,
+        expected_protocol_decision_sha256=expected_protocol_decision_sha256,
+        expected_template_semantic_sha256=expected_template_semantic_sha256,
+    )
+    loaded = load_particle_rtdlexe(
+        artifact_path,
+        deployment=deployment,
+        native_library_path=native_library_path,
+    )
+    if loaded.orientation_authority_sha256 \
+            != expected_orientation_authority_sha256:
+        loaded.close()
+        raise ValueError("Particle artifact orientation authority differs")
+    owner = None
+    try:
+        owner = loaded.prepare(ParticleStaticInput(
+            vertices_f32=vertices,
+            triangles_u32=triangles,
+            front_values_u32=front_values,
+            back_values_u32=back_values,
+        ))
+        columns = tuple(
+            np.ascontiguousarray(queries[:, index]) for index in range(7)
+        )
+        admitted = prevalidate_particle_rtdlexe_exact_core_input(
+            *columns, expected_u32x3=expected)
+        return PreparedParticleTrackingV4RTDLExecutable(
+            loaded=loaded,
+            owner=owner,
+            admitted_input=admitted,
+            expected=expected,
+            native_library_sha256=expected_native_sha256,
+            total_prepare_seconds=time.perf_counter() - started,
+        )
+    except BaseException:
+        if owner is not None:
+            owner.close()
+        loaded.close()
+        raise
+
+
 def prepare_v4(
     *, target, compute_capability, optix_include, cuda_include,
     expected_python_version, expected_numba_version, expected_numpy_version,
@@ -403,6 +587,7 @@ def prepare_v4(
 
 
 __all__ = [
-    "PreparedParticleTrackingV4", "build_v4_input", "load_real_scale_v4_input",
-    "prepare_v4", "run_v4_complete",
+    "PreparedParticleTrackingV4", "PreparedParticleTrackingV4RTDLExecutable",
+    "build_v4_input", "load_real_scale_v4_input", "prepare_v4",
+    "prepare_v4_rtdlexe", "run_v4_complete",
 ]
