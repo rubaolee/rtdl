@@ -8,6 +8,7 @@ built-in-triangle callback executable used by the host-array runtime.
 from __future__ import annotations
 
 import ctypes
+from collections.abc import Mapping
 from dataclasses import dataclass
 import hashlib
 import os
@@ -52,6 +53,20 @@ _FUSION_EXECUTION_TOKEN_ISSUER = object()
 _TRIANGLE_KEYS = (
     "ids", "x0", "y0", "z0", "x1", "y1", "z1", "x2", "y2", "z2")
 _RAY_KEYS = ("ids", "ox", "oy", "oz", "dx", "dy", "dz", "tmax")
+
+
+@dataclass(frozen=True)
+class _RTDLExecutableTriangleIdentity:
+    callback_ir_sha256: str
+    callback_authority_nonce: str
+    contract_sha256: str
+    abi_sha256: str
+    native_library_sha256: str
+    composed_program_sha256: str
+    target_identity_sha256: str
+    reducer_algebra: ReducerAlgebra
+    executable_identity_sha256: str
+    family_executable_identity_sha256: str
 
 
 class _CompactDeviceColumnStatusSummary(ctypes.Structure):
@@ -567,6 +582,127 @@ class VerifiedTriangleDeviceColumnCountExecutor:
         self._fresh = fresh
         self._contract = contract
         self._abi = abi
+        self._initialize_native_program(
+            library=library,
+            composed_ptx=composed_ptx,
+            native_sha=native_sha,
+        )
+
+    @classmethod
+    def _from_loaded_rtdlexe(
+        cls, loaded, *, library, native_library_path,
+    ) -> "VerifiedTriangleDeviceColumnCountExecutor":
+        """Prepare device-column execution from a verified family artifact.
+
+        ``load_rtdlexe`` has already authenticated the signed deployment and
+        recursively verified the product, provider, ABI, PTX, target, and
+        native-producer projections.  This bridge consumes only that issued
+        runtime capability; it never imports the compiler graph or regenerates
+        callback code.
+        """
+
+        from . import v4_rtdlexe as rtdlexe
+
+        rtdlexe._require_runtime_session_loaded_capability(
+            loaded, identity_path="triangle_device_columns.loaded")
+        projection = loaded.product_projection
+        if loaded.family != "builtin_triangle_reduction_v1" \
+                or projection.get("family") != loaded.family:
+            raise ValueError(
+                "triangle device-column route requires a triangle family artifact")
+        if loaded.family_executable_identity_sha256 is None:
+            raise ValueError(
+                "triangle device-column route requires a family-bound RTDL executable")
+
+        runtime = projection.get("runtime")
+        provider = projection.get("provider_key")
+        target = projection.get("target_toolchain")
+        executable = projection.get("executable_identity")
+        if not all(isinstance(value, Mapping) for value in (
+                runtime, provider, target, executable)):
+            raise RuntimeError("triangle RTDL executable projection is incomplete")
+        mode = runtime.get("triangle_mode")
+        reducer = {
+            "all_hit_count": ReducerAlgebra.CHECKED_U64_SUM,
+            "weighted_hit_count": ReducerAlgebra.CHECKED_U64_PRODUCT_SUM,
+        }.get(mode)
+        if reducer is None:
+            raise ValueError("triangle RTDL executable has an unsupported reducer mode")
+
+        callback_ir_sha = provider.get("callback_ir_sha256")
+        effect_digest = provider.get("callback_abi_projection", {}).get(
+            "callback_effect_digest")
+        physical_schema_sha = executable.get("physical_schema_sha256")
+        target_sha = target.get("target_sha256")
+        abi_sha = provider.get("callback_abi_sha256")
+        contract_sha = projection.get("protocol_contract_sha256")
+        native_sha = target.get("native_library_sha256")
+        composed_sha = projection.get("composed_ptx_sha256")
+        required_digests = {
+            "callback_ir_sha256": callback_ir_sha,
+            "callback_effect_digest": effect_digest,
+            "physical_schema_sha256": physical_schema_sha,
+            "target_sha256": target_sha,
+            "abi_sha256": abi_sha,
+            "contract_sha256": contract_sha,
+            "native_library_sha256": native_sha,
+            "composed_ptx_sha256": composed_sha,
+            "executable_identity_sha256": loaded.executable_identity_sha256,
+            "family_executable_identity_sha256": (
+                loaded.family_executable_identity_sha256),
+        }
+        invalid = sorted(
+            name for name, value in required_digests.items()
+            if not isinstance(value, str) or _SHA256.fullmatch(value) is None)
+        if invalid:
+            raise RuntimeError(
+                "triangle RTDL executable identity is invalid: " + repr(invalid))
+        if executable.get("abi_sha256") != abi_sha \
+                or executable.get("contract_sha256") != contract_sha \
+                or executable.get("target_sha256") != target_sha \
+                or executable.get("native_library_sha256") != native_sha \
+                or executable.get("composed_ptx_sha256") != composed_sha:
+            raise RuntimeError("triangle RTDL executable identity chain drift")
+
+        authority_nonce = _digest({
+            "kind": "verified_triangle_reduction_authority_v1",
+            "callback": callback_ir_sha,
+            "effect": effect_digest,
+            "schema": physical_schema_sha,
+            "target": target_sha,
+        })
+        native_path = _native_path(library, native_library_path)
+        observed_native_sha = hashlib.sha256(
+            Path(native_path).read_bytes()).hexdigest()
+        if observed_native_sha != native_sha:
+            raise RuntimeError("executed native bytes do not match RTDL executable")
+        loaded._validate_native_provider_descriptor(
+            library, identity_path="triangle_device_columns.native_producer_descriptor")
+
+        owner = cls.__new__(cls)
+        owner._rtdlexe_identity = _RTDLExecutableTriangleIdentity(
+            callback_ir_sha256=callback_ir_sha,
+            callback_authority_nonce=authority_nonce,
+            contract_sha256=contract_sha,
+            abi_sha256=abi_sha,
+            native_library_sha256=native_sha,
+            composed_program_sha256=composed_sha,
+            target_identity_sha256=target_sha,
+            reducer_algebra=reducer,
+            executable_identity_sha256=loaded.executable_identity_sha256,
+            family_executable_identity_sha256=(
+                loaded.family_executable_identity_sha256),
+        )
+        owner._initialize_native_program(
+            library=library,
+            composed_ptx=loaded.composed_ptx,
+            native_sha=observed_native_sha,
+        )
+        return owner
+
+    def _initialize_native_program(
+        self, *, library, composed_ptx: str, native_sha: str,
+    ) -> None:
         self._library = library
         (
             self._prepare,
@@ -596,6 +732,15 @@ class VerifiedTriangleDeviceColumnCountExecutor:
         self._closed = False
         self._fusion_execution_owner_key = object()
 
+    def _rtdlexe_identity_or_none(self):
+        return getattr(self, "_rtdlexe_identity", None)
+
+    def _reducer_algebra(self) -> ReducerAlgebra:
+        identity = self._rtdlexe_identity_or_none()
+        if identity is not None:
+            return identity.reducer_algebra
+        return self._fresh.schema.reducer.algebra
+
     @property
     def native_library_sha256(self) -> str:
         return self._native_sha
@@ -606,23 +751,33 @@ class VerifiedTriangleDeviceColumnCountExecutor:
 
     @property
     def callback_ir_sha256(self) -> str:
-        return self._fresh.callback.ir_sha256
+        identity = self._rtdlexe_identity_or_none()
+        return (identity.callback_ir_sha256 if identity is not None
+                else self._fresh.callback.ir_sha256)
 
     @property
     def callback_authority_nonce(self) -> str:
-        return self._fresh.authority_nonce
+        identity = self._rtdlexe_identity_or_none()
+        return (identity.callback_authority_nonce if identity is not None
+                else self._fresh.authority_nonce)
 
     @property
     def contract_sha256(self) -> str:
-        return self._contract.contract_sha256
+        identity = self._rtdlexe_identity_or_none()
+        return (identity.contract_sha256 if identity is not None
+                else self._contract.contract_sha256)
 
     @property
     def abi_sha256(self) -> str:
-        return self._abi.abi_sha256
+        identity = self._rtdlexe_identity_or_none()
+        return (identity.abi_sha256 if identity is not None
+                else self._abi.abi_sha256)
 
     @property
     def target_identity_sha256(self) -> str:
-        return self._fresh.target.target_sha256
+        identity = self._rtdlexe_identity_or_none()
+        return (identity.target_identity_sha256 if identity is not None
+                else self._fresh.target.target_sha256)
 
     def _fusion_owner_key(self) -> object:
         # Test doubles and preserved legacy constructors may predate the token
@@ -644,14 +799,14 @@ class VerifiedTriangleDeviceColumnCountExecutor:
             id(self._execute_compact),
             id(self._destroy),
             self._program_token,
-            self._fresh.callback.ir_sha256,
-            self._fresh.authority_nonce,
-            self._contract.contract_sha256,
-            self._abi.abi_sha256,
+            self.callback_ir_sha256,
+            self.callback_authority_nonce,
+            self.contract_sha256,
+            self.abi_sha256,
             self._native_sha,
             self._composed_ptx_sha,
-            self._fresh.target.target_sha256,
-            self._fresh.schema.reducer.algebra,
+            self.target_identity_sha256,
+            self._reducer_algebra(),
             self._closed,
         )
 
@@ -665,30 +820,30 @@ class VerifiedTriangleDeviceColumnCountExecutor:
         """Perform the recursive admission deliberately excluded from timing."""
 
         plan = verify_fusion_ablation_plan(fusion_ablation_plan)
-        if self._fresh.schema.reducer.algebra \
+        if self._reducer_algebra() \
                 is not ReducerAlgebra.CHECKED_U64_PRODUCT_SUM:
             raise ValueError(
                 "fusion ablation accepts only checked-U64 product-sum schemas")
         expected_downstream = checked_u64_downstream_operation_sha256(
             plan.variant.value,
-            target_identity_sha256=self._fresh.target.target_sha256,
+            target_identity_sha256=self.target_identity_sha256,
             cupy_version=cupy_version,
         )
         expected_identities = {
             "value_count": (plan.value_count, query_count),
             "callback_ir_sha256": (
-                plan.callback_ir_sha256, self._fresh.callback.ir_sha256),
+                plan.callback_ir_sha256, self.callback_ir_sha256),
             "callback_authority_nonce": (
-                plan.callback_authority_nonce, self._fresh.authority_nonce),
+                plan.callback_authority_nonce, self.callback_authority_nonce),
             "contract_sha256": (
-                plan.contract_sha256, self._contract.contract_sha256),
-            "abi_sha256": (plan.abi_sha256, self._abi.abi_sha256),
+                plan.contract_sha256, self.contract_sha256),
+            "abi_sha256": (plan.abi_sha256, self.abi_sha256),
             "native_library_sha256": (
                 plan.native_library_sha256, self._native_sha),
             "composed_program_sha256": (
                 plan.composed_program_sha256, self._composed_ptx_sha),
             "target_identity_sha256": (
-                plan.target_identity_sha256, self._fresh.target.target_sha256),
+                plan.target_identity_sha256, self.target_identity_sha256),
             "cupy_version": (plan.cupy_version, cupy_version),
             "downstream_operation_recipe_sha256": (
                 plan.downstream_operation_recipe_sha256, expected_downstream),
@@ -839,7 +994,7 @@ class VerifiedTriangleDeviceColumnCountExecutor:
         if triangle_device != ray_device or triangle_device != int(cp.cuda.Device().id):
             raise ValueError("all V4 segment columns must belong to the current device")
         weighted = (
-            self._fresh.schema.reducer.algebra
+            self._reducer_algebra()
             is ReducerAlgebra.CHECKED_U64_PRODUCT_SUM)
         if weighted:
             if not isinstance(ray_weights, cp.ndarray) or \
@@ -981,17 +1136,17 @@ class VerifiedTriangleDeviceColumnCountExecutor:
                 operation_trace=operation_trace,
                 traversal_observation=observation,
                 authority_nonce=(
-                    self._fresh.authority_nonce
+                    self.callback_authority_nonce
                     if fusion_ablation_plan is None
                     else fusion_ablation_plan.callback_authority_nonce
                 ),
                 contract_sha256=(
-                    self._contract.contract_sha256
+                    self.contract_sha256
                     if fusion_ablation_plan is None
                     else fusion_ablation_plan.contract_sha256
                 ),
                 abi_sha256=(
-                    self._abi.abi_sha256
+                    self.abi_sha256
                     if fusion_ablation_plan is None
                     else fusion_ablation_plan.abi_sha256
                 ),
@@ -1035,7 +1190,10 @@ class VerifiedTriangleDeviceColumnCountExecutor:
     def close(self) -> None:
         """Close the reusable callback-program owner and executor authority."""
 
+        provider = getattr(self, "_rtdlexe_provider", None)
         if self._closed:
+            if provider is not None and not provider.closed:
+                provider.close()
             return
         if getattr(self, "_program_token", 0):
             token = ctypes.c_uint64(self._program_token)
@@ -1048,6 +1206,8 @@ class VerifiedTriangleDeviceColumnCountExecutor:
             if self._program_token != 0:
                 raise RuntimeError(
                     "V4 device-column triangle program destroy did not clear token")
+        if provider is not None:
+            provider.close()
         self._closed = True
 
     def __enter__(self):

@@ -210,6 +210,7 @@ class PreparedSegmentedTriangleCountingV4:
     paper_algorithm: str
     max_relation_rows: int
     total_prepare_seconds: float
+    rtdlexe_lifecycle: dict[str, object] | None = None
 
     def execute(self) -> dict[str, object]:
         import cupy as cp
@@ -253,7 +254,7 @@ class PreparedSegmentedTriangleCountingV4:
             raise RuntimeError("segmented V4 execution produced no physical segment")
         elapsed = time.perf_counter() - started
         expected = int(self.graph_contract.expected_triangle_count)
-        return {
+        result = {
             "schema": "rtdl.paper_reproduction.triangle_counting.v4.segmented.v1",
             "paper_algorithm": self.paper_algorithm,
             "output": {"triangle_count": scalar_sum},
@@ -274,6 +275,9 @@ class PreparedSegmentedTriangleCountingV4:
             "device_columns_preserved": True,
             "per_ray_host_materialized": False,
         }
+        if self.rtdlexe_lifecycle is not None:
+            result["rtdlexe_lifecycle"] = self.rtdlexe_lifecycle
+        return result
 
     def close(self) -> None:
         self.executor.close()
@@ -330,6 +334,125 @@ def prepare_v4_segmented(
     return PreparedSegmentedTriangleCountingV4(
         executor, graph_contract, paper_algorithm, max_relation_rows,
         time.perf_counter() - started)
+
+
+def prepare_v4_segmented_rtdlexe(
+    paper_algorithm: str,
+    *,
+    native_library_path,
+    edge_file: str,
+    expected_triangle_count: int,
+    artifact_path,
+    authority_path,
+    trust_root_path,
+    trust_head_path,
+    trust_package_path,
+    deployment_id: str,
+    expected_artifact_sha256: str,
+    expected_authority_sha256: str,
+    expected_trust_root_sha256: str,
+    expected_trust_head_sha256: str,
+    expected_trust_package_sha256: str,
+    expected_any_hit_proof_sha256: str,
+    expected_family_executable_identity_sha256: str,
+    expected_native_sha256: str,
+    max_relation_rows: int = 1_000_000,
+    prepared_graph_contract=None,
+) -> PreparedSegmentedTriangleCountingV4:
+    """Load one signed triangle-family program for bounded device segments."""
+
+    from rtdsl.v4_rtdlexe import (  # pylint: disable=import-outside-toplevel
+        install_rtdlexe_deployment,
+        load_rtdlexe,
+    )
+
+    if paper_algorithm not in FORMAL_PAPER_ALGORITHMS:
+        raise ValueError("paper_algorithm must be RT-1A2 or RT-2A1")
+    if not edge_file or max_relation_rows <= 0:
+        raise ValueError("segmented V4 requires a binary edge file and row bound")
+    paths = {
+        "artifact": Path(artifact_path).resolve(strict=True),
+        "authority": Path(authority_path).resolve(strict=True),
+        "trust_root": Path(trust_root_path).resolve(strict=True),
+        "trust_head": Path(trust_head_path).resolve(strict=True),
+        "trust_package": Path(trust_package_path).resolve(strict=True),
+        "native": Path(native_library_path).resolve(strict=True),
+    }
+    expected_hashes = {
+        "artifact": expected_artifact_sha256,
+        "authority": expected_authority_sha256,
+        "trust_root": expected_trust_root_sha256,
+        "trust_head": expected_trust_head_sha256,
+        "trust_package": expected_trust_package_sha256,
+        "native": expected_native_sha256,
+    }
+    mismatches = sorted(
+        name for name, path in paths.items()
+        if _sha(path) != expected_hashes[name]
+    )
+    if mismatches:
+        raise ValueError(
+            "triangle RTDL executable input bytes differ: " + repr(mismatches))
+
+    started = time.perf_counter()
+    app = _benchmark()
+    graph_contract = (
+        prepared_graph_contract
+        if prepared_graph_contract is not None
+        else app.build_segmented_rt_graph_csr_binary(
+            edge_file, expected_triangle_count=expected_triangle_count)
+    )
+    if int(graph_contract.expected_triangle_count) != int(expected_triangle_count):
+        raise ValueError("prepared graph contract has the wrong triangle oracle")
+    deployment = install_rtdlexe_deployment(
+        trust_root_path=paths["trust_root"],
+        trust_head_path=paths["trust_head"],
+        trust_package_path=paths["trust_package"],
+        deployment_id=deployment_id,
+    )
+    loaded = load_rtdlexe(
+        paths["artifact"],
+        authority_path=paths["authority"],
+        deployment=deployment,
+    )
+    expected_mode = (
+        "all_hit_count" if paper_algorithm == "RT-1A2"
+        else "weighted_hit_count"
+    )
+    target = loaded.product_projection.get("target_toolchain", {})
+    runtime = loaded.product_projection.get("runtime", {})
+    provider = loaded.product_projection.get("provider_key", {})
+    callback_abi = provider.get("callback_abi_projection", {})
+    if (
+        loaded.artifact_sha256 != expected_artifact_sha256
+        or loaded.authority_sha256 != expected_authority_sha256
+        or loaded.trust_root_sha256 != expected_trust_root_sha256
+        or loaded.trust_package_sha256 != expected_trust_package_sha256
+        or loaded.deployment_id != deployment_id
+        or loaded.family != "builtin_triangle_reduction_v1"
+        or loaded.family_executable_identity_sha256
+            != expected_family_executable_identity_sha256
+        or target.get("native_library_sha256") != expected_native_sha256
+        or runtime.get("triangle_mode") != expected_mode
+        or callback_abi.get("any_hit_proof_sha256")
+            != expected_any_hit_proof_sha256
+    ):
+        raise ValueError("triangle RTDL executable deployment identity differs")
+    executor = loaded.prepare_triangle_device_columns(
+        native_library_path=paths["native"])
+    lifecycle = {
+        "schema": "rtdl.paper_reproduction.triangle_counting.rtdlexe.v1",
+        "artifact_sha256": loaded.artifact_sha256,
+        "authority_sha256": loaded.authority_sha256,
+        "family_executable_identity_sha256": (
+            loaded.family_executable_identity_sha256),
+        "compile_in_prepare": False,
+        "triangle_mode": expected_mode,
+        "any_hit_proof_sha256": expected_any_hit_proof_sha256,
+    }
+    return PreparedSegmentedTriangleCountingV4(
+        executor, graph_contract, paper_algorithm, max_relation_rows,
+        time.perf_counter() - started, lifecycle)
 
 
 def run_v4_segmented_complete(**kwargs) -> dict[str, object]:
@@ -470,6 +593,7 @@ __all__ = [
     "build_v4_input",
     "prepare_v4",
     "prepare_v4_segmented",
+    "prepare_v4_segmented_rtdlexe",
     "run_v4_complete",
     "run_v4_segmented_complete",
 ]

@@ -414,14 +414,62 @@ def _triangle_case(
             / "Paper-reproduction-apps/triangle-counting-paper/v4_whole_app.py",
             "v4_pyoptix_worker_triangle_app",
         )
-        owner = app.prepare_v4_segmented(
-            "RT-2A1",
-            **_rtdl_runtime(config),
-            edge_file=str(data["edge_file"]),
-            expected_triangle_count=int(data["expected_triangle_count"]),
-            max_relation_rows=int(data["max_relation_rows"]),
-            prepared_graph_contract=data["graph_contract"],
-        )
+        rtdlexe = config.get("triangle_rtdlexe")
+        if rtdlexe is None:
+            owner = app.prepare_v4_segmented(
+                "RT-2A1",
+                **_rtdl_runtime(config),
+                edge_file=str(data["edge_file"]),
+                expected_triangle_count=int(data["expected_triangle_count"]),
+                max_relation_rows=int(data["max_relation_rows"]),
+                prepared_graph_contract=data["graph_contract"],
+            )
+            method = {
+                "path_class": "v4_standard_callback_general_leaf_device_columns",
+                "private_checker_off_path": False,
+                "standard_count_fast_control_used": False,
+                "device_columns_preserved": True,
+                "post_traversal_reduction": "cupy_checked_u64_weighted_sum_device",
+                "rtdlexe_lifecycle_used": False,
+                "restricted_callback_compile_in_complete": True,
+            }
+        else:
+            if not isinstance(rtdlexe, Mapping):
+                raise TypeError("triangle RTDL executable config must be a mapping")
+            required = {
+                "artifact_path", "authority_path", "trust_root_path",
+                "trust_head_path", "trust_package_path", "deployment_id",
+                "expected_artifact_sha256", "expected_authority_sha256",
+                "expected_trust_root_sha256", "expected_trust_head_sha256",
+                "expected_trust_package_sha256",
+                "expected_any_hit_proof_sha256",
+                "expected_family_executable_identity_sha256",
+                "expected_native_sha256",
+            }
+            if set(rtdlexe) != required:
+                raise ValueError("triangle RTDL executable config fields differ")
+            _target, native = _rtdl_target(config)
+            owner = app.prepare_v4_segmented_rtdlexe(
+                "RT-2A1",
+                native_library_path=native,
+                edge_file=str(data["edge_file"]),
+                expected_triangle_count=int(data["expected_triangle_count"]),
+                max_relation_rows=int(data["max_relation_rows"]),
+                prepared_graph_contract=data["graph_contract"],
+                **dict(rtdlexe),
+            )
+            method = {
+                "path_class": (
+                    "v4_verified_family_rtdlexe_general_leaf_device_columns"
+                ),
+                "private_checker_off_path": False,
+                "standard_count_fast_control_used": False,
+                "device_columns_preserved": True,
+                "post_traversal_reduction": "cupy_checked_u64_weighted_sum_device",
+                "rtdlexe_lifecycle_used": True,
+                "restricted_callback_compile_in_complete": False,
+                "app_specific_native_engine_logic": False,
+            }
 
         def execute() -> dict[str, Any]:
             result = owner.execute()
@@ -447,13 +495,7 @@ def _triangle_case(
                 "detailed_receipt_retention_count": 0,
             }
 
-        metadata = {
-            "path_class": "v4_standard_callback_general_leaf_device_columns",
-            "private_checker_off_path": False,
-            "standard_count_fast_control_used": False,
-            "device_columns_preserved": True,
-            "post_traversal_reduction": "cupy_checked_u64_weighted_sum_device",
-        }
+        metadata = method
     else:
         owner_module = __import__(
             "experiments.v4_paper_apps_pyoptix.triangle_owner",

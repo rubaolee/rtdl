@@ -2707,6 +2707,36 @@ class LoadedRTDLExecutable:
                 _release_native_library_image(library)
             raise
 
+    def prepare_triangle_device_columns(
+        self,
+        *,
+        native_library_path: str | os.PathLike[str],
+    ) -> object:
+        """Prepare the authenticated triangle family for device-column input.
+
+        This is the AOT counterpart of the live compiler's generic triangle
+        device-column executor.  It consumes the exact signed artifact PTX and
+        never reconstructs or compiles callback source at runtime.
+        """
+
+        _require_runtime_session_loaded_capability(
+            self, identity_path="prepare_triangle_device_columns.loaded")
+        from .v4_triangle_reduction_device_runtime import (
+            VerifiedTriangleDeviceColumnCountExecutor,
+        )
+        provider = self.bind_provider(native_library_path)
+        try:
+            executor = VerifiedTriangleDeviceColumnCountExecutor._from_loaded_rtdlexe(
+                self,
+                library=provider._binding_library,
+                native_library_path=provider.native_library_path,
+            )
+            executor._rtdlexe_provider = provider
+            return executor
+        except BaseException:
+            provider.close()
+            raise
+
     def bind_provider(
         self, native_library_path: str | os.PathLike[str],
     ) -> "ProviderReadyRTDLExecutable":
