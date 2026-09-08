@@ -1321,3 +1321,10 @@ empty. P-decuple-prime-r1 starts at 0/2 independent exact-final-byte
 acceptances. The 31-entry claim ledger remains 0 authorized. Authenticated
 submission-form checks, upload authorization, upload, downloaded-byte
 verification, submission ID, and receipt remain absent.
+
+A same-context hostile precheck found no new blocking contradiction in the
+exact candidate but retained five open reviewer attacks: novelty/sufficiency,
+topology-specific TCB weight, one-host/five-unit evaluation breadth, absent
+independent-user authoring evidence, and per-row comparison fairness. Its
+verdict is `READY_TO_REQUEST_R7__DO_NOT_CLAIM_CONSENSUS_OR_SUBMISSION`; it
+counts as zero independent acceptances.

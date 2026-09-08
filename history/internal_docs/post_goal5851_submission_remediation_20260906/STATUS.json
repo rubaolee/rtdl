@@ -381,6 +381,11 @@
       "path": "history/internal_docs/post_goal5851_submission_remediation_20260906/R8_PDECUPLEPRIME_R1_LOCAL_PREFLIGHT_REPORT.md",
       "sha256": "c230ecf5b20d82afa4155b8802a497d64bc5f41cd720471400ca42885d76d06d"
     },
+    "internal_hostile_precheck": {
+      "path": "history/internal_docs/post_goal5851_submission_remediation_20260906/R7_PDECUPLEPRIME_R1_INTERNAL_HOSTILE_PRECHECK.md",
+      "sha256": "5e7a8b671160238d32523577adc30d000b0426e8535293dd5eb219782077a7f2",
+      "counts_as_independent_acceptance": false
+    },
     "pdf_sha256": "a810e3d8c465c6764da06a2ccdefd13fa5444c1c480ecd9441b54adadde26631",
     "source_bundle_sha256": "fc2f42b342843260d02d68884dcae3d1dcaa582a070c4eefde3d412a34876f78",
     "design_figure_sha256": "920bc8c2dd7d083df3a13cb8c289e419162966de1fb4d8528d0cfe8d071a5092",
@@ -696,7 +701,7 @@
     },
     "author_side_validation_log": {
       "path": "VALIDATION_LOG.md",
-      "sha256": "a53e331d09a992e2da9dbf0df76001c432a205677cff4cf4b54e3c45f75e8f82"
+      "sha256": "3d902caec4d62ee0a8ac67db832dbf25c77015dd800899a5fbdb5fe457a3f739"
     },
     "delivery_pdf": {
       "path": "output/pdf/rtdl_cgo2027_submission_candidate.pdf",
@@ -737,6 +742,7 @@
     "independent_pdecupleprime_r1_acceptances_received": 0,
     "earlier_candidate_reviews_transfer": false,
     "author_preflight_counts_as_acceptance": false,
+    "internal_hostile_precheck_counts_as_acceptance": false,
     "clean_pod_replay_counts_as_acceptance": false,
     "public_or_manuscript_claim_authorized": false
   },
@@ -1007,6 +1013,7 @@
     "independent_acceptances_received": 0,
     "earlier_candidate_reviews_count_as_acceptance": false,
     "author_preflight_counts_as_acceptance": false,
+    "internal_hostile_precheck_counts_as_acceptance": false,
     "pod_replay_counts_as_acceptance": false,
     "public_or_manuscript_claim_authorized": false
   },
