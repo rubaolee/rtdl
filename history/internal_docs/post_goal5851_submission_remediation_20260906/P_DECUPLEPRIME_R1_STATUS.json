@@ -103,6 +103,7 @@
     "nonfatal_bibtex_completeness_warning_count": 17,
     "embedded_subset_unicode_fonts": "18/18",
     "rendered_pages_inspected": 13,
+    "black_and_white_figure_readability": "PASS__FIGURES_1_TO_4",
     "tested_private_identity_scan": "PASS",
     "bibliography_explicit_url_or_doi_count_checked": 30,
     "dead_legacy_nvidia_url_replaced": true,

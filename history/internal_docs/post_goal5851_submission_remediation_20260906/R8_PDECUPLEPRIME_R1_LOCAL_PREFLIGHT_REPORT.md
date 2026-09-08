@@ -72,6 +72,7 @@ figure page.
 | BibTeX completeness warnings | 17 nonfatal inherited warnings |
 | Embedded/subset/Unicode fonts | 18/18 / 18/18 / 18/18 |
 | Visual defects | 0 clipping, overlap, blank page, missing glyph, or unreadable table |
+| Black-and-white readability | Figures 1--4 remain legible in grayscale; data marks and threshold lines do not depend on color |
 | Tested private-identity scan | PASS |
 
 The URL change leaves pages 1--11 text-identical to P-decuple-prime. On pages

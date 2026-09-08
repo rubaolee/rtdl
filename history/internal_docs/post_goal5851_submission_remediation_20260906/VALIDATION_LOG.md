@@ -1281,7 +1281,9 @@ zero unresolved references/citations, 17 inherited BibTeX completeness
 warnings, and 18/18 recursively discovered fonts embedded, subset, and Unicode
 mapped. All 13 rendered pages were inspected. Pages 1--11 are text-identical
 to P-decuple-prime; only the URL and consequent reference-line flow differ on
-pages 12--13. Local ordinary/optimized frozen tests passed 106/106.
+pages 12--13. A grayscale rendering check found Figures 1--4 readable without
+color-dependent data distinctions. Local ordinary/optimized frozen tests
+passed 106/106.
 
 The supplied SSH endpoint resolved to the same retained host `4735c6e75b0c`,
 NVIDIA RTX A4500, driver 550.127.05; it is not an independent host. A new clean

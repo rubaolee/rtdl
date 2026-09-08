@@ -371,7 +371,7 @@
     "superseded_candidate_commit": "8a485a6aae353e0d1dbfee7ce5a96610cee5d31d",
     "status_record": {
       "path": "history/internal_docs/post_goal5851_submission_remediation_20260906/P_DECUPLEPRIME_R1_STATUS.json",
-      "sha256": "96c2634e3b03aff6bb16440810344876eeb591e366c3d96c0b106ffc38b73844"
+      "sha256": "521d3e8d0ca85aa42c1a9637d0887c692924aa2bea7b76d54faa0e1860dc8886"
     },
     "review_request": {
       "path": "history/internal_docs/post_goal5851_submission_remediation_20260906/R7_PDECUPLEPRIME_R1_FINAL_BYTES_REVIEW_REQUEST.md",
@@ -379,7 +379,7 @@
     },
     "local_preflight": {
       "path": "history/internal_docs/post_goal5851_submission_remediation_20260906/R8_PDECUPLEPRIME_R1_LOCAL_PREFLIGHT_REPORT.md",
-      "sha256": "760c567d565bf92fbc51b554d1c7f8f0e758760591a9b7dbc25323741d38d006"
+      "sha256": "c230ecf5b20d82afa4155b8802a497d64bc5f41cd720471400ca42885d76d06d"
     },
     "pdf_sha256": "a810e3d8c465c6764da06a2ccdefd13fa5444c1c480ecd9441b54adadde26631",
     "source_bundle_sha256": "fc2f42b342843260d02d68884dcae3d1dcaa582a070c4eefde3d412a34876f78",
@@ -388,6 +388,7 @@
     "claim_count": 31,
     "claim_authorized_true_count": 0,
     "local_pdf_rule_checks_passed": true,
+    "local_black_and_white_figure_readability_passed": true,
     "source_bundle_foreign_path_compile_passed": true,
     "clean_pod_candidate_identity_checked": true,
     "clean_pod_f2_replay_normal_and_optimized_passed": true,
@@ -695,7 +696,7 @@
     },
     "author_side_validation_log": {
       "path": "VALIDATION_LOG.md",
-      "sha256": "885c72855b9d980570f4223e7fdd38d13a483c31db62950876d728aac05fd52a"
+      "sha256": "a53e331d09a992e2da9dbf0df76001c432a205677cff4cf4b54e3c45f75e8f82"
     },
     "delivery_pdf": {
       "path": "output/pdf/rtdl_cgo2027_submission_candidate.pdf",
@@ -743,12 +744,13 @@
     "status": "PDECUPLEPRIME_R1_AUTHOR_LOCAL_PREFLIGHT_AND_CLEAN_POD_REPLAY_PASSED__R7_AND_EXTERNAL_ACTIONS_PENDING",
     "report": {
       "path": "R8_PDECUPLEPRIME_R1_LOCAL_PREFLIGHT_REPORT.md",
-      "sha256": "760c567d565bf92fbc51b554d1c7f8f0e758760591a9b7dbc25323741d38d006"
+      "sha256": "c230ecf5b20d82afa4155b8802a497d64bc5f41cd720471400ca42885d76d06d"
     },
     "official_rule_page_checked": "https://conf.researchr.org/track/cgo-2027/cgo-2027-papers",
     "public_hotcrp_landing_checked": "https://cgo27.hotcrp.com/",
     "category": "standard_research_paper",
     "local_pdf_rule_checks_passed": true,
+    "local_black_and_white_figure_readability_passed": true,
     "source_bundle": {
       "path": "output/source/rtdl-cgo2027-source.tar.gz",
       "sha256": "fc2f42b342843260d02d68884dcae3d1dcaa582a070c4eefde3d412a34876f78",
@@ -1012,9 +1014,10 @@
     "status": "AUTHOR_LOCAL_PREFLIGHT_AND_CLEAN_POD_REPLAY_PASSED__R7_AND_EXTERNAL_ACTIONS_PENDING",
     "report": {
       "path": "R8_PDECUPLEPRIME_R1_LOCAL_PREFLIGHT_REPORT.md",
-      "sha256": "760c567d565bf92fbc51b554d1c7f8f0e758760591a9b7dbc25323741d38d006"
+      "sha256": "c230ecf5b20d82afa4155b8802a497d64bc5f41cd720471400ca42885d76d06d"
     },
     "local_pdf_rule_checks_passed": true,
+    "local_black_and_white_figure_readability_passed": true,
     "pdf_pages": 13,
     "page_size": "US Letter",
     "main_text_ends_on_page": 11,
