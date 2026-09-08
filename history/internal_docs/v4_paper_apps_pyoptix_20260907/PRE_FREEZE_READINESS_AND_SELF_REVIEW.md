@@ -30,7 +30,7 @@ public language/runtime routes with their checks intact.
 | Unit | Exact stage | V4 physical route | Public PyOptiX route | Output gate |
 | --- | --- | --- | --- | --- |
 | Particle | One strict-interior closest-face/cell-transition step, 3,392,530 triangles and 5,000 queries | Existing public Particle executable lifecycle | Triangle GAS, closest-hit strict-interior program, full U32x3 materialization | Exact 5,000x3 U32 matrix and historical independent-oracle identity |
-| Triangle counting | RT-2A1 on official SNAP `com-dblp` | Fixed standard triangle checked-U64 product-sum specialization over deterministic segments | Same shared RT-2A1 geometry, triangle GAS, any-hit continue traversal, checked-U64 device reduction | Exact published count 2,224,385 |
+| Triangle counting | RT-2A1 on official SNAP `com-dblp` | Standard restricted callback through the general Numba-leaf device-column entry, followed by CuPy checked-U64 weighted reduction over deterministic segments; `fast_control` is null | Same shared RT-2A1 geometry, triangle GAS, any-hit continue traversal, checked-U64 device reduction | Exact published count 2,224,385 |
 | LibRTS point | 11,544,398 parks boxes and 100,000 point queries | Closed AABB relation-to-device-count lowering | Custom-AABB GAS, exact point-containment intersection predicate, device count reduction | Exact checked-U64 count 112,729 |
 | LibRTS range | Same index and 100,000 range queries | Closed AABB relation-to-device-count lowering | Custom-AABB GAS, exact range-containment intersection predicate, device count reduction | Exact checked-U64 count 105,826 |
 
@@ -83,6 +83,11 @@ worker zero:
    now bind safe transaction-relative paths, and a test copies the complete
    synthetic transaction to a new directory and independently recounts all 192
    workers there.
+6. A final cross-agent source trace found that the Particle matrix had called
+   its `prepare_v4` callback owner an `rtdlexe` route, and that the triangle
+   worker metadata had called a general-leaf device-column execution a fast
+   specialization. Before any GPU worker, both descriptions were corrected;
+   no algorithm, workload, timer, repetition, or native path changed.
 
 The explicit source-hash projection now includes `contracts.py` and the PTX
 builder in addition to all owners, device programs, input/geometry producers,

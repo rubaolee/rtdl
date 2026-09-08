@@ -5,6 +5,8 @@
   "valid_formal_application_results": 0,
   "formal_worker_zero_reached": false,
   "experiment_source_frozen": true,
+  "superseded_pre_worker_zero_source_commit": "9207ed9937a61d3e2b9a1a3ba91a32ef2fd56ed1",
+  "supersession_reason": "correct_route_class_metadata_before_any_gpu_worker",
   "first_batch_registered_unit_count": 4,
   "first_batch_formal_worker_process_count": 192,
   "first_batch_local_contract_test_count": 25,

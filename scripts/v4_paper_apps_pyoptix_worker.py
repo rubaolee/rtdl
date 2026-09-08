@@ -335,6 +335,8 @@ def _particle_case(
             "device_source_shared_with_pyoptix": False,
             "device_semantics_matched_with_pyoptix": True,
             "private_checker_off_path": False,
+            "rtdlexe_lifecycle_used": False,
+            "restricted_callback_compile_in_complete": True,
         }
     else:
         ptx = _prebuilt_ptx(config, "particle_tracking")
@@ -404,8 +406,11 @@ def _triangle_case(
             }
 
         metadata = {
-            "path_class": "v4_fixed_standard_triangle_specialization",
+            "path_class": "v4_standard_callback_general_leaf_device_columns",
             "private_checker_off_path": False,
+            "standard_count_fast_control_used": False,
+            "device_columns_preserved": True,
+            "post_traversal_reduction": "cupy_checked_u64_weighted_sum_device",
         }
     else:
         owner_module = __import__(

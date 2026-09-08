@@ -83,6 +83,14 @@ their ordinary public restricted-callback compile work; V4 LibRTS accurately
 uses its existing fixed native specialization. These route-class differences
 must be reported and are not interpreted as intrinsic language effects.
 
+The Particle V4 arm uses the recovered application's `prepare_v4` public
+callback owner, not the `rtdlexe` lifecycle. The RT-2A1 V4 arm composes the
+standard callback but invokes the device-column native entry with
+`fast_control == nullptr`; its measured callback work therefore follows the
+general Numba-leaf ABI, and CuPy performs the checked weighted device reduction.
+The exact-IR fast branch present in the composed wrapper is not the executed
+triangle route in this transaction.
+
 ## Sampling and ordering
 
 - Eight paired blocks per app/input/endpoint.
