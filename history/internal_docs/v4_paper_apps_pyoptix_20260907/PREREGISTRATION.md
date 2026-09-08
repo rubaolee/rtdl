@@ -249,6 +249,16 @@ initializer while constructing the prepared index. This moves work between
 the already registered prepare and execute phases; it does not remove work
 from the complete endpoint or alter traversal semantics.
 
+Before commit `14831b9a9f1565c8d9194da96d718eb3dddd099f` reached GPU
+worker zero, prepared LibRTS blocks from the retained prior transaction also
+confirmed that the generic native packed-query route allocates query-count
+scratch and launch-parameter storage on every call. The final executable
+successor therefore also lets each prepared AABB query handle retain those two
+app-neutral buffers. Commit `14831b9a9f1565c8d9194da96d718eb3dddd099f`
+is superseded pre-worker-zero. Device reduction, D2H result scope, predicates,
+and all registered protocol fields remain unchanged; this is allocation
+lifetime repair only.
+
 The expected mechanism is removal of repeated `cuMemAlloc`/`cuMemFree` work,
 not a guaranteed speedup. The complete endpoint still includes owner
 preparation; first-result still includes first capacity allocation; prepared

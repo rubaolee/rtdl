@@ -17601,6 +17601,8 @@ struct PreparedAabbIndexQueries2DOptix {
     size_t query_count = 0;
     DevPtr d_point_queries;
     DevPtr d_box_queries;
+    DevPtr d_query_hit_counts;
+    DevPtr d_launch_params;
     AccelHolder accel;
 
     PreparedAabbIndexQueries2DOptix(
@@ -17610,6 +17612,8 @@ struct PreparedAabbIndexQueries2DOptix {
           query_count(point_query_count),
           d_point_queries(sizeof(GpuPoint) * point_query_count),
           d_box_queries(0),
+          d_query_hit_counts(sizeof(uint32_t) * point_query_count),
+          d_launch_params(sizeof(AabbIndexQueryLaunchParams)),
           accel()
     {
         if (!point_queries && point_query_count != 0)
@@ -17630,6 +17634,8 @@ struct PreparedAabbIndexQueries2DOptix {
           query_count(box_query_count),
           d_point_queries(0),
           d_box_queries(sizeof(GpuAabb2D) * box_query_count),
+          d_query_hit_counts(sizeof(uint32_t) * box_query_count),
+          d_launch_params(sizeof(AabbIndexQueryLaunchParams)),
           accel()
     {
         if (!box_queries && box_query_count != 0)
@@ -17690,7 +17696,8 @@ static void launch_aabb_index_count_pass_optix(
         bool collect_rows = false,
         bool action_overlap_filter = false,
         float minimum_overlap_area = 0.0f,
-        uint32_t action_overlap_boundary = 1u)
+        uint32_t action_overlap_boundary = 1u,
+        CUdeviceptr d_params_scratch = 0)
 {
     ensure_aabb_index_count_2d_pipeline();
 
@@ -17715,15 +17722,19 @@ static void launch_aabb_index_count_pass_optix(
     lp.action_overlap_boundary = action_overlap_boundary;
     lp.minimum_overlap_area = minimum_overlap_area;
 
-    DevPtr d_params(sizeof(AabbIndexQueryLaunchParams));
-    upload(d_params.ptr, &lp, 1);
+    std::unique_ptr<DevPtr> owned_params;
+    if (!d_params_scratch) {
+        owned_params = std::make_unique<DevPtr>(sizeof(AabbIndexQueryLaunchParams));
+        d_params_scratch = owned_params->ptr;
+    }
+    upload(d_params_scratch, &lp, 1);
 
     CUstream stream = 0;
     rtdl_optix_bind_traversal_audit_context(
         "aabb_index_count_2d",
         traversable);
     OPTIX_CHECK(optixLaunch(g_aabb_index_count.pipe->pipeline, stream,
-                            d_params.ptr, sizeof(AabbIndexQueryLaunchParams),
+                            d_params_scratch, sizeof(AabbIndexQueryLaunchParams),
                             &g_aabb_index_count.pipe->sbt,
                             static_cast<unsigned>(launch_count), 1, 1));
     CU_CHECK(cuStreamSynchronize(stream));
@@ -17799,7 +17810,9 @@ static void count_prepared_aabb_index_2d_device_optix(
         CUdeviceptr d_box_queries,
         size_t box_query_count,
         uint32_t operation,
-        size_t* hit_count_out)
+        size_t* hit_count_out,
+        CUdeviceptr d_query_hit_counts_scratch = 0,
+        CUdeviceptr d_launch_params_scratch = 0)
 {
     require_prepared_aabb_index_2d_valid(prepared);
     if (!hit_count_out) throw std::runtime_error("hit_count_out must not be null");
@@ -17825,8 +17838,14 @@ static void count_prepared_aabb_index_2d_device_optix(
 
     const size_t launch_count =
         operation == kAabbIndexOpPointContains ? point_query_count : box_query_count;
-    DevPtr d_query_hit_counts(sizeof(uint32_t) * launch_count);
-    CU_CHECK(cuMemsetD8(d_query_hit_counts.ptr, 0, sizeof(uint32_t) * launch_count));
+    std::unique_ptr<DevPtr> owned_query_hit_counts;
+    if (!d_query_hit_counts_scratch) {
+        owned_query_hit_counts = std::make_unique<DevPtr>(
+            sizeof(uint32_t) * launch_count);
+        d_query_hit_counts_scratch = owned_query_hit_counts->ptr;
+    }
+    CU_CHECK(cuMemsetD8(
+        d_query_hit_counts_scratch, 0, sizeof(uint32_t) * launch_count));
 
     launch_aabb_index_count_pass_optix(
         prepared->accel.handle,
@@ -17840,9 +17859,17 @@ static void count_prepared_aabb_index_2d_device_optix(
         0u,
         launch_count,
         0,
-        d_query_hit_counts.ptr);
+        d_query_hit_counts_scratch,
+        0,
+        0,
+        false,
+        false,
+        0.0f,
+        1u,
+        d_launch_params_scratch);
 
-    unsigned long long count = sum_device_u32_counts(d_query_hit_counts.ptr, launch_count);
+    unsigned long long count = sum_device_u32_counts(
+        d_query_hit_counts_scratch, launch_count);
     *hit_count_out = static_cast<size_t>(count);
 }
 
@@ -17988,7 +18015,9 @@ static void count_prepared_aabb_index_2d_packed_queries_optix(
         prepared_queries->d_box_queries.ptr,
         operation == kAabbIndexOpRangeContains ? prepared_queries->query_count : 0,
         operation,
-        hit_count_out);
+        hit_count_out,
+        prepared_queries->d_query_hit_counts.ptr,
+        prepared_queries->d_launch_params.ptr);
 }
 
 static unsigned long long count_prepared_aabb_index_2d_with_scratch_optix(
