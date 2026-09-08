@@ -1,6 +1,6 @@
 # CGO 2027 anonymous manuscript workspace
 
-`main.tex` and `main.pdf` are the P-decuple-prime manuscript candidate. The
+`main.tex` and `main.pdf` are the P-decuple-prime-r1 manuscript candidate. The
 paper presents RTDL as a restricted-Python DSL and compiler for bounded
 computations that repurpose ray-tracing hardware. The author selects the RT
 formulation and owns application semantics. For supported fixed families, RTDL
@@ -25,26 +25,28 @@ Numba leaf callbacks plus a trusted topology wrapper, and closed dedicated
 native routes. Whole-protocol/result-route checking is one compiler
 contribution inside the DSL story, not the entire paper theme.
 
-P-decuple-prime supersedes P-nonuple-prime for submission consideration. Every
+P-decuple-prime-r1 supersedes P-decuple-prime for submission consideration. It
+changes only one dead NVIDIA OptiX bibliography URL, the two resulting PDF
+copies, the normalized source bundle, and this candidate description. Every
 older candidate and all adverse application transactions remain immutable.
 
 ## Current exact candidate
 
 | Object | Exact identity |
 | --- | --- |
-| Source-package assembly commit | `c0c23e20ee325fb246c769ba1920566474d869c6` |
-| Source-package assembly tree | `c25914560f096175630f89453e33bcd42019992e` |
-| Manuscript/evidence parent commit | `ed4df9330a3c47c116912cb5a817fd7a84dccdfe` |
-| Manuscript/evidence parent tree | `d4bede2eea645716fe6749de479b69c9413da2bc` |
-| Superseded P-nonuple-prime checkpoint | commit `d20a0eb322c13ad17b591007116f8da616a5e60e`; tree `cec8fb10374943b757d205cb82daf04e4e768bba` |
+| Source-package assembly commit | `a9e6a76802e7f91b95935201d93ccddf19c844f6` |
+| Source-package assembly tree | `299de87bba09cf3ab7c480dbc37a1dbf9077d3fd` |
+| Manuscript/bibliography parent commit | `f377500fd85d4477529433fde282be59d60d7a81` |
+| Manuscript/bibliography parent tree | `f9471e81ce097d87ba27f5782cee4505ddbb81be` |
+| Superseded P-decuple-prime checkpoint | commit `8a485a6aae353e0d1dbfee7ce5a96610cee5d31d`; tree `b59d795819f489d4e53f34f264eb46d31f1ec45f` |
 | Candidate parent / measured successor | commit `02e84374fc092d2bb916cca633eda9592b4ecf07`; tree `8aad15d686bbc9e1c3b11df998898a0a063a01f1` |
 | `main.tex` | 57,947 bytes; SHA-256 `81299d0bddd605bdb42694d7204b5898fca3cf4436ff2aeec519038fa97fed52` |
-| `references.bib` | 22,538 bytes; SHA-256 `0bd5a31016fc847ef2ac52b45185533e16f0a23e439b83919d1794b9143da948` |
-| Exact PDF at both delivery paths | 254,212 bytes; SHA-256 `3f4ec710fa54248dcd8dde0116920d94e75a00ce0424d7b8cf60b8f3e67202e3` |
+| `references.bib` | 22,550 bytes; SHA-256 `55b138e56d1bd748885ab0765002a1fa7c28d9d09b000f93efae67955fa4f3b6` |
+| Exact PDF at both delivery paths | 254,266 bytes; SHA-256 `a810e3d8c465c6764da06a2ccdefd13fa5444c1c480ecd9441b54adadde26631` |
 | Reviewed design-figure PDF | 62,908 bytes; SHA-256 `920bc8c2dd7d083df3a13cb8c289e419162966de1fb4d8528d0cfe8d071a5092` |
 | Successor-performance figure PDF | 27,603 bytes; SHA-256 `3ce0081120db0202a8e2a5a8b623acd27394559e9f42fe2039c96abb2b4454cf` |
 | Deterministic performance-figure builder | 7,671 bytes; SHA-256 `e34599f8dd3fb1688e8628fa55883ae9246754542014aa71f876c9ee5bec8b55` |
-| Source bundle | 106,838 bytes; SHA-256 `8015a14bdb6af036d45f1500152637a0a5c5f29f56018dc01324992dea240108` |
+| Source bundle | 106,843 bytes; SHA-256 `fc2f42b342843260d02d68884dcae3d1dcaa582a070c4eefde3d412a34876f78` |
 | New performance archive | 730,851 bytes; SHA-256 `ef2ca7890c9d415dc1edbe71966aabc512209c9d8608d4eaf460c7c1fddf8bdc` |
 | Post-formal CPU-sensitivity archive | 877,815 bytes; SHA-256 `1f6f25512cbb781df2b75a204e1d3baad1e853179473a6616df6ec39e5629959` |
 | Anonymous application projection | 84,598 bytes; SHA-256 `d761ce92f55561be656a71712a9f0a78c57f2c7f8165d2ee8d8cb8cf60309e6f` |
@@ -129,7 +131,7 @@ rerun GPU work; the private 1,049-file archive remains the raw authority.
 | Main-content boundary | Main content ends on page 11; references begin on page 12 |
 | Paper/delivery PDF identity | Byte-identical |
 | Horizontal overfull boxes | 0 |
-| Vertical overfull boxes | One benign final-output `1.87198pt` ACM bibliography-page event; visual inspection shows no clipping |
+| Vertical overfull boxes | One benign final-output `1.90399pt` ACM bibliography-page event; visual inspection shows no clipping |
 | Unresolved citations/references | 0 |
 | Embedded/subset/Unicode fonts | 18/18 / 18/18 / 18/18, including figure form objects |
 | Render inspection | All 13 pages inspected; no clipping, overlap, blank page, missing glyph, or unreadable table |
@@ -145,9 +147,11 @@ path containing spaces and produced the same 13-page layout. PDF bytes are not
 claimed reproducible because the PDF creation timestamp varies.
 
 BibTeX emits 17 nonfatal completeness warnings for inherited conference
-records and the in-press survey. That is not a zero-warning build claim.
-Independent bibliography, live-link, content, novelty, and anonymity review
-remains open.
+records and the in-press survey. That is not a zero-warning build claim. An
+author-side scan checked all 30 explicit bibliography URLs/DOIs and replaced
+one legacy NVIDIA URL that returned HTTP 404 with the official OptiX SDK 9.0.0
+tagged-document URL. Independent bibliography, live-link, content, novelty,
+and anonymity review remains open.
 
 The CGO 2027 main-conference rule permits up to 11 text pages excluding
 references and requires US Letter. This candidate uses 11 text pages and two
@@ -160,7 +164,7 @@ The checkpoint commit containing this README changes no submission bytes. An
 exact review request must name that immutable checkpoint and therefore belongs
 in a later control-only commit.
 
-P-decuple-prime has zero independent exact-final-byte acceptances. No earlier
+P-decuple-prime-r1 has zero independent exact-final-byte acceptances. No earlier
 candidate review transfers to the new manuscript, source package, or figures.
 Local build, all-page rendering, anonymity scan, tests, source reconstruction,
 and numeric projection checks pass, but all public-claim, upload, and submission
