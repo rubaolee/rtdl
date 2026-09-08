@@ -30,6 +30,7 @@ class _Loaded:
         target = _sha("target")
         abi = _sha("abi")
         contract = _sha("contract")
+        declaration_contract = _sha("declaration-contract")
         composed = hashlib.sha256(self.composed_ptx.encode()).hexdigest()
         self.product_projection = {
             "family": self.family,
@@ -53,7 +54,7 @@ class _Loaded:
                 "native_library_sha256": native_sha,
                 "composed_ptx_sha256": composed,
             },
-            "protocol_contract_sha256": contract,
+            "protocol_contract_sha256": declaration_contract,
             "composed_ptx_sha256": composed,
         }
         self.descriptor_calls = []
@@ -95,7 +96,10 @@ class TriangleRTDLExecutableDeviceTest(unittest.TestCase):
             projection["provider_key"]["callback_ir_sha256"],
         )
         self.assertEqual(owner.abi_sha256, projection["provider_key"]["callback_abi_sha256"])
-        self.assertEqual(owner.contract_sha256, projection["protocol_contract_sha256"])
+        self.assertEqual(
+            owner.contract_sha256,
+            projection["executable_identity"]["contract_sha256"],
+        )
         self.assertEqual(owner.target_identity_sha256,
                          projection["target_toolchain"]["target_sha256"])
         self.assertEqual(owner.composed_program_sha256,

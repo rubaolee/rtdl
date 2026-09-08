@@ -635,7 +635,11 @@ class VerifiedTriangleDeviceColumnCountExecutor:
         physical_schema_sha = executable.get("physical_schema_sha256")
         target_sha = target.get("target_sha256")
         abi_sha = provider.get("callback_abi_sha256")
-        contract_sha = projection.get("protocol_contract_sha256")
+        # The protocol declaration contract governs source-level admission;
+        # the native executor must retain the independently derived lowered
+        # callback contract stored in the executable identity, exactly as the
+        # live compiler path does.
+        contract_sha = executable.get("contract_sha256")
         native_sha = target.get("native_library_sha256")
         composed_sha = projection.get("composed_ptx_sha256")
         required_digests = {
