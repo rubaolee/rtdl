@@ -561,6 +561,8 @@ def recount(root: Path, controller_script: Path) -> dict[str, Any]:
         require((root / name).is_file(), f"required machine snapshot missing: {name}")
     require((root / "GPU_PROCESSES_PRE.txt").read_bytes() == b"",
             "a compute process was present before the sensitivity study")
+    require((root / "GPU_PROCESSES_POST.txt").read_bytes() == b"",
+            "a compute process was present after the sensitivity study")
     require((root / "CGROUP_PRE.txt").read_text(encoding="utf-8") == (
         "/sys/fs/cgroup/cpu/cpu.cfs_quota_us=1020000\n"
         "/sys/fs/cgroup/cpu/cpu.cfs_period_us=100000\n"
