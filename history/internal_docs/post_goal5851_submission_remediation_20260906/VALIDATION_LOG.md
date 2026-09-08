@@ -1095,3 +1095,102 @@ claims. R7 starts at 0/2 independent exact-byte acceptances; no earlier review,
 author-side analysis, local preflight, or pod replay transfers as an
 acceptance. No authenticated submission-form check, upload, downloaded-byte
 verification, or submission receipt exists.
+
+## P-decuple-prime final narrative, figures, source package, and replay (2026-09-08)
+
+The final DSL-first narrative, complete authored example, result-obligation
+figures, implementation-route figure, prior-protocol comparison, related-work
+boundary, and successor performance figure were integrated without changing
+production, compiler, native, experiment, workload, timer, estimator,
+threshold, or test code. The manuscript/evidence commit is
+`ed4df9330a3c47c116912cb5a817fd7a84dccdfe`, tree
+`d4bede2eea645716fe6749de479b69c9413da2bc`. Its exact identities are:
+
+```text
+main.tex bytes/SHA-256: 57947 / 81299d0bddd605bdb42694d7204b5898fca3cf4436ff2aeec519038fa97fed52
+references.bib bytes/SHA-256: 22538 / 0bd5a31016fc847ef2ac52b45185533e16f0a23e439b83919d1794b9143da948
+paper and delivery PDF bytes/SHA-256: 254212 / 3f4ec710fa54248dcd8dde0116920d94e75a00ce0424d7b8cf60b8f3e67202e3
+design-figure bytes/SHA-256: 62908 / 920bc8c2dd7d083df3a13cb8c289e419162966de1fb4d8528d0cfe8d071a5092
+performance-figure bytes/SHA-256: 27603 / 3ce0081120db0202a8e2a5a8b623acd27394559e9f42fe2039c96abb2b4454cf
+```
+
+The deterministic performance-figure builder is 7,671 bytes at SHA-256
+`e34599f8dd3fb1688e8628fa55883ae9246754542014aa71f876c9ee5bec8b55`.
+It binds anonymous projection SHA-256
+`ae2cb7011f407c37b3850aa2a854d177baa4a6494d704eb2ddf68e89f574578c`
+and asserts all ten exact evaluation rows. Two independent builds were
+byte-identical to the committed figure.
+
+Two independent processes built an eight-member normalized USTAR/gzip source
+bundle directly from the exact manuscript/evidence Git blobs. The twin bundles
+were byte-identical. The official bundle was committed separately as
+`c0c23e20ee325fb246c769ba1920566474d869c6`, tree
+`c25914560f096175630f89453e33bcd42019992e`, and is 106,838 bytes at SHA-256
+`8015a14bdb6af036d45f1500152637a0a5c5f29f56018dc01324992dea240108`.
+It contains four directory records plus exact `main.tex`, `references.bib`,
+and both figure PDFs. A fresh read-only extraction under a path containing
+spaces preserved all hashes and compiled to 13 US-Letter pages.
+
+The immutable candidate checkpoint is
+`8a485a6aae353e0d1dbfee7ce5a96610cee5d31d`, tree
+`b59d795819f489d4e53f34f264eb46d31f1ec45f`. It differs from the source-
+package assembly only in `paper/cgo2027/README.md`, so submission bytes are
+unchanged. A canonical local build and exact PDF inspection produced:
+
+```text
+pages: 13, US Letter
+main text: pages 1--11
+references: pages 12--13
+horizontal overfull boxes: 0
+vertical overfull boxes: one final-output 1.87198pt event
+unresolved citations/references: 0
+BibTeX completeness warnings: 17 nonfatal inherited warnings
+embedded/subset/ToUnicode fonts: 18/18 / 18/18 / 18/18
+visual inspection: 13/13 pages PASS
+tested private-identity scan: PASS
+local focused tests: 14/14 plus 39/39 PASS
+```
+
+The small final vertical event occurs during ACM bibliography output. Visual
+inspection found no clipping or overlap. It is disclosed rather than called a
+zero-warning build. The PDF uses the official limit of 11 text pages plus two
+reference pages.
+
+A fresh Pod clone completed to 100% and verified the exact candidate commit,
+tree, clean status, delivery hashes, source member metadata, and source payload
+hashes on host `4735c6e75b0c`, NVIDIA RTX A4500, driver 550.127.05, Python
+3.12.3. An earlier interrupted worktree remained `initializing`; it was
+rejected and never used as evidence.
+
+The clean Pod replay produced byte-identical normal/optimized outputs:
+
+```text
+F2: c47aaee24bea18be6b30eaae45a856e30c7a2a74bd5b50fe7daf0f741bdf0ee8
+status: PASS__OFFLINE_PROJECTION_RECOUNT
+application projection: c22a23a782779683385a546634e0d9f3a7dc2cca575dc0c54197c75e0496b4f9
+status: PASS__APPLICATION_PROJECTION_RECOUNT
+CPU sensitivity: 005caca0475516bafa6834594144a95c445eee771b171d1af0dbb448f80364d0
+status: PASS__POST_FORMAL_DESCRIPTIVE_CPU_SENSITIVITY_RECOUNT
+```
+
+The CPU recount retained Particle CPU-8 `1.399873664x`, rank 47/48, and
+LibRTS-range CPU-8 `0.804614022x`, rank 6/48. No adverse row was removed or
+pooled. No GPU experiment ran.
+
+Pod system Python lacked Numba. Its first extra long-workload test attempt
+failed during import and was not counted. A checkout-external temporary venv
+with Numba 0.61.2, NumPy 2.2.6, and llvmlite 0.44.0 then passed both focused
+suites under normal and optimized Python, 106/106 test invocations. This does
+not establish zero-install package completeness.
+
+GNU tar 1.35 as container root restored the application artifact's `0555`
+root directory before creating children and failed direct extraction. Python
+3.12 `tarfile --filter data` extracted the exact same bytes and both verifier
+modes passed. The failed extraction attempts ended before verifier execution;
+this portability limitation is retained. Tectonic was absent on the Pod, so
+no Pod-side source compile is claimed.
+
+The P-decuple-prime claim ledger still has 31 claims and zero authorized
+claims. R7 starts at 0/2 exact-final-byte acceptances. No earlier review
+transfers. Authenticated submission-form checks, upload authorization,
+downloaded-byte verification, submission ID, and receipt remain absent.

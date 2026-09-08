@@ -1,0 +1,163 @@
+{
+  "schema": "rtdl.cgo2027.p_decupleprime_status.v1",
+  "updated_at": "2026-09-08T12:57:55-04:00",
+  "status": "AUTHOR_PREFLIGHT_PASSED__ZERO_OF_TWO_INDEPENDENT_ACCEPTANCES__NOT_SUBMITTED",
+  "candidate": {
+    "name": "P-decuple-prime",
+    "commit": "8a485a6aae353e0d1dbfee7ce5a96610cee5d31d",
+    "tree": "b59d795819f489d4e53f34f264eb46d31f1ec45f",
+    "source_package_assembly_commit": "c0c23e20ee325fb246c769ba1920566474d869c6",
+    "source_package_assembly_tree": "c25914560f096175630f89453e33bcd42019992e",
+    "manuscript_evidence_parent_commit": "ed4df9330a3c47c116912cb5a817fd7a84dccdfe",
+    "manuscript_evidence_parent_tree": "d4bede2eea645716fe6749de479b69c9413da2bc",
+    "supersedes_candidate": "P-nonuple-prime",
+    "superseded_commit": "d20a0eb322c13ad17b591007116f8da616a5e60e",
+    "superseded_tree": "cec8fb10374943b757d205cb82daf04e4e768bba",
+    "candidate_parent_diff": [
+      "paper/cgo2027/README.md"
+    ],
+    "submission_bytes_unchanged_from_source_package_assembly_commit": true
+  },
+  "frozen_identities": {
+    "measured_two_task_implementation_m": {
+      "commit": "d653fe4ad170c5b51fee309d653c9565944dcf2e",
+      "tree": "d53af23a2599f9d6adb4ac0bfff39cd0ab31860b"
+    },
+    "predecessor_e": {
+      "commit": "12ab1bc0a8ebbcefe42e93c677a151c04c3ba3c8",
+      "tree": "aa8b9b12a7bf9cf4395cb71e4fb8e6eb0f169ab6"
+    },
+    "offline_artifact_f2": {
+      "commit": "9771facece4ccd807e26c15b21892b9d0a701d32",
+      "tree": "11c62c28bdebcc7d437f8ab3326635af0832ce48"
+    },
+    "long_workload_successor": {
+      "commit": "02e84374fc092d2bb916cca633eda9592b4ecf07",
+      "tree": "8aad15d686bbc9e1c3b11df998898a0a063a01f1"
+    }
+  },
+  "deliverables": {
+    "paper/cgo2027/main.tex": {
+      "bytes": 57947,
+      "sha256": "81299d0bddd605bdb42694d7204b5898fca3cf4436ff2aeec519038fa97fed52"
+    },
+    "paper/cgo2027/references.bib": {
+      "bytes": 22538,
+      "sha256": "0bd5a31016fc847ef2ac52b45185533e16f0a23e439b83919d1794b9143da948"
+    },
+    "paper/cgo2027/main.pdf": {
+      "bytes": 254212,
+      "sha256": "3f4ec710fa54248dcd8dde0116920d94e75a00ce0424d7b8cf60b8f3e67202e3"
+    },
+    "output/pdf/rtdl_cgo2027_submission_candidate.pdf": {
+      "bytes": 254212,
+      "sha256": "3f4ec710fa54248dcd8dde0116920d94e75a00ce0424d7b8cf60b8f3e67202e3"
+    },
+    "paper/cgo2027/figures/reviewed_design_figures.pdf": {
+      "bytes": 62908,
+      "sha256": "920bc8c2dd7d083df3a13cb8c289e419162966de1fb4d8528d0cfe8d071a5092"
+    },
+    "paper/cgo2027/figures/successor_application_performance.pdf": {
+      "bytes": 27603,
+      "sha256": "3ce0081120db0202a8e2a5a8b623acd27394559e9f42fe2039c96abb2b4454cf"
+    },
+    "paper/cgo2027/figures/build_successor_performance.py": {
+      "bytes": 7671,
+      "sha256": "e34599f8dd3fb1688e8628fa55883ae9246754542014aa71f876c9ee5bec8b55"
+    },
+    "output/source/rtdl-cgo2027-source.tar.gz": {
+      "bytes": 106838,
+      "sha256": "8015a14bdb6af036d45f1500152637a0a5c5f29f56018dc01324992dea240108",
+      "member_count": 8,
+      "regular_file_count": 4
+    },
+    "output/artifact/rtdl-cgo2027-artifact.tar.gz": {
+      "bytes": 180308,
+      "sha256": "916cedbb7001c7aa43e66df3f992b543b7b3ca5a013f0f997790113a2e3738b8",
+      "member_count": 9
+    },
+    "output/artifact/rtdl-cgo2027-application-performance.tar.gz": {
+      "bytes": 84598,
+      "sha256": "d761ce92f55561be656a71712a9f0a78c57f2c7f8165d2ee8d8cb8cf60309e6f"
+    },
+    "history/internal_docs/v4_long_workload_performance_20260908/raw/rtdl-v4-long-perf-successor-02e84374f-affinity-final.tar.gz": {
+      "bytes": 730851,
+      "sha256": "ef2ca7890c9d415dc1edbe71966aabc512209c9d8608d4eaf460c7c1fddf8bdc",
+      "member_count": 1049
+    },
+    "history/internal_docs/v4_long_workload_performance_20260908/raw/rtdl-v4-long-perf-successor-02e84374f-cpu-sensitivity-v1.tar.gz": {
+      "bytes": 877815,
+      "sha256": "1f6f25512cbb781df2b75a204e1d3baad1e853179473a6616df6ec39e5629959",
+      "member_count": 2003
+    }
+  },
+  "author_preflight": {
+    "local_submission_evidence_tests": "14/14 PASS",
+    "local_long_workload_tests": "39/39 PASS",
+    "pdf_paths_byte_identical": true,
+    "pdf_pages": 13,
+    "pdf_page_size": "612 x 792 pt US Letter",
+    "main_text_ends_on_page": 11,
+    "references_begin_on_page": 12,
+    "overfull_hbox_count": 0,
+    "overfull_vbox_count": 1,
+    "overfull_vbox_detail": "1.87198pt at final ACM bibliography output; all-page visual inspection found no clipping or overlap",
+    "unresolved_citation_or_reference_count": 0,
+    "nonfatal_bibtex_completeness_warning_count": 17,
+    "embedded_subset_unicode_fonts": "18/18",
+    "rendered_pages_inspected": 13,
+    "tested_private_identity_scan": "PASS",
+    "source_twin_build_byte_identical": true,
+    "source_foreign_path_with_spaces_build": "PASS__13_PAGE_US_LETTER",
+    "source_foreign_build_pdf_byte_identity_claimed": false,
+    "source_foreign_build_pdf_difference_reason": "PDF creation-time metadata differs; buildability rather than cross-build PDF byte identity is claimed",
+    "performance_figure_twin_build_byte_identical": true,
+    "performance_figure_input_projection_sha256": "ae2cb7011f407c37b3850aa2a854d177baa4a6494d704eb2ddf68e89f574578c"
+  },
+  "clean_pod_replay": {
+    "hostname": "4735c6e75b0c",
+    "gpu": "NVIDIA RTX A4500",
+    "driver": "550.127.05",
+    "python": "3.12.3",
+    "candidate_commit_verified": true,
+    "candidate_tree_verified": true,
+    "candidate_worktree_clean_before_and_after": true,
+    "candidate_file_hashes_verified": true,
+    "source_member_metadata_and_payload_hashes_verified": true,
+    "tectonic_available": false,
+    "f2_normal_optimized_byte_identical": true,
+    "f2_output_sha256": "c47aaee24bea18be6b30eaae45a856e30c7a2a74bd5b50fe7daf0f741bdf0ee8",
+    "f2_status": "PASS__OFFLINE_PROJECTION_RECOUNT",
+    "application_projection_normal_optimized_byte_identical": true,
+    "application_projection_output_sha256": "c22a23a782779683385a546634e0d9f3a7dc2cca575dc0c54197c75e0496b4f9",
+    "application_projection_status": "PASS__APPLICATION_PROJECTION_RECOUNT",
+    "cpu_sensitivity_normal_optimized_byte_identical": true,
+    "cpu_sensitivity_output_sha256": "005caca0475516bafa6834594144a95c445eee771b171d1af0dbb448f80364d0",
+    "cpu_sensitivity_status": "PASS__POST_FORMAL_DESCRIPTIVE_CPU_SENSITIVITY_RECOUNT",
+    "frozen_tests_normal_and_optimized": "106/106 PASS after temporary pinned test environment installation",
+    "temporary_test_environment": {
+      "numba": "0.61.2",
+      "numpy": "2.2.6",
+      "llvmlite": "0.44.0"
+    },
+    "initial_system_python_long_workload_test": "DEPENDENCY_FAILURE__NUMBA_NOT_INSTALLED__NOT_A_CODE_FAILURE",
+    "plain_gnu_tar_root_extraction_of_application_artifact": "PORTABILITY_FAILURE__READ_ONLY_DIRECTORY_MODE_RESTORED_BEFORE_CHILDREN",
+    "python_tarfile_data_filter_extraction": "PASS",
+    "initial_interrupted_worktree_used_as_evidence": false,
+    "gpu_experiment_executed": false
+  },
+  "claim_and_submission_gates": {
+    "claim_ledger_entry_count": 31,
+    "claim_authorized_true_count": 0,
+    "independent_exact_final_byte_acceptance_count": 0,
+    "required_independent_exact_final_byte_acceptance_count": 2,
+    "public_claim_authorized": false,
+    "manuscript_claim_authorized": false,
+    "upload_authorized": false,
+    "upload_performed": false,
+    "downloaded_upload_hash_verified": false,
+    "submission_performed": false,
+    "submission_receipt_present": false
+  },
+  "claim_boundary": "The long-workload successor supports only ten registered complete/prepared rows over five units on one RTX A4500. Only cit-Patents/4M is a multi-second prepared natural computation. The post-formal CPU scan is not pooled and shows that sub-millisecond prepared rows are not stable performance guarantees. No broad performance, productivity, arbitrary-Python, arbitrary-topology, all-app, CPU-invariance, clock-invariance, or app-independent-engine claim is authorized."
+}

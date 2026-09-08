@@ -1,8 +1,8 @@
 {
   "schema": "rtdl.cgo2027.post_goal5851_submission_remediation.status.v1",
-  "updated_at_utc": "2026-09-08T04:53:41Z",
-  "updated_at_et": "2026-09-08T00:53:41-0400",
-  "overall_status": "PSEPTUPLEPRIME_APPLICATION_EVIDENCE_INTEGRATED__R7_ZERO_OF_TWO__CLAIMS_UNAUTHORIZED__NOT_SUBMITTED",
+  "updated_at_utc": "2026-09-08T16:57:55Z",
+  "updated_at_et": "2026-09-08T12:57:55-0400",
+  "overall_status": "PDECUPLEPRIME_AUTHOR_PREFLIGHT_PASSED__R7_ZERO_OF_TWO__CLAIMS_UNAUTHORIZED__NOT_SUBMITTED",
   "controlling_directive": {
     "path": "history/internal_docs/lead_dsl_first_submission_directive_20260907.md",
     "sha256": "ddbf047144a1e8641428f84a3588cf50f0171b0babfb0691399994e7efd68edf",
@@ -360,6 +360,49 @@
     "upload_executed": false,
     "submission_receipt_present": false
   },
+  "p_decuple_prime_final_candidate": {
+    "status": "FINAL_NARRATIVE_FIGURES_AND_SOURCE_PACKAGE_INTEGRATED__AUTHOR_PREFLIGHT_AND_CLEAN_POD_REPLAY_PASSED__PENDING_TWO_INDEPENDENT_R7_ACCEPTANCES",
+    "candidate_commit": "8a485a6aae353e0d1dbfee7ce5a96610cee5d31d",
+    "candidate_tree": "b59d795819f489d4e53f34f264eb46d31f1ec45f",
+    "source_package_assembly_commit": "c0c23e20ee325fb246c769ba1920566474d869c6",
+    "source_package_assembly_tree": "c25914560f096175630f89453e33bcd42019992e",
+    "manuscript_evidence_parent_commit": "ed4df9330a3c47c116912cb5a817fd7a84dccdfe",
+    "manuscript_evidence_parent_tree": "d4bede2eea645716fe6749de479b69c9413da2bc",
+    "superseded_candidate_commit": "d20a0eb322c13ad17b591007116f8da616a5e60e",
+    "status_record": {
+      "path": "history/internal_docs/post_goal5851_submission_remediation_20260906/P_DECUPLEPRIME_STATUS.json",
+      "sha256": "61269b06ca22358d4a9071b086f0c241b71f45e2cc45aec24eb572bae8d4b517"
+    },
+    "review_request": {
+      "path": "history/internal_docs/post_goal5851_submission_remediation_20260906/R7_PDECUPLEPRIME_FINAL_BYTES_REVIEW_REQUEST.md",
+      "sha256": "1c280a1d1686b79d4f85c6f32d5e82f219cada5ee42bccf314b9ed85aff66ee5"
+    },
+    "local_preflight": {
+      "path": "history/internal_docs/post_goal5851_submission_remediation_20260906/R8_PDECUPLEPRIME_LOCAL_PREFLIGHT_REPORT.md",
+      "sha256": "5aabfd0726511b6d184bdc78432cda30a9e719977004c1e3ebad3ae0123bcb95"
+    },
+    "pdf_sha256": "3f4ec710fa54248dcd8dde0116920d94e75a00ce0424d7b8cf60b8f3e67202e3",
+    "source_bundle_sha256": "8015a14bdb6af036d45f1500152637a0a5c5f29f56018dc01324992dea240108",
+    "design_figure_sha256": "920bc8c2dd7d083df3a13cb8c289e419162966de1fb4d8528d0cfe8d071a5092",
+    "performance_figure_sha256": "3ce0081120db0202a8e2a5a8b623acd27394559e9f42fe2039c96abb2b4454cf",
+    "claim_count": 31,
+    "claim_authorized_true_count": 0,
+    "local_pdf_rule_checks_passed": true,
+    "source_bundle_foreign_path_compile_passed": true,
+    "clean_pod_candidate_identity_checked": true,
+    "clean_pod_f2_replay_normal_and_optimized_passed": true,
+    "clean_pod_application_recount_normal_and_optimized_passed": true,
+    "clean_pod_cpu_sensitivity_recount_normal_and_optimized_passed": true,
+    "clean_pod_frozen_tests_normal_and_optimized_passed_after_pinned_test_environment": true,
+    "plain_gnu_tar_root_extraction_portability_limit_disclosed": true,
+    "gpu_experiment_executed": false,
+    "independent_acceptances_received": 0,
+    "independent_acceptances_required": 2,
+    "earlier_candidate_reviews_transfer": false,
+    "public_or_manuscript_claim_authorized": false,
+    "upload_executed": false,
+    "submission_receipt_present": false
+  },
   "source_identities": {
     "measured_successor_commit_M": "d653fe4ad170c5b51fee309d653c9565944dcf2e",
     "measured_successor_tree": "d53af23a2599f9d6adb4ac0bfff39cd0ab31860b",
@@ -679,35 +722,23 @@
     "public_or_manuscript_claim_authorized": false
   },
   "r7_final_bytes_review": {
-    "status": "PSEPTUPLEPRIME_REQUEST_READY__ZERO_OF_TWO_INDEPENDENT_ACCEPTANCES",
+    "status": "PDECUPLEPRIME_REQUEST_READY__ZERO_OF_TWO_INDEPENDENT_ACCEPTANCES",
     "request": {
-      "path": "R7_PSEPTUPLEPRIME_FINAL_BYTES_REVIEW_REQUEST.md",
-      "sha256": "f96d7404d1dd3f3f9209a458d43e594720640c2ff2196ed4513b1fce30b9ae97"
-    },
-    "old_p_lead_review": {
-      "path": "R7_LEAD_INDEPENDENT_FINAL_BYTES_REVIEW.md",
-      "sha256": "c449a6c6eed4f177496a762b38f13434a09b1447aa3b3521db56c66b818d5ddd",
-      "verdict": "REVISE_AND_REREVIEW_CHANGED_BYTES",
-      "counts_as_pprime_acceptance": false
-    },
-    "internal_hostile_precheck": {
-      "path": "R7_INTERNAL_HOSTILE_PRECHECK.md",
-      "sha256": "64939a85ba98b5345e685655713038beaa6978391ea91067e819288c8a6ae2b1",
-      "result": "PASS_READY_TO_REQUEST_R7",
-      "counts_as_independent_review": false
+      "path": "R7_PDECUPLEPRIME_FINAL_BYTES_REVIEW_REQUEST.md",
+      "sha256": "1c280a1d1686b79d4f85c6f32d5e82f219cada5ee42bccf314b9ed85aff66ee5"
     },
     "independent_reviews_required": 2,
-    "independent_pseptupleprime_acceptances_received": 0,
+    "independent_pdecupleprime_acceptances_received": 0,
     "earlier_candidate_reviews_transfer": false,
-    "author_side_findings_remediated": true,
-    "material_findings_closed_or_descoped": false,
+    "author_preflight_counts_as_acceptance": false,
+    "clean_pod_replay_counts_as_acceptance": false,
     "public_or_manuscript_claim_authorized": false
   },
   "r8_submission_gate": {
-    "status": "PSEPTUPLEPRIME_AUTHOR_LOCAL_PREFLIGHT_AND_FROZEN_POD_REPLAY_PASSED__R7_AND_EXTERNAL_ACTIONS_PENDING",
+    "status": "PDECUPLEPRIME_AUTHOR_LOCAL_PREFLIGHT_AND_CLEAN_POD_REPLAY_PASSED__R7_AND_EXTERNAL_ACTIONS_PENDING",
     "report": {
-      "path": "R8_PSEPTUPLEPRIME_LOCAL_PREFLIGHT_REPORT.md",
-      "sha256": "f2782047ba6c85440e87780ecf8629b6a6659b07ba689609d9bee6a6671d35de"
+      "path": "R8_PDECUPLEPRIME_LOCAL_PREFLIGHT_REPORT.md",
+      "sha256": "5aabfd0726511b6d184bdc78432cda30a9e719977004c1e3ebad3ae0123bcb95"
     },
     "official_rule_page_checked": "https://conf.researchr.org/track/cgo-2027/cgo-2027-papers",
     "public_hotcrp_landing_checked": "https://cgo27.hotcrp.com/",
@@ -715,14 +746,16 @@
     "local_pdf_rule_checks_passed": true,
     "source_bundle": {
       "path": "output/source/rtdl-cgo2027-source.tar.gz",
-      "sha256": "e4a291f9e86b125438f2b1c9a5334110a035a36b4a88955267ea319a4e596f6f",
-      "bytes": 29743,
-      "regular_files": 2,
+      "sha256": "8015a14bdb6af036d45f1500152637a0a5c5f29f56018dc01324992dea240108",
+      "bytes": 106838,
+      "regular_files": 4,
       "twin_normalized_builds_byte_identical": true,
       "foreign_path_compile_exit_zero": true
     },
     "clean_pod_f2_replay_normal_and_optimized_passed": true,
     "clean_pod_application_recount_normal_and_optimized_passed": true,
+    "clean_pod_cpu_sensitivity_recount_normal_and_optimized_passed": true,
+    "clean_pod_frozen_tests_normal_and_optimized_passed_after_pinned_test_environment": true,
     "independent_anonymity_scans_received": 0,
     "authenticated_submission_form_checked": false,
     "upload_executed": false,
@@ -946,6 +979,49 @@
     "submission_receipt_present": false,
     "public_or_manuscript_claim_authorized": false
   },
+  "r7_p_decuple_prime_final_bytes_review": {
+    "status": "REQUEST_READY__ZERO_OF_TWO_INDEPENDENT_ACCEPTANCES",
+    "request": {
+      "path": "R7_PDECUPLEPRIME_FINAL_BYTES_REVIEW_REQUEST.md",
+      "sha256": "1c280a1d1686b79d4f85c6f32d5e82f219cada5ee42bccf314b9ed85aff66ee5"
+    },
+    "candidate_commit": "8a485a6aae353e0d1dbfee7ce5a96610cee5d31d",
+    "candidate_tree": "b59d795819f489d4e53f34f264eb46d31f1ec45f",
+    "pdf_sha256": "3f4ec710fa54248dcd8dde0116920d94e75a00ce0424d7b8cf60b8f3e67202e3",
+    "source_bundle_sha256": "8015a14bdb6af036d45f1500152637a0a5c5f29f56018dc01324992dea240108",
+    "artifact_sha256": "916cedbb7001c7aa43e66df3f992b543b7b3ca5a013f0f997790113a2e3738b8",
+    "application_projection_sha256": "d761ce92f55561be656a71712a9f0a78c57f2c7f8165d2ee8d8cb8cf60309e6f",
+    "independent_reviews_required": 2,
+    "independent_acceptances_received": 0,
+    "earlier_candidate_reviews_count_as_acceptance": false,
+    "author_preflight_counts_as_acceptance": false,
+    "pod_replay_counts_as_acceptance": false,
+    "public_or_manuscript_claim_authorized": false
+  },
+  "r8_p_decuple_prime_submission_gate": {
+    "status": "AUTHOR_LOCAL_PREFLIGHT_AND_CLEAN_POD_REPLAY_PASSED__R7_AND_EXTERNAL_ACTIONS_PENDING",
+    "report": {
+      "path": "R8_PDECUPLEPRIME_LOCAL_PREFLIGHT_REPORT.md",
+      "sha256": "5aabfd0726511b6d184bdc78432cda30a9e719977004c1e3ebad3ae0123bcb95"
+    },
+    "local_pdf_rule_checks_passed": true,
+    "pdf_pages": 13,
+    "page_size": "US Letter",
+    "main_text_ends_on_page": 11,
+    "references_begin_on_page": 12,
+    "all_pages_rendered_and_inspected": true,
+    "source_bundle_foreign_path_compile_exit_zero": true,
+    "clean_pod_candidate_identity_checked": true,
+    "clean_pod_f2_replay_normal_and_optimized_passed": true,
+    "clean_pod_application_recount_normal_and_optimized_passed": true,
+    "clean_pod_cpu_sensitivity_recount_normal_and_optimized_passed": true,
+    "independent_anonymity_scans_received": 0,
+    "authenticated_submission_form_checked": false,
+    "upload_executed": false,
+    "downloaded_upload_hash_checked": false,
+    "submission_receipt_present": false,
+    "public_or_manuscript_claim_authorized": false
+  },
   "candidate_f_precommit_path_ownership": [
     {
       "paths": [
@@ -989,11 +1065,11 @@
     "R1": "CLOSED_WITH_EVIDENCE",
     "R2": "CLOSED_WITH_EVIDENCE__FINAL_F2_REHEARSAL_PASSED",
     "R3": "CLOSED_WITH_EVIDENCE",
-    "R4": "PSEPTUPLEPRIME_SELECTED_STAGE_APPLICATION_COST_INTEGRATED__PENDING_INDEPENDENT_REREVIEW",
+    "R4": "PDECUPLEPRIME_FINAL_DSL_NARRATIVE_AND_FIGURES_INTEGRATED__PENDING_INDEPENDENT_REREVIEW",
     "R5": "CLOSED_WITH_EVIDENCE__FINAL_F2_FROZEN",
-    "R6": "PSEPTUPLEPRIME_PDF_SOURCE_AND_UNCHANGED_F2_BOUND__FROZEN_REPLAYS_PASSED__PENDING_R7_R8",
-    "R7": "PSEPTUPLEPRIME_REQUEST_READY__ZERO_OF_TWO_INDEPENDENT_ACCEPTANCES",
-    "R8": "PSEPTUPLEPRIME_AUTHOR_LOCAL_PREFLIGHT_AND_FROZEN_POD_REPLAY_PASSED__EXTERNAL_ACTIONS_PENDING"
+    "R6": "PDECUPLEPRIME_PDF_SOURCE_FIGURES_AND_UNCHANGED_F2_BOUND__FROZEN_REPLAYS_PASSED__PENDING_R7_R8",
+    "R7": "PDECUPLEPRIME_REQUEST_READY__ZERO_OF_TWO_INDEPENDENT_ACCEPTANCES",
+    "R8": "PDECUPLEPRIME_AUTHOR_LOCAL_PREFLIGHT_AND_CLEAN_POD_REPLAY_PASSED__EXTERNAL_ACTIONS_PENDING"
   },
   "hard_freeze": "2026-09-08T00:00:00-04:00",
   "submission_deadline": "2026-09-10T23:59:59-12:00",
