@@ -4,13 +4,15 @@ Date: 2026-09-08 America/New_York.
 
 ## Decision
 
-`ACCEPT_AS_VALID_ADVERSE_FIRST_BATCH_EVIDENCE__REJECT_BROAD_PERFORMANCE_OR_COVERAGE_CLAIMS`
+`ACCEPT_AS_VALID_ADVERSE_POST_LOADER_ROUTE_EVIDENCE__REJECT_RAW_DOMAIN_END_TO_END_OR_BROAD_CLAIMS`
 
-The frozen first-batch experiment is internally valid at its stated scope. It
-does not show that V4 is competitive with a competent public PyOptiX
-implementation across paper applications. It also does not complete the
-registered nine-application denominator. These are research results and scope
-limits, not infrastructure failures.
+The frozen first-batch experiment is internally valid at its registered
+post-input-loader method-route scope. It does not show that V4 is competitive
+with a competent public PyOptiX implementation across paper applications. It
+does not measure raw-domain end-to-end application cost, use operation-identical
+device programs for Particle, or complete the registered nine-application
+denominator. These are research results and scope limits, not infrastructure
+failures.
 
 ## Exact authority
 
@@ -41,16 +43,33 @@ executable repair is permitted.
 
 ### 1. Are the comparisons valid?
 
-Yes, for the registered application stages. Both arms consume the same frozen
-input identity and return the same complete public output. Each timed result is
-accepted only after exact output/status checks. Disk input is outside both
-primary timers. Process isolation, paired order, repetitions, warmups, and the
-block estimator are symmetric and preregistered. Public PyOptiX does not call a
-private RTDL native path.
+Yes, only for the registered post-loader application routes. Both arms consume
+the same frozen derived-input identity and return the same complete public
+output. Each timed result is accepted only after exact output/status checks.
+Process isolation, paired order, repetitions, warmups, and the block estimator
+are symmetric and preregistered. Public PyOptiX does not call a private RTDL
+native path.
 
-The device programs are semantically matched, not byte-identical. This is an
-application-route comparison, not a controlled measurement of one compiler
-pass. The table must not be described as intrinsic DSL overhead.
+The excluded loader includes application work, not only disk I/O. It loads
+pre-encoded Particle arrays, constructs Triangle's degree-oriented filtered and
+deduplicated CSR, and loads LibRTS index caches while converting WKT queries.
+Therefore the original broader requirement to time all required domain encoding
+was not fulfilled. The registered `complete` result begins after that work and
+must be called a post-loader method setup-and-execution endpoint.
+
+The device programs are semantically matched for the frozen outputs, not
+byte-identical or operation-identical. Most importantly, V4 Particle enumerates
+any-hit candidates and performs canonical selection before one logical
+closest-hit call, whereas PyOptiX disables any-hit and uses native closest-hit.
+`first_result` also excludes only work already completed by `_prepare_case`;
+application-internal setup remains timed. For Triangle, both arms rebuild
+per-segment geometry/GAS, while V4 additionally rebuilds its composed module,
+program groups, pipeline, and SBT inside every segment execution and PyOptiX
+reuses those prepared objects. Each timed execute also contains the registered
+adapter-level synchronous output/oracle and status checks, digest work, and
+compact evidence projection; it is not isolated native-runtime latency.
+This is an application-route comparison, not a controlled measurement of one
+compiler pass. The table must not be described as intrinsic DSL overhead.
 
 ### 2. Is the PyOptiX baseline competent?
 
@@ -60,6 +79,13 @@ synchronization, and output materialization. PTX is compiled once before worker
 zero and hash-bound; compile time is diagnostic rather than repeatedly charged.
 Triangle and LibRTS reduce on the device. Particle returns the full 5,000 by 3
 U32 matrix. No host-only straw baseline is used.
+
+This means `complete` is not a compiler-time-symmetric endpoint: PyOptiX uses
+prebuilt PTX while ordinary V4 Particle and Triangle compilation occurs during
+their method preparation. That difference is part of the measured public-route
+cost and must be disclosed, not interpreted as a controlled compiler comparison.
+Triangle's PyOptiX device source is handwritten CUDA/OptiX compiled to PTX; it
+is not a second Numba implementation.
 
 ### 3. What useful capability does RTDL add?
 
@@ -79,7 +105,8 @@ from this packet.
 
 - Particle still owns the mesh-to-face/adjacency mapping, strict-interior
   transition meaning, queries, output schema, and oracle. RTDL compiles and
-  executes the supported built-in-triangle callback protocol.
+  executes the project standard-library built-in-triangle callback protocol;
+  this is not an independent user-authored callback study.
 - Triangle still owns RT-2A1 selection, CSR segmentation, geometry production,
   ray weights, cross-segment accumulation, and graph oracle. RTDL executes the
   general Numba-leaf callback ABI, while CuPy performs checked-U64 weighted
@@ -131,11 +158,16 @@ formal causal ablation:
 
 1. Prepared Particle still crosses NumPy/ctypes/native layout boundaries,
    performs seven query-column H2D copies, and downloads complete output plus
-   diagnostics/status. Both arms upload queries, so query residency alone does
-   not explain its gap.
-2. Triangle reconstructs bounded device geometry by segment and uses
-   application/partner continuation. Its 1.38x prepared result is a complete
-   route cost, not solely a callback dispatch cost.
+   diagnostics/status. More fundamentally, V4 enumerates all candidate hits for
+   canonical tie/boundary selection and then invokes one logical closest-hit
+   leaf, while PyOptiX disables any-hit and runs native closest-hit. Both arms
+   upload queries, and no retained ablation separates these costs.
+2. Triangle reconstructs bounded device geometry by segment in both arms. V4's
+   general Numba-leaf route additionally performs native prepare/execute/destroy
+   per segment, including GAS plus module/program-group/pipeline/SBT construction;
+   PyOptiX runs handwritten CUDA/OptiX PTX and retains those objects while
+   rebuilding only per-segment GAS. Its 1.38x prepared result is a complete route cost, not
+   solely a callback dispatch or language-code-generation cost.
 3. V4 LibRTS uses a general multi-operation AoS kernel and an indexed GAS built
    with `ALLOW_RANDOM_VERTEX_ACCESS` but no `PREFER_FAST_TRACE`. It synchronizes
    after traversal, then launches reduction and synchronizes through scalar
@@ -152,12 +184,15 @@ They may not be silently repaired or tested in the current candidate.
 ## Submission consequences
 
 - The manuscript may state that a frozen first-batch experiment found exact
-  output parity and measured substantial route-dependent overhead, provided it
-  includes winners and losers, exact stages, path classes, hardware, estimator,
-  and coverage denominator.
+  output parity and measured substantial post-loader route-dependent cost,
+  provided it includes all adverse rows, exact starting representations, path
+  classes, hardware, estimator, and coverage denominator.
 - The manuscript may use this result to motivate runtime/lowering limitations.
-- It may not claim broad near-PyOptiX performance, speedup, nine-app comparison
-  completion, arbitrary callback efficiency, or demonstrated ease of use.
+- It may not claim raw-domain end-to-end application timing, operation-identical
+  Particle algorithms, lifecycle-identical Triangle execution, cold-start or
+  pure-launch first-result timing, broad near-PyOptiX performance, speedup,
+  nine-app completion, arbitrary callback efficiency, or demonstrated ease of
+  use.
 - Existing Goal5848 near-Direct observations remain separate synthetic-task
   evidence. They cannot replace or override these application results.
 - External final-byte review, paper integration, artifact review, authenticated

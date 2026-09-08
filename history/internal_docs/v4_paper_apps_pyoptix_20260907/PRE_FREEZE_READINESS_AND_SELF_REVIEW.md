@@ -7,6 +7,12 @@ Date: 2026-09-07 America/New_York.
 > `RESULTS.md`, `STATUS.json`, and `EVIDENCE_INDEX.json`. The final frozen
 > first-batch transaction is `c5c8be48b`, with 192/192 PASS and an independent
 > recount match; its performance results are adverse and cover only 3/9 apps.
+> A post-freeze endpoint audit further established that `complete` begins after
+> application preprocessing, `first_result` begins after preparation but still
+> contains app-internal setup, and the Triangle arms use different pipeline
+> lifecycles. See
+> `POST_FREEZE_ENDPOINT_AND_ROUTE_CORRECTION_20260908.md`; do not promote this
+> historical snapshot's broader application-language to current claims.
 
 ## Verdict
 
@@ -47,23 +53,33 @@ missing PyOptiX owners; none is silently removed from the denominator.
 
 ## Fair timing boundaries
 
-- `complete` starts from the already-loaded common in-memory domain input,
-  before implementation-specific imports and preparation. It ends after the
-  first complete output, synchronous status/oracle checks, materialization, and
-  owner close.
-- `first_result` measures the first complete public execution after input load
-  and explicit preparation; load and preparation are retained separately.
+- `complete` starts after the shared loader has produced each application's
+  derived input, before implementation-specific imports and preparation. It
+  ends after the first complete output, synchronous status/oracle checks,
+  materialization, and owner close. Excluded loader work includes application
+  preprocessing, so this is setup plus run after shared preprocessing rather
+  than raw-domain end to end.
+- `first_result` measures the first checked execution after `_prepare_case`.
+  Work inside the execute closure remains timed; for Triangle that includes
+  per-segment geometry/GAS in both arms and module/pipeline/SBT construction in
+  V4. The closure also includes registered oracle/status checks, output digest,
+  and compact evidence projection. It is not a cold-start, pure-launch, or
+  isolated native-runtime endpoint.
 - `prepared` measures warm owner reuse after one untimed warmup. Particle uses
   32 retained calls per worker; each triangle/LibRTS unit uses four.
-- Disk load is never included in a primary ratio. It remains a diagnostic so
-  page-cache behavior cannot be mistaken for compiler/runtime cost.
+- The shared loader is never included in a primary ratio. Its time remains a
+  diagnostic, but it also performs application preprocessing and cannot be
+  described as disk I/O alone.
 - Eight balanced paired blocks use fresh processes, four V4-first and four
   PyOptiX-first. There is no performance pass threshold and no winner-based row
   deletion.
 - Public PyOptiX uses prebuilt, hash-bound PTX generated before worker zero.
   PTX compile time is retained separately and excluded from primary ratios.
-  Fresh module, pipeline, SBT, GAS, transfer, execute, and public result work
-  remain in the applicable endpoint.
+  Setup-plus-run includes owner preparation after the shared loader. Exact
+  first/prepared reuse is route-specific: Triangle PyOptiX retains
+  module/pipeline/SBT and rebuilds per-segment GAS, while V4 rebuilds all of
+  those objects per segment. The PyOptiX Triangle program is handwritten
+  CUDA/OptiX rather than Numba.
 
 ## Custody and fail-closed controls
 

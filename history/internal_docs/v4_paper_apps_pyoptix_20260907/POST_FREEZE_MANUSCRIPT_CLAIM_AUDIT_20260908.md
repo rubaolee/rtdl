@@ -34,6 +34,25 @@ lead-owned manuscript. The proposed replacement text is
    endpoint ratios are adverse, from 1.079542x to 75.533295x. Omitting this
    table while retaining favorable synthetic A/D and A/C observations would
    materially misrepresent the evaluation.
+6. A second post-freeze source audit found that the registered `complete` timer
+   begins after `_load_input`. That loader performs material application work:
+   Triangle degree orientation/filtering/deduplication/CSR construction and
+   LibRTS WKT-to-query conversion are excluded. The endpoint cannot be called
+   raw-domain end-to-end or said to fulfill the original all-encoding objective.
+7. `first_result` begins after `_prepare_case`; it is the first checked execute
+   on a prepared owner, not cold start or first result from a fresh environment.
+8. Particle outputs match, but its physical device algorithms are not
+   operation-identical. V4 enumerates and canonicalizes candidates through
+   any-hit plus `optixIgnoreIntersection`; PyOptiX sets
+   `OPTIX_RAY_FLAG_DISABLE_ANYHIT` and uses native closest-hit. This difference
+   must be disclosed and prevents allocating the 37.93x prepared ratio to DSL
+   checks or host/runtime overhead.
+9. Triangle's `execute` routes are not lifecycle-identical. Both rebuild
+   per-segment geometry/GAS, but V4 also builds and destroys its composed
+   module/program groups/pipeline/SBT per segment while PyOptiX retains those objects from
+   `_prepare_case`. The PyOptiX device program is handwritten CUDA/OptiX, not
+   Numba. Therefore neither `first_result` nor `prepared` is a controlled
+   measurement of Numba callback code-generation overhead.
 
 ## Required manuscript changes
 
@@ -56,14 +75,25 @@ lead-owned manuscript. The proposed replacement text is
 5. State what each app author still supplies and what RTDL generates, checks,
    and reuses. The responsibility paragraph in the replacement file satisfies
    this requirement for the three executed applications.
-6. Report the same-input, same-complete-output endpoint cost. Do not call the
-   total V4/PyOptiX ratio intrinsic language overhead, compiler overhead, or
-   validation overhead; no causal ablation supports that allocation.
+6. Report the same registered derived-input, same-complete-output endpoint cost.
+   Identify excluded application preprocessing and the post-prepare meaning of
+   `first_result`. Do not call the total V4/PyOptiX ratio intrinsic language
+   overhead, compiler overhead, or validation overhead; no causal ablation
+   supports that allocation.
 7. Keep Goal5848's two synthetic tasks separate. Their near-Direct and
    favorable prepared A/C observations do not substitute for application
    evidence or prove the general Numba-leaf route competitive.
-8. Do not claim easier authoring. This packet contains a responsibility
-   comparison but no independent authoring study.
+8. Disclose that PyOptiX PTX was compiled before worker zero while ordinary V4
+   Particle and Triangle compilation remains in `complete` preparation. Also
+   disclose Triangle's per-segment lifecycle difference and handwritten
+   CUDA/OptiX PyOptiX device program.
+9. Do not call `first_result` pure launch: only `_prepare_case` is excluded, and
+   Triangle retains material per-segment setup inside `execute`. Also disclose
+   that timed execute includes adapter oracle/status checks, digest work, and
+   compact evidence projection rather than isolated native-runtime latency.
+10. State that Particle uses a project standard-library callback. Do not claim
+    easier authoring: this packet contains a responsibility comparison but no
+    independent authoring study.
 
 ## Verified numerical basis
 

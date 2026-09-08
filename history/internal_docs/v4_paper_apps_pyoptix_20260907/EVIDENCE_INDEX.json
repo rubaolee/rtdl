@@ -109,6 +109,13 @@
     "public_or_manuscript_performance_claim_authorized": false,
     "nine_application_completion_claim_authorized": false,
     "usability_claim_authorized": false,
+    "raw_domain_end_to_end_claim_authorized": false,
+    "cold_start_claim_authorized": false,
+    "pure_launch_first_result_claim_authorized": false,
+    "isolated_native_runtime_latency_claim_authorized": false,
+    "same_physical_algorithm_claim_authorized": false,
+    "same_triangle_lifecycle_claim_authorized": false,
+    "pyoptix_triangle_as_numba_baseline_claim_authorized": false,
     "submission_or_upload_authorized": false
   }
 }

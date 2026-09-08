@@ -3,7 +3,7 @@
 
 We separately evaluated the public application routes against competent public
 PyOptiX implementations.  The registered denominator contains nine
-project-authored application mappings.  Before the executable freeze, three
+project-authored application mappings.  Before the executable freeze, three of nine
 applications (four operation units) had complete, output-equivalent PyOptiX
 owners: one Particle Tracking transition step, RT-2A1 graph triangle counting,
 and LibRTS point- and range-containment counts.  RTNN, X-HD, RT-DBSCAN, RayDB,
@@ -12,16 +12,18 @@ PyOptiX owner satisfying the registered output contract was not frozen.  We do
 not remove those six applications from the denominator or replace them with
 the two synthetic tasks evaluated above.
 
-Both arms consumed the same frozen input identity and returned the same
+Both arms consumed the same frozen derived-input identity and returned the same
 complete public result for each executed unit.  The PyOptiX arm owned the
 public context, module, program groups, pipeline, SBT, GAS, device buffers,
 launch, device continuation or reduction, synchronization, and result
 materialization; it did not call a private RTDL native path.  Prebuilt PyOptiX
-PTX was hash-bound before worker zero.  Each endpoint used eight paired blocks,
-four in each arm order, and a fresh process for every arm and block.  Ratios
-are medians of eight within-block V4/PyOptiX ratios.  The displayed arm times
-are diagnostic medians over the eight arm-specific block medians and therefore
-need not divide to the displayed ratio.  A ratio above one means V4 is slower.
+PTX was hash-bound before worker zero, whereas ordinary V4 Particle and
+Triangle callback compilation remained inside registered complete preparation.
+Each endpoint used eight paired blocks, four in each arm order, and a fresh
+process for every arm and block.  Ratios are medians of eight within-block
+V4/PyOptiX ratios.  The displayed arm times are diagnostic medians over the
+eight arm-specific block medians and therefore need not divide to the displayed
+ratio.  A ratio above one means V4 is slower.
 
 \begin{table*}[t]
   \caption{Frozen first-batch application-route comparison on one NVIDIA RTX
@@ -35,17 +37,17 @@ need not divide to the displayed ratio.  A ratio above one means V4 is slower.
     \toprule
     Unit & Endpoint & V4 & PyOptiX & V4/PyOptiX & Range \\
     \midrule
-    Particle Tracking & Complete & 24020.112 & 2405.894 & 10.208 & 9.559--10.676 \\
-    Particle Tracking & First result & 54.817 & 0.728 & 75.533 & 57.803--82.877 \\
+    Particle Tracking & Setup + run & 24020.112 & 2405.894 & 10.208 & 9.559--10.676 \\
+    Particle Tracking & First execute & 54.817 & 0.728 & 75.533 & 57.803--82.877 \\
     Particle Tracking & Prepared & 18.035 & 0.476 & 37.928 & 35.338--41.236 \\
-    Triangle RT-2A1 & Complete & 11847.933 & 3508.170 & 3.411 & 3.292--3.591 \\
-    Triangle RT-2A1 & First result & 3516.714 & 1312.973 & 2.732 & 2.449--2.806 \\
+    Triangle RT-2A1 & Setup + run & 11847.933 & 3508.170 & 3.411 & 3.292--3.591 \\
+    Triangle RT-2A1 & First execute & 3516.714 & 1312.973 & 2.732 & 2.449--2.806 \\
     Triangle RT-2A1 & Prepared & 602.856 & 437.096 & 1.379 & 1.300--1.415 \\
-    LibRTS point & Complete & 5502.395 & 4147.360 & 1.312 & 1.061--2.021 \\
-    LibRTS point & First result & 10.796 & 0.902 & 12.059 & 9.440--17.776 \\
+    LibRTS point & Setup + run & 5502.395 & 4147.360 & 1.312 & 1.061--2.021 \\
+    LibRTS point & First execute & 10.796 & 0.902 & 12.059 & 9.440--17.776 \\
     LibRTS point & Prepared & 8.916 & 0.230 & 38.467 & 34.687--41.240 \\
-    LibRTS range & Complete & 4565.787 & 4173.109 & 1.080 & 1.009--1.196 \\
-    LibRTS range & First result & 12.352 & 0.890 & 13.422 & 12.182--23.731 \\
+    LibRTS range & Setup + run & 4565.787 & 4173.109 & 1.080 & 1.009--1.196 \\
+    LibRTS range & First execute & 12.352 & 0.890 & 13.422 & 12.182--23.731 \\
     LibRTS range & Prepared & 9.140 & 0.233 & 39.083 & 34.129--42.385 \\
     \bottomrule
   \end{tabular}
@@ -54,22 +56,44 @@ need not divide to the displayed ratio.  A ratio above one means V4 is slower.
 The output obligations were a complete ordered $5000\mathbin{\times}3$ U32
 Particle matrix, checked U64 graph count 2,224,385, checked U64 LibRTS point
 count 112,729, and checked U64 LibRTS range count 105,826.  Triangle and LibRTS
-therefore establish count routes, not relation materialization.  Complete
-starts from common in-memory domain input and includes implementation import,
+therefore establish count routes, not relation materialization.  The registered
+complete endpoint starts after a shared loader, then includes method import,
 preparation, execution, required public checks and materialization, and close.
-First result begins after separately reported preparation.  Prepared measures
-one complete public action on retained owners and the registered retained
-input, after one untimed warmup.
+The excluded loader includes domain work: Particle uses already encoded arrays,
+Triangle constructs its degree-oriented filtered and deduplicated CSR, and
+LibRTS loads cached index columns while parsing WKT queries into points or MBRs.
+This endpoint is method setup plus execution from a derived representation, not
+raw-domain end-to-end application time; the table's Setup + run label therefore
+means setup and run after shared preprocessing.  We report the protocol's
+\texttt{first\_result} field as First execute after preparation: it is not cold
+start or necessarily a pure launch because work inside the application execute
+closure remains timed.  Execute timing also includes the registered synchronous
+output/oracle and status checks, output digest, and compact evidence projection;
+it is not isolated native-runtime latency.  Prepared measures one
+complete public action on retained owners and retained registered input, after
+one untimed warmup.
 
 The route responsibilities are not uniform.  Particle authors still provide
 mesh-to-face and adjacency encoding, strict-interior transition semantics,
 queries, output meaning, and an oracle; RTDL compiles the supported four-role
 callback and owns its typed ABI, OptiX wrapper, prepared lifecycle, result
-checks, and traversal receipt.  Triangle authors select RT-2A1, construct
+checks, and traversal receipt.  This callback is supplied by the project
+standard library rather than independently authored by a study participant.
+The V4 wrapper enumerates any-hit candidates,
+applies canonical $(t,\mathit{primitive\_id})$ selection, ignores each physical
+intersection, and then invokes one logical closest-hit leaf.  PyOptiX instead
+disables any-hit and uses native closest-hit.  Their frozen outputs match, but
+their physical work is not identical.  Triangle authors select RT-2A1, construct
 degree-oriented CSR segments and geometry, provide weights, combine segment
 scalars, and check the graph result; RTDL executes the general Numba-leaf
 device-column callback route, while CuPy performs checked-U64 weighted device
-reduction.  LibRTS authors select point or range algebra and provide index and
+reduction.  Both Triangle arms rebuild per-segment geometry and GAS.  V4 also
+builds and destroys its composed native module, program groups, pipeline, and
+SBT per segment, while PyOptiX retains those objects from owner preparation.  The
+PyOptiX device program is handwritten CUDA/OptiX compiled to the prebuilt PTX,
+not Numba.  Thus the Triangle ratios include a lifecycle and program-generation
+difference rather than isolating DSL code generation.  LibRTS authors select
+point or range algebra and provide index and
 query columns; RTDL verifies and executes a closed generic AABB-count
 specialization rather than arbitrary callback lowering.
 
@@ -84,9 +108,10 @@ synchronization, and route-specific transfer and materialization as candidate
 mechanisms; this experiment does not causally allocate the total difference
 among them.
 
-These are complete measured-route costs, not intrinsic DSL overhead.  They do
-not support a speedup, near-PyOptiX performance, broad application coverage, or
-reduced-authoring-effort claim.  The separate synthetic prepared measurements
+These are registered post-loader route costs, not raw-domain application time
+or intrinsic DSL overhead.  They do not support a speedup, near-PyOptiX
+performance, broad application coverage, or reduced-authoring-effort claim.
+The separate synthetic prepared measurements
 in Table~\ref{tab:prepared} isolate different fixed tasks and cannot replace
 this application evidence.  The complete 192-worker transaction retained zero
 retries and discards and was independently recounted from its archived worker

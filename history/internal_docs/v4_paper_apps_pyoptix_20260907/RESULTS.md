@@ -6,16 +6,17 @@ freeze: commit `c5c8be48b743aa001e9c16c3344cc97c200600d1`, tree
 
 ## Verdict
 
-The final first-batch transaction is valid: all 192 registered fresh-process
-workers passed, retry and discard counts are zero, source and config remained
-unchanged, and the independent recount reports `RECOUNT_MATCH` over all 192
-worker files. Exact output parity passed for Particle Tracking, RT-2A1 triangle
-counting, and both LibRTS count operations.
+The final first-batch transaction is valid at its registered post-input-loader
+method-route scope: all 192 registered fresh-process workers passed, retry and
+discard counts are zero, source and config remained unchanged, and the
+independent recount reports `RECOUNT_MATCH` over all 192 worker files. Exact
+output parity passed for Particle Tracking, RT-2A1 triangle counting, and both
+LibRTS count operations.
 
 The performance result is adverse. V4 is slower than the competent public
 PyOptiX arm at every registered endpoint. The smallest final median ratio is
-`1.079542x` for LibRTS range complete; the largest is `75.533295x` for
-Particle first result. This packet does not authorize a public or manuscript
+`1.079542x` for LibRTS range setup plus run; the largest is `75.533295x` for
+Particle first execute after preparation. This packet does not authorize a public or manuscript
 speedup, near-PyOptiX, usability, nine-application completion, upload, or
 submission claim.
 
@@ -31,37 +32,65 @@ because their frozen competent PyOptiX owners were not complete before the
 - Driver `550.127.05`; OptiX SDK `8.0.0`; Python `3.12.3`; PyOptiX `9.1.0`.
 - Eight paired blocks per unit and endpoint, with four V4-first and four
   PyOptiX-first blocks. Each arm/block ran in a fresh process.
-- Complete and first-result workers retained one observation. Prepared workers
-  retained 32 calls for Particle and four calls for each other unit after one
-  untimed warmup.
+- The registered `complete` endpoint starts only after the shared input loader.
+  It includes method import/preparation, one checked execution, and close.
+  `first_result` is the first checked execute after preparation, not a cold-start
+  or pure-launch endpoint: work inside `execute` remains timed. For Triangle,
+  both arms rebuild per-segment geometry and GAS, while V4 also rebuilds its
+  native composed module/program groups/pipeline/SBT per segment and PyOptiX
+  reuses those objects from `_prepare_case`. The execute timer also includes
+  registered synchronous output/oracle and status checks, output digest work,
+  and compact evidence projection; it is not isolated native-runtime latency.
+  Prepared workers retained 32 calls for Particle and four calls for each other
+  unit after one untimed warmup.
 - Ratios are the median of eight within-block V4/PyOptiX ratios. The absolute
   columns below are diagnostics: the median across the eight arm-specific
   block medians. A ratio above one means V4 is slower.
-- Disk input loading is excluded from primary endpoints. Complete begins from
-  common in-memory domain input and includes implementation import,
-  preparation, execution, required public checks/materialization, and close.
+- The excluded loader does more than disk I/O. Particle starts from pre-encoded
+  mesh, adjacency, query, and oracle arrays; Triangle builds the degree-oriented,
+  filtered, deduplicated CSR; LibRTS loads prebuilt index columns and parses WKT
+  queries into points or MBRs. The measurements are therefore post-loader
+  method-route costs, not raw-domain end-to-end application costs. This does not
+  fulfill the original broader objective of including all required domain
+  encoding in the complete endpoint.
+- PyOptiX consumes hash-bound PTX compiled before worker zero. Ordinary V4
+  Particle and Triangle callback compilation remains inside their registered
+  `complete` preparation. This asymmetry is intentional in the executed route
+  comparison and must accompany every interpretation of complete cost. The
+  Triangle PyOptiX PTX comes from a handwritten CUDA/OptiX program, not Numba.
 
 ## Final transaction
 
 | Unit | Endpoint | V4 median ms | PyOptiX median ms | V4/PyOptiX median | Block range |
 | --- | --- | ---: | ---: | ---: | ---: |
-| Particle Tracking | complete | 24020.112 | 2405.894 | 10.208260x | 9.559144-10.675932x |
-| Particle Tracking | first result | 54.817 | 0.728 | 75.533295x | 57.802708-82.876756x |
+| Particle Tracking | setup + run after preprocessing | 24020.112 | 2405.894 | 10.208260x | 9.559144-10.675932x |
+| Particle Tracking | first execute after preparation | 54.817 | 0.728 | 75.533295x | 57.802708-82.876756x |
 | Particle Tracking | prepared | 18.035 | 0.476 | 37.927723x | 35.338217-41.235553x |
-| Triangle Counting RT-2A1 | complete | 11847.933 | 3508.170 | 3.410621x | 3.292015-3.590890x |
-| Triangle Counting RT-2A1 | first result | 3516.714 | 1312.973 | 2.731653x | 2.448916-2.806382x |
+| Triangle Counting RT-2A1 | setup + run after preprocessing | 11847.933 | 3508.170 | 3.410621x | 3.292015-3.590890x |
+| Triangle Counting RT-2A1 | first execute after preparation | 3516.714 | 1312.973 | 2.731653x | 2.448916-2.806382x |
 | Triangle Counting RT-2A1 | prepared | 602.856 | 437.096 | 1.379226x | 1.299988-1.415015x |
-| LibRTS point contains | complete | 5502.395 | 4147.360 | 1.311772x | 1.060957-2.021146x |
-| LibRTS point contains | first result | 10.796 | 0.902 | 12.058793x | 9.439534-17.776229x |
+| LibRTS point contains | setup + run after preprocessing | 5502.395 | 4147.360 | 1.311772x | 1.060957-2.021146x |
+| LibRTS point contains | first execute after preparation | 10.796 | 0.902 | 12.058793x | 9.439534-17.776229x |
 | LibRTS point contains | prepared | 8.916 | 0.230 | 38.466788x | 34.687357-41.240009x |
-| LibRTS range contains | complete | 4565.787 | 4173.109 | 1.079542x | 1.009269-1.195565x |
-| LibRTS range contains | first result | 12.352 | 0.890 | 13.421842x | 12.182152-23.730743x |
+| LibRTS range contains | setup + run after preprocessing | 4565.787 | 4173.109 | 1.079542x | 1.009269-1.195565x |
+| LibRTS range contains | first execute after preparation | 12.352 | 0.890 | 13.421842x | 12.182152-23.730743x |
 | LibRTS range contains | prepared | 9.140 | 0.233 | 39.083145x | 34.129091-42.384681x |
 
 All four public outputs are complete for their registered stage: a 5,000 by 3
 U32 Particle matrix, checked U64 Triangle count `2,224,385`, checked U64
 LibRTS point count `112,729`, and checked U64 LibRTS range count `105,826`.
 Triangle and LibRTS count rows are not relation-materialization claims.
+
+The excluded-loader medians below are diagnostics from the eight `complete`
+workers per arm. They are not added after the fact to the registered primary
+times and are not used to manufacture a new ratio.
+
+| Unit | V4 excluded loader ms | PyOptiX excluded loader ms | Important excluded work |
+| --- | ---: | ---: | --- |
+| Particle Tracking | 1309.203 | 1280.814 | Load already encoded mesh/adjacency/query/oracle arrays |
+| Triangle Counting RT-2A1 | 1615.432 | 1601.093 | Binary edge load, degree orientation, filtering, deduplication, CSR construction |
+| LibRTS point contains | 2286.838 | 2201.239 | Prebuilt index-column load and point-WKT parsing |
+| LibRTS range contains | 4064.573 | 3890.047 | Prebuilt index-column load and WKT-to-MBR conversion |
 
 ## Retained transaction chronology
 
@@ -80,7 +109,7 @@ Query residency was a necessary fairness repair: it reduced V4 LibRTS
 prepared time from hundreds of milliseconds to roughly 8-16 ms, but it also
 reduced the competent PyOptiX arm to roughly 0.23 ms. The resulting larger
 ratio exposed rather than caused the steady-state gap. Execution-buffer and
-scratch reuse moved LibRTS complete/first costs in the intended direction but
+scratch reuse moved LibRTS setup-plus-run/first-execute costs in the intended direction but
 did not close prepared replay. Device reduction removed a 400,000-byte D2H
 count column and CPU sum, yet left about 8.7-8.9 ms of absolute prepared gap.
 It therefore addressed a real transfer debt but not the dominant physical-route
@@ -94,16 +123,16 @@ hit contention. It is not a measured transaction.
 
 | Application | Application-author responsibility | RTDL responsibility in the measured V4 route | Important route boundary | Final measured cost |
 | --- | --- | --- | --- | --- |
-| Particle Tracking | Mesh-to-oriented-face/adjacency mapping, strict-interior transition semantics, query construction, cell/neighbor/face output meaning, and oracle | Restricted callback compilation, typed program/ABI checks, trusted built-in-triangle wrapper, GAS/pipeline/SBT ownership, prepared lifecycle, public result checks, and traversal receipt | Public callback owner, but not the `rtdlexe` lifecycle; device source is semantically matched rather than shared with PyOptiX | 10.21x complete, 75.53x first, 37.93x prepared |
-| Triangle Counting | Select RT-2A1, construct degree-oriented CSR segments and geometry, supply ray weights, combine segment scalars, and enforce graph oracle | Compile/verify the count callback and delivery proof, execute through the general Numba-leaf device-column ABI, own OptiX traversal, and produce per-segment receipts | CuPy still performs checked-U64 weighted device reduction; the measured route does not use the exact-IR `fast_control` specialization | 3.41x complete, 2.73x first, 1.38x prepared |
-| LibRTS | Select point/range algebra, provide indexed/query columns and expected count | Verify a closed AABB count authority, prepare generic AABB index/query handles, execute the fixed count route, check scalar metadata, and issue a traversal receipt | Fixed standard specialization, not arbitrary callback lowering; its generic multi-operation native kernel is broader than the app-specific PyOptiX kernel | 1.31x/1.08x complete, 12.06x/13.42x first, 38.47x/39.08x prepared |
+| Particle Tracking | Mesh-to-oriented-face/adjacency mapping, strict-interior transition semantics, query construction, cell/neighbor/face output meaning, and oracle | Compile the project standard-library callback, check its typed program/ABI, own the trusted built-in-triangle wrapper and prepared lifecycle, check public results, and issue a traversal receipt | This is not an independent user-authored callback study. V4 enumerates any-hit candidates, applies canonical `(t, primitive_id)` selection, ignores intersections, and then invokes one logical closest-hit leaf. PyOptiX disables any-hit and uses native closest-hit. Outputs match on the frozen input, but physical operations are not identical. | 10.21x setup + run, 75.53x first execute, 37.93x prepared |
+| Triangle Counting | Select RT-2A1, construct degree-oriented CSR segments and geometry, supply ray weights, combine segment scalars, and enforce graph oracle | Compile/verify the count callback and delivery proof, execute through the general Numba-leaf device-column ABI, own OptiX traversal, and produce per-segment receipts | CSR construction is outside every primary timer. Both arms rebuild per-segment geometry/GAS. V4 also rebuilds and destroys its composed native module/program groups/pipeline/SBT per segment; PyOptiX reuses those prepared objects and runs handwritten CUDA/OptiX PTX. CuPy performs V4's checked-U64 weighted device reduction; `fast_control` is unused. | 3.41x setup + run, 2.73x first execute, 1.38x prepared |
+| LibRTS | Select point/range algebra, provide indexed/query columns and expected count | Verify a closed AABB count authority, prepare generic AABB index/query handles, execute the fixed count route, check scalar metadata, and issue a traversal receipt | Index-cache loading and WKT conversion are outside every primary timer. This is a fixed standard specialization, not arbitrary callback lowering; its generic multi-operation native kernel is broader than the app-specific PyOptiX kernel. | 1.31x/1.08x setup + run, 12.06x/13.42x first execute, 38.47x/39.08x prepared |
 
 The PyOptiX arms explicitly own context/module/program groups/pipeline/SBT/GAS,
 device buffers, launch, device continuation/reduction, status, synchronization,
 and result materialization. RTDL removes much of that OptiX plumbing and adds
 admission, identity, lifecycle, and physical-execution checks. The measurements
-show the cost of each complete measured route; they do not isolate an intrinsic
-cost for any single language check.
+show the cost of each registered post-loader measured route; they do not
+isolate an intrinsic cost for any single language check.
 
 No independent authoring study is part of this packet. The responsibility
 comparison supports a concrete capability description, not a claim that RTDL
@@ -111,14 +140,22 @@ is easier to use.
 
 ## Mechanism findings and remaining debt
 
-- Particle's two arms both upload queries on each execute. The likely V4 costs
-  include NumPy/ctypes/native repacking, seven synchronous query-column H2D
-  copies, full output plus diagnostic/status D2H, and receipt/materialization
-  work. The current evidence does not provide a causal ablation for each item.
+- Particle's two arms both upload queries on each execute, but their device
+  algorithms differ materially. V4 enumerates candidate hits through any-hit,
+  performs canonical boundary/tie handling, calls `optixIgnoreIntersection`,
+  reconstructs selected-hit data, and only then invokes the logical closest-hit
+  leaf. PyOptiX uses `OPTIX_RAY_FLAG_DISABLE_ANYHIT` and a native closest-hit
+  program. NumPy/ctypes/native repacking, seven synchronous query-column H2D
+  copies, output/diagnostic/status D2H, and receipt work are additional
+  candidate costs. No retained ablation allocates the 37.93x prepared ratio
+  among these differences.
 - Triangle uses the same graph contract, segmentation, geometry producer, and
-  complete scalar output in both arms. Its prepared gap is much smaller than
-  its complete/first gaps, but partner-owned segment production and reduction
-  mean the ratio is not pure callback-compiler overhead.
+  complete scalar output in both arms, but not the same program-generation or
+  lifecycle route. V4's general Numba-leaf path invokes native
+  prepare/execute/destroy for each segment, rebuilding GAS and the composed
+  module/program groups/pipeline/SBT; PyOptiX executes handwritten CUDA/OptiX
+  PTX, retains those objects across segments, and rebuilds per-segment GAS. Its 1.38x
+  prepared ratio therefore cannot be isolated as callback-compiler overhead.
 - LibRTS no longer repacks or uploads 100,000 queries per prepared call. Static
   source comparison shows that V4 still uses a general multi-operation AoS
   native route, an intermediate traversal synchronization followed by a
