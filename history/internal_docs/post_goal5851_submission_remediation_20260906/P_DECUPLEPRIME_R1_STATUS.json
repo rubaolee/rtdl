@@ -1,0 +1,165 @@
+{
+  "schema": "rtdl.cgo2027.p_decupleprime_r1_status.v1",
+  "updated_at": "2026-09-08T13:45:08-04:00",
+  "status": "AUTHOR_PREFLIGHT_PASSED__ZERO_OF_TWO_INDEPENDENT_ACCEPTANCES__NOT_SUBMITTED",
+  "candidate": {
+    "name": "P-decuple-prime-r1",
+    "commit": "7c7dfce8e2aad8621d86246b58bb142ab9ed2329",
+    "tree": "25d8d07d26ccba02d65711eb671d9324e433cb41",
+    "source_package_assembly_commit": "a9e6a76802e7f91b95935201d93ccddf19c844f6",
+    "source_package_assembly_tree": "299de87bba09cf3ab7c480dbc37a1dbf9077d3fd",
+    "manuscript_bibliography_parent_commit": "f377500fd85d4477529433fde282be59d60d7a81",
+    "manuscript_bibliography_parent_tree": "f9471e81ce097d87ba27f5782cee4505ddbb81be",
+    "supersedes_candidate": "P-decuple-prime",
+    "superseded_commit": "8a485a6aae353e0d1dbfee7ce5a96610cee5d31d",
+    "superseded_tree": "b59d795819f489d4e53f34f264eb46d31f1ec45f",
+    "reason_for_successor": "The superseded bibliography cited a legacy NVIDIA OptiX guide URL that returned HTTP 404. The replacement is the official NVIDIA optix-sdk v9.0.0 tagged programming-guide URL.",
+    "candidate_parent_diff": [
+      "paper/cgo2027/README.md"
+    ],
+    "submission_bytes_unchanged_from_source_package_assembly_commit": true,
+    "production_native_experiment_test_bytes_changed_from_superseded_candidate": false
+  },
+  "frozen_identities": {
+    "measured_two_task_implementation_m": {
+      "commit": "d653fe4ad170c5b51fee309d653c9565944dcf2e",
+      "tree": "d53af23a2599f9d6adb4ac0bfff39cd0ab31860b"
+    },
+    "predecessor_e": {
+      "commit": "12ab1bc0a8ebbcefe42e93c677a151c04c3ba3c8",
+      "tree": "aa8b9b12a7bf9cf4395cb71e4fb8e6eb0f169ab6"
+    },
+    "offline_artifact_f2": {
+      "commit": "9771facece4ccd807e26c15b21892b9d0a701d32",
+      "tree": "11c62c28bdebcc7d437f8ab3326635af0832ce48"
+    },
+    "long_workload_successor": {
+      "commit": "02e84374fc092d2bb916cca633eda9592b4ecf07",
+      "tree": "8aad15d686bbc9e1c3b11df998898a0a063a01f1"
+    }
+  },
+  "deliverables": {
+    "paper/cgo2027/main.tex": {
+      "bytes": 57947,
+      "sha256": "81299d0bddd605bdb42694d7204b5898fca3cf4436ff2aeec519038fa97fed52"
+    },
+    "paper/cgo2027/references.bib": {
+      "bytes": 22550,
+      "sha256": "55b138e56d1bd748885ab0765002a1fa7c28d9d09b000f93efae67955fa4f3b6"
+    },
+    "paper/cgo2027/main.pdf": {
+      "bytes": 254266,
+      "sha256": "a810e3d8c465c6764da06a2ccdefd13fa5444c1c480ecd9441b54adadde26631"
+    },
+    "output/pdf/rtdl_cgo2027_submission_candidate.pdf": {
+      "bytes": 254266,
+      "sha256": "a810e3d8c465c6764da06a2ccdefd13fa5444c1c480ecd9441b54adadde26631"
+    },
+    "paper/cgo2027/figures/reviewed_design_figures.pdf": {
+      "bytes": 62908,
+      "sha256": "920bc8c2dd7d083df3a13cb8c289e419162966de1fb4d8528d0cfe8d071a5092"
+    },
+    "paper/cgo2027/figures/successor_application_performance.pdf": {
+      "bytes": 27603,
+      "sha256": "3ce0081120db0202a8e2a5a8b623acd27394559e9f42fe2039c96abb2b4454cf"
+    },
+    "output/source/rtdl-cgo2027-source.tar.gz": {
+      "bytes": 106843,
+      "sha256": "fc2f42b342843260d02d68884dcae3d1dcaa582a070c4eefde3d412a34876f78",
+      "member_count": 8,
+      "regular_file_count": 4
+    },
+    "output/artifact/rtdl-cgo2027-artifact.tar.gz": {
+      "bytes": 180308,
+      "sha256": "916cedbb7001c7aa43e66df3f992b543b7b3ca5a013f0f997790113a2e3738b8",
+      "member_count": 9
+    },
+    "output/artifact/rtdl-cgo2027-application-performance.tar.gz": {
+      "bytes": 84598,
+      "sha256": "d761ce92f55561be656a71712a9f0a78c57f2c7f8165d2ee8d8cb8cf60309e6f"
+    },
+    "history/internal_docs/v4_long_workload_performance_20260908/raw/rtdl-v4-long-perf-successor-02e84374f-affinity-final.tar.gz": {
+      "bytes": 730851,
+      "sha256": "ef2ca7890c9d415dc1edbe71966aabc512209c9d8608d4eaf460c7c1fddf8bdc",
+      "member_count": 1049
+    },
+    "history/internal_docs/v4_long_workload_performance_20260908/raw/rtdl-v4-long-perf-successor-02e84374f-cpu-sensitivity-v1.tar.gz": {
+      "bytes": 877815,
+      "sha256": "1f6f25512cbb781df2b75a204e1d3baad1e853179473a6616df6ec39e5629959",
+      "member_count": 2003
+    }
+  },
+  "author_preflight": {
+    "local_tests_normal_and_optimized": "106/106 PASS",
+    "pdf_paths_byte_identical": true,
+    "pdf_pages": 13,
+    "pdf_page_size": "612 x 792 pt US Letter",
+    "main_text_ends_on_page": 11,
+    "references_begin_on_page": 12,
+    "overfull_hbox_count": 0,
+    "overfull_vbox_count": 1,
+    "overfull_vbox_detail": "1.90399pt at final ACM bibliography output; all-page visual inspection found no clipping or overlap",
+    "unresolved_citation_or_reference_count": 0,
+    "nonfatal_bibtex_completeness_warning_count": 17,
+    "embedded_subset_unicode_fonts": "18/18",
+    "rendered_pages_inspected": 13,
+    "tested_private_identity_scan": "PASS",
+    "bibliography_explicit_url_or_doi_count_checked": 30,
+    "dead_legacy_nvidia_url_replaced": true,
+    "source_twin_build_byte_identical": true,
+    "source_member_metadata_and_payloads_match_exact_parent_commit": true
+  },
+  "clean_pod_replay": {
+    "hostname": "4735c6e75b0c",
+    "gpu": "NVIDIA RTX A4500",
+    "driver": "550.127.05",
+    "candidate_commit_verified": true,
+    "candidate_tree_verified": true,
+    "candidate_worktree_clean_before_and_after": true,
+    "candidate_file_hashes_verified": true,
+    "source_member_metadata_and_payload_hashes_verified": true,
+    "tectonic_version": "0.17.0",
+    "tectonic_release_asset_sha256": "1a715688baf591e650c8aeb160ae934e181685eecbb38b317de30b269ac5d606",
+    "first_linux_pdf_bytes": 253086,
+    "first_linux_pdf_sha256": "499021af5d2324e33b7355f589cc33d1e857d056e48e0b435ac6387200ba40d4",
+    "cached_linux_pdf_bytes": 253086,
+    "cached_linux_pdf_sha256": "9708e51b9417735901c896f520abe9d5228a0b8aa47ab3ccb7fc004749b977e3",
+    "only_cached_fresh_path_build": "PASS",
+    "candidate_and_both_linux_builds_page_text_equal": "13/13 pages under pypdf 6.0.0",
+    "candidate_and_both_linux_builds_page_text_sha256": "063d022570868872acacb4f3bdc3e2d97a18ebcef39bad7b4794a0c58d6415fe",
+    "linux_builds_aux_byte_identical": true,
+    "linux_builds_bbl_byte_identical": true,
+    "linux_builds_out_byte_identical": true,
+    "cross_build_pdf_byte_identity_claimed": false,
+    "cross_build_pdf_difference_reason": "PDF CreationDate metadata differs; exact source, per-page extracted text, page geometry, and converged aux/bbl/out rather than PDF byte identity are claimed",
+    "f2_normal_optimized_byte_identical": true,
+    "f2_output_sha256": "c47aaee24bea18be6b30eaae45a856e30c7a2a74bd5b50fe7daf0f741bdf0ee8",
+    "application_projection_normal_optimized_byte_identical": true,
+    "application_projection_output_sha256": "c22a23a782779683385a546634e0d9f3a7dc2cca575dc0c54197c75e0496b4f9",
+    "cpu_sensitivity_normal_optimized_byte_identical": true,
+    "cpu_sensitivity_output_sha256": "005caca0475516bafa6834594144a95c445eee771b171d1af0dbb448f80364d0",
+    "frozen_tests_normal_and_optimized": "106/106 PASS",
+    "temporary_test_environment": {
+      "numba": "0.61.2",
+      "numpy": "2.2.6",
+      "llvmlite": "0.44.0"
+    },
+    "gpu_compute_processes_after_replay": 0,
+    "gpu_experiment_executed": false
+  },
+  "claim_and_submission_gates": {
+    "claim_ledger_sha256": "f1e036ee94c944c11b0b67a600fbff3f06bfcfdfb68855c1d586383a4771c39b",
+    "claim_ledger_entry_count": 31,
+    "claim_authorized_true_count": 0,
+    "independent_exact_final_byte_acceptance_count": 0,
+    "required_independent_exact_final_byte_acceptance_count": 2,
+    "public_claim_authorized": false,
+    "manuscript_claim_authorized": false,
+    "upload_authorized": false,
+    "upload_performed": false,
+    "downloaded_upload_hash_verified": false,
+    "submission_performed": false,
+    "submission_receipt_present": false
+  },
+  "claim_boundary": "P-decuple-prime-r1 changes no research result, implementation, experiment, test, or claim. It repairs one dead bibliography URL and rebinds exact delivery bytes. All prior application, lifecycle, receipt, CPU-sensitivity, coverage, memory, and authoring-study limitations remain in force."
+}

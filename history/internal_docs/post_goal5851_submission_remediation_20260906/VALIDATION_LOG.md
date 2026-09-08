@@ -1246,3 +1246,76 @@ This was author-side preflight on the same Pod. It ran no CUDA/OptiX workload,
 created no new GPU result, changed no candidate or evidence byte, and counts as
 zero independent R7 acceptances. The claim ledger remains 31/31 unauthorized;
 upload and submission remain unperformed.
+
+## P-decuple-prime-r1 dead-link repair and exact replay (2026-09-08)
+
+An author-side live-link scan found that P-decuple-prime's NVIDIA OptiX 9
+programming-guide URL returned HTTP 404. The bibliography now cites the
+official NVIDIA `optix-sdk` v9.0.0 tagged guide. The scan exercised all 30
+explicit bibliography URLs/DOIs; publisher bot blocks were not classified as
+dead links. This repair changes no manuscript prose, research claim,
+implementation, experiment, workload, timer, threshold, estimator, or test.
+
+The repaired bibliography and two byte-identical PDFs were committed as
+`f377500fd85d4477529433fde282be59d60d7a81`, tree
+`f9471e81ce097d87ba27f5782cee4505ddbb81be`. Two independent normalized
+source-bundle builds from that commit's exact Git blobs were byte-identical.
+The bundle was committed as `a9e6a76802e7f91b95935201d93ccddf19c844f6`,
+tree `299de87bba09cf3ab7c480dbc37a1dbf9077d3fd`. Candidate metadata alone
+then established P-decuple-prime-r1 at commit
+`7c7dfce8e2aad8621d86246b58bb142ab9ed2329`, tree
+`25d8d07d26ccba02d65711eb671d9324e433cb41`.
+
+Exact changed deliverable identities are:
+
+```text
+references.bib: 22550 bytes / 55b138e56d1bd748885ab0765002a1fa7c28d9d09b000f93efae67955fa4f3b6
+both PDFs: 254266 bytes / a810e3d8c465c6764da06a2ccdefd13fa5444c1c480ecd9441b54adadde26631
+source bundle: 106843 bytes / fc2f42b342843260d02d68884dcae3d1dcaa582a070c4eefde3d412a34876f78
+```
+
+Local Tectonic 0.16.9 produced 13 US-Letter pages, with main text ending on
+page 11 and references beginning on page 12. There were zero horizontal
+overfull boxes, one visually harmless final-output `1.90399pt` vertical event,
+zero unresolved references/citations, 17 inherited BibTeX completeness
+warnings, and 18/18 recursively discovered fonts embedded, subset, and Unicode
+mapped. All 13 rendered pages were inspected. Pages 1--11 are text-identical
+to P-decuple-prime; only the URL and consequent reference-line flow differ on
+pages 12--13. Local ordinary/optimized frozen tests passed 106/106.
+
+The supplied SSH endpoint resolved to the same retained host `4735c6e75b0c`,
+NVIDIA RTX A4500, driver 550.127.05; it is not an independent host. A new clean
+worktree from the verified Pod object store matched the candidate commit/tree
+and remained porcelain-clean before and after replay. A redundant full-clone
+attempt exceeded the SSH window and was abandoned without use as evidence.
+
+The exact source bundle compiled with hash-verified official Tectonic 0.17.0
+both normally and from a separate fresh extraction under `--only-cached`:
+
+```text
+first Linux PDF: 253086 bytes / 499021af5d2324e33b7355f589cc33d1e857d056e48e0b435ac6387200ba40d4
+cached Linux PDF: 253086 bytes / 9708e51b9417735901c896f520abe9d5228a0b8aa47ab3ccb7fc004749b977e3
+```
+
+The committed PDF and both Linux PDFs had 13/13 equal page texts under pypdf
+6.0.0; joined page-text SHA-256 was
+`063d022570868872acacb4f3bdc3e2d97a18ebcef39bad7b4794a0c58d6415fe`.
+The Linux `.aux`, `.bbl`, and `.out` pairs were byte-identical. The PDF byte
+hashes differ because creation timestamps differ, so cross-build PDF byte
+identity is not claimed.
+
+Pod ordinary/optimized frozen tests passed 106/106. Retained-data replays were
+also byte-identical across normal and optimized Python:
+
+```text
+F2: c47aaee24bea18be6b30eaae45a856e30c7a2a74bd5b50fe7daf0f741bdf0ee8
+application projection: c22a23a782779683385a546634e0d9f3a7dc2cca575dc0c54197c75e0496b4f9
+CPU sensitivity: 005caca0475516bafa6834594144a95c445eee771b171d1af0dbb448f80364d0
+```
+
+The CPU recount retained the adverse CPU-8 values. No CUDA/OptiX workload or
+new GPU measurement ran, and the post-replay GPU compute-process list was
+empty. P-decuple-prime-r1 starts at 0/2 independent exact-final-byte
+acceptances. The 31-entry claim ledger remains 0 authorized. Authenticated
+submission-form checks, upload authorization, upload, downloaded-byte
+verification, submission ID, and receipt remain absent.
