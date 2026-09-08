@@ -7,6 +7,7 @@ from unittest import mock
 
 from scripts import v4_long_workload_replication_controller as controller
 from scripts import v4_long_workload_replication_freeze as freeze
+from scripts import v4_long_workload_replication_make_config as make_config
 from scripts import v4_long_workload_replication_recount as recount
 
 
@@ -80,6 +81,79 @@ def _observed_rows(*, ratio=1.05, mismatch_block=None):
 
 
 class V4LongWorkloadReplicationHarnessTest(unittest.TestCase):
+    def test_config_builder_derives_exact_two_arm_contract(self):
+        base = {
+            "schema": make_config.BASE_SCHEMA,
+            "source_root": "/source",
+            "source_commit": "a" * 40,
+            "source_tree": "b" * 40,
+            "native_library_path": "/native.so",
+            "native_library_sha256": "c" * 64,
+            "native_build_manifest_path": "/native.json",
+            "native_build_manifest_sha256": "d" * 64,
+            "prepared_repetitions": {"old": 4},
+            "prepared_warmups": 1,
+            "performance_threshold_present": False,
+            "registered_before_performance_observation": True,
+            "retry_allowed": False,
+            "discard_allowed": False,
+            "registered_machine": {"gpu": {"uuid": "GPU-new"}},
+        }
+        fragment = {
+            "expected_native_sha256": "c" * 64,
+            "artifact_path": "/triangle.rtdlexe",
+        }
+        rtdlexe = {
+            "schema": make_config.RTDLEXE_SCHEMA,
+            "status": (
+                "PASS__SIGNED_PUBLIC_LOAD_AND_DEVICE_PROGRAM_PREPARE_VERIFIED"
+            ),
+            "source": {"commit": "a" * 40, "tree": "b" * 40},
+            "target": {"native_sha256": "c" * 64},
+            "formal_config_fragment": fragment,
+        }
+        observed = make_config.derive_config(
+            base, rtdlexe, cpu_id=8, worker_timeout_seconds=900)
+        self.assertEqual(observed["schema"], controller.CONFIG_SCHEMA)
+        self.assertEqual(
+            set(observed["implementations"]), {"new_v4", "pyoptix"})
+        self.assertNotIn("triangle_rtdlexe", observed["implementations"]["pyoptix"])
+        self.assertEqual(
+            observed["implementations"]["new_v4"]["triangle_rtdlexe"],
+            fragment,
+        )
+        self.assertEqual(observed["common"]["cpu_affinity"], {"cpu_ids": [8]})
+        self.assertNotIn("source_root", observed["common"])
+        self.assertNotIn("prepared_repetitions", observed["common"])
+        controller.validate_config(observed)
+
+    def test_config_builder_rejects_rtdlexe_identity_drift(self):
+        base = {
+            "schema": make_config.BASE_SCHEMA,
+            "source_root": "/source",
+            "source_commit": "a" * 40,
+            "source_tree": "b" * 40,
+            "native_library_path": "/native.so",
+            "native_library_sha256": "c" * 64,
+            "native_build_manifest_path": "/native.json",
+            "native_build_manifest_sha256": "d" * 64,
+            "registered_before_performance_observation": True,
+            "retry_allowed": False,
+            "discard_allowed": False,
+        }
+        rtdlexe = {
+            "schema": make_config.RTDLEXE_SCHEMA,
+            "status": (
+                "PASS__SIGNED_PUBLIC_LOAD_AND_DEVICE_PROGRAM_PREPARE_VERIFIED"
+            ),
+            "source": {"commit": "e" * 40, "tree": "b" * 40},
+            "target": {"native_sha256": "c" * 64},
+            "formal_config_fragment": {"expected_native_sha256": "c" * 64},
+        }
+        with self.assertRaises(ValueError):
+            make_config.derive_config(
+                base, rtdlexe, cpu_id=8, worker_timeout_seconds=900)
+
     def test_formal_schedule_is_exactly_sixteen_balanced_workers(self):
         rows = controller.build_schedule(_config(), mode="formal")
         self.assertEqual(len(rows), 16)

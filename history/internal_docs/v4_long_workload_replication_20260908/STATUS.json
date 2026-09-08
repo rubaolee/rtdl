@@ -1,7 +1,7 @@
 {
   "schema": "rtdl.v4_long_workload.replication_status.v1",
   "updated_at": "2026-09-08T19:05:06-04:00",
-  "status": "LOCAL_TOOLING_READY__REPLACEMENT_GPU_AVAILABLE__WORKER_ZERO_NOT_STARTED",
+    "status": "REPLACEMENT_STACK_BUILT__CONFIG_DERIVATION_READY__WORKER_ZERO_NOT_STARTED",
   "question": "Does the exact cit-Patents/4M prepared RTDL/PyOptiX contract reproduce on a separately registered RTX 4000 Ada GPU?",
   "immutable_prior": {
     "archive_sha256": "ef2ca7890c9d415dc1edbe71966aabc512209c9d8608d4eaf460c7c1fddf8bdc",
@@ -33,13 +33,14 @@
     "prior_transaction_pooling_allowed": false
   },
   "local_validation": {
-    "ordinary_combined_tests": "22/22 PASS",
-    "optimized_combined_tests": "22/22 PASS",
+        "ordinary_combined_tests": "24/24 PASS",
+        "optimized_combined_tests": "24/24 PASS",
     "synthetic_full_recount_round_trip_passed": true,
     "controller_sha256": "71b3a0f65c675d4e6ea97c954a28136a2f2c781d00da946df573bb90062272d6",
     "freeze_sha256": "b7017cb02907b6b136542c763c16e5b88a9990b2ecc6475182210398385bfe22",
-    "recount_sha256": "348df4f6fdc3bbdda33adc516f4bff054e810f538183e09d79185df2733f7a45",
-    "worker_sha256": "0009137c032dc13f03065898283c95ed087153eb11a36a69723fea32a4b7ed50"
+        "recount_sha256": "348df4f6fdc3bbdda33adc516f4bff054e810f538183e09d79185df2733f7a45",
+        "config_builder_sha256": "d0e567b3f707caf8c1d4427037d34372eb00dc36aaef880d384deca135aca284",
+        "worker_sha256": "0009137c032dc13f03065898283c95ed087153eb11a36a69723fea32a4b7ed50"
   },
   "pod": {
     "original_endpoint": "213.173.98.71:15797",
@@ -56,8 +57,16 @@
       "compute_capability": "8.9",
       "memory_total_mib": 20475
     },
-    "replication_scope": "cross_gpu_reproducibility"
-  },
+        "replication_scope": "cross_gpu_reproducibility"
+    },
+    "replacement_setup": {
+        "data_manifest_sha256": "db3affa051b24642a386f7f16c3590126d2e895d966e386fbecbaa0587185cae",
+        "cit_patents_edge_sha256": "c5b2c9203eeabb46414965755c33befdb1810e71cb51155eb940a68a6179d855",
+        "pyoptix_extension_sha256": "0a05db8ccb565ec513a391809bd8b539ccefdd25bd7b75a573ffc7bc5ad55933",
+        "native_library_sha256": "94d9e42be75c86c3186dac1d2a280873206698ea620f5666b83e4d49ce00686d",
+        "triangle_rtdlexe_sha256": "596642ec516415197677685ae660362e86d9ba6001a888ac8fab4afa1700d1ed",
+        "device_prepare_verified": true
+    },
   "gates": {
     "dry_run_started": false,
     "preregistration_frozen": false,

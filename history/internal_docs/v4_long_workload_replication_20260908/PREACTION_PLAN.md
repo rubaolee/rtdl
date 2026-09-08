@@ -74,6 +74,7 @@ New create-only tools:
 | `scripts/v4_long_workload_replication_controller.py` | `71b3a0f65c675d4e6ea97c954a28136a2f2c781d00da946df573bb90062272d6` |
 | `scripts/v4_long_workload_replication_freeze.py` | `b7017cb02907b6b136542c763c16e5b88a9990b2ecc6475182210398385bfe22` |
 | `scripts/v4_long_workload_replication_recount.py` | `348df4f6fdc3bbdda33adc516f4bff054e810f538183e09d79185df2733f7a45` |
+| `scripts/v4_long_workload_replication_make_config.py` | `d0e567b3f707caf8c1d4427037d34372eb00dc36aaef880d384deca135aca284` |
 | unchanged `scripts/v4_long_workload_worker.py` | `0009137c032dc13f03065898283c95ed087153eb11a36a69723fea32a4b7ed50` |
 
 The independent recount imports only the Python standard library. It
@@ -82,11 +83,22 @@ progress rows, source/native/machine identities, distinct PIDs, input/output
 parity, medians, ratios and verdict. It does not trust only the controller
 summary.
 
-Local ordinary and optimized Python each pass 22/22 combined original-harness
+Local ordinary and optimized Python each pass 24/24 combined original-harness
 and replication-harness tests. The tests include a full synthetic
 dry-run/freeze/formal/raw-file/recount round trip, adverse target retention,
 output mismatch rejection, schedule balance, fixed workload rejection, CPU
-affinity failure, and rejection of raw paths outside the exact evidence root.
+affinity failure, rejection of raw paths outside the exact evidence root, and
+fail-closed two-arm config derivation with RTDL-executable identity binding.
+
+The replacement setup has independently reconstructed the official input into
+`cit-Patents.edge` with SHA-256
+`c5b2c9203eeabb46414965755c33befdb1810e71cb51155eb940a68a6179d855`.
+The separately identified one-input manifest has SHA-256
+`db3affa051b24642a386f7f16c3590126d2e895d966e386fbecbaa0587185cae`;
+it explicitly does not claim to be the complete Goal5776 data bundle. PyOptiX,
+the CC 8.9 PTX set, the RTDL native library, and the signed triangle
+`.rtdlexe` have been built and device-loaded, but neither dry-run nor formal
+performance execution has begun.
 
 ## 4. Exact execution sequence after the Pod returns
 
