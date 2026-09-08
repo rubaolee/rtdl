@@ -17458,11 +17458,7 @@ extern "C" __global__ void __intersection__aabb_index_exact() {
     }
     if (!accept) return;
     if (params.collect_rows == 0u) {
-        if (params.query_hit_counts) {
-            atomicAdd(params.query_hit_counts + qidx, 1u);
-        } else if (params.hit_count) {
-            atomicAdd(params.hit_count, 1ULL);
-        }
+        atomicAdd(params.query_hit_counts + qidx, 1u);
         return;
     }
     float hit_t = optixGetRayTmin() + 1.0e-6f;
@@ -17509,6 +17505,77 @@ static void ensure_aabb_index_count_2d_pipeline()
     });
 }
 
+struct DeviceU32SumU64Function {
+    CUmodule module = nullptr;
+    CUfunction fn = nullptr;
+    std::once_flag init;
+};
+
+static DeviceU32SumU64Function g_device_u32_sum_u64;
+
+static const char* kDeviceU32SumU64KernelSrc = R"CUDA(
+extern "C" __global__ void rtdl_device_u32_sum_u64(
+        const unsigned int* values,
+        unsigned int count,
+        unsigned long long* total) {
+    __shared__ unsigned long long partial[256];
+    const unsigned int lane = threadIdx.x;
+    unsigned long long local = 0ULL;
+    for (unsigned int index = blockIdx.x * blockDim.x + lane;
+            index < count; index += blockDim.x * gridDim.x) {
+        local += static_cast<unsigned long long>(values[index]);
+    }
+    partial[lane] = local;
+    __syncthreads();
+    for (unsigned int stride = blockDim.x / 2; stride != 0; stride /= 2) {
+        if (lane < stride) partial[lane] += partial[lane + stride];
+        __syncthreads();
+    }
+    if (lane == 0 && partial[0] != 0ULL) atomicAdd(total, partial[0]);
+}
+)CUDA";
+
+static void ensure_device_u32_sum_u64()
+{
+    std::call_once(g_device_u32_sum_u64.init, [&]() {
+        const std::string cubin = compile_to_cubin(
+            kDeviceU32SumU64KernelSrc, "device_u32_sum_u64_kernel.cu");
+        CU_CHECK(cuModuleLoadData(&g_device_u32_sum_u64.module, cubin.data()));
+        CU_CHECK(cuModuleGetFunction(
+            &g_device_u32_sum_u64.fn,
+            g_device_u32_sum_u64.module,
+            "rtdl_device_u32_sum_u64"));
+    });
+}
+
+static unsigned long long reduce_device_u32_sum_u64(
+        CUdeviceptr d_values,
+        size_t count,
+        CUdeviceptr d_total)
+{
+    if (count == 0) return 0ULL;
+    if (!d_values || !d_total)
+        throw std::runtime_error("device u32 sum requires non-null buffers");
+    if (count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+        throw std::runtime_error("device u32 sum count exceeds uint32 limit");
+    ensure_device_u32_sum_u64();
+    CU_CHECK(cuMemsetD8(d_total, 0, sizeof(unsigned long long)));
+    uint32_t count_u32 = static_cast<uint32_t>(count);
+    const unsigned int block = 256u;
+    const size_t required_grid = (count + block - 1u) / block;
+    const unsigned int grid = static_cast<unsigned int>(
+        std::min<size_t>(required_grid, 1024u));
+    void* arguments[] = {&d_values, &count_u32, &d_total};
+    CU_CHECK(cuLaunchKernel(
+        g_device_u32_sum_u64.fn,
+        grid, 1, 1,
+        block, 1, 1,
+        0, nullptr, arguments, nullptr));
+    unsigned long long total = 0ULL;
+    download(&total, d_total, 1);
+    return total;
+}
+
 struct PreparedAabbIndex2DOptix {
     size_t box_count = 0;
     DevPtr d_boxes;
@@ -17534,6 +17601,7 @@ struct PreparedAabbIndex2DOptix {
         if (count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
             throw std::runtime_error("AABB index box_count exceeds uint32 launch limit");
         ensure_aabb_index_count_2d_pipeline();
+        ensure_device_u32_sum_u64();
         if (count == 0) return;
 
         host_gpu_boxes.resize(count);
@@ -17847,18 +17915,13 @@ static void count_prepared_aabb_index_2d_device_optix(
     const size_t launch_count =
         operation == kAabbIndexOpPointContains ? point_query_count : box_query_count;
     std::unique_ptr<DevPtr> owned_query_hit_counts;
-    if (d_total_hit_count_scratch) {
-        CU_CHECK(cuMemsetD8(
-            d_total_hit_count_scratch, 0, sizeof(unsigned long long)));
-    } else {
-        if (!d_query_hit_counts_scratch) {
-            owned_query_hit_counts = std::make_unique<DevPtr>(
-                sizeof(uint32_t) * launch_count);
-            d_query_hit_counts_scratch = owned_query_hit_counts->ptr;
-        }
-        CU_CHECK(cuMemsetD8(
-            d_query_hit_counts_scratch, 0, sizeof(uint32_t) * launch_count));
+    if (!d_query_hit_counts_scratch) {
+        owned_query_hit_counts = std::make_unique<DevPtr>(
+            sizeof(uint32_t) * launch_count);
+        d_query_hit_counts_scratch = owned_query_hit_counts->ptr;
     }
+    CU_CHECK(cuMemsetD8(
+        d_query_hit_counts_scratch, 0, sizeof(uint32_t) * launch_count));
 
     launch_aabb_index_count_pass_optix(
         prepared->accel.handle,
@@ -17871,8 +17934,8 @@ static void count_prepared_aabb_index_2d_device_optix(
         operation,
         0u,
         launch_count,
-        d_total_hit_count_scratch,
-        d_total_hit_count_scratch ? 0 : d_query_hit_counts_scratch,
+        0,
+        d_query_hit_counts_scratch,
         0,
         0,
         false,
@@ -17881,12 +17944,11 @@ static void count_prepared_aabb_index_2d_device_optix(
         1u,
         d_launch_params_scratch);
 
-    unsigned long long count = 0;
-    if (d_total_hit_count_scratch) {
-        download(&count, d_total_hit_count_scratch, 1);
-    } else {
-        count = sum_device_u32_counts(d_query_hit_counts_scratch, launch_count);
-    }
+    const unsigned long long count = d_total_hit_count_scratch
+        ? reduce_device_u32_sum_u64(
+            d_query_hit_counts_scratch, launch_count,
+            d_total_hit_count_scratch)
+        : sum_device_u32_counts(d_query_hit_counts_scratch, launch_count);
     *hit_count_out = static_cast<size_t>(count);
 }
 

@@ -74,8 +74,9 @@ class OptixAabbIndexNativeSymbolTest(unittest.TestCase):
             workloads.index('extern "C" __global__ void __intersection__aabb_index_exact'):
             workloads.index('extern "C" __global__ void __anyhit__aabb_index_count')
         ]
-        self.assertIn("if (params.query_hit_counts)", kernel)
-        self.assertIn("atomicAdd(params.hit_count, 1ULL)", kernel)
+        self.assertIn("atomicAdd(params.query_hit_counts + qidx, 1u)", kernel)
+        self.assertIn("rtdl_device_u32_sum_u64", workloads)
+        self.assertIn("reduce_device_u32_sum_u64", workloads)
         packed = workloads[
             workloads.index("static void count_prepared_aabb_index_2d_packed_queries_optix"):
             workloads.index("static unsigned long long count_prepared_aabb_index_2d_with_scratch_optix")

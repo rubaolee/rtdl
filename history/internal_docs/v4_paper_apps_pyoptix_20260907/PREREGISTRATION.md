@@ -280,21 +280,30 @@ for every query and reduces the column on the CPU even though the public output
 contract is one checked `u64` scalar. The competent PyOptiX arm reduces on the
 device and returns one scalar.
 
-This successor may use the existing app-neutral `hit_count` field in the AABB
-query launch contract for prepared point-contains and range-contains scalar
-counts. A prepared query owner may retain one eight-byte device scalar; each
-execution zeros it, exact accepted intersections increment it on the device,
-and the public call downloads only that scalar. Dynamic count calls that need
-per-query counts, row-collection calls, and range-intersects behavior keep
-their current paths. No application predicate, input, output, callback,
-traversal geometry, block order, endpoint, repetition count, warmup count,
-estimator, or performance threshold changes. No LibRTS or other application
-identity may enter the native implementation.
+This successor may retain one eight-byte device scalar in each prepared query
+owner and reduce the existing per-query device counters with an app-neutral
+block reduction. Each execution zeros the per-query counters, performs the
+same exact traversal, reduces those counters on the device, and downloads only
+the scalar. Dynamic count calls, row-collection calls, and range-intersects
+behavior keep their current paths. No application predicate, input, output,
+callback, traversal geometry, block order, endpoint, repetition count, warmup
+count, estimator, or performance threshold changes. No LibRTS or other
+application identity may enter the native implementation.
 
 The expected mechanism is elimination of the `query_count * sizeof(u32)` D2H
-transfer and CPU loop. A global device atomic may itself be costly, so speedup
-is not guaranteed and the complete transaction remains required. Authority
-requires a new clean commit/tree, fresh native/PTX/config identities, passing
-focused tests and eight-process GPU dry run before the executable freeze, then
-a wholly fresh 192-worker transaction and independent recount. All prior
-adverse evidence remains retained, separately named, and reportable.
+transfer and CPU loop. Speedup is not guaranteed and the complete transaction
+remains required. Authority requires a new clean commit/tree, fresh
+native/PTX/config identities, passing focused tests and eight-process GPU dry
+run before the executable freeze, then a wholly fresh 192-worker transaction
+and independent recount. All prior adverse evidence remains retained,
+separately named, and reportable.
+
+Before commit `56e5c2ff4608632e1f9eeaa4e67fd683173785d0` reached GPU
+worker zero, self-review rejected its proposed single global atomic as a
+possible high-contention replacement for the transfer debt. That commit is
+superseded pre-worker-zero and remains in Git history. The final successor
+retains per-query device counters, reduces them with an app-neutral block
+reduction whose blocks contribute to one retained `u64`, and downloads only
+that scalar. The reduction module is materialized during prepared-index
+construction, not charged lazily to first execution. All other boundaries and
+authority requirements in this section remain unchanged.
