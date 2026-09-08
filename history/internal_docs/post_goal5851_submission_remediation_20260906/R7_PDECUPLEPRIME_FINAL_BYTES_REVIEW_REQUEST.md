@@ -251,6 +251,24 @@ application artifact because its `0555` root directory was restored too early;
 Python 3.12 `tarfile --filter data` extracted it and both verifier modes passed.
 Do not convert these facts into zero-install or universal extraction claims.
 
+Tectonic was not preinstalled on the Pod. Author-side preflight subsequently
+verified the official Tectonic 0.17.0 Linux release asset at SHA-256
+`1a715688baf591e650c8aeb160ae934e181685eecbb38b317de30b269ac5d606`
+and installed it outside the checkout. An online first build and a fresh-path
+`--only-cached` build of the exact source package both produced 13 US-Letter
+pages with main text ending on page 11, references beginning on page 12, zero
+horizontal overfull boxes, the same one `1.87198pt` vertical event, and zero
+unresolved citations or references. The committed candidate and both Linux
+builds had identical extracted text on all 13 pages, with joined page-text
+SHA-256
+`14d41d1173e172e6eef9f28a3dd5e1f78df9693fbb7e6099421e0ab7aa6a1a4c`;
+the two Linux `.aux`, `.bbl`, and `.out` outputs were byte-identical. The three
+PDF byte hashes differ because their creation timestamps differ, so no
+cross-build PDF byte identity is claimed. Default release-archive extraction
+also first hit the network volume's UID/GID-restoration restriction and passed
+only in a new directory with `--no-same-owner`. This remains author-side replay
+on the same Pod and counts as zero independent acceptances.
+
 ## 10. Required review output
 
 Report every finding with severity, exact PDF page or source location,

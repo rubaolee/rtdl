@@ -154,9 +154,30 @@ before a verifier ran. Python 3.12 `tarfile --filter data` extracted the exact
 same archive successfully, after which both verifier modes passed. This is a
 real extraction-portability limitation and must not be hidden.
 
-Tectonic was absent on the Pod, so no Pod-side source compile is claimed. The
-Pod verified all source member metadata and payload hashes. No CUDA/OptiX
-execution or new GPU measurement occurred.
+Tectonic was initially absent on the Pod. The author-side preflight fetched the
+official Tectonic 0.17.0 Linux x86-64 release asset, verified its 22,749,118-byte
+payload at SHA-256
+`1a715688baf591e650c8aeb160ae934e181685eecbb38b317de30b269ac5d606`,
+and installed it outside the checkout. Default GNU-tar extraction first failed
+because the RunPod network volume rejected restoration of the release archive's
+UID/GID; extraction into a new directory with `--no-same-owner` passed. That
+environment failure is retained rather than rewritten as a first-attempt pass.
+
+The exact candidate source package then compiled in a fresh extracted path.
+After the first build populated Tectonic's resource cache, a second extraction
+and build under `--only-cached` also passed, establishing cached/offline
+buildability on this Linux environment. Both outputs had 13 US-Letter pages,
+main text ending on page 11, references beginning on page 12, zero horizontal
+overfull boxes, the same single `1.87198pt` vertical event, and zero unresolved
+citations or references. The committed candidate PDF and both Linux builds had
+identical extracted text on all 13 pages, with joined page-text SHA-256
+`14d41d1173e172e6eef9f28a3dd5e1f78df9693fbb7e6099421e0ab7aa6a1a4c`.
+The two Linux builds also had byte-identical `.aux`, `.bbl`, and `.out` files.
+Their PDF byte hashes differ from each other and the committed candidate because
+each records a different creation timestamp; cross-build PDF byte identity is
+not claimed. This is an additional author-side replay on the same retained Pod,
+not an independent R7 acceptance. No CUDA/OptiX execution or new GPU measurement
+occurred.
 
 ## 6. Evidence and claim scope
 

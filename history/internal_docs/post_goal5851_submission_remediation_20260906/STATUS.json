@@ -1,7 +1,7 @@
 {
   "schema": "rtdl.cgo2027.post_goal5851_submission_remediation.status.v1",
-  "updated_at_utc": "2026-09-08T16:57:55Z",
-  "updated_at_et": "2026-09-08T12:57:55-0400",
+  "updated_at_utc": "2026-09-08T17:15:56Z",
+  "updated_at_et": "2026-09-08T13:15:56-0400",
   "overall_status": "PDECUPLEPRIME_AUTHOR_PREFLIGHT_PASSED__R7_ZERO_OF_TWO__CLAIMS_UNAUTHORIZED__NOT_SUBMITTED",
   "controlling_directive": {
     "path": "history/internal_docs/lead_dsl_first_submission_directive_20260907.md",
@@ -371,15 +371,15 @@
     "superseded_candidate_commit": "d20a0eb322c13ad17b591007116f8da616a5e60e",
     "status_record": {
       "path": "history/internal_docs/post_goal5851_submission_remediation_20260906/P_DECUPLEPRIME_STATUS.json",
-      "sha256": "61269b06ca22358d4a9071b086f0c241b71f45e2cc45aec24eb572bae8d4b517"
+      "sha256": "b9892ec34aa9c9527b2166cd244d0d5522c12af805bdc2951db308c136971ad8"
     },
     "review_request": {
       "path": "history/internal_docs/post_goal5851_submission_remediation_20260906/R7_PDECUPLEPRIME_FINAL_BYTES_REVIEW_REQUEST.md",
-      "sha256": "1c280a1d1686b79d4f85c6f32d5e82f219cada5ee42bccf314b9ed85aff66ee5"
+      "sha256": "c3bf00ea3d78c4c458eba5f9b61129118483c4b0ebd8f5cf3fde4933938fc999"
     },
     "local_preflight": {
       "path": "history/internal_docs/post_goal5851_submission_remediation_20260906/R8_PDECUPLEPRIME_LOCAL_PREFLIGHT_REPORT.md",
-      "sha256": "5aabfd0726511b6d184bdc78432cda30a9e719977004c1e3ebad3ae0123bcb95"
+      "sha256": "effda9bf5a0702253e32a51a266a1ffc17148710e8489d52cd4d9a123f8f9c64"
     },
     "pdf_sha256": "3f4ec710fa54248dcd8dde0116920d94e75a00ce0424d7b8cf60b8f3e67202e3",
     "source_bundle_sha256": "8015a14bdb6af036d45f1500152637a0a5c5f29f56018dc01324992dea240108",
@@ -394,6 +394,10 @@
     "clean_pod_application_recount_normal_and_optimized_passed": true,
     "clean_pod_cpu_sensitivity_recount_normal_and_optimized_passed": true,
     "clean_pod_frozen_tests_normal_and_optimized_passed_after_pinned_test_environment": true,
+    "clean_pod_source_compile_after_verified_tectonic_install_passed": true,
+    "clean_pod_source_compile_only_cached_fresh_path_passed": true,
+    "clean_pod_candidate_and_linux_builds_page_text_sha256": "14d41d1173e172e6eef9f28a3dd5e1f78df9693fbb7e6099421e0ab7aa6a1a4c",
+    "clean_pod_cross_build_pdf_byte_identity_claimed": false,
     "plain_gnu_tar_root_extraction_portability_limit_disclosed": true,
     "gpu_experiment_executed": false,
     "independent_acceptances_received": 0,
@@ -725,7 +729,7 @@
     "status": "PDECUPLEPRIME_REQUEST_READY__ZERO_OF_TWO_INDEPENDENT_ACCEPTANCES",
     "request": {
       "path": "R7_PDECUPLEPRIME_FINAL_BYTES_REVIEW_REQUEST.md",
-      "sha256": "1c280a1d1686b79d4f85c6f32d5e82f219cada5ee42bccf314b9ed85aff66ee5"
+      "sha256": "c3bf00ea3d78c4c458eba5f9b61129118483c4b0ebd8f5cf3fde4933938fc999"
     },
     "independent_reviews_required": 2,
     "independent_pdecupleprime_acceptances_received": 0,
@@ -738,7 +742,7 @@
     "status": "PDECUPLEPRIME_AUTHOR_LOCAL_PREFLIGHT_AND_CLEAN_POD_REPLAY_PASSED__R7_AND_EXTERNAL_ACTIONS_PENDING",
     "report": {
       "path": "R8_PDECUPLEPRIME_LOCAL_PREFLIGHT_REPORT.md",
-      "sha256": "5aabfd0726511b6d184bdc78432cda30a9e719977004c1e3ebad3ae0123bcb95"
+      "sha256": "effda9bf5a0702253e32a51a266a1ffc17148710e8489d52cd4d9a123f8f9c64"
     },
     "official_rule_page_checked": "https://conf.researchr.org/track/cgo-2027/cgo-2027-papers",
     "public_hotcrp_landing_checked": "https://cgo27.hotcrp.com/",
@@ -756,6 +760,10 @@
     "clean_pod_application_recount_normal_and_optimized_passed": true,
     "clean_pod_cpu_sensitivity_recount_normal_and_optimized_passed": true,
     "clean_pod_frozen_tests_normal_and_optimized_passed_after_pinned_test_environment": true,
+    "clean_pod_source_compile_after_verified_tectonic_install_passed": true,
+    "clean_pod_source_compile_only_cached_fresh_path_passed": true,
+    "clean_pod_candidate_and_linux_builds_page_text_sha256": "14d41d1173e172e6eef9f28a3dd5e1f78df9693fbb7e6099421e0ab7aa6a1a4c",
+    "clean_pod_cross_build_pdf_byte_identity_claimed": false,
     "independent_anonymity_scans_received": 0,
     "authenticated_submission_form_checked": false,
     "upload_executed": false,
@@ -983,7 +991,7 @@
     "status": "REQUEST_READY__ZERO_OF_TWO_INDEPENDENT_ACCEPTANCES",
     "request": {
       "path": "R7_PDECUPLEPRIME_FINAL_BYTES_REVIEW_REQUEST.md",
-      "sha256": "1c280a1d1686b79d4f85c6f32d5e82f219cada5ee42bccf314b9ed85aff66ee5"
+      "sha256": "c3bf00ea3d78c4c458eba5f9b61129118483c4b0ebd8f5cf3fde4933938fc999"
     },
     "candidate_commit": "8a485a6aae353e0d1dbfee7ce5a96610cee5d31d",
     "candidate_tree": "b59d795819f489d4e53f34f264eb46d31f1ec45f",
@@ -1002,7 +1010,7 @@
     "status": "AUTHOR_LOCAL_PREFLIGHT_AND_CLEAN_POD_REPLAY_PASSED__R7_AND_EXTERNAL_ACTIONS_PENDING",
     "report": {
       "path": "R8_PDECUPLEPRIME_LOCAL_PREFLIGHT_REPORT.md",
-      "sha256": "5aabfd0726511b6d184bdc78432cda30a9e719977004c1e3ebad3ae0123bcb95"
+      "sha256": "effda9bf5a0702253e32a51a266a1ffc17148710e8489d52cd4d9a123f8f9c64"
     },
     "local_pdf_rule_checks_passed": true,
     "pdf_pages": 13,
@@ -1015,6 +1023,10 @@
     "clean_pod_f2_replay_normal_and_optimized_passed": true,
     "clean_pod_application_recount_normal_and_optimized_passed": true,
     "clean_pod_cpu_sensitivity_recount_normal_and_optimized_passed": true,
+    "clean_pod_source_compile_after_verified_tectonic_install_passed": true,
+    "clean_pod_source_compile_only_cached_fresh_path_passed": true,
+    "clean_pod_candidate_and_linux_builds_page_text_sha256": "14d41d1173e172e6eef9f28a3dd5e1f78df9693fbb7e6099421e0ab7aa6a1a4c",
+    "clean_pod_cross_build_pdf_byte_identity_claimed": false,
     "independent_anonymity_scans_received": 0,
     "authenticated_submission_form_checked": false,
     "upload_executed": false,

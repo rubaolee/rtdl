@@ -1194,3 +1194,55 @@ The P-decuple-prime claim ledger still has 31 claims and zero authorized
 claims. R7 starts at 0/2 exact-final-byte acceptances. No earlier review
 transfers. Authenticated submission-form checks, upload authorization,
 downloaded-byte verification, submission ID, and receipt remain absent.
+
+## P-decuple-prime Linux source-package build replay (2026-09-08)
+
+The replacement SSH endpoint resolved to the same retained Pod hostname
+`4735c6e75b0c`, NVIDIA RTX A4500, driver 550.127.05. It is therefore not a
+second-machine or cross-host replication. The existing exact-candidate checkout
+remained at commit `8a485a6aae353e0d1dbfee7ce5a96610cee5d31d`, tree
+`b59d795819f489d4e53f34f264eb46d31f1ec45f`, with empty porcelain status
+before and after this replay.
+
+Tectonic was not preinstalled. The official GitHub release API identified
+Tectonic 0.17.0's Linux x86-64 GNU archive as 22,749,118 bytes with SHA-256
+`1a715688baf591e650c8aeb160ae934e181685eecbb38b317de30b269ac5d606`.
+The downloaded archive matched that digest. Default GNU-tar extraction first
+failed because the RunPod network volume rejected restoration of UID/GID 1001;
+the failed destination was not reused. Extraction into a new directory with
+`--no-same-owner` passed, and the installed binary reported Tectonic 0.17.0.
+
+The exact 106,838-byte source package at SHA-256
+`8015a14bdb6af036d45f1500152637a0a5c5f29f56018dc01324992dea240108`
+was extracted with Python 3.12 `tarfile --filter data` into two distinct fresh
+roots. The first build populated the Tectonic resource cache and passed. The
+second build used `--only-cached`, printed `using only cached resource files`,
+and also passed. Results were:
+
+```text
+first Linux PDF: 253043 bytes
+first Linux PDF SHA-256: 7204a3dfeda6946a279a9c0dbc3662f9b00233c85e72d1dc8faf5e45bd97085e
+cached Linux PDF: 253043 bytes
+cached Linux PDF SHA-256: 5027d8eec85b10f632698eddb5e34fa71a2650d9709abe5add3a473773a991e1
+pages: 13, all 612 x 792 pt US Letter
+main text ends: page 11
+references begin: page 12
+horizontal overfull boxes: 0
+vertical overfull boxes: one 1.87198pt final bibliography event
+undefined citations/references: 0
+BibTeX completeness warnings: 17
+```
+
+The committed candidate PDF and both Linux PDFs had identical extracted text
+on all 13 pages. Their joined page-text SHA-256 was
+`14d41d1173e172e6eef9f28a3dd5e1f78df9693fbb7e6099421e0ab7aa6a1a4c`.
+The two Linux builds also produced byte-identical `.aux`, `.bbl`, and `.out`
+files. The three PDFs are not byte-identical: each metadata dictionary records
+a different `/CreationDate`. Only exact-source buildability, page geometry,
+page boundary, converged intermediates, and extracted page-text equivalence are
+claimed; cross-build PDF byte identity is explicitly not claimed.
+
+This was author-side preflight on the same Pod. It ran no CUDA/OptiX workload,
+created no new GPU result, changed no candidate or evidence byte, and counts as
+zero independent R7 acceptances. The claim ledger remains 31/31 unauthorized;
+upload and submission remain unperformed.
