@@ -69,6 +69,7 @@ def main() -> int:
         "units": config["units"],
         "implementations": config["implementations"],
         "registered_machine": config["common"]["registered_machine"],
+        "cpu_affinity": config["common"].get("cpu_affinity"),
         "claim_boundary": (
             "This transaction can support only four repaired old-input units "
             "and one preselected cit-Patents/4M long graph unit. It is not a "

@@ -23,6 +23,7 @@ ENDPOINTS = ("complete", "prepared")
 CONFIG_SCHEMA = "rtdl.v4_long_workload.formal_config.v1"
 RESULT_SCHEMA = "rtdl.v4_long_workload.worker_result.v1"
 JOURNAL_SCHEMA = "rtdl.v4_long_workload.worker_journal.v1"
+CPU_AFFINITY_FIELDS = frozenset({"cpu_ids"})
 
 
 def _sha256(path: Path) -> str:
@@ -82,6 +83,35 @@ def _selected_config(config: Mapping[str, Any], arm: str) -> dict[str, Any]:
     if any(not result.get(name) for name in required):
         raise ValueError(f"implementation arm is incomplete: {arm}")
     return result
+
+
+def _bind_cpu_affinity(
+    config: Mapping[str, Any], *, apply: bool,
+) -> dict[str, Any] | None:
+    """Apply or observe one registered, non-migrating worker CPU set."""
+
+    contract = config.get("cpu_affinity")
+    if contract is None:
+        return None
+    if not isinstance(contract, Mapping) or set(contract) != CPU_AFFINITY_FIELDS:
+        raise ValueError("CPU-affinity contract fields differ")
+    cpu_ids = contract.get("cpu_ids")
+    if not isinstance(cpu_ids, list) or len(cpu_ids) != 1 \
+            or type(cpu_ids[0]) is not int or cpu_ids[0] < 0:
+        raise ValueError("CPU-affinity contract requires one logical CPU")
+    setter = getattr(os, "sched_setaffinity", None)
+    getter = getattr(os, "sched_getaffinity", None)
+    if not callable(setter) or not callable(getter):
+        raise RuntimeError("registered CPU affinity requires Linux sched affinity")
+    if apply:
+        setter(0, set(cpu_ids))
+    observed = sorted(int(value) for value in getter(0))
+    if observed != cpu_ids:
+        raise RuntimeError(
+            "CPU-affinity observation differs from registered contract: "
+            f"expected={cpu_ids!r} observed={observed!r}"
+        )
+    return {"cpu_ids": observed}
 
 
 def _load_input(base, unit: Mapping[str, Any], config: Mapping[str, Any]):
@@ -251,6 +281,8 @@ def main() -> int:
     selected: dict[str, Any] | None = None
     base = None
     base_path = None
+    affinity_preflight = None
+    affinity_postflight = None
     try:
         loaded = json.loads(args.config.read_text(encoding="utf-8"))
         if not isinstance(loaded, dict) or loaded.get("schema") != CONFIG_SCHEMA:
@@ -263,6 +295,13 @@ def main() -> int:
         if unit.get("unit_id") != args.unit:
             raise ValueError("formal unit identity differs")
         selected = _selected_config(config, args.arm)
+        affinity_preflight = _bind_cpu_affinity(selected, apply=True)
+        if affinity_preflight is not None:
+            _append(args.journal, {
+                "schema": JOURNAL_SCHEMA,
+                "event": "cpu_affinity_preflight",
+                "observation": affinity_preflight,
+            })
         roots = tuple(
             Path(row["source_root"]).resolve(strict=True)
             for row in config["implementations"].values()
@@ -277,6 +316,13 @@ def main() -> int:
             repetitions=args.repetitions, warmups=args.warmups,
             journal=args.journal,
         )
+        affinity_postflight = _bind_cpu_affinity(selected, apply=False)
+        if affinity_postflight is not None:
+            _append(args.journal, {
+                "schema": JOURNAL_SCHEMA,
+                "event": "cpu_affinity_postflight",
+                "observation": affinity_postflight,
+            })
     except BaseException as error:  # noqa: BLE001 - retain all adverse rows
         exit_code = 1
         _append(args.journal, {
@@ -305,6 +351,16 @@ def main() -> int:
             )
             machine = base._machine()
             base._validate_machine_identity(machine, selected)
+            if selected.get("cpu_affinity") is not None:
+                if affinity_preflight is None or affinity_postflight is None:
+                    raise RuntimeError("CPU-affinity evidence is incomplete")
+                machine = {
+                    **dict(machine),
+                    "cpu_affinity": {
+                        "preflight": affinity_preflight,
+                        "postflight": affinity_postflight,
+                    },
+                }
             root = Path(selected["source_root"]).resolve(strict=True)
             commit = _git(root, "rev-parse", "HEAD")
             tree = _git(root, "rev-parse", "HEAD^{tree}")

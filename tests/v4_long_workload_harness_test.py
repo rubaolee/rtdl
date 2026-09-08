@@ -2,6 +2,7 @@ from pathlib import Path
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 from scripts import v4_long_workload_controller as controller
 from scripts import v4_long_workload_independent_recount as recount
@@ -49,6 +50,75 @@ def _config():
 
 
 class V4LongWorkloadHarnessTest(unittest.TestCase):
+    def test_worker_applies_and_observes_cpu_affinity_fail_closed(self):
+        contract = {"cpu_ids": [8]}
+        current = {0, 1}
+
+        def set_affinity(_pid, cpu_ids):
+            nonlocal current
+            current = set(cpu_ids)
+
+        with mock.patch.object(
+                worker.os, "sched_setaffinity", side_effect=set_affinity,
+                create=True), mock.patch.object(
+                    worker.os, "sched_getaffinity",
+                    side_effect=lambda _pid: current, create=True):
+            self.assertEqual(
+                worker._bind_cpu_affinity(
+                    {"cpu_affinity": contract}, apply=True),
+                contract,
+            )
+            current = {9}
+            with self.assertRaises(RuntimeError):
+                worker._bind_cpu_affinity(
+                    {"cpu_affinity": contract}, apply=False)
+
+    def test_independent_recount_validates_cpu_affinity_projection(self):
+        contract = {"cpu_ids": [8]}
+        common = {
+            "registered_machine": {
+                "cuda_visible_devices": "0",
+                "gpu": {
+                    "name": "GPU", "uuid": "GPU-LOCKED", "driver": "driver",
+                    "compute_capability": "8.6",
+                },
+            },
+            "python_version": "3.12.3",
+            "python_executable": "/venv/bin/python",
+            "cpu_affinity": contract,
+        }
+        machine = {
+            **common["registered_machine"],
+            "hostname": "pod", "platform": "Linux",
+            "python": common["python_version"],
+            "python_executable": common["python_executable"],
+            "cpu_affinity": {
+                "preflight": contract,
+                "postflight": contract,
+            },
+        }
+        recount.validate_worker_machine(machine, common, ordinal=0)
+        machine["cpu_affinity"] = {
+            "preflight": {"cpu_ids": [9]},
+            "postflight": contract,
+        }
+        with self.assertRaises(RuntimeError):
+            recount.validate_worker_machine(machine, common, ordinal=0)
+
+    def test_controller_validates_optional_cpu_affinity_contract(self):
+        config = _config()
+        config["common"]["cpu_affinity"] = {"cpu_ids": [8]}
+        self.assertEqual(len(controller.validate_config(config)), 5)
+        config["common"]["cpu_affinity"]["cpu_ids"] = [8, 9]
+        with self.assertRaises(ValueError):
+            controller.validate_config(config)
+
+    def test_worker_has_no_affinity_effect_without_registered_contract(self):
+        with mock.patch.object(
+                worker.os, "sched_setaffinity", create=True) as setter:
+            self.assertIsNone(worker._bind_cpu_affinity({}, apply=True))
+        setter.assert_not_called()
+
     def test_independent_recount_validates_registered_machine_projection(self):
         common = {
             "registered_machine": {

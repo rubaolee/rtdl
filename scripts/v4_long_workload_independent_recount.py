@@ -94,7 +94,10 @@ def validate_worker_machine(
             f"worker machine is not an object: {ordinal}")
     require(isinstance(registered, Mapping),
             "formal config lacks a registered machine")
+    affinity_contract = common.get("cpu_affinity")
     expected_fields = set(registered) | WORKER_MACHINE_SUPPLEMENTAL_FIELDS
+    if affinity_contract is not None:
+        expected_fields.add("cpu_affinity")
     require(set(observed) == expected_fields,
             f"worker machine fields differ: {ordinal}")
     require(all(observed.get(key) == value for key, value in registered.items()),
@@ -106,6 +109,19 @@ def validate_worker_machine(
     for field in ("hostname", "platform"):
         require(isinstance(observed.get(field), str) and bool(observed[field]),
                 f"worker machine {field} is invalid: {ordinal}")
+    if affinity_contract is not None:
+        require(isinstance(affinity_contract, Mapping),
+                "formal CPU-affinity contract is invalid")
+        evidence = observed.get("cpu_affinity")
+        require(isinstance(evidence, Mapping)
+                and set(evidence) == {"preflight", "postflight"},
+                f"worker CPU-affinity evidence differs: {ordinal}")
+        for phase in ("preflight", "postflight"):
+            row = evidence[phase]
+            require(isinstance(row, Mapping),
+                    f"worker CPU-affinity {phase} is invalid: {ordinal}")
+            require(row == affinity_contract,
+                    f"worker CPU-affinity {phase} differs: {ordinal}")
 
 
 def main() -> int:
@@ -141,6 +157,8 @@ def main() -> int:
             "preregistration was not pre-action")
     require(prereg.get("formal_config_sha256") == sha256(config_path),
             "config hash differs from preregistration")
+    require(prereg.get("cpu_affinity") == config["common"].get("cpu_affinity"),
+            "CPU affinity differs between config and preregistration")
     require(prereg.get("dry_run_summary_sha256") == sha256(dry_path),
             "dry-run hash differs from preregistration")
     require(dry.get("status") == "PASS" and dry.get("worker_count") == 15,
@@ -224,6 +242,18 @@ def main() -> int:
         journal = read_journal(journal_path)
         require(journal and journal[0].get("event") == "worker_started",
                 f"worker journal has no start: {expected_row['ordinal']}")
+        if config["common"].get("cpu_affinity") is not None:
+            affinity_evidence = worker["machine"]["cpu_affinity"]
+            for phase in ("preflight", "postflight"):
+                events = [
+                    row for row in journal
+                    if row.get("event") == f"cpu_affinity_{phase}"
+                ]
+                require(len(events) == 1
+                        and events[0].get("observation")
+                        == affinity_evidence[phase],
+                        f"worker CPU-affinity journal differs: "
+                        f"{expected_row['ordinal']}:{phase}")
         if expected_row["endpoint"] == "prepared":
             samples = [row for row in journal if row.get("event") == "sample_complete"]
             warmups = [row for row in journal if row.get("event") == "warmup_complete"]

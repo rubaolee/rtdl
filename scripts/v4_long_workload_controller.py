@@ -35,6 +35,7 @@ BLOCK_ORDERS = (
 CONFIG_SCHEMA = "rtdl.v4_long_workload.formal_config.v1"
 PREREG_SCHEMA = "rtdl.v4_long_workload.preregistration.v1"
 SCHEDULE_SCHEMA = "rtdl.v4_long_workload.schedule.v1"
+CPU_AFFINITY_FIELDS = frozenset({"cpu_ids"})
 
 
 def sha256(path: Path) -> str:
@@ -105,6 +106,15 @@ def validate_config(config: Mapping[str, Any]) -> tuple[str, ...]:
         raise ValueError("formal unit application population differs")
     if common.get("prepared_warmups") != 1:
         raise ValueError("formal prepared warmup count must be one")
+    cpu_affinity = common.get("cpu_affinity")
+    if cpu_affinity is not None:
+        if not isinstance(cpu_affinity, Mapping) \
+                or set(cpu_affinity) != CPU_AFFINITY_FIELDS:
+            raise ValueError("formal CPU-affinity contract fields differ")
+        cpu_ids = cpu_affinity.get("cpu_ids")
+        if not isinstance(cpu_ids, list) or len(cpu_ids) != 1 \
+                or type(cpu_ids[0]) is not int or cpu_ids[0] < 0:
+            raise ValueError("formal CPU affinity requires one logical CPU")
     return unit_ids
 
 
@@ -364,6 +374,8 @@ def main() -> int:
             or prereg.get("controller_sha256") != sha256(Path(__file__).resolve())
             or prereg.get("worker_sha256") != sha256(WORKER)
             or prereg.get("dry_run_summary_sha256") != sha256(dry_path)
+            or prereg.get("cpu_affinity")
+                != config["common"].get("cpu_affinity")
             or dry.get("status") != "PASS"
             or dry.get("formal_worker_zero_reached") is not False
         ):
