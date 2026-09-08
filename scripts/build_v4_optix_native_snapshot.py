@@ -67,6 +67,7 @@ _AABB_INDEX_PTX_SYMBOLS = (
     "__intersection__aabb_index_exact",
     "__anyhit__aabb_index_count",
 )
+_DEVICE_U32_SUM_U64_SYMBOL = "rtdl_device_u32_sum_u64"
 
 
 def _validate_output_paths(*paths: Path) -> None:
@@ -123,26 +124,53 @@ def _extract_aabb_index_count_source() -> bytes:
     return source.encode("utf-8")
 
 
-def _embedded_ptx_translation_unit(ptx: bytes) -> bytes:
+def _embedded_binary_translation_unit(
+    payload: bytes, *, function_name: str, array_name: str,
+) -> bytes:
     rows = []
-    for offset in range(0, len(ptx), 16):
+    for offset in range(0, len(payload), 16):
         rows.append("    " + ", ".join(
-            f"0x{value:02x}" for value in ptx[offset:offset + 16]) + ",")
+            f"0x{value:02x}" for value in payload[offset:offset + 16]) + ",")
     text = "\n".join((
         "#include <cstddef>",
         "",
         'extern "C" __attribute__((visibility("hidden")))',
-        "const unsigned char* rtdl_optix_embedded_aabb_index_count_ptx_v1(",
+        f"const unsigned char* {function_name}(",
         "        std::size_t* byte_count) {",
-        "    static const unsigned char ptx[] = {",
+        f"    static const unsigned char {array_name}[] = {{",
         *rows,
         "    };",
-        "    if (byte_count != nullptr) *byte_count = sizeof(ptx);",
-        "    return ptx;",
+        f"    if (byte_count != nullptr) *byte_count = sizeof({array_name});",
+        f"    return {array_name};",
         "}",
         "",
     ))
     return text.encode("ascii")
+
+
+def _embedded_ptx_translation_unit(ptx: bytes) -> bytes:
+    return _embedded_binary_translation_unit(
+        ptx,
+        function_name="rtdl_optix_embedded_aabb_index_count_ptx_v1",
+        array_name="ptx",
+    )
+
+
+def _extract_device_u32_sum_u64_source() -> bytes:
+    text = OPTIX_WORKLOADS.read_text(encoding="utf-8")
+    start_marker = 'static const char* kDeviceU32SumU64KernelSrc = R"CUDA(\n'
+    end_marker = '\n)CUDA";'
+    start = text.find(start_marker)
+    if start < 0:
+        raise RuntimeError("device U32-sum source start marker is missing")
+    start += len(start_marker)
+    end = text.find(end_marker, start)
+    if end < 0:
+        raise RuntimeError("device U32-sum source end marker is missing")
+    source = text[start:end] + "\n"
+    if _DEVICE_U32_SUM_U64_SYMBOL not in source:
+        raise RuntimeError("device U32-sum source lacks its kernel symbol")
+    return source.encode("utf-8")
 
 
 def _prepare_embedded_aabb_index_count_ptx(
@@ -192,6 +220,61 @@ def _prepare_embedded_aabb_index_count_ptx(
         "compile_log_sha256": _sha(compile_log),
         "compile_command": command,
         "entry_points": list(_AABB_INDEX_PTX_SYMBOLS),
+        "runtime_source_compilation_required": False,
+    }
+    return translation_unit, result
+
+
+def _prepare_embedded_device_u32_sum_u64_cubin(
+    *, directory: Path, nvcc: Path, host_compiler: Path,
+    optix_include: Path, cuda_include: Path, capability: tuple[int, int],
+) -> tuple[Path, dict[str, object]]:
+    directory.mkdir(parents=True, exist_ok=False)
+    source_path = directory / "device_u32_sum_u64_kernel.cu"
+    cubin_path = directory / "device_u32_sum_u64_kernel.cubin"
+    compile_log = directory / "device_u32_sum_u64_nvcc.log"
+    translation_unit = directory / "device_u32_sum_u64_embedded_cubin.cpp"
+    source = _extract_device_u32_sum_u64_source()
+    source_path.write_bytes(source)
+    command = [
+        str(nvcc), "-ccbin", str(host_compiler), "--cubin", "--std=c++14",
+        "-allow-unsupported-compiler", "-O3",
+        f"-arch=sm_{capability[0]}{capability[1]}",
+        f"-I{optix_include}", f"-I{cuda_include}",
+        str(source_path), "-o", str(cubin_path),
+    ]
+    completed = subprocess.run(
+        command, cwd=ROOT, text=True, stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT, check=False)
+    compile_log.write_text(completed.stdout, encoding="utf-8", newline="\n")
+    if completed.returncode:
+        raise RuntimeError(
+            f"device U32-sum AOT CUBIN compile failed ({completed.returncode}); "
+            f"see {compile_log}")
+    cubin = cubin_path.read_bytes()
+    if not cubin.startswith(b"\x7fELF"):
+        raise RuntimeError("device U32-sum AOT CUBIN is not ELF")
+    if _DEVICE_U32_SUM_U64_SYMBOL.encode("ascii") not in cubin:
+        raise RuntimeError("device U32-sum AOT CUBIN lacks its kernel symbol")
+    translation_unit.write_bytes(_embedded_binary_translation_unit(
+        cubin,
+        function_name="rtdl_optix_embedded_device_u32_sum_u64_cubin_v1",
+        array_name="cubin",
+    ))
+    result = {
+        "schema": "rtdl.v4.embedded_cuda_program.v1",
+        "program": "device_u32_sum_u64",
+        "source_path": str(source_path),
+        "source_sha256": _sha(source_path),
+        "cubin_path": str(cubin_path),
+        "cubin_sha256": _sha(cubin_path),
+        "cubin_bytes": len(cubin),
+        "translation_unit_path": str(translation_unit),
+        "translation_unit_sha256": _sha(translation_unit),
+        "compile_log_path": str(compile_log),
+        "compile_log_sha256": _sha(compile_log),
+        "compile_command": command,
+        "entry_points": [_DEVICE_U32_SUM_U64_SYMBOL],
         "runtime_source_compilation_required": False,
     }
     return translation_unit, result
@@ -411,6 +494,8 @@ def build(args) -> dict[str, object]:
             "OptiX header version differs from --expected-optix-sdk: "
             f"header={optix_version}, expected={expected_optix_version}")
     embed_aabb_ptx = bool(getattr(args, "embed_aabb_index_count_ptx", False))
+    embed_aabb_reduction_cubin = bool(getattr(
+        args, "embed_aabb_index_count_reduction_cubin", False))
     embedded_directory = getattr(args, "embedded_program_directory", None)
     if embed_aabb_ptx and aot_runtime:
         raise ValueError(
@@ -419,8 +504,14 @@ def build(args) -> dict[str, object]:
         raise ValueError(
             "--embed-aabb-index-count-ptx and --embedded-program-directory "
             "must be supplied together")
+    if embed_aabb_reduction_cubin and not embed_aabb_ptx:
+        raise ValueError(
+            "--embed-aabb-index-count-reduction-cubin requires "
+            "--embed-aabb-index-count-ptx")
     embedded_translation_unit = None
     embedded_program = None
+    embedded_reduction_translation_unit = None
+    embedded_reduction_program = None
     if embed_aabb_ptx:
         embedded_translation_unit, embedded_program = (
             _prepare_embedded_aabb_index_count_ptx(
@@ -432,9 +523,28 @@ def build(args) -> dict[str, object]:
                 capability=capability,
             )
         )
+    if embed_aabb_reduction_cubin:
+        assert embedded_directory is not None
+        embedded_reduction_translation_unit, embedded_reduction_program = (
+            _prepare_embedded_device_u32_sum_u64_cubin(
+                directory=(
+                    embedded_directory.expanduser().resolve()
+                    / "device-u32-sum-u64"
+                ),
+                nvcc=nvcc,
+                host_compiler=host_compiler,
+                optix_include=optix_include,
+                cuda_include=cuda_include,
+                capability=capability,
+            )
+        )
+    generated_translation_units = tuple(
+        path for path in (
+            embedded_translation_unit, embedded_reduction_translation_unit,
+        ) if path is not None
+    )
     compiled_translation_units = (
-        (*translation_units, embedded_translation_unit)
-        if embedded_translation_unit is not None else translation_units
+        *translation_units, *generated_translation_units,
     )
     source_inventory = _source_inventory()
     optix_header_inventory = _header_inventory(optix_include)
@@ -508,6 +618,11 @@ def build(args) -> dict[str, object]:
         identity.update({
             "schema": "rtdl.v4.optix_native_build_input.v4",
             "embedded_optix_programs": [embedded_program],
+        })
+    if embedded_reduction_program is not None:
+        identity.update({
+            "schema": "rtdl.v4.optix_native_build_input.v5",
+            "embedded_cuda_programs": [embedded_reduction_program],
         })
     build_id = _build_input_id(identity)
     descriptor, temporary_name = tempfile.mkstemp(
@@ -631,6 +746,16 @@ def build(args) -> dict[str, object]:
             ):
         output.unlink()
         raise RuntimeError("build input identity changed during native build")
+    if embedded_reduction_program is not None and any(
+        _sha(Path(str(embedded_reduction_program[key])))
+        != embedded_reduction_program[key.replace("_path", "_sha256")]
+        for key in (
+            "source_path", "cubin_path", "translation_unit_path",
+            "compile_log_path",
+        )
+    ):
+        output.unlink()
+        raise RuntimeError("build input identity changed during native build")
     reproduction_command = [
         str(output) if item == str(temporary_output) else item
         for item in command
@@ -689,6 +814,13 @@ def build(args) -> dict[str, object]:
             "status": "PASS__FRESH_NATIVE_WITH_EMBEDDED_AABB_INDEX_PTX",
             "embedded_optix_programs": [embedded_program],
         })
+    if embedded_reduction_program is not None:
+        result.update({
+            "schema": "rtdl.v4.optix_native_snapshot_build.v5",
+            "status": "PASS__FRESH_NATIVE_WITH_EMBEDDED_AABB_INDEX_PROGRAM",
+            "embedded_cuda_programs": [embedded_reduction_program],
+            "runtime_compiler_attempts_required_by_embedded_aabb_program": 0,
+        })
     try:
         _write_json(manifest, result)
     except Exception:
@@ -722,6 +854,11 @@ def main() -> None:
         "--embed-aabb-index-count-ptx", action="store_true",
         help=("compile the generic AABB-index OptiX program during the native "
               "build and embed the exact PTX bytes in the provider image"),
+    )
+    parser.add_argument(
+        "--embed-aabb-index-count-reduction-cubin", action="store_true",
+        help=("compile the generic device U32-to-U64 reduction during the "
+              "native build; requires the embedded AABB index PTX"),
     )
     parser.add_argument(
         "--embedded-program-directory", type=Path,

@@ -17565,11 +17565,34 @@ extern "C" __global__ void rtdl_device_u32_sum_u64(
 }
 )CUDA";
 
+#if defined(__GNUC__)
+extern "C" const unsigned char* rtdl_optix_embedded_device_u32_sum_u64_cubin_v1(
+    size_t* byte_count) __attribute__((weak));
+#endif
+
+static std::string device_u32_sum_u64_cubin()
+{
+#if defined(__GNUC__)
+    if (rtdl_optix_embedded_device_u32_sum_u64_cubin_v1 != nullptr) {
+        size_t byte_count = 0u;
+        const unsigned char* bytes =
+            rtdl_optix_embedded_device_u32_sum_u64_cubin_v1(&byte_count);
+        if (!bytes || byte_count < 4u)
+            throw std::runtime_error("embedded device U32-sum CUBIN is empty");
+        if (bytes[0] != 0x7fu || bytes[1] != 'E'
+                || bytes[2] != 'L' || bytes[3] != 'F')
+            throw std::runtime_error("embedded device U32-sum CUBIN is not ELF");
+        return std::string(reinterpret_cast<const char*>(bytes), byte_count);
+    }
+#endif
+    return compile_to_cubin(
+        kDeviceU32SumU64KernelSrc, "device_u32_sum_u64_kernel.cu");
+}
+
 static void ensure_device_u32_sum_u64()
 {
     std::call_once(g_device_u32_sum_u64.init, [&]() {
-        const std::string cubin = compile_to_cubin(
-            kDeviceU32SumU64KernelSrc, "device_u32_sum_u64_kernel.cu");
+        const std::string cubin = device_u32_sum_u64_cubin();
         CU_CHECK(cuModuleLoadData(&g_device_u32_sum_u64.module, cubin.data()));
         CU_CHECK(cuModuleGetFunction(
             &g_device_u32_sum_u64.fn,
