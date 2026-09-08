@@ -17458,7 +17458,11 @@ extern "C" __global__ void __intersection__aabb_index_exact() {
     }
     if (!accept) return;
     if (params.collect_rows == 0u) {
-        atomicAdd(params.query_hit_counts + qidx, 1u);
+        if (params.query_hit_counts) {
+            atomicAdd(params.query_hit_counts + qidx, 1u);
+        } else if (params.hit_count) {
+            atomicAdd(params.hit_count, 1ULL);
+        }
         return;
     }
     float hit_t = optixGetRayTmin() + 1.0e-6f;
@@ -17602,6 +17606,7 @@ struct PreparedAabbIndexQueries2DOptix {
     DevPtr d_point_queries;
     DevPtr d_box_queries;
     DevPtr d_query_hit_counts;
+    DevPtr d_total_hit_count;
     DevPtr d_launch_params;
     AccelHolder accel;
 
@@ -17613,6 +17618,7 @@ struct PreparedAabbIndexQueries2DOptix {
           d_point_queries(sizeof(GpuPoint) * point_query_count),
           d_box_queries(0),
           d_query_hit_counts(sizeof(uint32_t) * point_query_count),
+          d_total_hit_count(sizeof(unsigned long long)),
           d_launch_params(sizeof(AabbIndexQueryLaunchParams)),
           accel()
     {
@@ -17635,6 +17641,7 @@ struct PreparedAabbIndexQueries2DOptix {
           d_point_queries(0),
           d_box_queries(sizeof(GpuAabb2D) * box_query_count),
           d_query_hit_counts(sizeof(uint32_t) * box_query_count),
+          d_total_hit_count(sizeof(unsigned long long)),
           d_launch_params(sizeof(AabbIndexQueryLaunchParams)),
           accel()
     {
@@ -17812,7 +17819,8 @@ static void count_prepared_aabb_index_2d_device_optix(
         uint32_t operation,
         size_t* hit_count_out,
         CUdeviceptr d_query_hit_counts_scratch = 0,
-        CUdeviceptr d_launch_params_scratch = 0)
+        CUdeviceptr d_launch_params_scratch = 0,
+        CUdeviceptr d_total_hit_count_scratch = 0)
 {
     require_prepared_aabb_index_2d_valid(prepared);
     if (!hit_count_out) throw std::runtime_error("hit_count_out must not be null");
@@ -17839,13 +17847,18 @@ static void count_prepared_aabb_index_2d_device_optix(
     const size_t launch_count =
         operation == kAabbIndexOpPointContains ? point_query_count : box_query_count;
     std::unique_ptr<DevPtr> owned_query_hit_counts;
-    if (!d_query_hit_counts_scratch) {
-        owned_query_hit_counts = std::make_unique<DevPtr>(
-            sizeof(uint32_t) * launch_count);
-        d_query_hit_counts_scratch = owned_query_hit_counts->ptr;
+    if (d_total_hit_count_scratch) {
+        CU_CHECK(cuMemsetD8(
+            d_total_hit_count_scratch, 0, sizeof(unsigned long long)));
+    } else {
+        if (!d_query_hit_counts_scratch) {
+            owned_query_hit_counts = std::make_unique<DevPtr>(
+                sizeof(uint32_t) * launch_count);
+            d_query_hit_counts_scratch = owned_query_hit_counts->ptr;
+        }
+        CU_CHECK(cuMemsetD8(
+            d_query_hit_counts_scratch, 0, sizeof(uint32_t) * launch_count));
     }
-    CU_CHECK(cuMemsetD8(
-        d_query_hit_counts_scratch, 0, sizeof(uint32_t) * launch_count));
 
     launch_aabb_index_count_pass_optix(
         prepared->accel.handle,
@@ -17858,8 +17871,8 @@ static void count_prepared_aabb_index_2d_device_optix(
         operation,
         0u,
         launch_count,
-        0,
-        d_query_hit_counts_scratch,
+        d_total_hit_count_scratch,
+        d_total_hit_count_scratch ? 0 : d_query_hit_counts_scratch,
         0,
         0,
         false,
@@ -17868,8 +17881,12 @@ static void count_prepared_aabb_index_2d_device_optix(
         1u,
         d_launch_params_scratch);
 
-    unsigned long long count = sum_device_u32_counts(
-        d_query_hit_counts_scratch, launch_count);
+    unsigned long long count = 0;
+    if (d_total_hit_count_scratch) {
+        download(&count, d_total_hit_count_scratch, 1);
+    } else {
+        count = sum_device_u32_counts(d_query_hit_counts_scratch, launch_count);
+    }
     *hit_count_out = static_cast<size_t>(count);
 }
 
@@ -18017,7 +18034,8 @@ static void count_prepared_aabb_index_2d_packed_queries_optix(
         operation,
         hit_count_out,
         prepared_queries->d_query_hit_counts.ptr,
-        prepared_queries->d_launch_params.ptr);
+        prepared_queries->d_launch_params.ptr,
+        prepared_queries->d_total_hit_count.ptr);
 }
 
 static unsigned long long count_prepared_aabb_index_2d_with_scratch_optix(

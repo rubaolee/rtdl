@@ -267,3 +267,34 @@ arms. Authority requires a new clean commit/tree, fresh native and PTX
 manifests, a passing eight-process dry run before the executable freeze, a
 wholly fresh 192-worker transaction, an independent recount, and a separately
 named archive. All adverse outcomes remain reportable evidence.
+
+## Pre-freeze prepared AABB scalar-output successor
+
+The execution-buffer/scratch-residency transaction at commit
+`df7db5c38922bb108338142ce471151d5f9caf5a` reached formal worker zero and
+therefore remains immutable and must complete or retain its exact failure
+state. It is not pooled with this successor. Independent source inspection and
+the already retained `43655ff1b` transaction identify an additional generic
+count-path mismatch: the prepared V4 AABB count path downloads one `u32` count
+for every query and reduces the column on the CPU even though the public output
+contract is one checked `u64` scalar. The competent PyOptiX arm reduces on the
+device and returns one scalar.
+
+This successor may use the existing app-neutral `hit_count` field in the AABB
+query launch contract for prepared point-contains and range-contains scalar
+counts. A prepared query owner may retain one eight-byte device scalar; each
+execution zeros it, exact accepted intersections increment it on the device,
+and the public call downloads only that scalar. Dynamic count calls that need
+per-query counts, row-collection calls, and range-intersects behavior keep
+their current paths. No application predicate, input, output, callback,
+traversal geometry, block order, endpoint, repetition count, warmup count,
+estimator, or performance threshold changes. No LibRTS or other application
+identity may enter the native implementation.
+
+The expected mechanism is elimination of the `query_count * sizeof(u32)` D2H
+transfer and CPU loop. A global device atomic may itself be costly, so speedup
+is not guaranteed and the complete transaction remains required. Authority
+requires a new clean commit/tree, fresh native/PTX/config identities, passing
+focused tests and eight-process GPU dry run before the executable freeze, then
+a wholly fresh 192-worker transaction and independent recount. All prior
+adverse evidence remains retained, separately named, and reportable.
