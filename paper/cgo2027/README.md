@@ -1,6 +1,6 @@
 # CGO 2027 anonymous manuscript workspace
 
-`main.tex` and `main.pdf` are the current P-octuple-prime manuscript
+`main.tex` and `main.pdf` are the current P-nonuple-prime manuscript
 candidate. The paper presents RTDL as a restricted-Python DSL and compiler for
 bounded computations that repurpose ray-tracing hardware. The author selects
 the geometric mapping and owns application semantics; for supported fixed
@@ -23,22 +23,25 @@ prior systems cannot implement related guarantees. Whole-protocol/result-route
 checking is one compiler contribution inside the DSL story, not the entire
 paper theme.
 
-P-octuple-prime supersedes P-septuple-prime for submission consideration. The
+P-nonuple-prime supersedes P-octuple-prime for submission consideration. Every
 older candidate and all adverse application transactions remain immutable.
 
 ## Current exact candidate
 
 | Object | Exact identity |
 | --- | --- |
-| Manuscript/evidence commit | `9e66fb42f02261e81d22f26a24e1a2282b8986f2` |
-| Manuscript/evidence tree | `d01c6173f1e3d6a447daeb2975d6be50f10ea106` |
+| Source-package assembly commit | `3702ac8ecfc9dfb6708fea641e054e92c9535df7` |
+| Source-package assembly tree | `97a5ddb544471154926583602d473befc6e70b89` |
+| Manuscript/evidence parent commit | `2eb06eeb183e0614072171318e9159db1f808891` |
+| Manuscript/evidence parent tree | `d81bc41a5bdad3bfcec18e960af019e6b2bc6fe9` |
 | Candidate parent / measured successor | `02e84374fc092d2bb916cca633eda9592b4ecf07` |
-| `main.tex` | 60,625 bytes; SHA-256 `0d29d05d04a0919d0c5b26c98861b17647fbc2256298990f6ab5b52a8de3f7a0` |
-| `references.bib` | unchanged from P-septuple-prime; local unrelated edit excluded |
-| Exact PDF | 183,937 bytes; SHA-256 `3887bf1abb21068be057d13b012eddd7b9977e06ce53daf75b0eca84af4874c0` |
+| `main.tex` | 61,210 bytes; SHA-256 `a52347ff48f181dfaaaa42f0ab7d8077bb78761611b94e66171f61a52d47f836` |
+| `references.bib` | 21,640 bytes; SHA-256 `d27ce8c5db0a6855e9879b90a38e98fb07f56ecf993ee4fe2eaddea5b57619f5` |
+| Exact PDF | 184,360 bytes; SHA-256 `9d8b3f7277cca812c4de7955abce2bfe6b9bb44337a41493f6c5ca8cf59f8e4a` |
 | New performance archive | 730,851 bytes; SHA-256 `ef2ca7890c9d415dc1edbe71966aabc512209c9d8608d4eaf460c7c1fddf8bdc` |
+| Post-formal CPU-sensitivity archive | 877,815 bytes; SHA-256 `1f6f25512cbb781df2b75a204e1d3baad1e853179473a6616df6ec39e5629959` |
 | Anonymous application projection | 84,598 bytes; SHA-256 `d761ce92f55561be656a71712a9f0a78c57f2c7f8165d2ee8d8cb8cf60309e6f` |
-| Source bundle | 29,456 bytes; SHA-256 `da9c2085d7269f92a1863952765784b6c640b026ca28144721485981aac87c82` |
+| Source bundle | 29,666 bytes; SHA-256 `ac079200ba4606a76e10827d6f486ea5f5b85b48182a2c424462a17b8a2f8286` |
 | Unchanged F2 artifact | 180,308 bytes; SHA-256 `916cedbb7001c7aa43e66df3f992b543b7b3ca5a013f0f997790113a2e3738b8` |
 
 The original measured implementation remains M commit
@@ -53,6 +56,11 @@ The separately identified application successor is commit
 `8aad15d686bbc9e1c3b11df998898a0a063a01f1`. Its scope is the authorized
 Particle, Graph RT-2A1, and LibRTS performance remediation plus generic
 measurement controls. F2 bytes remain unchanged.
+
+The final package commit differs from its manuscript/evidence parent only in
+the normalized source archive. That archive was constructed from the exact
+parent-commit `main.tex` and `references.bib` blobs, not from unrelated dirty
+working-tree bibliography bytes.
 
 ## Evidence boundary
 
@@ -95,6 +103,15 @@ clocks were not locked, and formal peak memory was not captured. These results
 are not broad performance, productivity, intrinsic-language-cost, arbitrary
 callback, or app-independent-engine evidence.
 
+A fixed post-formal descriptive scan then ran the two shortest prepared units
+across all 48 allowed logical CPUs. All 384 fresh workers completed and clean
+Pod/local ordinary/optimized recounts were byte-identical. Although 45/48
+Particle and 43/48 LibRTS CPU medians were at most `1.20x`, only 36/48 and
+41/48 CPUs kept both blocks at most `1.35x`; CPU-8 Particle reversed from
+`0.772559x` in the formal population to `1.399874x`. The scan is not pooled
+with formal evidence and shows that these sub-millisecond rows are not stable
+performance guarantees.
+
 The nine-member F2 archive performs offline recount of retained evidence. It
 does not rerun GPU work, install RTDL, verify novelty, or reconstruct missing
 private history.
@@ -121,6 +138,7 @@ work; the private 1,049-file archive remains the raw authority.
 | Clean-pod F2 replay | Normal/optimized outputs byte-identical; offline recount PASS |
 | Clean-pod application recount | Normal/optimized outputs byte-identical; exact after removing only environment-dependent paths |
 | Anonymous application projection | Normal/optimized outputs byte-identical; 240 workers, 80 cells, 1,248 samples, ten evaluations |
+| Post-formal CPU sensitivity | 384/384 workers; all 48 logical CPUs; Pod/local normal/optimized recounts byte-identical; adverse to CPU invariance |
 
 BibTeX emits nonfatal completeness warnings for inherited conference records
 and the in-press survey. That is not a zero-warning build claim. Independent
@@ -128,18 +146,16 @@ bibliography, live-link, content, novelty, and anonymity review remains open.
 
 ## Review and submission state
 
-The exact review request is
-`history/internal_docs/post_goal5851_submission_remediation_20260906/R7_PSEPTUPLEPRIME_FINAL_BYTES_REVIEW_REQUEST.md`.
-The author-side preflight is
-`history/internal_docs/post_goal5851_submission_remediation_20260906/R8_PSEPTUPLEPRIME_LOCAL_PREFLIGHT_REPORT.md`.
-Detailed current state is in `STATUS.json` and the 29-entry `CLAIM_LEDGER.json`
-in the same control directory.
+An exact review request must name the immutable candidate commit. It and the
+matching author-side preflight therefore belong in a later control-only commit,
+not in the candidate they identify. The 31-entry claim ledger is
+`history/internal_docs/post_goal5851_submission_remediation_20260906/CLAIM_LEDGER.json`.
 
-P-octuple-prime has zero independent exact-byte acceptances. No P-septuple-prime
-review transfers to the new manuscript or performance archive. Local build,
-all-page rendering, anonymity scan, and numeric projection checks pass, but all
-public/submission authorization flags remain false. Independent final-byte
-review, authenticated
+P-nonuple-prime has zero independent exact-byte acceptances. No P-octuple-prime
+review transfers to the new manuscript, source package, or evidence set. Local
+build, all-page rendering, anonymity scan, and numeric projection checks pass,
+but all public/submission authorization flags remain false. Independent
+final-byte review, authenticated
 submission-form checks, upload, downloaded-byte verification, and a receipt
 remain open. No upload or submission has occurred.
 
