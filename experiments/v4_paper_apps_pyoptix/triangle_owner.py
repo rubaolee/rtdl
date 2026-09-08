@@ -173,7 +173,14 @@ class PublicPyOptixTriangleCountingOwner:
         build_input.vertexStrideInBytes = 12
         build_input.numVertices = primitive_count * 3
         build_input.vertexBuffers = [int(vertices.data.ptr)]
-        build_input.flags = [optix.GEOMETRY_FLAG_NONE]
+        single_any_hit = getattr(
+            optix, "GEOMETRY_FLAG_REQUIRE_SINGLE_ANYHIT_CALL", None
+        )
+        if single_any_hit is None:
+            raise RuntimeError(
+                "public PyOptiX lacks required single-any-hit geometry delivery"
+            )
+        build_input.flags = [single_any_hit]
         build_input.numSbtRecords = 1
         options = optix.AccelBuildOptions(
             buildFlags=int(optix.BUILD_FLAG_PREFER_FAST_TRACE),

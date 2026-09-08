@@ -31,6 +31,7 @@ from experiments.v4_paper_apps_pyoptix.particle_adapter import (
 )
 from experiments.v4_paper_apps_pyoptix.public_runtime import (
     PublicRuntime,
+    _canonicalize_nvrtc_ptx,
     _nvrtc_options,
     pipeline_options,
 )
@@ -170,6 +171,28 @@ class V4PaperAppsPyOptixOwnersTest(unittest.TestCase):
                 cuda_include="/usr/local/cuda/include",
                 compute_capability=(12, 10),
             )
+
+    def test_nvrtc_ptx_canonicalization_removes_only_required_terminator(self) -> None:
+        self.assertEqual(
+            _canonicalize_nvrtc_ptx(b".version 8.0\n.target sm_86\n\0"),
+            b".version 8.0\n.target sm_86\n",
+        )
+        for malformed in (
+            b".version 8.0\n",
+            b".version 8.0\0.target sm_86\0",
+            b"\0",
+        ):
+            with self.subTest(malformed=malformed):
+                with self.assertRaises(RuntimeError):
+                    _canonicalize_nvrtc_ptx(malformed)
+
+    def test_triangle_owner_requires_single_any_hit_delivery(self) -> None:
+        source = (
+            Path(__file__).resolve().parents[1]
+            / "experiments/v4_paper_apps_pyoptix/triangle_owner.py"
+        ).read_text(encoding="utf-8")
+        self.assertIn("GEOMETRY_FLAG_REQUIRE_SINGLE_ANYHIT_CALL", source)
+        self.assertNotIn("build_input.flags = [optix.GEOMETRY_FLAG_NONE]", source)
 
     def test_particle_loader_reconstructs_v4_oracle_identity(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

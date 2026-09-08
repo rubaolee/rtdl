@@ -7,15 +7,17 @@
   "experiment_source_frozen": true,
   "superseded_pre_worker_zero_source_commits": [
     "9207ed9937a61d3e2b9a1a3ba91a32ef2fd56ed1",
-    "fec140b28ab1c22c203ebe2efbdc7e437dbffb20"
+    "fec140b28ab1c22c203ebe2efbdc7e437dbffb20",
+    "5edf331bd9736d5f2b62b04622d0952dae776e90"
   ],
   "supersession_reasons": [
     "correct_route_class_metadata_before_any_gpu_worker",
-    "bind_triangle_device_columns_to_general_callback_entries_and_remove_nonportable_baseline_header_before_any_gpu_worker"
+    "bind_triangle_device_columns_to_general_callback_entries_and_remove_nonportable_baseline_header_before_any_gpu_worker",
+    "canonicalize_nvrtc_ptx_and_require_single_any_hit_in_public_triangle_baseline_after_retained_failed_dry_run_but_before_formal_worker_zero"
   ],
   "first_batch_registered_unit_count": 4,
   "first_batch_formal_worker_process_count": 192,
-  "first_batch_local_contract_test_count": 25,
+  "first_batch_local_contract_test_count": 27,
   "first_batch_local_contract_tests_passed": true,
   "first_batch_gpu_dry_run_passed": false,
   "first_batch_code_ready_gpu_unvalidated": true,

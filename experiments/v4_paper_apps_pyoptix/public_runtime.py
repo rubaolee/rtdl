@@ -97,9 +97,18 @@ def compile_ptx(
     size = checked(nvrtc.nvrtcGetPTXSize(program))
     ptx = b" " * size
     checked(nvrtc.nvrtcGetPTX(program, ptx))
-    if not ptx or b".version" not in ptx[:4096]:
-        raise RuntimeError("NVRTC did not produce PTX")
-    return bytes(ptx)
+    return _canonicalize_nvrtc_ptx(bytes(ptx))
+
+
+def _canonicalize_nvrtc_ptx(raw: bytes) -> bytes:
+    """Remove NVRTC's required terminator without hiding embedded NULs."""
+
+    if not isinstance(raw, bytes) or not raw.endswith(b"\0"):
+        raise RuntimeError("NVRTC PTX lacks its required trailing NUL")
+    ptx = raw[:-1]
+    if not ptx or b"\0" in ptx or b".version" not in ptx[:4096]:
+        raise RuntimeError("NVRTC did not produce canonical PTX")
+    return ptx
 
 
 def make_context(runtime: PublicRuntime) -> Any:

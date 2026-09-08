@@ -61,7 +61,7 @@ missing PyOptiX owners; none is silently removed from the denominator.
 
 ## Custody and fail-closed controls
 
-The pre-freeze self-review found and repaired eight evidence weaknesses before
+The pre-freeze self-review found and repaired ten evidence weaknesses before
 worker zero:
 
 1. Dry-run output parity alone did not freeze the actual input bytes. The dry
@@ -97,6 +97,16 @@ worker zero:
    use, `isfinite`, is an NVRTC device intrinsic already used by the Triangle
    source without that header. The include was removed after NVRTC rejected
    the unbound host dependency; device semantics did not change.
+9. The first retained GPU dry-run showed that NVRTC's reported PTX size
+   includes a required trailing NUL, while the public Particle owner correctly
+   rejects any NUL in its identity-bound module bytes. PTX preparation now
+   strips exactly one required trailing terminator and rejects a missing
+   terminator or any remaining embedded NUL.
+10. That same retained dry-run showed the public Triangle arm overcounting
+    official `com-dblp`. Unlike V4, its GAS had not requested single any-hit
+    delivery. The public owner now requires PyOptiX's public
+    `GEOMETRY_FLAG_REQUIRE_SINGLE_ANYHIT_CALL`; this aligns delivery semantics
+    without using private RTDL code.
 
 The explicit source-hash projection now includes `contracts.py` and the PTX
 builder in addition to all owners, device programs, input/geometry producers,
@@ -113,7 +123,7 @@ zero; no requirement claims one detailed receipt per call.
 - Recovered source manifest independently regenerated: 9 applications, 134
   files, directory digest
   `a2cdb9f9f83a49485f8964c9ae8391ed9531c9b7f25bfe4cf16164c594bfa0cb`.
-- Focused experiment suite: 25 tests passed.
+- Focused experiment suite: 27 tests passed.
 - Directly relevant pre-existing runtime-input, AABB-count, triangle-device,
   and public Particle owner tests: 26 tests passed with
   `PYTHONPATH=src:scripts:tests:.`.

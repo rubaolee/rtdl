@@ -29,5 +29,5 @@ object stores lack abbreviated commit `b8058860f`. `origin` also has no ref by
 that name. The remaining test asks `git show b8058860f` to establish that the
 selected app was absent from that commit; this is a historical Git-custody
 dependency, not an application execution dependency. It is retained as an open
-custody gap rather than weakened, skipped, or rewritten. The 25-test new
+custody gap rather than weakened, skipped, or rewritten. The 27-test new
 experiment suite remains fully passing.
