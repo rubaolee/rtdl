@@ -2,7 +2,7 @@
   "schema": "rtdl.cgo2027.post_goal5851.claim_ledger.v1",
   "version": 1,
   "created_at_utc": "2026-09-06T20:35:00Z",
-  "updated_at_utc": "2026-09-08T04:53:41Z",
+  "updated_at_utc": "2026-09-08T15:05:11Z",
   "measured_implementation": {
     "commit": "d653fe4ad170c5b51fee309d653c9565944dcf2e",
     "tree": "d53af23a2599f9d6adb4ac0bfff39cd0ab31860b",
@@ -678,6 +678,39 @@
       "disposition": "RETAIN_ADVERSE_SELECTED_STAGE_COST__PENDING_PSEPTUPLEPRIME_R7",
       "claim_authorized": false,
       "reviewer": "Codex author-side frozen-evidence integration and replay; two independent exact-byte reviews pending"
+    },
+    {
+      "claim_id": "PERF-APPLICATION-PYOPTIX-REMEDIATED-030",
+      "candidate_sentence": "On one RTX A4500, a separately identified remediation put all ten registered complete/prepared rows over five application units within a 1.20x paired-median and 1.35x every-block engineering envelope; the preselected cit-Patents prepared row was 1.057x with 9.348 s RTDL and 8.802 s PyOptiX.",
+      "scope": "Successor source 02e84374fc092d2bb916cca633eda9592b4ecf07, tree 8aad15d686bbc9e1c3b11df998898a0a063a01f1, on one RTX A4500: Particle transition, triangle counting on com-dblp and cit-Patents/4M, and LibRTS point/range count at complete and prepared endpoints.",
+      "source_evidence": [
+        {"path": "history/internal_docs/v4_long_workload_performance_20260908/RESULTS.md", "sha256": "27022d8ba7e64d5c435be555ce443e80d60a5f0cedbf0f68208a771081c56a43"},
+        {"path": "history/internal_docs/v4_long_workload_performance_20260908/APPLICATION_PROJECTION_ARTIFACT_REPORT.md", "sha256": "3138358b08d42ad3f27f7b8057090f85fcaad1f57a0003ae7e07070e9056e42b"},
+        {"path": "history/internal_docs/v4_long_workload_performance_20260908/raw/rtdl-v4-long-perf-successor-02e84374f-affinity-final.tar.gz", "sha256": "ef2ca7890c9d415dc1edbe71966aabc512209c9d8608d4eaf460c7c1fddf8bdc"},
+        {"path": "output/artifact/rtdl-cgo2027-application-performance.tar.gz", "sha256": "d761ce92f55561be656a71712a9f0a78c57f2c7f8165d2ee8d8cb8cf60309e6f"}
+      ],
+      "validation_phase": "Frozen 240-worker successor transaction with 80 paired cells, 1,248 timed samples, 120 warmups, exact-output checks, zero retry/discard/timeout, independent clean-checkout raw recount, normal/optimized anonymous-projection recount, deterministic packaging, and foreign-path replay.",
+      "limitations": "Only selected stages from three of nine application mappings and five units on one A4500. Only cit-Patents/4M is a multi-second prepared natural computation. Particle is app-shaped; physical routes differ; six mappings, peak memory, clock invariance, intrinsic language overhead, productivity, and broad performance are unmeasured. A post-formal CPU scan separately shows that the sub-millisecond prepared rows are not stable performance guarantees.",
+      "paper_destination": "Abstract; Application-route cost subsection; Threats; Artifact; Conclusion",
+      "disposition": "RETAIN_EXACT_TEN_ROW_ENGINEERING_ENVELOPE__PENDING_NEW_FINAL_BYTES_R7",
+      "claim_authorized": false,
+      "reviewer": "Codex author-side successor evidence and artifact integration; two independent exact-byte reviews pending"
+    },
+    {
+      "claim_id": "LIMIT-CPU-AFFINITY-SENSITIVITY-031",
+      "candidate_sentence": "A post-formal two-block scan over all 48 logical CPUs was not pooled: 45/48 Particle and 43/48 LibRTS CPU medians were at most 1.20x, but only 36/48 and 41/48 kept both blocks at most 1.35x; CPU-8 Particle reversed from 0.773x in the formal population to 1.400x in the scan, so these sub-millisecond rows are not stable performance guarantees.",
+      "scope": "Post-formal descriptive sensitivity only, using the same 02e84374f successor and A4500 host for Particle and LibRTS range prepared endpoints across logical CPUs 0 through 47.",
+      "source_evidence": [
+        {"path": "history/internal_docs/v4_long_workload_performance_20260908/CPU_SENSITIVITY_RESULTS.md", "sha256": "6d0cfdebe010821883885f6e48ca4e7e41dc3fbeec553769f4d8dc33293740eb"},
+        {"path": "history/internal_docs/v4_long_workload_performance_20260908/cpu_sensitivity/CPU_SENSITIVITY_RECOUNT_POD_NORMAL.json", "sha256": "005caca0475516bafa6834594144a95c445eee771b171d1af0dbb448f80364d0"},
+        {"path": "history/internal_docs/v4_long_workload_performance_20260908/raw/rtdl-v4-long-perf-successor-02e84374f-cpu-sensitivity-v1.tar.gz", "sha256": "1f6f25512cbb781df2b75a204e1d3baad1e853179473a6616df6ec39e5629959"}
+      ],
+      "validation_phase": "Fixed plan committed before observing sensitivity performance; 384 fresh workers, 192 paired cells, all raw hashes/journals/identities/outputs verified; clean-Pod and local-archive ordinary/optimized recounts byte-identical; post-process mutation rejected.",
+      "limitations": "Two short units and two blocks per CPU only. Ascending CPU order confounds CPU identity and hardware-thread class with experiment time. GPU clocks were unlocked and no per-worker clock trace exists. No confidence interval, CPU causality, hardware-thread advantage, formal-gate result, or public performance claim is inferred; the scan is not pooled with the formal population.",
+      "paper_destination": "Internal-validity threats",
+      "disposition": "RETAIN_AS_POST_FORMAL_ADVERSE_SENSITIVITY__PENDING_NEW_FINAL_BYTES_R7",
+      "claim_authorized": false,
+      "reviewer": "Codex author-side fixed-population recount; two independent exact-byte reviews pending"
     }
   ]
 }

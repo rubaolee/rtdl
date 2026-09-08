@@ -53,6 +53,12 @@ reproduce the paired estimator exactly.
 - CPU 8 was chosen after a scheduling diagnostic. The formal comparison is
   fair under that registered condition, but does not prove CPU-invariant
   timing. GPU application-clock locking was unavailable.
+- A fixed post-formal scan completed 384/384 fresh workers over all 48 logical
+  CPUs for the two shortest prepared units. It is not pooled with formal
+  evidence. CPU-8 Particle reversed from a `0.772559x` formal median to
+  `1.399874x`; only 36/48 Particle and 41/48 LibRTS CPUs kept both scan blocks
+  at or below `1.35x`. These sub-millisecond rows are not stable performance
+  guarantees.
 - Formal GPU peak-memory measurements were not captured. Static input and
   segment sizes are available; no peak-memory value should be invented from
   them.

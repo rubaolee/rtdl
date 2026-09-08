@@ -201,6 +201,12 @@ No failed transaction was rewritten or pooled:
   the registered controlled-host condition, not invariance across arbitrary
   host CPUs. The pod exposed 48 logical CPUs under a roughly 10.2-core cgroup
   quota.
+- A fixed post-formal two-block scan subsequently completed all 384 workers
+  over those 48 logical CPUs. It is not pooled with this formal transaction.
+  CPU-8 Particle reversed from the formal `0.772559x` median to `1.399874x`;
+  only 36/48 Particle and 41/48 LibRTS CPUs kept both scan blocks at or below
+  `1.35x`. See `CPU_SENSITIVITY_RESULTS.md`. The short prepared rows are not
+  stable performance guarantees.
 - The container rejected GPU clock locking. Balanced order mitigates but does
   not eliminate clock-state effects; all block ranges remain reported.
 - Particle is a fixed 5,000-query strict-interior standard-library

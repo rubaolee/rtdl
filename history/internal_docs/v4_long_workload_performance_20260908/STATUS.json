@@ -1,6 +1,6 @@
 {
   "schema": "rtdl.v4_long_workload_performance.status.v1",
-  "updated_at": "2026-09-08T09:43:00-04:00",
+  "updated_at": "2026-09-08T11:05:11-04:00",
   "authorization": {
     "owner_authorized_after_prior_freeze": true,
     "scope": "existing Particle, graph triangle-counting, and LibRTS performance remediation, strong public-PyOptiX comparison, necessary experiment tooling, and matching evidence/manuscript work",
@@ -55,6 +55,10 @@
     "independent_recount_status": "PASS__METHOD_AND_TARGET",
     "performance_target_met_for_all_four_original_units": true,
     "performance_target_met_for_all_ten_registered_rows": true,
+    "post_formal_cpu_sensitivity_raw_complete": true,
+    "post_formal_cpu_sensitivity_independent_recount_complete": true,
+    "cpu_or_clock_invariance_established": false,
+    "short_prepared_stable_performance_guarantee_authorized": false,
     "long_prepared_compute_target_met_by": [
       "triangle_counting__cit_patents__rt_2a1__4m"
     ],
@@ -77,10 +81,37 @@
     "archive_bytes": 730851,
     "archive_member_count": 1049
   },
+  "post_formal_cpu_sensitivity": {
+    "formal_evidence": false,
+    "pooled_into_formal_transaction": false,
+    "worker_count": 384,
+    "paired_cell_count": 192,
+    "logical_cpu_count": 48,
+    "unit_count": 2,
+    "retry_count": 0,
+    "discard_count": 0,
+    "timeout_count": 0,
+    "output_mismatch_count": 0,
+    "recount_status": "PASS__POST_FORMAL_DESCRIPTIVE_CPU_SENSITIVITY_RECOUNT",
+    "recount_commit": "98cce4a0fe8ec817b2d9610b651a8a8e54f25062",
+    "recount_output_sha256": "005caca0475516bafa6834594144a95c445eee771b171d1af0dbb448f80364d0",
+    "archive_sha256": "1f6f25512cbb781df2b75a204e1d3baad1e853179473a6616df6ec39e5629959",
+    "archive_bytes": 877815,
+    "archive_member_count": 2003,
+    "particle_cpu_medians_lte_1_20": 45,
+    "particle_cpus_both_blocks_lte_1_35": 36,
+    "particle_cpu_8_median": 1.3998736644530707,
+    "particle_cpu_8_rank_1_is_lowest": 47,
+    "librts_cpu_medians_lte_1_20": 43,
+    "librts_cpus_both_blocks_lte_1_35": 41,
+    "librts_cpu_8_median": 0.8046140224213388,
+    "librts_cpu_8_rank_1_is_lowest": 6,
+    "conclusion": "ADVERSE_TO_CPU_INVARIANCE__SUB_MILLISECOND_PREPARED_ROWS_NOT_STABLE_PERFORMANCE_GUARANTEES"
+  },
   "manuscript_draft": {
-    "main_tex_sha256": "0d29d05d04a0919d0c5b26c98861b17647fbc2256298990f6ab5b52a8de3f7a0",
-    "main_pdf_sha256": "3887bf1abb21068be057d13b012eddd7b9977e06ce53daf75b0eca84af4874c0",
-    "main_pdf_bytes": 183937,
+    "main_tex_sha256": "a52347ff48f181dfaaaa42f0ab7d8077bb78761611b94e66171f61a52d47f836",
+    "main_pdf_sha256": "9d8b3f7277cca812c4de7955abce2bfe6b9bb44337a41493f6c5ca8cf59f8e4a",
+    "main_pdf_bytes": 184360,
     "main_pdf_pages": 12,
     "page_size": "US Letter 612 x 792 pt",
     "overfull_log_entries": 0,
@@ -110,6 +141,7 @@
     "A different clean checkout independently reconstructed every journal, verified every raw-file hash and input/output identity, imported no project module, and returned PASS__METHOD_AND_TARGET.",
     "Only cit-Patents/4M supplies a multi-second prepared natural computation. Particle and LibRTS prepared rows remain sub-millisecond fixed-cost regressions, not broad long-workload evidence.",
     "CPU 8 was selected after a disclosed diagnostic; GPU clocks could not be locked. The result supports the registered controlled-host condition, not invariance over arbitrary CPUs or clocks.",
+    "The fixed post-formal 48-logical-CPU scan completed all 384 workers and was independently recounted, but CPU-8 Particle reversed from the formal 0.772559x median to 1.399874x. This scan is not pooled and prohibits a stable short-prepared-row guarantee.",
     "The successor evidence is integrated into a new 12-page local manuscript draft. Cached Tectonic build, all-page rendering, table inspection, and tested private-identity scans pass.",
     "Formal technical acceptance and local manuscript integration do not authorize public wording or submission. The new exact bytes still require independent final-byte review and submission controls."
   ]

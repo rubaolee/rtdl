@@ -22,8 +22,9 @@ transaction into a selectively relabeled pass?
    instability.
 3. A separate balanced eight-block diagnosis changed only process affinity and
    brought both worst blocks below 1.02x. This establishes a concrete,
-   reproducible measurement mechanism rather than a speculative source-code
-   explanation.
+   testable measurement mechanism rather than a speculative source-code
+   explanation. The later post-formal scan described below shows that exact
+   affinity alone is not sufficient to make the short rows reproducibly stable.
 4. Commit `02e84374f` changes only generic measurement tooling and tests. It
    does not alter an app path, callback, native DSO, PTX, `.rtdlexe`, workload,
    output contract, timer, repetition count, arm implementation, or threshold.
@@ -44,10 +45,14 @@ not invariance over arbitrary host CPUs. The same-CPU comparison remains fair
 within each block. The report must disclose selection chronology and must not
 claim that affinity eliminates every infrastructure source of variance.
 
-If GPU budget remains after formal closure, a clearly non-evidence sensitivity
-check on several allowed CPU IDs should test whether the two short prepared
-ratios remain within the engineering range. Such a check cannot change or
-filter the formal transaction.
+A fixed, clearly non-evidence sensitivity scan later tested all 48 allowed
+logical CPUs with two blocks per CPU and unit. It completed all 384 fresh
+workers with zero retry, discard, timeout, or output mismatch. CPU-8 Particle
+reversed from the formal `0.772559x` median to `1.399874x`, rank 47 of 48;
+only 36/48 Particle CPUs kept both blocks at or below `1.35x`. LibRTS CPU 8
+was `0.804614x`, rank 6, with 41/48 CPUs keeping both blocks at or below the
+limit.
+The scan is not pooled and rejects a stable short-row or CPU-invariance claim.
 
 ### GPU clocks are not locked
 
@@ -107,9 +112,10 @@ SHA-256
 A second deterministic archive was byte-identical. This closes the internal
 method and engineering gate, not manuscript/public authorization.
 
-The CPU-selection and unlocked-clock limitations above remain material. A
-multi-CPU sensitivity study would strengthen robustness but is not allowed to
-filter, replace, or relabel the passing formal transaction. Manuscript wording
-must also state that only cit-Patents/4M is a multi-second prepared natural
-computation and that the Particle route is a fixed app-shaped standard-library
-specialization. New paper bytes require a separate claim and final-byte review.
+The CPU-selection and unlocked-clock limitations above remain material. The
+completed multi-CPU sensitivity study is adverse to invariance and is not
+allowed to filter, replace, or relabel the passing formal transaction.
+Manuscript wording must state that the short prepared rows are unstable, only
+cit-Patents/4M is a multi-second prepared natural computation, and Particle is
+a fixed app-shaped standard-library specialization. New paper bytes require a
+separate claim and final-byte review.

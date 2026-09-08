@@ -17,12 +17,19 @@ threats, and conclusion were updated together. The draft does not claim broad
 performance, arbitrary callback lowering, app-independent native execution,
 CPU/clock invariance, easier authoring, or peak-memory evidence.
 
+After that integration, a fixed post-formal scan completed 384 fresh workers
+over all 48 logical CPUs for the two shortest prepared units. Its ordinary and
+optimized clean-Pod and local-archive recounts are byte-identical. CPU-8
+Particle reversed from `0.772559x` in the formal population to `1.399874x` in
+the scan. The scan is not pooled; the revised Internal Validity text now states
+that the sub-millisecond rows are unstable.
+
 ## Exact local bytes
 
 | Object | Bytes | SHA-256 |
 | --- | ---: | --- |
-| `paper/cgo2027/main.tex` | 60,625 | `0d29d05d04a0919d0c5b26c98861b17647fbc2256298990f6ab5b52a8de3f7a0` |
-| `paper/cgo2027/main.pdf` | 183,937 | `3887bf1abb21068be057d13b012eddd7b9977e06ce53daf75b0eca84af4874c0` |
+| `paper/cgo2027/main.tex` | 61,210 | `a52347ff48f181dfaaaa42f0ab7d8077bb78761611b94e66171f61a52d47f836` |
+| `paper/cgo2027/main.pdf` | 184,360 | `9d8b3f7277cca812c4de7955abce2bfe6b9bb44337a41493f6c5ca8cf59f8e4a` |
 
 The source byte count must be rechecked after the commit if metadata-only
 documentation changes unexpectedly touch `main.tex`; its SHA-256 is the binding
@@ -34,7 +41,6 @@ The exact build command from `paper/cgo2027/` was:
 
 ```text
 /opt/homebrew/bin/tectonic -X compile main.tex \
-  --outdir '/tmp/RTDL CGO long perf.NrVlo2' \
   --keep-logs --keep-intermediates
 ```
 
@@ -46,8 +52,8 @@ Results:
 - zero unresolved citation/reference or missing-character entries;
 - inherited BibTeX completeness warnings remain nonfatal and are not described
   as a warning-free bibliography;
-- all 12 pages rendered at 110 DPI and reviewed as a contact sheet;
-- pages 10--12 were separately reviewed at full rendered resolution;
+- all 12 pages rendered at 120 DPI and reviewed as three contact sheets;
+- pages 9--12 were separately reviewed at full rendered resolution;
 - the new Table 8 is legible and contained within its rules;
 - no clipping, overlap, blank page, missing glyph, or broken reference page was
   observed.
@@ -68,6 +74,11 @@ recounted JSON, not the rounded manuscript projection. In particular:
 - largest block: LibRTS range prepared `1.2433325861`;
 - long graph prepared: RTDL `9347.908622` ms, PyOptiX `8802.240058` ms,
   paired median `1.0573612349`.
+
+The separate sensitivity projection reconstructs 384 workers and 192 paired
+cells. Particle has 45/48 CPU medians at or below `1.20x`, but only 36/48 CPUs
+keep both blocks at or below `1.35x`; LibRTS has 43/48 and 41/48. Those values
+are descriptive limitations, not additional formal gates.
 
 ## Local test record
 

@@ -1,0 +1,3626 @@
+{
+  "all_input_and_output_parity_verified": true,
+  "all_journals_reconstructed": true,
+  "all_raw_file_hashes_verified": true,
+  "claim_boundary": {
+    "changes_formal_transaction": false,
+    "confidence_interval_claimed": false,
+    "cross_hardware_generalization_claimed": false,
+    "formal_gate_inferred": false,
+    "public_or_manuscript_claim_authorized": false
+  },
+  "cpu_rows": [
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 710780,
+            "pyoptix": 495984
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 1.433070421626504,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 360235,
+            "pyoptix": 490174
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 0.7349125004590207,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": false,
+      "cpu": 0,
+      "hardware_thread_class": "primary",
+      "maximum_block_ratio": 1.433070421626504,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 1.0839914610427623,
+      "minimum_block_ratio": 0.7349125004590207,
+      "unit_id": "particle_tracking"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 355185,
+            "pyoptix": 482714
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 0.7358083668590512,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 717100,
+            "pyoptix": 983677
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 0.7289994581554717,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": true,
+      "cpu": 1,
+      "hardware_thread_class": "primary",
+      "maximum_block_ratio": 0.7358083668590512,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 0.7324039125072614,
+      "minimum_block_ratio": 0.7289994581554717,
+      "unit_id": "particle_tracking"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 362300,
+            "pyoptix": 1001193
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 0.36186829112868346,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 364675,
+            "pyoptix": 999463
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 0.36487093569246687,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": true,
+      "cpu": 2,
+      "hardware_thread_class": "primary",
+      "maximum_block_ratio": 0.36487093569246687,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 0.36336961341057517,
+      "minimum_block_ratio": 0.36186829112868346,
+      "unit_id": "particle_tracking"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 732780,
+            "pyoptix": 995428
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 0.7361456579481389,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 730970,
+            "pyoptix": 495809
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 1.474297562166076,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": false,
+      "cpu": 3,
+      "hardware_thread_class": "primary",
+      "maximum_block_ratio": 1.474297562166076,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 1.1052216100571075,
+      "minimum_block_ratio": 0.7361456579481389,
+      "unit_id": "particle_tracking"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 400201,
+            "pyoptix": 510029
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 0.7846632250323021,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 389056,
+            "pyoptix": 526399
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 0.7390895499421541,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": true,
+      "cpu": 4,
+      "hardware_thread_class": "primary",
+      "maximum_block_ratio": 0.7846632250323021,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 0.7618763874872281,
+      "minimum_block_ratio": 0.7390895499421541,
+      "unit_id": "particle_tracking"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 376281,
+            "pyoptix": 883109
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 0.42608670050922365,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 358865,
+            "pyoptix": 505424
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 0.7100276203741809,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": true,
+      "cpu": 5,
+      "hardware_thread_class": "primary",
+      "maximum_block_ratio": 0.7100276203741809,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 0.5680571604417023,
+      "minimum_block_ratio": 0.42608670050922365,
+      "unit_id": "particle_tracking"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 366115,
+            "pyoptix": 519455
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 0.704805998594681,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 367975,
+            "pyoptix": 542520
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 0.6782699255326993,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": true,
+      "cpu": 6,
+      "hardware_thread_class": "primary",
+      "maximum_block_ratio": 0.704805998594681,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 0.6915379620636901,
+      "minimum_block_ratio": 0.6782699255326993,
+      "unit_id": "particle_tracking"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 536540,
+            "pyoptix": 494564
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 1.0848747583730316,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 382185,
+            "pyoptix": 1019968
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 0.3747029318566857,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": true,
+      "cpu": 7,
+      "hardware_thread_class": "primary",
+      "maximum_block_ratio": 1.0848747583730316,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 0.7297888451148586,
+      "minimum_block_ratio": 0.3747029318566857,
+      "unit_id": "particle_tracking"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 702585,
+            "pyoptix": 499804
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 1.4057210426487183,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 698120,
+            "pyoptix": 500794
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 1.3940262862574233,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": false,
+      "cpu": 8,
+      "hardware_thread_class": "primary",
+      "maximum_block_ratio": 1.4057210426487183,
+      "median_lte_1_20": false,
+      "median_new_v4_over_pyoptix": 1.3998736644530707,
+      "minimum_block_ratio": 1.3940262862574233,
+      "unit_id": "particle_tracking"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 549621,
+            "pyoptix": 489644
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 1.1224910343024728,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 451668,
+            "pyoptix": 490468
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 0.9208918828547428,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": true,
+      "cpu": 9,
+      "hardware_thread_class": "primary",
+      "maximum_block_ratio": 1.1224910343024728,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 1.0216914585786077,
+      "minimum_block_ratio": 0.9208918828547428,
+      "unit_id": "particle_tracking"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 357330,
+            "pyoptix": 482599
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 0.7404283887865495,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 705250,
+            "pyoptix": 990108
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 0.7122960323520262,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": true,
+      "cpu": 10,
+      "hardware_thread_class": "primary",
+      "maximum_block_ratio": 0.7404283887865495,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 0.7263622105692878,
+      "minimum_block_ratio": 0.7122960323520262,
+      "unit_id": "particle_tracking"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 366675,
+            "pyoptix": 718565
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 0.5102878653983982,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 704845,
+            "pyoptix": 498239
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 1.4146724764620995,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": false,
+      "cpu": 11,
+      "hardware_thread_class": "primary",
+      "maximum_block_ratio": 1.4146724764620995,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 0.9624801709302488,
+      "minimum_block_ratio": 0.5102878653983982,
+      "unit_id": "particle_tracking"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 365665,
+            "pyoptix": 989373
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 0.36959266121068596,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 356120,
+            "pyoptix": 487449
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 0.7305789939050034,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": true,
+      "cpu": 12,
+      "hardware_thread_class": "primary",
+      "maximum_block_ratio": 0.7305789939050034,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 0.5500858275578446,
+      "minimum_block_ratio": 0.36959266121068596,
+      "unit_id": "particle_tracking"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 384896,
+            "pyoptix": 991383
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 0.38824147680563414,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 366580,
+            "pyoptix": 994113
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 0.3687508361725478,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": true,
+      "cpu": 13,
+      "hardware_thread_class": "primary",
+      "maximum_block_ratio": 0.38824147680563414,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 0.37849615648909096,
+      "minimum_block_ratio": 0.3687508361725478,
+      "unit_id": "particle_tracking"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 760066,
+            "pyoptix": 998878
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 0.760919751961701,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 709295,
+            "pyoptix": 980217
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 0.7236101801947936,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": true,
+      "cpu": 14,
+      "hardware_thread_class": "primary",
+      "maximum_block_ratio": 0.760919751961701,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 0.7422649660782473,
+      "minimum_block_ratio": 0.7236101801947936,
+      "unit_id": "particle_tracking"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 708120,
+            "pyoptix": 990763
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 0.7147218860615505,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 495809,
+            "pyoptix": 998833
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 0.4963882851287452,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": true,
+      "cpu": 15,
+      "hardware_thread_class": "primary",
+      "maximum_block_ratio": 0.7147218860615505,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 0.6055550855951479,
+      "minimum_block_ratio": 0.4963882851287452,
+      "unit_id": "particle_tracking"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 354315,
+            "pyoptix": 1000628
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 0.35409262982846773,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 358750,
+            "pyoptix": 973687
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 0.36844489040112477,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": true,
+      "cpu": 16,
+      "hardware_thread_class": "primary",
+      "maximum_block_ratio": 0.36844489040112477,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 0.36126876011479625,
+      "minimum_block_ratio": 0.35409262982846773,
+      "unit_id": "particle_tracking"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 707175,
+            "pyoptix": 503784
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 1.4037265971130484,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 355100,
+            "pyoptix": 1015438
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 0.3497013111583376,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": false,
+      "cpu": 17,
+      "hardware_thread_class": "primary",
+      "maximum_block_ratio": 1.4037265971130484,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 0.876713954135693,
+      "minimum_block_ratio": 0.3497013111583376,
+      "unit_id": "particle_tracking"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 370880,
+            "pyoptix": 517680
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 0.7164271364549528,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 530990,
+            "pyoptix": 995113
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 0.5335976919204151,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": true,
+      "cpu": 18,
+      "hardware_thread_class": "primary",
+      "maximum_block_ratio": 0.7164271364549528,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 0.6250124141876839,
+      "minimum_block_ratio": 0.5335976919204151,
+      "unit_id": "particle_tracking"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 356380,
+            "pyoptix": 989638
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 0.3601114751050384,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 726206,
+            "pyoptix": 501514
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 1.4480273731142101,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": false,
+      "cpu": 19,
+      "hardware_thread_class": "primary",
+      "maximum_block_ratio": 1.4480273731142101,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 0.9040694241096243,
+      "minimum_block_ratio": 0.3601114751050384,
+      "unit_id": "particle_tracking"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 546821,
+            "pyoptix": 503074
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 1.0869593737700616,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 711960,
+            "pyoptix": 1021039
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 0.6972897215483443,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": true,
+      "cpu": 20,
+      "hardware_thread_class": "primary",
+      "maximum_block_ratio": 1.0869593737700616,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 0.892124547659203,
+      "minimum_block_ratio": 0.6972897215483443,
+      "unit_id": "particle_tracking"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 356225,
+            "pyoptix": 986663
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 0.3610401930547715,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 356010,
+            "pyoptix": 748956
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 0.47534167561245255,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": true,
+      "cpu": 21,
+      "hardware_thread_class": "primary",
+      "maximum_block_ratio": 0.47534167561245255,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 0.418190934333612,
+      "minimum_block_ratio": 0.3610401930547715,
+      "unit_id": "particle_tracking"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 741061,
+            "pyoptix": 497694
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 1.488989218274683,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 702975,
+            "pyoptix": 501409
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 1.401999166349228,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": false,
+      "cpu": 22,
+      "hardware_thread_class": "primary",
+      "maximum_block_ratio": 1.488989218274683,
+      "median_lte_1_20": false,
+      "median_new_v4_over_pyoptix": 1.4454941923119553,
+      "minimum_block_ratio": 1.401999166349228,
+      "unit_id": "particle_tracking"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 730086,
+            "pyoptix": 994413
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 0.7341879078411083,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 717525,
+            "pyoptix": 787077
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 0.9116325340468595,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": true,
+      "cpu": 23,
+      "hardware_thread_class": "primary",
+      "maximum_block_ratio": 0.9116325340468595,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 0.8229102209439839,
+      "minimum_block_ratio": 0.7341879078411083,
+      "unit_id": "particle_tracking"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 359640,
+            "pyoptix": 985123
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 0.3650711637024006,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 699755,
+            "pyoptix": 494454
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 1.4152074813835058,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": false,
+      "cpu": 24,
+      "hardware_thread_class": "smt_sibling",
+      "maximum_block_ratio": 1.4152074813835058,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 0.8901393225429532,
+      "minimum_block_ratio": 0.3650711637024006,
+      "unit_id": "particle_tracking"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 732785,
+            "pyoptix": 990528
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 0.7397923127867158,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 364020,
+            "pyoptix": 716540
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 0.5080246741284506,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": true,
+      "cpu": 25,
+      "hardware_thread_class": "smt_sibling",
+      "maximum_block_ratio": 0.7397923127867158,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 0.6239084934575831,
+      "minimum_block_ratio": 0.5080246741284506,
+      "unit_id": "particle_tracking"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 708365,
+            "pyoptix": 980672
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 0.7223261192325263,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 707565,
+            "pyoptix": 995713
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 0.71061139103336,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": true,
+      "cpu": 26,
+      "hardware_thread_class": "smt_sibling",
+      "maximum_block_ratio": 0.7223261192325263,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 0.7164687551329432,
+      "minimum_block_ratio": 0.71061139103336,
+      "unit_id": "particle_tracking"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 366330,
+            "pyoptix": 610162
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 0.6003815380177723,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 722695,
+            "pyoptix": 494079
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 1.4627114287391287,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": false,
+      "cpu": 27,
+      "hardware_thread_class": "smt_sibling",
+      "maximum_block_ratio": 1.4627114287391287,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 1.0315464833784505,
+      "minimum_block_ratio": 0.6003815380177723,
+      "unit_id": "particle_tracking"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 736506,
+            "pyoptix": 509644
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 1.4451381748828593,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 375916,
+            "pyoptix": 727426
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 0.5167755895445035,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": false,
+      "cpu": 28,
+      "hardware_thread_class": "smt_sibling",
+      "maximum_block_ratio": 1.4451381748828593,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 0.9809568822136814,
+      "minimum_block_ratio": 0.5167755895445035,
+      "unit_id": "particle_tracking"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 363000,
+            "pyoptix": 514324
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 0.7057807918743827,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 363500,
+            "pyoptix": 528510
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 0.6877826341980284,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": true,
+      "cpu": 29,
+      "hardware_thread_class": "smt_sibling",
+      "maximum_block_ratio": 0.7057807918743827,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 0.6967817130362055,
+      "minimum_block_ratio": 0.6877826341980284,
+      "unit_id": "particle_tracking"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 410671,
+            "pyoptix": 1032484
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 0.3977504736150875,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 581031,
+            "pyoptix": 737871
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 0.7874425204405648,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": true,
+      "cpu": 30,
+      "hardware_thread_class": "smt_sibling",
+      "maximum_block_ratio": 0.7874425204405648,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 0.5925964970278261,
+      "minimum_block_ratio": 0.3977504736150875,
+      "unit_id": "particle_tracking"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 372771,
+            "pyoptix": 514244
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 0.7248912967385133,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 367405,
+            "pyoptix": 494424
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 0.7430970179441128,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": true,
+      "cpu": 31,
+      "hardware_thread_class": "smt_sibling",
+      "maximum_block_ratio": 0.7430970179441128,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 0.733994157341313,
+      "minimum_block_ratio": 0.7248912967385133,
+      "unit_id": "particle_tracking"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 854389,
+            "pyoptix": 501834
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 1.70253310855781,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 361900,
+            "pyoptix": 506094
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 0.7150845495105652,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": false,
+      "cpu": 32,
+      "hardware_thread_class": "smt_sibling",
+      "maximum_block_ratio": 1.70253310855781,
+      "median_lte_1_20": false,
+      "median_new_v4_over_pyoptix": 1.2088088290341876,
+      "minimum_block_ratio": 0.7150845495105652,
+      "unit_id": "particle_tracking"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 431247,
+            "pyoptix": 905650
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 0.47617401866063047,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 365680,
+            "pyoptix": 649928
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 0.5626469393532822,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": true,
+      "cpu": 33,
+      "hardware_thread_class": "smt_sibling",
+      "maximum_block_ratio": 0.5626469393532822,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 0.5194104790069564,
+      "minimum_block_ratio": 0.47617401866063047,
+      "unit_id": "particle_tracking"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 370615,
+            "pyoptix": 942171
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 0.39336277597166547,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 359380,
+            "pyoptix": 489029
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 0.7348848432301561,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": true,
+      "cpu": 34,
+      "hardware_thread_class": "smt_sibling",
+      "maximum_block_ratio": 0.7348848432301561,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 0.5641238096009108,
+      "minimum_block_ratio": 0.39336277597166547,
+      "unit_id": "particle_tracking"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 360665,
+            "pyoptix": 488379
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 0.7384940793932581,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 362700,
+            "pyoptix": 504474
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 0.7189666860928413,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": true,
+      "cpu": 35,
+      "hardware_thread_class": "smt_sibling",
+      "maximum_block_ratio": 0.7384940793932581,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 0.7287303827430497,
+      "minimum_block_ratio": 0.7189666860928413,
+      "unit_id": "particle_tracking"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 711215,
+            "pyoptix": 762166
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 0.9331497337850284,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 372456,
+            "pyoptix": 511344
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 0.7283863700366094,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": true,
+      "cpu": 36,
+      "hardware_thread_class": "smt_sibling",
+      "maximum_block_ratio": 0.9331497337850284,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 0.8307680519108189,
+      "minimum_block_ratio": 0.7283863700366094,
+      "unit_id": "particle_tracking"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 373051,
+            "pyoptix": 495229
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 0.7532898921509039,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 357640,
+            "pyoptix": 489784
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 0.7301994348529147,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": true,
+      "cpu": 37,
+      "hardware_thread_class": "smt_sibling",
+      "maximum_block_ratio": 0.7532898921509039,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 0.7417446635019094,
+      "minimum_block_ratio": 0.7301994348529147,
+      "unit_id": "particle_tracking"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 678214,
+            "pyoptix": 496014
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 1.367328341538747,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 368845,
+            "pyoptix": 493669
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 0.7471504186003172,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": false,
+      "cpu": 38,
+      "hardware_thread_class": "smt_sibling",
+      "maximum_block_ratio": 1.367328341538747,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 1.057239380069532,
+      "minimum_block_ratio": 0.7471504186003172,
+      "unit_id": "particle_tracking"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 479764,
+            "pyoptix": 618563
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 0.7756105683657122,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 367085,
+            "pyoptix": 491519
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 0.7468378638465655,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": true,
+      "cpu": 39,
+      "hardware_thread_class": "smt_sibling",
+      "maximum_block_ratio": 0.7756105683657122,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 0.7612242161061389,
+      "minimum_block_ratio": 0.7468378638465655,
+      "unit_id": "particle_tracking"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 362530,
+            "pyoptix": 508809
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 0.712507050779369,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 369966,
+            "pyoptix": 494929
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 0.7475132796825403,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": true,
+      "cpu": 40,
+      "hardware_thread_class": "smt_sibling",
+      "maximum_block_ratio": 0.7475132796825403,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 0.7300101652309547,
+      "minimum_block_ratio": 0.712507050779369,
+      "unit_id": "particle_tracking"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 359335,
+            "pyoptix": 609027
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 0.5900148926073885,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 459578,
+            "pyoptix": 508459
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 0.9038644217134518,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": true,
+      "cpu": 41,
+      "hardware_thread_class": "smt_sibling",
+      "maximum_block_ratio": 0.9038644217134518,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 0.7469396571604201,
+      "minimum_block_ratio": 0.5900148926073885,
+      "unit_id": "particle_tracking"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 367210,
+            "pyoptix": 492749
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 0.7452272861030667,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 473048,
+            "pyoptix": 509330
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 0.9287652406102134,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": true,
+      "cpu": 42,
+      "hardware_thread_class": "smt_sibling",
+      "maximum_block_ratio": 0.9287652406102134,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 0.83699626335664,
+      "minimum_block_ratio": 0.7452272861030667,
+      "unit_id": "particle_tracking"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 370060,
+            "pyoptix": 528165
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 0.7006522582904964,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 362690,
+            "pyoptix": 493709
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 0.7346230269247674,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": true,
+      "cpu": 43,
+      "hardware_thread_class": "smt_sibling",
+      "maximum_block_ratio": 0.7346230269247674,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 0.7176376426076319,
+      "minimum_block_ratio": 0.7006522582904964,
+      "unit_id": "particle_tracking"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 518709,
+            "pyoptix": 503394
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 1.0304234853812322,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 381431,
+            "pyoptix": 531875
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 0.7171440658049354,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": true,
+      "cpu": 44,
+      "hardware_thread_class": "smt_sibling",
+      "maximum_block_ratio": 1.0304234853812322,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 0.8737837755930837,
+      "minimum_block_ratio": 0.7171440658049354,
+      "unit_id": "particle_tracking"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 514020,
+            "pyoptix": 704749
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 0.7293660579866024,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 379056,
+            "pyoptix": 629283
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 0.6023617354989727,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": true,
+      "cpu": 45,
+      "hardware_thread_class": "smt_sibling",
+      "maximum_block_ratio": 0.7293660579866024,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 0.6658638967427875,
+      "minimum_block_ratio": 0.6023617354989727,
+      "unit_id": "particle_tracking"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 373960,
+            "pyoptix": 498054
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 0.7508422781465464,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 369440,
+            "pyoptix": 491829
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 0.7511553812402278,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": true,
+      "cpu": 46,
+      "hardware_thread_class": "smt_sibling",
+      "maximum_block_ratio": 0.7511553812402278,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 0.7509988296933872,
+      "minimum_block_ratio": 0.7508422781465464,
+      "unit_id": "particle_tracking"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 459453,
+            "pyoptix": 1010718
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 0.45458080295393966,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 773392,
+            "pyoptix": 867760
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 0.8912510371531299,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": true,
+      "cpu": 47,
+      "hardware_thread_class": "smt_sibling",
+      "maximum_block_ratio": 0.8912510371531299,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 0.6729159200535348,
+      "minimum_block_ratio": 0.45458080295393966,
+      "unit_id": "particle_tracking"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 241542,
+            "pyoptix": 247961
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 0.97411286452305,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 318254,
+            "pyoptix": 256747
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 1.239562682329297,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": true,
+      "cpu": 0,
+      "hardware_thread_class": "primary",
+      "maximum_block_ratio": 1.239562682329297,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 1.1068377734261734,
+      "minimum_block_ratio": 0.97411286452305,
+      "unit_id": "librts__parks__range_contains"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 271542,
+            "pyoptix": 250357
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 1.084619163834045,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 356295,
+            "pyoptix": 249352
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 1.4288836664634734,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": false,
+      "cpu": 1,
+      "hardware_thread_class": "primary",
+      "maximum_block_ratio": 1.4288836664634734,
+      "median_lte_1_20": false,
+      "median_new_v4_over_pyoptix": 1.2567514151487593,
+      "minimum_block_ratio": 1.084619163834045,
+      "unit_id": "librts__parks__range_contains"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 241502,
+            "pyoptix": 259682
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 0.9299912970479278,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 237497,
+            "pyoptix": 250407
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 0.9484439332766257,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": true,
+      "cpu": 2,
+      "hardware_thread_class": "primary",
+      "maximum_block_ratio": 0.9484439332766257,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 0.9392176151622768,
+      "minimum_block_ratio": 0.9299912970479278,
+      "unit_id": "librts__parks__range_contains"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 254867,
+            "pyoptix": 261817
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 0.9734547412887627,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 291508,
+            "pyoptix": 264962
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 1.100187951479835,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": true,
+      "cpu": 3,
+      "hardware_thread_class": "primary",
+      "maximum_block_ratio": 1.100187951479835,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 1.0368213463842988,
+      "minimum_block_ratio": 0.9734547412887627,
+      "unit_id": "librts__parks__range_contains"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 552905,
+            "pyoptix": 259347
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 2.131912071471812,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 254072,
+            "pyoptix": 271042
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 0.9373897772300972,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": false,
+      "cpu": 4,
+      "hardware_thread_class": "primary",
+      "maximum_block_ratio": 2.131912071471812,
+      "median_lte_1_20": false,
+      "median_new_v4_over_pyoptix": 1.5346509243509545,
+      "minimum_block_ratio": 0.9373897772300972,
+      "unit_id": "librts__parks__range_contains"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 249697,
+            "pyoptix": 268897
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 0.9285971952085743,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 309983,
+            "pyoptix": 261952
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 1.1833580197898852,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": true,
+      "cpu": 5,
+      "hardware_thread_class": "primary",
+      "maximum_block_ratio": 1.1833580197898852,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 1.0559776074992298,
+      "minimum_block_ratio": 0.9285971952085743,
+      "unit_id": "librts__parks__range_contains"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 250851,
+            "pyoptix": 250222
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 1.0025137677742164,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 263588,
+            "pyoptix": 266852
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 0.9877685008918802,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": true,
+      "cpu": 6,
+      "hardware_thread_class": "primary",
+      "maximum_block_ratio": 1.0025137677742164,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 0.9951411343330483,
+      "minimum_block_ratio": 0.9877685008918802,
+      "unit_id": "librts__parks__range_contains"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 263252,
+            "pyoptix": 259487
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 1.0145093973879231,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 239947,
+            "pyoptix": 271042
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 0.885276082673534,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": true,
+      "cpu": 7,
+      "hardware_thread_class": "primary",
+      "maximum_block_ratio": 1.0145093973879231,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 0.9498927400307285,
+      "minimum_block_ratio": 0.885276082673534,
+      "unit_id": "librts__parks__range_contains"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 245882,
+            "pyoptix": 370290
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 0.6640254935320965,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 247627,
+            "pyoptix": 261983
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 0.9452025513105812,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": true,
+      "cpu": 8,
+      "hardware_thread_class": "primary",
+      "maximum_block_ratio": 0.9452025513105812,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 0.8046140224213388,
+      "minimum_block_ratio": 0.6640254935320965,
+      "unit_id": "librts__parks__range_contains"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 245287,
+            "pyoptix": 257427
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 0.9528409995843482,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 239691,
+            "pyoptix": 250782
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 0.9557743378711391,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": true,
+      "cpu": 9,
+      "hardware_thread_class": "primary",
+      "maximum_block_ratio": 0.9557743378711391,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 0.9543076687277436,
+      "minimum_block_ratio": 0.9528409995843482,
+      "unit_id": "librts__parks__range_contains"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 315829,
+            "pyoptix": 248032
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 1.2733397303573732,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 320389,
+            "pyoptix": 401581
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 0.7978191199284826,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": true,
+      "cpu": 10,
+      "hardware_thread_class": "primary",
+      "maximum_block_ratio": 1.2733397303573732,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 1.035579425142928,
+      "minimum_block_ratio": 0.7978191199284826,
+      "unit_id": "librts__parks__range_contains"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 249372,
+            "pyoptix": 254127
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 0.9812888831174964,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 243387,
+            "pyoptix": 255977
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 0.950815893615442,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": true,
+      "cpu": 11,
+      "hardware_thread_class": "primary",
+      "maximum_block_ratio": 0.9812888831174964,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 0.9660523883664692,
+      "minimum_block_ratio": 0.950815893615442,
+      "unit_id": "librts__parks__range_contains"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 248297,
+            "pyoptix": 251822
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 0.9860020172979327,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 246867,
+            "pyoptix": 264547
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 0.9331687753026873,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": true,
+      "cpu": 12,
+      "hardware_thread_class": "primary",
+      "maximum_block_ratio": 0.9860020172979327,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 0.95958539630031,
+      "minimum_block_ratio": 0.9331687753026873,
+      "unit_id": "librts__parks__range_contains"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 240632,
+            "pyoptix": 247862
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 0.9708305428020431,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 245496,
+            "pyoptix": 250237
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 0.9810539608451189,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": true,
+      "cpu": 13,
+      "hardware_thread_class": "primary",
+      "maximum_block_ratio": 0.9810539608451189,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 0.975942251823581,
+      "minimum_block_ratio": 0.9708305428020431,
+      "unit_id": "librts__parks__range_contains"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 244282,
+            "pyoptix": 262797
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 0.9295463799054022,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 342234,
+            "pyoptix": 397146
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 0.861733468296294,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": true,
+      "cpu": 14,
+      "hardware_thread_class": "primary",
+      "maximum_block_ratio": 0.9295463799054022,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 0.8956399241008481,
+      "minimum_block_ratio": 0.861733468296294,
+      "unit_id": "librts__parks__range_contains"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 243586,
+            "pyoptix": 392581
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 0.6204732271811423,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 237902,
+            "pyoptix": 260377
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 0.9136828521720428,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": true,
+      "cpu": 15,
+      "hardware_thread_class": "primary",
+      "maximum_block_ratio": 0.9136828521720428,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 0.7670780396765926,
+      "minimum_block_ratio": 0.6204732271811423,
+      "unit_id": "librts__parks__range_contains"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 257117,
+            "pyoptix": 251917
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 1.020641719296435,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 249517,
+            "pyoptix": 405531
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 0.6152846514816377,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": true,
+      "cpu": 16,
+      "hardware_thread_class": "primary",
+      "maximum_block_ratio": 1.020641719296435,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 0.8179631853890363,
+      "minimum_block_ratio": 0.6152846514816377,
+      "unit_id": "librts__parks__range_contains"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 241881,
+            "pyoptix": 257587
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 0.9390264260230524,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 238147,
+            "pyoptix": 255012
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 0.9338658572929901,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": true,
+      "cpu": 17,
+      "hardware_thread_class": "primary",
+      "maximum_block_ratio": 0.9390264260230524,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 0.9364461416580212,
+      "minimum_block_ratio": 0.9338658572929901,
+      "unit_id": "librts__parks__range_contains"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 239226,
+            "pyoptix": 252132
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 0.948812526771691,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 240992,
+            "pyoptix": 250222
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 0.963112755872785,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": true,
+      "cpu": 18,
+      "hardware_thread_class": "primary",
+      "maximum_block_ratio": 0.963112755872785,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 0.955962641322238,
+      "minimum_block_ratio": 0.948812526771691,
+      "unit_id": "librts__parks__range_contains"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 243987,
+            "pyoptix": 252307
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 0.9670242997617982,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 252862,
+            "pyoptix": 300853
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 0.8404835584155718,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": true,
+      "cpu": 19,
+      "hardware_thread_class": "primary",
+      "maximum_block_ratio": 0.9670242997617982,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 0.9037539290886849,
+      "minimum_block_ratio": 0.8404835584155718,
+      "unit_id": "librts__parks__range_contains"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 240867,
+            "pyoptix": 250882
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 0.9600808348147735,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 417597,
+            "pyoptix": 402217
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 1.0382380655218453,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": true,
+      "cpu": 20,
+      "hardware_thread_class": "primary",
+      "maximum_block_ratio": 1.0382380655218453,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 0.9991594501683094,
+      "minimum_block_ratio": 0.9600808348147735,
+      "unit_id": "librts__parks__range_contains"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 243267,
+            "pyoptix": 253012
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 0.9614840402826743,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 319349,
+            "pyoptix": 258392
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 1.2359090064707885,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": true,
+      "cpu": 21,
+      "hardware_thread_class": "primary",
+      "maximum_block_ratio": 1.2359090064707885,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 1.0986965233767314,
+      "minimum_block_ratio": 0.9614840402826743,
+      "unit_id": "librts__parks__range_contains"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 236081,
+            "pyoptix": 397566
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 0.593815869566311,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 249227,
+            "pyoptix": 254887
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 0.9777940812987717,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": true,
+      "cpu": 22,
+      "hardware_thread_class": "primary",
+      "maximum_block_ratio": 0.9777940812987717,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 0.7858049754325414,
+      "minimum_block_ratio": 0.593815869566311,
+      "unit_id": "librts__parks__range_contains"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 252957,
+            "pyoptix": 248692
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 1.0171497273736188,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 267327,
+            "pyoptix": 483023
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 0.55344569513253,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": true,
+      "cpu": 23,
+      "hardware_thread_class": "primary",
+      "maximum_block_ratio": 1.0171497273736188,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 0.7852977112530743,
+      "minimum_block_ratio": 0.55344569513253,
+      "unit_id": "librts__parks__range_contains"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 245437,
+            "pyoptix": 254317
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 0.9650829476598104,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 243477,
+            "pyoptix": 259178
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 0.939420012501061,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": true,
+      "cpu": 24,
+      "hardware_thread_class": "smt_sibling",
+      "maximum_block_ratio": 0.9650829476598104,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 0.9522514800804357,
+      "minimum_block_ratio": 0.939420012501061,
+      "unit_id": "librts__parks__range_contains"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 242161,
+            "pyoptix": 262372
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 0.9229681520893998,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 346030,
+            "pyoptix": 255262
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 1.355587592356089,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": false,
+      "cpu": 25,
+      "hardware_thread_class": "smt_sibling",
+      "maximum_block_ratio": 1.355587592356089,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 1.1392778722227443,
+      "minimum_block_ratio": 0.9229681520893998,
+      "unit_id": "librts__parks__range_contains"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 242897,
+            "pyoptix": 328214
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 0.7400567922148354,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 252512,
+            "pyoptix": 253022
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 0.9979843649959292,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": true,
+      "cpu": 26,
+      "hardware_thread_class": "smt_sibling",
+      "maximum_block_ratio": 0.9979843649959292,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 0.8690205786053824,
+      "minimum_block_ratio": 0.7400567922148354,
+      "unit_id": "librts__parks__range_contains"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 247937,
+            "pyoptix": 251817
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 0.9845919854497512,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 254242,
+            "pyoptix": 255332
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 0.9957310482039071,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": true,
+      "cpu": 27,
+      "hardware_thread_class": "smt_sibling",
+      "maximum_block_ratio": 0.9957310482039071,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 0.9901615168268292,
+      "minimum_block_ratio": 0.9845919854497512,
+      "unit_id": "librts__parks__range_contains"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 242987,
+            "pyoptix": 304734
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 0.7973741033163348,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 243827,
+            "pyoptix": 253347
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 0.9624230798075367,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": true,
+      "cpu": 28,
+      "hardware_thread_class": "smt_sibling",
+      "maximum_block_ratio": 0.9624230798075367,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 0.8798985915619357,
+      "minimum_block_ratio": 0.7973741033163348,
+      "unit_id": "librts__parks__range_contains"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 393716,
+            "pyoptix": 259662
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 1.5162634501775385,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 360125,
+            "pyoptix": 353445
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 1.018899687362956,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": false,
+      "cpu": 29,
+      "hardware_thread_class": "smt_sibling",
+      "maximum_block_ratio": 1.5162634501775385,
+      "median_lte_1_20": false,
+      "median_new_v4_over_pyoptix": 1.2675815687702472,
+      "minimum_block_ratio": 1.018899687362956,
+      "unit_id": "librts__parks__range_contains"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 247887,
+            "pyoptix": 254657
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 0.9734152212583985,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 262117,
+            "pyoptix": 367591
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 0.7130669684513494,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": true,
+      "cpu": 30,
+      "hardware_thread_class": "smt_sibling",
+      "maximum_block_ratio": 0.9734152212583985,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 0.843241094854874,
+      "minimum_block_ratio": 0.7130669684513494,
+      "unit_id": "librts__parks__range_contains"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 243222,
+            "pyoptix": 260377
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 0.9341147643609075,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 254667,
+            "pyoptix": 449772
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 0.5662135481977535,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": true,
+      "cpu": 31,
+      "hardware_thread_class": "smt_sibling",
+      "maximum_block_ratio": 0.9341147643609075,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 0.7501641562793304,
+      "minimum_block_ratio": 0.5662135481977535,
+      "unit_id": "librts__parks__range_contains"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 262622,
+            "pyoptix": 254237
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 1.032981037378509,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 273683,
+            "pyoptix": 524455
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 0.5218426747766729,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": true,
+      "cpu": 32,
+      "hardware_thread_class": "smt_sibling",
+      "maximum_block_ratio": 1.032981037378509,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 0.777411856077591,
+      "minimum_block_ratio": 0.5218426747766729,
+      "unit_id": "librts__parks__range_contains"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 253572,
+            "pyoptix": 330214
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 0.7679020271702592,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 241877,
+            "pyoptix": 264322
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 0.91508463162355,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": true,
+      "cpu": 33,
+      "hardware_thread_class": "smt_sibling",
+      "maximum_block_ratio": 0.91508463162355,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 0.8414933293969047,
+      "minimum_block_ratio": 0.7679020271702592,
+      "unit_id": "librts__parks__range_contains"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 284153,
+            "pyoptix": 262622
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 1.0819847537525418,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 244882,
+            "pyoptix": 326769
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 0.7494040132325894,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": true,
+      "cpu": 34,
+      "hardware_thread_class": "smt_sibling",
+      "maximum_block_ratio": 1.0819847537525418,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 0.9156943834925656,
+      "minimum_block_ratio": 0.7494040132325894,
+      "unit_id": "librts__parks__range_contains"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 267632,
+            "pyoptix": 254067
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 1.0533914282453054,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 289528,
+            "pyoptix": 262377
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 1.1034808691310596,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": true,
+      "cpu": 35,
+      "hardware_thread_class": "smt_sibling",
+      "maximum_block_ratio": 1.1034808691310596,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 1.0784361486881826,
+      "minimum_block_ratio": 1.0533914282453054,
+      "unit_id": "librts__parks__range_contains"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 249422,
+            "pyoptix": 269447
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 0.925681117251259,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 248072,
+            "pyoptix": 271168
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 0.9148277082841634,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": true,
+      "cpu": 36,
+      "hardware_thread_class": "smt_sibling",
+      "maximum_block_ratio": 0.925681117251259,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 0.9202544127677112,
+      "minimum_block_ratio": 0.9148277082841634,
+      "unit_id": "librts__parks__range_contains"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 245926,
+            "pyoptix": 264987
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 0.9280681693818942,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 241112,
+            "pyoptix": 260257
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 0.926438097726478,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": true,
+      "cpu": 37,
+      "hardware_thread_class": "smt_sibling",
+      "maximum_block_ratio": 0.9280681693818942,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 0.927253133554186,
+      "minimum_block_ratio": 0.926438097726478,
+      "unit_id": "librts__parks__range_contains"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 237192,
+            "pyoptix": 247052
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 0.9600893738969933,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 255562,
+            "pyoptix": 245947
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 1.0390937884991482,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": true,
+      "cpu": 38,
+      "hardware_thread_class": "smt_sibling",
+      "maximum_block_ratio": 1.0390937884991482,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 0.9995915811980708,
+      "minimum_block_ratio": 0.9600893738969933,
+      "unit_id": "librts__parks__range_contains"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 246491,
+            "pyoptix": 264352
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 0.9324347839244643,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 264007,
+            "pyoptix": 263947
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 1.0002273183631563,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": true,
+      "cpu": 39,
+      "hardware_thread_class": "smt_sibling",
+      "maximum_block_ratio": 1.0002273183631563,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 0.9663310511438103,
+      "minimum_block_ratio": 0.9324347839244643,
+      "unit_id": "librts__parks__range_contains"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 251267,
+            "pyoptix": 270612
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 0.9285138870412251,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 244887,
+            "pyoptix": 257553
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 0.9508217726060267,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": true,
+      "cpu": 40,
+      "hardware_thread_class": "smt_sibling",
+      "maximum_block_ratio": 0.9508217726060267,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 0.9396678298236258,
+      "minimum_block_ratio": 0.9285138870412251,
+      "unit_id": "librts__parks__range_contains"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 258988,
+            "pyoptix": 284313
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 0.9109256347757577,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 237012,
+            "pyoptix": 299413
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 0.7915888755665251,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": true,
+      "cpu": 41,
+      "hardware_thread_class": "smt_sibling",
+      "maximum_block_ratio": 0.9109256347757577,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 0.8512572551711415,
+      "minimum_block_ratio": 0.7915888755665251,
+      "unit_id": "librts__parks__range_contains"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 252012,
+            "pyoptix": 315634
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 0.7984310942420652,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 334549,
+            "pyoptix": 289988
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 1.1536649792405202,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": true,
+      "cpu": 42,
+      "hardware_thread_class": "smt_sibling",
+      "maximum_block_ratio": 1.1536649792405202,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 0.9760480367412927,
+      "minimum_block_ratio": 0.7984310942420652,
+      "unit_id": "librts__parks__range_contains"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 274533,
+            "pyoptix": 316969
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 0.8661193996889286,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 258367,
+            "pyoptix": 304984
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 0.8471493586548803,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": true,
+      "cpu": 43,
+      "hardware_thread_class": "smt_sibling",
+      "maximum_block_ratio": 0.8661193996889286,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 0.8566343791719044,
+      "minimum_block_ratio": 0.8471493586548803,
+      "unit_id": "librts__parks__range_contains"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 444548,
+            "pyoptix": 273763
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 1.6238425207204772,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 262917,
+            "pyoptix": 416366
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 0.6314564589808005,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": false,
+      "cpu": 44,
+      "hardware_thread_class": "smt_sibling",
+      "maximum_block_ratio": 1.6238425207204772,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 1.1276494898506388,
+      "minimum_block_ratio": 0.6314564589808005,
+      "unit_id": "librts__parks__range_contains"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 337109,
+            "pyoptix": 253367
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 1.3305166023988917,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 382906,
+            "pyoptix": 251867
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 1.5202706190171797,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": false,
+      "cpu": 45,
+      "hardware_thread_class": "smt_sibling",
+      "maximum_block_ratio": 1.5202706190171797,
+      "median_lte_1_20": false,
+      "median_new_v4_over_pyoptix": 1.4253936107080358,
+      "minimum_block_ratio": 1.3305166023988917,
+      "unit_id": "librts__parks__range_contains"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 260002,
+            "pyoptix": 262228
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 0.9915112039904206,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 547476,
+            "pyoptix": 269847
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 2.028838564075198,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": false,
+      "cpu": 46,
+      "hardware_thread_class": "smt_sibling",
+      "maximum_block_ratio": 2.028838564075198,
+      "median_lte_1_20": false,
+      "median_new_v4_over_pyoptix": 1.5101748840328093,
+      "minimum_block_ratio": 0.9915112039904206,
+      "unit_id": "librts__parks__range_contains"
+    },
+    {
+      "blocks": [
+        {
+          "arm_medians_ns": {
+            "new_v4": 425192,
+            "pyoptix": 486013
+          },
+          "block": 0,
+          "new_v4_over_pyoptix": 0.8748572569046507,
+          "order": [
+            "new_v4",
+            "pyoptix"
+          ]
+        },
+        {
+          "arm_medians_ns": {
+            "new_v4": 516065,
+            "pyoptix": 502859
+          },
+          "block": 1,
+          "new_v4_over_pyoptix": 1.026261834828451,
+          "order": [
+            "pyoptix",
+            "new_v4"
+          ]
+        }
+      ],
+      "both_blocks_lte_1_35": true,
+      "cpu": 47,
+      "hardware_thread_class": "smt_sibling",
+      "maximum_block_ratio": 1.026261834828451,
+      "median_lte_1_20": true,
+      "median_new_v4_over_pyoptix": 0.9505595458665508,
+      "minimum_block_ratio": 0.8748572569046507,
+      "unit_id": "librts__parks__range_contains"
+    }
+  ],
+  "discard_count": 0,
+  "distinct_process_id_count": 384,
+  "formal_evidence": false,
+  "identities": {
+    "base_config_sha256": "491d399343fee27fbf97f6a72837ff38b4b7d04fa5324525cf3b3780caf72e1d",
+    "controller_sha256": "c7072ce8867f9dd11f0719daa52336636440525bd272fae64b1e646863a6c0bd",
+    "native_library_sha256": "5edb9ec3e542b64bf0696c6df9a164448aecd6b5b51f1fdd78ba6e8c791dd2af",
+    "progress_sha256": "2e41de7e8854b828c2b6dd006ca2f7f788671bc910527878b794eb5d4724bbc3",
+    "raw_complete_sha256": "e66c49005e6dfa6f2b6df3b42d701e490cdffc522bd378609b413b38161db216",
+    "schedule_sha256": "7f526c2ebab77b903caccee08b6d475594a6c7891edd45624ebf95149e09af9a",
+    "source_commit": "02e84374fc092d2bb916cca633eda9592b4ecf07",
+    "source_tree": "8aad15d686bbc9e1c3b11df998898a0a063a01f1",
+    "worker_sha256": "0009137c032dc13f03065898283c95ed087153eb11a36a69723fea32a4b7ed50"
+  },
+  "logical_cpu_count": 48,
+  "paired_cell_count": 192,
+  "pooled_into_formal_transaction": false,
+  "project_modules_imported": false,
+  "retry_count": 0,
+  "schema": "rtdl.v4_long_workload.cpu_sensitivity.recount.v1",
+  "status": "PASS__POST_FORMAL_DESCRIPTIVE_CPU_SENSITIVITY_RECOUNT",
+  "timeout_count": 0,
+  "unit_count": 2,
+  "unit_summaries": [
+    {
+      "all_logical_cpus": {
+        "count_cpu_medians_lte_1_20": 45,
+        "count_cpus_both_blocks_lte_1_35": 36,
+        "cpu_count": 48,
+        "maximum_cpu_median": 1.4454941923119553,
+        "median_of_cpu_medians": 0.7378694104216112,
+        "minimum_cpu_median": 0.36126876011479625
+      },
+      "cpu_8": {
+        "ascending_rank_1_is_lowest": 47,
+        "blocks": [
+          {
+            "arm_medians_ns": {
+              "new_v4": 702585,
+              "pyoptix": 499804
+            },
+            "block": 0,
+            "new_v4_over_pyoptix": 1.4057210426487183,
+            "order": [
+              "new_v4",
+              "pyoptix"
+            ]
+          },
+          {
+            "arm_medians_ns": {
+              "new_v4": 698120,
+              "pyoptix": 500794
+            },
+            "block": 1,
+            "new_v4_over_pyoptix": 1.3940262862574233,
+            "order": [
+              "pyoptix",
+              "new_v4"
+            ]
+          }
+        ],
+        "both_blocks_lte_1_35": false,
+        "cpu": 8,
+        "exact_tie_count": 1,
+        "hardware_thread_class": "primary",
+        "maximum_block_ratio": 1.4057210426487183,
+        "median_lte_1_20": false,
+        "median_new_v4_over_pyoptix": 1.3998736644530707,
+        "minimum_block_ratio": 1.3940262862574233,
+        "unit_id": "particle_tracking"
+      },
+      "primary_hardware_threads_0_23": {
+        "count_cpu_medians_lte_1_20": 22,
+        "count_cpus_both_blocks_lte_1_35": 17,
+        "cpu_count": 24,
+        "maximum_cpu_median": 1.4454941923119553,
+        "median_of_cpu_medians": 0.7373344392927543,
+        "minimum_cpu_median": 0.36126876011479625
+      },
+      "smt_siblings_24_47": {
+        "count_cpu_medians_lte_1_20": 23,
+        "count_cpus_both_blocks_lte_1_35": 19,
+        "cpu_count": 24,
+        "maximum_cpu_median": 1.2088088290341876,
+        "median_of_cpu_medians": 0.7378694104216112,
+        "minimum_cpu_median": 0.5194104790069564
+      },
+      "unit_id": "particle_tracking"
+    },
+    {
+      "all_logical_cpus": {
+        "count_cpu_medians_lte_1_20": 43,
+        "count_cpus_both_blocks_lte_1_35": 41,
+        "cpu_count": 48,
+        "maximum_cpu_median": 1.5346509243509545,
+        "median_of_cpu_medians": 0.9532795744040896,
+        "minimum_cpu_median": 0.7501641562793304
+      },
+      "cpu_8": {
+        "ascending_rank_1_is_lowest": 6,
+        "blocks": [
+          {
+            "arm_medians_ns": {
+              "new_v4": 245882,
+              "pyoptix": 370290
+            },
+            "block": 0,
+            "new_v4_over_pyoptix": 0.6640254935320965,
+            "order": [
+              "new_v4",
+              "pyoptix"
+            ]
+          },
+          {
+            "arm_medians_ns": {
+              "new_v4": 247627,
+              "pyoptix": 261983
+            },
+            "block": 1,
+            "new_v4_over_pyoptix": 0.9452025513105812,
+            "order": [
+              "pyoptix",
+              "new_v4"
+            ]
+          }
+        ],
+        "both_blocks_lte_1_35": true,
+        "cpu": 8,
+        "exact_tie_count": 1,
+        "hardware_thread_class": "primary",
+        "maximum_block_ratio": 0.9452025513105812,
+        "median_lte_1_20": true,
+        "median_new_v4_over_pyoptix": 0.8046140224213388,
+        "minimum_block_ratio": 0.6640254935320965,
+        "unit_id": "librts__parks__range_contains"
+      },
+      "primary_hardware_threads_0_23": {
+        "count_cpu_medians_lte_1_20": 22,
+        "count_cpus_both_blocks_lte_1_35": 22,
+        "cpu_count": 24,
+        "maximum_cpu_median": 1.5346509243509545,
+        "median_of_cpu_medians": 0.957774018811274,
+        "minimum_cpu_median": 0.7670780396765926
+      },
+      "smt_siblings_24_47": {
+        "count_cpu_medians_lte_1_20": 21,
+        "count_cpus_both_blocks_lte_1_35": 19,
+        "cpu_count": 24,
+        "maximum_cpu_median": 1.5101748840328093,
+        "median_of_cpu_medians": 0.9451136878450883,
+        "minimum_cpu_median": 0.7501641562793304
+      },
+      "unit_id": "librts__parks__range_contains"
+    }
+  ],
+  "worker_count": 384
+}

@@ -1,7 +1,7 @@
 {
   "schema": "rtdl.v4_long_workload_performance.evidence_index.v1",
   "created_at": "2026-09-08T09:28:10-04:00",
-  "status": "PASS__METHOD_AND_TARGET__MANUSCRIPT_LOCAL_PREFLIGHT_PASS__FINAL_REVIEW_PENDING",
+  "status": "PASS__METHOD_AND_TARGET__POST_FORMAL_SENSITIVITY_DISCLOSED__MANUSCRIPT_LOCAL_PREFLIGHT_PASS__FINAL_REVIEW_PENDING",
   "claim_authorization": {
     "internal_technical_result_complete": true,
     "manuscript_integration_complete": true,
@@ -102,6 +102,69 @@
     "rows_meeting_engineering_target": 10,
     "registered_row_count": 10
   },
+  "post_formal_cpu_sensitivity": {
+    "status": "PASS__RAW_AND_INDEPENDENT_RECOUNT_COMPLETE__ADVERSE_TO_CPU_INVARIANCE__NOT_POOLED",
+    "formal_evidence": false,
+    "pooled_into_formal_transaction": false,
+    "plan_commit_before_observing_sensitivity_performance": "c54bce034",
+    "measured_source_commit": "02e84374fc092d2bb916cca633eda9592b4ecf07",
+    "measured_source_tree": "8aad15d686bbc9e1c3b11df998898a0a063a01f1",
+    "recount_commit": "98cce4a0fe8ec817b2d9610b651a8a8e54f25062",
+    "recount_tree": "7ab07c5644a0c8d9183a104367acdd850d89744d",
+    "recount_script_sha256": "c8d5866c9e29ead42b8cf401e4f8ce2b2e64b01ac854497ffb156320819794ee",
+    "controller_sha256": "c7072ce8867f9dd11f0719daa52336636440525bd272fae64b1e646863a6c0bd",
+    "recount_output_sha256": "005caca0475516bafa6834594144a95c445eee771b171d1af0dbb448f80364d0",
+    "ordinary_and_optimized_outputs_byte_equal": true,
+    "pod_and_local_archive_recounts_byte_equal": true,
+    "project_modules_imported": false,
+    "counts": {
+      "logical_cpu_count": 48,
+      "unit_count": 2,
+      "paired_blocks_per_cpu_and_unit": 2,
+      "worker_count": 384,
+      "distinct_process_id_count": 384,
+      "paired_cell_count": 192,
+      "retry_count": 0,
+      "discard_count": 0,
+      "timeout_count": 0,
+      "output_mismatch_count": 0
+    },
+    "particle_tracking": {
+      "median_of_48_cpu_medians": 0.7378694104216112,
+      "minimum_cpu_median": 0.36126876011479625,
+      "maximum_cpu_median": 1.4454941923119553,
+      "cpu_medians_lte_1_20": 45,
+      "cpus_both_blocks_lte_1_35": 36,
+      "cpu_8_block_ratios": [
+        1.4057210426487183,
+        1.3940262862574233
+      ],
+      "cpu_8_median": 1.3998736644530707,
+      "cpu_8_ascending_rank_1_is_lowest": 47
+    },
+    "librts_parks_range_contains": {
+      "median_of_48_cpu_medians": 0.9532795744040896,
+      "minimum_cpu_median": 0.7501641562793304,
+      "maximum_cpu_median": 1.5346509243509545,
+      "cpu_medians_lte_1_20": 43,
+      "cpus_both_blocks_lte_1_35": 41,
+      "cpu_8_block_ratios": [
+        0.6640254935320965,
+        0.9452025513105812
+      ],
+      "cpu_8_median": 0.8046140224213388,
+      "cpu_8_ascending_rank_1_is_lowest": 6
+    },
+    "pre_and_post_gpu_compute_process_snapshots_empty": true,
+    "gpu_clocks_locked": false,
+    "limitations": [
+      "Only two sub-millisecond prepared units and two blocks per CPU were tested.",
+      "Ascending CPU order confounds CPU identity and hardware-thread class with experiment time.",
+      "No per-worker GPU clock, temperature, or power trace was retained.",
+      "The CPU-8 Particle ratio reversed relative to the separate formal population, so short prepared rows are not stable performance guarantees.",
+      "No confidence interval, CPU-causality result, hardware-thread advantage, or formal gate is inferred."
+    ]
+  },
   "input_and_output_identities": {
     "particle_tracking": {
       "input_sha256": "7f21844610c4c9ad8ccdf6ec6961de28d6f1099af8b1bf0e37e41bf53fb55743",
@@ -144,6 +207,14 @@
       "sha256": "5c8abbd60d1f2edd07b4fb6f7931d639ada6d44f7ed87e5c5a5535fade3c8f03",
       "formal_evidence": false
     },
+    "post_formal_cpu_sensitivity": {
+      "path": "history/internal_docs/v4_long_workload_performance_20260908/raw/rtdl-v4-long-perf-successor-02e84374f-cpu-sensitivity-v1.tar.gz",
+      "sha256": "1f6f25512cbb781df2b75a204e1d3baad1e853179473a6616df6ec39e5629959",
+      "bytes": 877815,
+      "member_count": 2003,
+      "formal_evidence": false,
+      "pooled_into_formal_transaction": false
+    },
     "first_aot_adverse_transaction": {
       "path": "history/internal_docs/v4_long_workload_performance_20260908/raw/rtdl-v4-long-perf-f8dcd81da-final-240.tar.gz",
       "sha256": "07170d396da193829ce2695b50f1064c750a6efbba7d993e2f7e0b6d1f6d7ce8",
@@ -152,10 +223,10 @@
   },
   "manuscript_draft": {
     "main_tex_path": "paper/cgo2027/main.tex",
-    "main_tex_sha256": "0d29d05d04a0919d0c5b26c98861b17647fbc2256298990f6ab5b52a8de3f7a0",
+    "main_tex_sha256": "a52347ff48f181dfaaaa42f0ab7d8077bb78761611b94e66171f61a52d47f836",
     "main_pdf_path": "paper/cgo2027/main.pdf",
-    "main_pdf_sha256": "3887bf1abb21068be057d13b012eddd7b9977e06ce53daf75b0eca84af4874c0",
-    "main_pdf_bytes": 183937,
+    "main_pdf_sha256": "9d8b3f7277cca812c4de7955abce2bfe6b9bb44337a41493f6c5ca8cf59f8e4a",
+    "main_pdf_bytes": 184360,
     "main_pdf_pages": 12,
     "page_size": "US Letter 612 x 792 pt",
     "overfull_log_entries": 0,
@@ -164,5 +235,5 @@
     "anonymous_private_identity_scan_passed": true,
     "independent_final_bytes_review_complete": false
   },
-  "claim_boundary": "Evidence supports only the five registered units and controlled RTX A4500 condition. It does not establish arbitrary Python or Callback IR, arbitrary topology synthesis, all nine applications, CPU or clock invariance, peak memory, easier authoring, intrinsic language overhead, or broad practical performance."
+  "claim_boundary": "Evidence supports only the five registered units and exact controlled RTX A4500 formal population. The separate post-formal sensitivity scan is not pooled and shows that sub-millisecond prepared rows are not stable performance guarantees. The evidence does not establish arbitrary Python or Callback IR, arbitrary topology synthesis, all nine applications, CPU or clock invariance, peak memory, easier authoring, intrinsic language overhead, or broad practical performance."
 }

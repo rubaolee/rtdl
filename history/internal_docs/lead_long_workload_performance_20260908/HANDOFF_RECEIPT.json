@@ -1,0 +1,36 @@
+{
+  "schema": "rtdl.lead.long_workload_handoff.v1",
+  "recorded_at_utc": "2026-09-08T05:22:49.780132+00:00",
+  "controlling_directive": "EXECUTION_DIRECTIVE.md (section 8 resolves advisory protocol differences)",
+  "implementation_thread": "019d2063-58f5-7312-ac6b-d46928ca7f43",
+  "execution_started_observed": true,
+  "observed_gpu": "NVIDIA RTX A4500",
+  "observed_gpu_uuid": "GPU-5dbda20d-af85-650e-7250-10b265a77143",
+  "baseline_profile_in_progress": true,
+  "raw_profile_independently_verified": false,
+  "long_workload_qualified": false,
+  "successor_formal_result_available": false,
+  "performance_issue_resolved": false,
+  "lead_implementation_changes": false,
+  "lead_gpu_runs": false,
+  "prior_p7_review_completed": true,
+  "p7_verdict": "REVISE_AND_REREVIEW_CHANGED_BYTES",
+  "documents": {
+    "EXECUTION_DIRECTIVE.md": {
+      "bytes": 16596,
+      "sha256": "6dcbe1f7ad74373fecdaf186a16f1ca44f56116fb69dce6ed539df6020452e93"
+    },
+    "WORKLOAD_AUDIT.md": {
+      "bytes": 21671,
+      "sha256": "919d7a5b1c3caf8166fcf6fe54748efb94897ec890f14a3f237bd69483772d3f"
+    },
+    "PATH_OPTIMIZATION_AUDIT.md": {
+      "bytes": 34679,
+      "sha256": "9ada3276449a98bf46033fe6fa7f3360ac0398a7d6a6fc1ed5b667abf37c469c"
+    },
+    "PROTOCOL_REVIEW.md": {
+      "bytes": 22051,
+      "sha256": "b1cfd7449a8ce60b1b6f6e4e46ea33a6c110730f5d3c189f8e2c690943483c16"
+    }
+  }
+}
