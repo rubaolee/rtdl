@@ -16,9 +16,9 @@ public or manuscript claim.
 | --- | ---: | --- |
 | Retained private raw archive | 730,851 | `ef2ca7890c9d415dc1edbe71966aabc512209c9d8608d4eaf460c7c1fddf8bdc` |
 | Anonymous projection JSON | 545,481 | `ae2cb7011f407c37b3850aa2a854d177baa4a6494d704eb2ddf68e89f574578c` |
-| Projection verifier | 15,284 | `787e2240496a53fe20e8834859af20de1cd1c3ec753f98bf827e49270c62a45b` |
-| Projection manifest | 1,126 | `bd191292e268328c432578168ea39c21fc2721e7737515cb2abd23fdd553f552` |
-| Normalized public artifact | 83,877 | `e713529fb3f3370aeef57b30793a85c5e894ee34da8bcc177fa12272816fee77` |
+| Projection verifier | 18,258 | `3a5a1930fe2f2f73f42aeb7a3a3dac0b632ee8589be24db61d5807e2440294b7` |
+| Projection manifest | 1,126 | `83a229bc0dfcbd9ca58b0cd9ed23013dd0525f89fca9215fd70d6561cbc44f77` |
+| Normalized public artifact | 84,598 | `d761ce92f55561be656a71712a9f0a78c57f2c7f8165d2ee8d8cb8cf60309e6f` |
 
 The public package is
 `output/artifact/rtdl-cgo2027-application-performance.tar.gz`. Its tracked
@@ -33,10 +33,14 @@ removes absolute paths, hostname, GPU UUID, process IDs, source commits, and
 source trees. Process IDs are represented only by salted one-way tokens so the
 verifier can check that all 240 workers were distinct.
 
-The standard-library verifier independently reconstructs each worker median,
-all three within-cell ratios, all ten paired medians and maxima, output/input
-parity, threshold decisions, sample counts, and retry/discard/timeout counts.
-It imports no RTDL or third-party module.
+The standard-library verifier independently checks the registered arm order,
+position, repetition and warmup contract for every worker; validates the five
+exact output contracts; and reconstructs each worker median, all three
+within-cell ratios, all ten paired medians and maxima, per-arm time medians,
+output/input parity, threshold decisions, sample counts, and
+retry/discard/timeout counts. It also retains and format-checks the stdout and
+stderr identity fields for every worker; the corresponding private streams are
+not present in this projection. It imports no RTDL or third-party module.
 
 The package cross-binds to the retained raw archive and its formal summary,
 preregistration, schedule, progress, and independent recount by SHA-256. Since

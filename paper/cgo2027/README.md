@@ -37,7 +37,7 @@ older candidate and all adverse application transactions remain immutable.
 | `references.bib` | unchanged from P-septuple-prime; local unrelated edit excluded |
 | Exact PDF | 183,937 bytes; SHA-256 `3887bf1abb21068be057d13b012eddd7b9977e06ce53daf75b0eca84af4874c0` |
 | New performance archive | 730,851 bytes; SHA-256 `ef2ca7890c9d415dc1edbe71966aabc512209c9d8608d4eaf460c7c1fddf8bdc` |
-| Anonymous application projection | 83,877 bytes; SHA-256 `e713529fb3f3370aeef57b30793a85c5e894ee34da8bcc177fa12272816fee77` |
+| Anonymous application projection | 84,598 bytes; SHA-256 `d761ce92f55561be656a71712a9f0a78c57f2c7f8165d2ee8d8cb8cf60309e6f` |
 | Source bundle | 29,456 bytes; SHA-256 `da9c2085d7269f92a1863952765784b6c640b026ca28144721485981aac87c82` |
 | Unchanged F2 artifact | 180,308 bytes; SHA-256 `916cedbb7001c7aa43e66df3f992b543b7b3ca5a013f0f997790113a2e3738b8` |
 

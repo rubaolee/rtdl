@@ -27,12 +27,12 @@
       "sha256": "ae2cb7011f407c37b3850aa2a854d177baa4a6494d704eb2ddf68e89f574578c"
     },
     {
-      "bytes": 15284,
+      "bytes": 18258,
       "path": "verify.py",
-      "sha256": "787e2240496a53fe20e8834859af20de1cd1c3ec753f98bf827e49270c62a45b"
+      "sha256": "3a5a1930fe2f2f73f42aeb7a3a3dac0b632ee8589be24db61d5807e2440294b7"
     }
   ],
-  "manifest_sha256": "68065afb56f15678f822be760e5c7a3c93f4f2d6664c220b8f11fc01970c3396",
-  "payload_bytes": 563595,
+  "manifest_sha256": "aec413bcdb5ecb8fc2257f9ca888e498fd49bfc2adcd80bfca9d67e1e4324056",
+  "payload_bytes": 566569,
   "schema": "rtdl.cgo2027.application_projection_manifest.v1"
 }

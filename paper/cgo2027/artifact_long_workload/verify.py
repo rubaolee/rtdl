@@ -21,6 +21,16 @@ EXPECTED_PROJECTION_SHA256 = (
 )
 ARMS = ("old_v4", "new_v4", "pyoptix")
 ENDPOINTS = ("complete", "prepared")
+BLOCK_ORDERS = (
+    ("old_v4", "new_v4", "pyoptix"),
+    ("old_v4", "pyoptix", "new_v4"),
+    ("new_v4", "old_v4", "pyoptix"),
+    ("new_v4", "pyoptix", "old_v4"),
+    ("pyoptix", "old_v4", "new_v4"),
+    ("pyoptix", "new_v4", "old_v4"),
+    ("old_v4", "new_v4", "pyoptix"),
+    ("pyoptix", "new_v4", "old_v4"),
+)
 UNIT_IDS = (
     "particle_tracking",
     "triangle_counting__com_dblp__rt_2a1",
@@ -28,6 +38,35 @@ UNIT_IDS = (
     "librts__parks__range_contains",
     "triangle_counting__cit_patents__rt_2a1__4m",
 )
+PREPARED_REPETITIONS = {
+    "particle_tracking": 32,
+    "triangle_counting__com_dblp__rt_2a1": 4,
+    "librts__parks__point_contains": 4,
+    "librts__parks__range_contains": 4,
+    "triangle_counting__cit_patents__rt_2a1__4m": 3,
+}
+EXPECTED_OUTPUT_CONTRACTS = {
+    "particle_tracking": {
+        "kind": "ordered_u32_matrix", "shape": [5000, 3],
+        "output_sha256": "81dea3f2ad83c6c239a372d699b6133a088fe7171356b298b9aeace4074370c7",
+    },
+    "triangle_counting__com_dblp__rt_2a1": {
+        "kind": "checked_u64_scalar", "value": 2224385,
+        "output_sha256": "ffc4373270ebfb830803df134ca09bf0aa265de91c409d104588408a0273f1f5",
+    },
+    "librts__parks__point_contains": {
+        "kind": "checked_u64_scalar", "value": 112729,
+        "output_sha256": "b790372024c23e8882fafb893a1c2a6216f4aeaf8f8b090d29d817794c701243",
+    },
+    "librts__parks__range_contains": {
+        "kind": "checked_u64_scalar", "value": 105826,
+        "output_sha256": "ce12d9de8ed2fb51211f9c192801f0c32744edd6d18e9576b453afcc4f37b687",
+    },
+    "triangle_counting__cit_patents__rt_2a1__4m": {
+        "kind": "checked_u64_scalar", "value": 7515023,
+        "output_sha256": "f3a9d76129db60b207374aef74b6d5abb6a126a6d4fc7bc88b830a7fc1995e2c",
+    },
+}
 REQUIRED_PUBLIC_FILES = {
     "CLAIM_SCOPE.md",
     "DEPENDENCIES.md",
@@ -200,6 +239,8 @@ def recount(projection: Mapping[str, object]) -> dict[str, object]:
     require(contract["unit_ids"] == list(UNIT_IDS), "unit order differs")
     require(contract["paired_blocks"] == 8, "paired block count differs")
     require(contract["cpu_affinity"] == [8], "registered CPU differs")
+    require(contract["output_contracts"] == EXPECTED_OUTPUT_CONTRACTS,
+            "output contracts differ")
     thresholds = contract["engineering_thresholds"]
     require(thresholds == {
         "every_block_new_v4_over_pyoptix_max": 1.35,
@@ -231,6 +272,17 @@ def recount(projection: Mapping[str, object]) -> dict[str, object]:
         require(key not in observed, f"duplicate worker key: {key}")
         observed[key] = row
         require(row.get("status") == "PASS", f"worker failed: {key}")
+        expected_position = BLOCK_ORDERS[key[2]].index(key[3])
+        require(row.get("position") == expected_position,
+                f"worker order differs: {key}")
+        expected_repetitions = (
+            1 if key[1] == "complete" else PREPARED_REPETITIONS[key[0]]
+        )
+        expected_warmups = 0 if key[1] == "complete" else 1
+        require(row.get("repetitions") == expected_repetitions,
+                f"worker repetition contract differs: {key}")
+        require(row.get("warmup_count") == expected_warmups,
+                f"worker warmup contract differs: {key}")
         samples = row.get("primary_samples_ns")
         require(isinstance(samples, list), f"worker samples missing: {key}")
         require(row.get("primary_median_ns") == median(samples),
@@ -244,7 +296,8 @@ def recount(projection: Mapping[str, object]) -> dict[str, object]:
                 f"worker retry/discard differs: {key}")
         require(row.get("timeout") is False, f"worker timeout differs: {key}")
         for name in ("output_sha256", "input_identity_sha256",
-                     "raw_worker_sha256", "journal_sha256"):
+                     "raw_worker_sha256", "journal_sha256", "stdout_sha256",
+                     "stderr_sha256"):
             require(isinstance(row.get(name), str) and HEX64.fullmatch(row[name]),
                     f"worker hash differs: {key}/{name}")
         input_identity = row.get("input_identity")
@@ -274,6 +327,9 @@ def recount(projection: Mapping[str, object]) -> dict[str, object]:
                 output_hashes = {row["output_sha256"] for row in arms.values()}
                 require(len(input_hashes) == 1, "cell input identity differs")
                 require(len(output_hashes) == 1, "cell output identity differs")
+                require(output_hashes == {
+                    EXPECTED_OUTPUT_CONTRACTS[unit]["output_sha256"]
+                }, "cell output contract differs")
                 medians = {arm: arms[arm]["primary_median_ns"] for arm in ARMS}
                 cells.append({
                     "unit_id": unit,
@@ -289,6 +345,7 @@ def recount(projection: Mapping[str, object]) -> dict[str, object]:
     require(cells == projection["expected_cells"], "reconstructed cells differ")
 
     evaluations = []
+    reported_evaluations = []
     for unit in UNIT_IDS:
         for endpoint in ENDPOINTS:
             selected = [row for row in cells
@@ -304,6 +361,17 @@ def recount(projection: Mapping[str, object]) -> dict[str, object]:
                 "engineering_target_met": (
                     statistics.median(values) <= 1.2 and max(values) <= 1.35
                 ),
+            })
+            reported_evaluations.append({
+                **evaluations[-1],
+                "arm_time_medians_ns": {
+                    arm: statistics.median([
+                        row["medians_ns"][arm] for row in selected
+                    ]) for arm in ARMS
+                },
+                "median_new_v4_over_old_v4": statistics.median([
+                    row["new_v4_over_old_v4"] for row in selected
+                ]),
             })
     require(evaluations == projection["expected_evaluations"],
             "reconstructed evaluations differ")
@@ -338,7 +406,7 @@ def recount(projection: Mapping[str, object]) -> dict[str, object]:
         "discard_count": discards,
         "timeout_count": timeouts,
         "engineering_target_met_for_all_ten_rows": True,
-        "evaluations": evaluations,
+        "evaluations": reported_evaluations,
     }
 
 
