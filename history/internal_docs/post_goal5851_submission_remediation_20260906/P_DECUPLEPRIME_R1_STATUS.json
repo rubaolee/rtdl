@@ -1,6 +1,6 @@
 {
   "schema": "rtdl.cgo2027.p_decupleprime_r1_status.v1",
-  "updated_at": "2026-09-08T13:45:08-04:00",
+  "updated_at": "2026-09-08T14:03:49-04:00",
   "status": "AUTHOR_PREFLIGHT_PASSED__ZERO_OF_TWO_INDEPENDENT_ACCEPTANCES__NOT_SUBMITTED",
   "candidate": {
     "name": "P-decuple-prime-r1",
@@ -161,6 +161,17 @@
     "downloaded_upload_hash_verified": false,
     "submission_performed": false,
     "submission_receipt_present": false
+  },
+  "submission_portal_observation": {
+    "checked_at": "2026-09-08T14:03:49-04:00",
+    "site": "https://cgo27.hotcrp.com/",
+    "session_authenticated": false,
+    "visible_r2_deadline": "2026-09-10 23:59:59 AoE",
+    "author_coi_topic_form_checked": false,
+    "reason_form_not_checked": "The available browser session displayed the HotCRP.com email/password sign-in form; no credentials were entered.",
+    "field_write_performed": false,
+    "upload_performed": false,
+    "submission_performed": false
   },
   "claim_boundary": "P-decuple-prime-r1 changes no research result, implementation, experiment, test, or claim. It repairs one dead bibliography URL and rebinds exact delivery bytes. All prior application, lifecycle, receipt, CPU-sensitivity, coverage, memory, and authoring-study limitations remain in force."
 }

@@ -161,3 +161,17 @@ has zero of two required independent exact-final-byte acceptances. Earlier
 reviews do not transfer. Authenticated submission-form checks, explicit upload
 authorization, upload, downloaded-byte verification, submission ID, and
 receipt are absent. Correct state: `NOT_SUBMITTED`.
+
+## 8. Read-only submission-portal observation
+
+At 2026-09-08 14:03:49 America/New_York, the available browser session opened
+`https://cgo27.hotcrp.com/` and displayed the HotCRP.com email/password sign-in
+form. The session was not authenticated. No credential or form field was
+entered, and no submission record was created, changed, uploaded, or submitted.
+The public page displayed the R2 deadline as 2026-09-10 23:59:59 AoE.
+
+Because authentication was absent, author, conflict-of-interest, topic,
+abstract, artifact-option, and existing-submission fields were not checked.
+This observation does not close any authenticated R8 gate. It only records why
+those checks remain pending and confirms that this author-side inspection made
+no remote mutation.

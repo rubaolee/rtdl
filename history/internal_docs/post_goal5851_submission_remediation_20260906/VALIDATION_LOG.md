@@ -1328,3 +1328,11 @@ topology-specific TCB weight, one-host/five-unit evaluation breadth, absent
 independent-user authoring evidence, and per-row comparison fairness. Its
 verdict is `READY_TO_REQUEST_R7__DO_NOT_CLAIM_CONSENSUS_OR_SUBMISSION`; it
 counts as zero independent acceptances.
+
+At 2026-09-08 14:03:49 America/New_York, an author-side read-only visit to
+`https://cgo27.hotcrp.com/` found the available browser session unauthenticated
+at the HotCRP.com email/password sign-in form. No credentials or form fields
+were entered, and no upload or submission action occurred. The public page
+displayed the R2 deadline as 2026-09-10 23:59:59 AoE. Authenticated author,
+conflict, topic, abstract, artifact-option, upload, downloaded-byte, and receipt
+checks therefore remain pending; this observation closes none of the R8 gates.
