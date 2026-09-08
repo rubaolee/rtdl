@@ -2,6 +2,12 @@
 
 Date: 2026-09-07 America/New_York.
 
+> Historical pre-worker-zero snapshot. It accurately records the state at the
+> time it was written, but its zero-GPU-result statements are superseded by
+> `RESULTS.md`, `STATUS.json`, and `EVIDENCE_INDEX.json`. The final frozen
+> first-batch transaction is `c5c8be48b`, with 192/192 PASS and an independent
+> recount match; its performance results are adverse and cover only 3/9 apps.
+
 ## Verdict
 
 `READY_FOR_FREEZE_COMMIT__GPU_DRY_RUN_REQUIRED`

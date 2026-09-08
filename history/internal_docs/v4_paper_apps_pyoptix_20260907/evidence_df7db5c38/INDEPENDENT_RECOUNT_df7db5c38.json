@@ -1,0 +1,2236 @@
+{
+  "discard_count": 0,
+  "evaluations": [
+    {
+      "key": "librts__parks__point_contains::complete",
+      "max_v4_over_pyoptix": 1.6900103076202295,
+      "median_v4_over_pyoptix": 1.0146747590335692,
+      "min_v4_over_pyoptix": 0.9587323455492163,
+      "registered_block_count": 8,
+      "valid": true,
+      "valid_block_count": 8
+    },
+    {
+      "key": "librts__parks__point_contains::first_result",
+      "max_v4_over_pyoptix": 31.13695961280034,
+      "median_v4_over_pyoptix": 14.215044888013786,
+      "min_v4_over_pyoptix": 11.643586471325586,
+      "registered_block_count": 8,
+      "valid": true,
+      "valid_block_count": 8
+    },
+    {
+      "key": "librts__parks__point_contains::prepared",
+      "max_v4_over_pyoptix": 57.223798614069715,
+      "median_v4_over_pyoptix": 42.739321296289546,
+      "min_v4_over_pyoptix": 33.02468100611757,
+      "registered_block_count": 8,
+      "valid": true,
+      "valid_block_count": 8
+    },
+    {
+      "key": "librts__parks__range_contains::complete",
+      "max_v4_over_pyoptix": 1.1455948930125306,
+      "median_v4_over_pyoptix": 1.119843298296491,
+      "min_v4_over_pyoptix": 0.9669878154431668,
+      "registered_block_count": 8,
+      "valid": true,
+      "valid_block_count": 8
+    },
+    {
+      "key": "librts__parks__range_contains::first_result",
+      "max_v4_over_pyoptix": 30.640820728368773,
+      "median_v4_over_pyoptix": 13.97434324090285,
+      "min_v4_over_pyoptix": 12.2976209787941,
+      "registered_block_count": 8,
+      "valid": true,
+      "valid_block_count": 8
+    },
+    {
+      "key": "librts__parks__range_contains::prepared",
+      "max_v4_over_pyoptix": 47.10703686563552,
+      "median_v4_over_pyoptix": 36.86204369266293,
+      "min_v4_over_pyoptix": 32.1708755133352,
+      "registered_block_count": 8,
+      "valid": true,
+      "valid_block_count": 8
+    },
+    {
+      "key": "particle_tracking::complete",
+      "max_v4_over_pyoptix": 10.852786148100154,
+      "median_v4_over_pyoptix": 10.289937782958816,
+      "min_v4_over_pyoptix": 9.626124227953706,
+      "registered_block_count": 8,
+      "valid": true,
+      "valid_block_count": 8
+    },
+    {
+      "key": "particle_tracking::first_result",
+      "max_v4_over_pyoptix": 89.19983571402213,
+      "median_v4_over_pyoptix": 61.32224992427979,
+      "min_v4_over_pyoptix": 53.00030035153821,
+      "registered_block_count": 8,
+      "valid": true,
+      "valid_block_count": 8
+    },
+    {
+      "key": "particle_tracking::prepared",
+      "max_v4_over_pyoptix": 40.91690021285763,
+      "median_v4_over_pyoptix": 38.76294457659692,
+      "min_v4_over_pyoptix": 38.222811047036274,
+      "registered_block_count": 8,
+      "valid": true,
+      "valid_block_count": 8
+    },
+    {
+      "key": "triangle_counting__com_dblp__rt_2a1::complete",
+      "max_v4_over_pyoptix": 3.622571155545566,
+      "median_v4_over_pyoptix": 3.471261545896156,
+      "min_v4_over_pyoptix": 3.3560257594972556,
+      "registered_block_count": 8,
+      "valid": true,
+      "valid_block_count": 8
+    },
+    {
+      "key": "triangle_counting__com_dblp__rt_2a1::first_result",
+      "max_v4_over_pyoptix": 2.982112625754125,
+      "median_v4_over_pyoptix": 2.736600033746991,
+      "min_v4_over_pyoptix": 2.6928541907699817,
+      "registered_block_count": 8,
+      "valid": true,
+      "valid_block_count": 8
+    },
+    {
+      "key": "triangle_counting__com_dblp__rt_2a1::prepared",
+      "max_v4_over_pyoptix": 1.390044776522508,
+      "median_v4_over_pyoptix": 1.339120605599271,
+      "min_v4_over_pyoptix": 1.2523457851800874,
+      "registered_block_count": 8,
+      "valid": true,
+      "valid_block_count": 8
+    }
+  ],
+  "formal_status_preserved": "PASS",
+  "formal_summary_path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/FORMAL_SUMMARY.json",
+  "formal_summary_sha256": "a5c4db7d8a6ae93a876d64979576387520bd7a95af9d317cd67fe49b7a22a1b7",
+  "recomputed_pairs": [
+    {
+      "block": 0,
+      "endpoint": "complete",
+      "pair": {
+        "output_sha256": "81dea3f2ad83c6c239a372d699b6133a088fe7171356b298b9aeace4074370c7",
+        "pyoptix_median_ns": 2090200932,
+        "v4_median_ns": 22386532005,
+        "v4_over_pyoptix": 10.710229654131645,
+        "valid": true
+      },
+      "unit_id": "particle_tracking"
+    },
+    {
+      "block": 1,
+      "endpoint": "complete",
+      "pair": {
+        "output_sha256": "81dea3f2ad83c6c239a372d699b6133a088fe7171356b298b9aeace4074370c7",
+        "pyoptix_median_ns": 2167199152,
+        "v4_median_ns": 23520148937,
+        "v4_over_pyoptix": 10.852786148100154,
+        "valid": true
+      },
+      "unit_id": "particle_tracking"
+    },
+    {
+      "block": 2,
+      "endpoint": "complete",
+      "pair": {
+        "output_sha256": "81dea3f2ad83c6c239a372d699b6133a088fe7171356b298b9aeace4074370c7",
+        "pyoptix_median_ns": 2319492634,
+        "v4_median_ns": 24098867607,
+        "v4_over_pyoptix": 10.389715084130765,
+        "valid": true
+      },
+      "unit_id": "particle_tracking"
+    },
+    {
+      "block": 3,
+      "endpoint": "complete",
+      "pair": {
+        "output_sha256": "81dea3f2ad83c6c239a372d699b6133a088fe7171356b298b9aeace4074370c7",
+        "pyoptix_median_ns": 2176101833,
+        "v4_median_ns": 22791574231,
+        "v4_over_pyoptix": 10.4735788947796,
+        "valid": true
+      },
+      "unit_id": "particle_tracking"
+    },
+    {
+      "block": 4,
+      "endpoint": "complete",
+      "pair": {
+        "output_sha256": "81dea3f2ad83c6c239a372d699b6133a088fe7171356b298b9aeace4074370c7",
+        "pyoptix_median_ns": 2399018545,
+        "v4_median_ns": 23363024088,
+        "v4_over_pyoptix": 9.738575859154103,
+        "valid": true
+      },
+      "unit_id": "particle_tracking"
+    },
+    {
+      "block": 5,
+      "endpoint": "complete",
+      "pair": {
+        "output_sha256": "81dea3f2ad83c6c239a372d699b6133a088fe7171356b298b9aeace4074370c7",
+        "pyoptix_median_ns": 2430875443,
+        "v4_median_ns": 23399908997,
+        "v4_over_pyoptix": 9.626124227953706,
+        "valid": true
+      },
+      "unit_id": "particle_tracking"
+    },
+    {
+      "block": 6,
+      "endpoint": "complete",
+      "pair": {
+        "output_sha256": "81dea3f2ad83c6c239a372d699b6133a088fe7171356b298b9aeace4074370c7",
+        "pyoptix_median_ns": 2358653677,
+        "v4_median_ns": 23922489336,
+        "v4_over_pyoptix": 10.142434037381571,
+        "valid": true
+      },
+      "unit_id": "particle_tracking"
+    },
+    {
+      "block": 7,
+      "endpoint": "complete",
+      "pair": {
+        "output_sha256": "81dea3f2ad83c6c239a372d699b6133a088fe7171356b298b9aeace4074370c7",
+        "pyoptix_median_ns": 2301413495,
+        "v4_median_ns": 23451772849,
+        "v4_over_pyoptix": 10.190160481786869,
+        "valid": true
+      },
+      "unit_id": "particle_tracking"
+    },
+    {
+      "block": 0,
+      "endpoint": "first_result",
+      "pair": {
+        "output_sha256": "81dea3f2ad83c6c239a372d699b6133a088fe7171356b298b9aeace4074370c7",
+        "pyoptix_median_ns": 711490,
+        "v4_median_ns": 43722102,
+        "v4_over_pyoptix": 61.451463829428384,
+        "valid": true
+      },
+      "unit_id": "particle_tracking"
+    },
+    {
+      "block": 1,
+      "endpoint": "first_result",
+      "pair": {
+        "output_sha256": "81dea3f2ad83c6c239a372d699b6133a088fe7171356b298b9aeace4074370c7",
+        "pyoptix_median_ns": 731651,
+        "v4_median_ns": 65263149,
+        "v4_over_pyoptix": 89.19983571402213,
+        "valid": true
+      },
+      "unit_id": "particle_tracking"
+    },
+    {
+      "block": 2,
+      "endpoint": "first_result",
+      "pair": {
+        "output_sha256": "81dea3f2ad83c6c239a372d699b6133a088fe7171356b298b9aeace4074370c7",
+        "pyoptix_median_ns": 713280,
+        "v4_median_ns": 39913135,
+        "v4_over_pyoptix": 55.95717670480036,
+        "valid": true
+      },
+      "unit_id": "particle_tracking"
+    },
+    {
+      "block": 3,
+      "endpoint": "first_result",
+      "pair": {
+        "output_sha256": "81dea3f2ad83c6c239a372d699b6133a088fe7171356b298b9aeace4074370c7",
+        "pyoptix_median_ns": 734541,
+        "v4_median_ns": 40475331,
+        "v4_over_pyoptix": 55.10288874276589,
+        "valid": true
+      },
+      "unit_id": "particle_tracking"
+    },
+    {
+      "block": 4,
+      "endpoint": "first_result",
+      "pair": {
+        "output_sha256": "81dea3f2ad83c6c239a372d699b6133a088fe7171356b298b9aeace4074370c7",
+        "pyoptix_median_ns": 709169,
+        "v4_median_ns": 37586170,
+        "v4_over_pyoptix": 53.00030035153821,
+        "valid": true
+      },
+      "unit_id": "particle_tracking"
+    },
+    {
+      "block": 5,
+      "endpoint": "first_result",
+      "pair": {
+        "output_sha256": "81dea3f2ad83c6c239a372d699b6133a088fe7171356b298b9aeace4074370c7",
+        "pyoptix_median_ns": 826844,
+        "v4_median_ns": 69610342,
+        "v4_over_pyoptix": 84.18799918727112,
+        "valid": true
+      },
+      "unit_id": "particle_tracking"
+    },
+    {
+      "block": 6,
+      "endpoint": "first_result",
+      "pair": {
+        "output_sha256": "81dea3f2ad83c6c239a372d699b6133a088fe7171356b298b9aeace4074370c7",
+        "pyoptix_median_ns": 721030,
+        "v4_median_ns": 50293587,
+        "v4_over_pyoptix": 69.75241945550115,
+        "valid": true
+      },
+      "unit_id": "particle_tracking"
+    },
+    {
+      "block": 7,
+      "endpoint": "first_result",
+      "pair": {
+        "output_sha256": "81dea3f2ad83c6c239a372d699b6133a088fe7171356b298b9aeace4074370c7",
+        "pyoptix_median_ns": 708790,
+        "v4_median_ns": 43373012,
+        "v4_over_pyoptix": 61.19303601913119,
+        "valid": true
+      },
+      "unit_id": "particle_tracking"
+    },
+    {
+      "block": 0,
+      "endpoint": "prepared",
+      "pair": {
+        "output_sha256": "81dea3f2ad83c6c239a372d699b6133a088fe7171356b298b9aeace4074370c7",
+        "pyoptix_median_ns": 465428.0,
+        "v4_median_ns": 17789966.5,
+        "v4_over_pyoptix": 38.222811047036274,
+        "valid": true
+      },
+      "unit_id": "particle_tracking"
+    },
+    {
+      "block": 1,
+      "endpoint": "prepared",
+      "pair": {
+        "output_sha256": "81dea3f2ad83c6c239a372d699b6133a088fe7171356b298b9aeace4074370c7",
+        "pyoptix_median_ns": 468858.0,
+        "v4_median_ns": 19184216.0,
+        "v4_over_pyoptix": 40.91690021285763,
+        "valid": true
+      },
+      "unit_id": "particle_tracking"
+    },
+    {
+      "block": 2,
+      "endpoint": "prepared",
+      "pair": {
+        "output_sha256": "81dea3f2ad83c6c239a372d699b6133a088fe7171356b298b9aeace4074370c7",
+        "pyoptix_median_ns": 463813.0,
+        "v4_median_ns": 18159016.0,
+        "v4_over_pyoptix": 39.15158911026642,
+        "valid": true
+      },
+      "unit_id": "particle_tracking"
+    },
+    {
+      "block": 3,
+      "endpoint": "prepared",
+      "pair": {
+        "output_sha256": "81dea3f2ad83c6c239a372d699b6133a088fe7171356b298b9aeace4074370c7",
+        "pyoptix_median_ns": 476593.5,
+        "v4_median_ns": 18319436.0,
+        "v4_over_pyoptix": 38.43828335887921,
+        "valid": true
+      },
+      "unit_id": "particle_tracking"
+    },
+    {
+      "block": 4,
+      "endpoint": "prepared",
+      "pair": {
+        "output_sha256": "81dea3f2ad83c6c239a372d699b6133a088fe7171356b298b9aeace4074370c7",
+        "pyoptix_median_ns": 473628.5,
+        "v4_median_ns": 18478660.0,
+        "v4_over_pyoptix": 39.015093052888496,
+        "valid": true
+      },
+      "unit_id": "particle_tracking"
+    },
+    {
+      "block": 5,
+      "endpoint": "prepared",
+      "pair": {
+        "output_sha256": "81dea3f2ad83c6c239a372d699b6133a088fe7171356b298b9aeace4074370c7",
+        "pyoptix_median_ns": 468438.0,
+        "v4_median_ns": 18180372.0,
+        "v4_over_pyoptix": 38.810625952634076,
+        "valid": true
+      },
+      "unit_id": "particle_tracking"
+    },
+    {
+      "block": 6,
+      "endpoint": "prepared",
+      "pair": {
+        "output_sha256": "81dea3f2ad83c6c239a372d699b6133a088fe7171356b298b9aeace4074370c7",
+        "pyoptix_median_ns": 468768.0,
+        "v4_median_ns": 18148476.5,
+        "v4_over_pyoptix": 38.71526320055977,
+        "valid": true
+      },
+      "unit_id": "particle_tracking"
+    },
+    {
+      "block": 7,
+      "endpoint": "prepared",
+      "pair": {
+        "output_sha256": "81dea3f2ad83c6c239a372d699b6133a088fe7171356b298b9aeace4074370c7",
+        "pyoptix_median_ns": 470493.0,
+        "v4_median_ns": 18023142.5,
+        "v4_over_pyoptix": 38.30693017749467,
+        "valid": true
+      },
+      "unit_id": "particle_tracking"
+    },
+    {
+      "block": 0,
+      "endpoint": "complete",
+      "pair": {
+        "output_sha256": "ffc4373270ebfb830803df134ca09bf0aa265de91c409d104588408a0273f1f5",
+        "pyoptix_median_ns": 3744694815,
+        "v4_median_ns": 13370498238,
+        "v4_over_pyoptix": 3.570517464985995,
+        "valid": true
+      },
+      "unit_id": "triangle_counting__com_dblp__rt_2a1"
+    },
+    {
+      "block": 1,
+      "endpoint": "complete",
+      "pair": {
+        "output_sha256": "ffc4373270ebfb830803df134ca09bf0aa265de91c409d104588408a0273f1f5",
+        "pyoptix_median_ns": 3516780147,
+        "v4_median_ns": 12233715815,
+        "v4_over_pyoptix": 3.478669494149644,
+        "valid": true
+      },
+      "unit_id": "triangle_counting__com_dblp__rt_2a1"
+    },
+    {
+      "block": 2,
+      "endpoint": "complete",
+      "pair": {
+        "output_sha256": "ffc4373270ebfb830803df134ca09bf0aa265de91c409d104588408a0273f1f5",
+        "pyoptix_median_ns": 3749743896,
+        "v4_median_ns": 13530702509,
+        "v4_over_pyoptix": 3.608433771552701,
+        "valid": true
+      },
+      "unit_id": "triangle_counting__com_dblp__rt_2a1"
+    },
+    {
+      "block": 3,
+      "endpoint": "complete",
+      "pair": {
+        "output_sha256": "ffc4373270ebfb830803df134ca09bf0aa265de91c409d104588408a0273f1f5",
+        "pyoptix_median_ns": 3462663072,
+        "v4_median_ns": 12543743366,
+        "v4_over_pyoptix": 3.622571155545566,
+        "valid": true
+      },
+      "unit_id": "triangle_counting__com_dblp__rt_2a1"
+    },
+    {
+      "block": 4,
+      "endpoint": "complete",
+      "pair": {
+        "output_sha256": "ffc4373270ebfb830803df134ca09bf0aa265de91c409d104588408a0273f1f5",
+        "pyoptix_median_ns": 3822033133,
+        "v4_median_ns": 12826841648,
+        "v4_over_pyoptix": 3.3560257594972556,
+        "valid": true
+      },
+      "unit_id": "triangle_counting__com_dblp__rt_2a1"
+    },
+    {
+      "block": 5,
+      "endpoint": "complete",
+      "pair": {
+        "output_sha256": "ffc4373270ebfb830803df134ca09bf0aa265de91c409d104588408a0273f1f5",
+        "pyoptix_median_ns": 3693393650,
+        "v4_median_ns": 12576344704,
+        "v4_over_pyoptix": 3.4050918737026583,
+        "valid": true
+      },
+      "unit_id": "triangle_counting__com_dblp__rt_2a1"
+    },
+    {
+      "block": 6,
+      "endpoint": "complete",
+      "pair": {
+        "output_sha256": "ffc4373270ebfb830803df134ca09bf0aa265de91c409d104588408a0273f1f5",
+        "pyoptix_median_ns": 3520233044,
+        "v4_median_ns": 12193571894,
+        "v4_over_pyoptix": 3.463853597642668,
+        "valid": true
+      },
+      "unit_id": "triangle_counting__com_dblp__rt_2a1"
+    },
+    {
+      "block": 7,
+      "endpoint": "complete",
+      "pair": {
+        "output_sha256": "ffc4373270ebfb830803df134ca09bf0aa265de91c409d104588408a0273f1f5",
+        "pyoptix_median_ns": 3596585624,
+        "v4_median_ns": 12228474548,
+        "v4_over_pyoptix": 3.4000231959999625,
+        "valid": true
+      },
+      "unit_id": "triangle_counting__com_dblp__rt_2a1"
+    },
+    {
+      "block": 0,
+      "endpoint": "first_result",
+      "pair": {
+        "output_sha256": "ffc4373270ebfb830803df134ca09bf0aa265de91c409d104588408a0273f1f5",
+        "pyoptix_median_ns": 1388898693,
+        "v4_median_ns": 3740101666,
+        "v4_over_pyoptix": 2.6928541907699817,
+        "valid": true
+      },
+      "unit_id": "triangle_counting__com_dblp__rt_2a1"
+    },
+    {
+      "block": 1,
+      "endpoint": "first_result",
+      "pair": {
+        "output_sha256": "ffc4373270ebfb830803df134ca09bf0aa265de91c409d104588408a0273f1f5",
+        "pyoptix_median_ns": 1276630191,
+        "v4_median_ns": 3807055011,
+        "v4_over_pyoptix": 2.982112625754125,
+        "valid": true
+      },
+      "unit_id": "triangle_counting__com_dblp__rt_2a1"
+    },
+    {
+      "block": 2,
+      "endpoint": "first_result",
+      "pair": {
+        "output_sha256": "ffc4373270ebfb830803df134ca09bf0aa265de91c409d104588408a0273f1f5",
+        "pyoptix_median_ns": 1353569818,
+        "v4_median_ns": 3679360945,
+        "v4_over_pyoptix": 2.7182646185451516,
+        "valid": true
+      },
+      "unit_id": "triangle_counting__com_dblp__rt_2a1"
+    },
+    {
+      "block": 3,
+      "endpoint": "first_result",
+      "pair": {
+        "output_sha256": "ffc4373270ebfb830803df134ca09bf0aa265de91c409d104588408a0273f1f5",
+        "pyoptix_median_ns": 1372033468,
+        "v4_median_ns": 3707866198,
+        "v4_over_pyoptix": 2.7024604606802494,
+        "valid": true
+      },
+      "unit_id": "triangle_counting__com_dblp__rt_2a1"
+    },
+    {
+      "block": 4,
+      "endpoint": "first_result",
+      "pair": {
+        "output_sha256": "ffc4373270ebfb830803df134ca09bf0aa265de91c409d104588408a0273f1f5",
+        "pyoptix_median_ns": 1379370014,
+        "v4_median_ns": 3718948120,
+        "v4_over_pyoptix": 2.6961207524118325,
+        "valid": true
+      },
+      "unit_id": "triangle_counting__com_dblp__rt_2a1"
+    },
+    {
+      "block": 5,
+      "endpoint": "first_result",
+      "pair": {
+        "output_sha256": "ffc4373270ebfb830803df134ca09bf0aa265de91c409d104588408a0273f1f5",
+        "pyoptix_median_ns": 1303942261,
+        "v4_median_ns": 3670533086,
+        "v4_over_pyoptix": 2.814950627633657,
+        "valid": true
+      },
+      "unit_id": "triangle_counting__com_dblp__rt_2a1"
+    },
+    {
+      "block": 6,
+      "endpoint": "first_result",
+      "pair": {
+        "output_sha256": "ffc4373270ebfb830803df134ca09bf0aa265de91c409d104588408a0273f1f5",
+        "pyoptix_median_ns": 1306651497,
+        "v4_median_ns": 3824918164,
+        "v4_over_pyoptix": 2.9272672727056923,
+        "valid": true
+      },
+      "unit_id": "triangle_counting__com_dblp__rt_2a1"
+    },
+    {
+      "block": 7,
+      "endpoint": "first_result",
+      "pair": {
+        "output_sha256": "ffc4373270ebfb830803df134ca09bf0aa265de91c409d104588408a0273f1f5",
+        "pyoptix_median_ns": 1345072519,
+        "v4_median_ns": 3705587964,
+        "v4_over_pyoptix": 2.754935448948831,
+        "valid": true
+      },
+      "unit_id": "triangle_counting__com_dblp__rt_2a1"
+    },
+    {
+      "block": 0,
+      "endpoint": "prepared",
+      "pair": {
+        "output_sha256": "ffc4373270ebfb830803df134ca09bf0aa265de91c409d104588408a0273f1f5",
+        "pyoptix_median_ns": 451129829.5,
+        "v4_median_ns": 600036217.5,
+        "v4_over_pyoptix": 1.3300743561227977,
+        "valid": true
+      },
+      "unit_id": "triangle_counting__com_dblp__rt_2a1"
+    },
+    {
+      "block": 1,
+      "endpoint": "prepared",
+      "pair": {
+        "output_sha256": "ffc4373270ebfb830803df134ca09bf0aa265de91c409d104588408a0273f1f5",
+        "pyoptix_median_ns": 435516504.5,
+        "v4_median_ns": 582320668.5,
+        "v4_over_pyoptix": 1.3370805985149525,
+        "valid": true
+      },
+      "unit_id": "triangle_counting__com_dblp__rt_2a1"
+    },
+    {
+      "block": 2,
+      "endpoint": "prepared",
+      "pair": {
+        "output_sha256": "ffc4373270ebfb830803df134ca09bf0aa265de91c409d104588408a0273f1f5",
+        "pyoptix_median_ns": 437101814.5,
+        "v4_median_ns": 594990570.5,
+        "v4_over_pyoptix": 1.3612173428760725,
+        "valid": true
+      },
+      "unit_id": "triangle_counting__com_dblp__rt_2a1"
+    },
+    {
+      "block": 3,
+      "endpoint": "prepared",
+      "pair": {
+        "output_sha256": "ffc4373270ebfb830803df134ca09bf0aa265de91c409d104588408a0273f1f5",
+        "pyoptix_median_ns": 450746733.5,
+        "v4_median_ns": 595782943.0,
+        "v4_over_pyoptix": 1.321768742224285,
+        "valid": true
+      },
+      "unit_id": "triangle_counting__com_dblp__rt_2a1"
+    },
+    {
+      "block": 4,
+      "endpoint": "prepared",
+      "pair": {
+        "output_sha256": "ffc4373270ebfb830803df134ca09bf0aa265de91c409d104588408a0273f1f5",
+        "pyoptix_median_ns": 453340371.5,
+        "v4_median_ns": 567738903.5,
+        "v4_over_pyoptix": 1.2523457851800874,
+        "valid": true
+      },
+      "unit_id": "triangle_counting__com_dblp__rt_2a1"
+    },
+    {
+      "block": 5,
+      "endpoint": "prepared",
+      "pair": {
+        "output_sha256": "ffc4373270ebfb830803df134ca09bf0aa265de91c409d104588408a0273f1f5",
+        "pyoptix_median_ns": 449182554.5,
+        "v4_median_ns": 602425950.0,
+        "v4_over_pyoptix": 1.3411606126835898,
+        "valid": true
+      },
+      "unit_id": "triangle_counting__com_dblp__rt_2a1"
+    },
+    {
+      "block": 6,
+      "endpoint": "prepared",
+      "pair": {
+        "output_sha256": "ffc4373270ebfb830803df134ca09bf0aa265de91c409d104588408a0273f1f5",
+        "pyoptix_median_ns": 440387482.0,
+        "v4_median_ns": 612158319.0,
+        "v4_over_pyoptix": 1.390044776522508,
+        "valid": true
+      },
+      "unit_id": "triangle_counting__com_dblp__rt_2a1"
+    },
+    {
+      "block": 7,
+      "endpoint": "prepared",
+      "pair": {
+        "output_sha256": "ffc4373270ebfb830803df134ca09bf0aa265de91c409d104588408a0273f1f5",
+        "pyoptix_median_ns": 441257201.0,
+        "v4_median_ns": 592677810.0,
+        "v4_over_pyoptix": 1.3431572530869587,
+        "valid": true
+      },
+      "unit_id": "triangle_counting__com_dblp__rt_2a1"
+    },
+    {
+      "block": 0,
+      "endpoint": "complete",
+      "pair": {
+        "output_sha256": "b790372024c23e8882fafb893a1c2a6216f4aeaf8f8b090d29d817794c701243",
+        "pyoptix_median_ns": 4385544851,
+        "v4_median_ns": 4286097611,
+        "v4_over_pyoptix": 0.9773238574957628,
+        "valid": true
+      },
+      "unit_id": "librts__parks__point_contains"
+    },
+    {
+      "block": 1,
+      "endpoint": "complete",
+      "pair": {
+        "output_sha256": "b790372024c23e8882fafb893a1c2a6216f4aeaf8f8b090d29d817794c701243",
+        "pyoptix_median_ns": 3850656788,
+        "v4_median_ns": 4052123242,
+        "v4_over_pyoptix": 1.0523200235938555,
+        "valid": true
+      },
+      "unit_id": "librts__parks__point_contains"
+    },
+    {
+      "block": 2,
+      "endpoint": "complete",
+      "pair": {
+        "output_sha256": "b790372024c23e8882fafb893a1c2a6216f4aeaf8f8b090d29d817794c701243",
+        "pyoptix_median_ns": 4097507680,
+        "v4_median_ns": 4153997611,
+        "v4_over_pyoptix": 1.0137864124759859,
+        "valid": true
+      },
+      "unit_id": "librts__parks__point_contains"
+    },
+    {
+      "block": 3,
+      "endpoint": "complete",
+      "pair": {
+        "output_sha256": "b790372024c23e8882fafb893a1c2a6216f4aeaf8f8b090d29d817794c701243",
+        "pyoptix_median_ns": 3859328213,
+        "v4_median_ns": 4536025719,
+        "v4_over_pyoptix": 1.1753407506831293,
+        "valid": true
+      },
+      "unit_id": "librts__parks__point_contains"
+    },
+    {
+      "block": 4,
+      "endpoint": "complete",
+      "pair": {
+        "output_sha256": "b790372024c23e8882fafb893a1c2a6216f4aeaf8f8b090d29d817794c701243",
+        "pyoptix_median_ns": 4025692278,
+        "v4_median_ns": 4088344552,
+        "v4_over_pyoptix": 1.0155631055911523,
+        "valid": true
+      },
+      "unit_id": "librts__parks__point_contains"
+    },
+    {
+      "block": 5,
+      "endpoint": "complete",
+      "pair": {
+        "output_sha256": "b790372024c23e8882fafb893a1c2a6216f4aeaf8f8b090d29d817794c701243",
+        "pyoptix_median_ns": 4222942963,
+        "v4_median_ns": 4262730643,
+        "v4_over_pyoptix": 1.0094217895786437,
+        "valid": true
+      },
+      "unit_id": "librts__parks__point_contains"
+    },
+    {
+      "block": 6,
+      "endpoint": "complete",
+      "pair": {
+        "output_sha256": "b790372024c23e8882fafb893a1c2a6216f4aeaf8f8b090d29d817794c701243",
+        "pyoptix_median_ns": 4401435420,
+        "v4_median_ns": 4219798504,
+        "v4_over_pyoptix": 0.9587323455492163,
+        "valid": true
+      },
+      "unit_id": "librts__parks__point_contains"
+    },
+    {
+      "block": 7,
+      "endpoint": "complete",
+      "pair": {
+        "output_sha256": "b790372024c23e8882fafb893a1c2a6216f4aeaf8f8b090d29d817794c701243",
+        "pyoptix_median_ns": 3948849404,
+        "v4_median_ns": 6673596196,
+        "v4_over_pyoptix": 1.6900103076202295,
+        "valid": true
+      },
+      "unit_id": "librts__parks__point_contains"
+    },
+    {
+      "block": 0,
+      "endpoint": "first_result",
+      "pair": {
+        "output_sha256": "b790372024c23e8882fafb893a1c2a6216f4aeaf8f8b090d29d817794c701243",
+        "pyoptix_median_ns": 876035,
+        "v4_median_ns": 10444734,
+        "v4_over_pyoptix": 11.92273596374574,
+        "valid": true
+      },
+      "unit_id": "librts__parks__point_contains"
+    },
+    {
+      "block": 1,
+      "endpoint": "first_result",
+      "pair": {
+        "output_sha256": "b790372024c23e8882fafb893a1c2a6216f4aeaf8f8b090d29d817794c701243",
+        "pyoptix_median_ns": 904375,
+        "v4_median_ns": 10531826,
+        "v4_over_pyoptix": 11.645419212163096,
+        "valid": true
+      },
+      "unit_id": "librts__parks__point_contains"
+    },
+    {
+      "block": 2,
+      "endpoint": "first_result",
+      "pair": {
+        "output_sha256": "b790372024c23e8882fafb893a1c2a6216f4aeaf8f8b090d29d817794c701243",
+        "pyoptix_median_ns": 899126,
+        "v4_median_ns": 13223563,
+        "v4_over_pyoptix": 14.707130035167484,
+        "valid": true
+      },
+      "unit_id": "librts__parks__point_contains"
+    },
+    {
+      "block": 3,
+      "endpoint": "first_result",
+      "pair": {
+        "output_sha256": "b790372024c23e8882fafb893a1c2a6216f4aeaf8f8b090d29d817794c701243",
+        "pyoptix_median_ns": 881535,
+        "v4_median_ns": 10264229,
+        "v4_over_pyoptix": 11.643586471325586,
+        "valid": true
+      },
+      "unit_id": "librts__parks__point_contains"
+    },
+    {
+      "block": 4,
+      "endpoint": "first_result",
+      "pair": {
+        "output_sha256": "b790372024c23e8882fafb893a1c2a6216f4aeaf8f8b090d29d817794c701243",
+        "pyoptix_median_ns": 874364,
+        "v4_median_ns": 12753809,
+        "v4_over_pyoptix": 14.58638393163488,
+        "valid": true
+      },
+      "unit_id": "librts__parks__point_contains"
+    },
+    {
+      "block": 5,
+      "endpoint": "first_result",
+      "pair": {
+        "output_sha256": "b790372024c23e8882fafb893a1c2a6216f4aeaf8f8b090d29d817794c701243",
+        "pyoptix_median_ns": 896695,
+        "v4_median_ns": 27920356,
+        "v4_over_pyoptix": 31.13695961280034,
+        "valid": true
+      },
+      "unit_id": "librts__parks__point_contains"
+    },
+    {
+      "block": 6,
+      "endpoint": "first_result",
+      "pair": {
+        "output_sha256": "b790372024c23e8882fafb893a1c2a6216f4aeaf8f8b090d29d817794c701243",
+        "pyoptix_median_ns": 891025,
+        "v4_median_ns": 12335088,
+        "v4_over_pyoptix": 13.843705844392694,
+        "valid": true
+      },
+      "unit_id": "librts__parks__point_contains"
+    },
+    {
+      "block": 7,
+      "endpoint": "first_result",
+      "pair": {
+        "output_sha256": "b790372024c23e8882fafb893a1c2a6216f4aeaf8f8b090d29d817794c701243",
+        "pyoptix_median_ns": 889525,
+        "v4_median_ns": 15238269,
+        "v4_over_pyoptix": 17.13079340097243,
+        "valid": true
+      },
+      "unit_id": "librts__parks__point_contains"
+    },
+    {
+      "block": 0,
+      "endpoint": "prepared",
+      "pair": {
+        "output_sha256": "b790372024c23e8882fafb893a1c2a6216f4aeaf8f8b090d29d817794c701243",
+        "pyoptix_median_ns": 232982.0,
+        "v4_median_ns": 12516117.5,
+        "v4_over_pyoptix": 53.72139263977475,
+        "valid": true
+      },
+      "unit_id": "librts__parks__point_contains"
+    },
+    {
+      "block": 1,
+      "endpoint": "prepared",
+      "pair": {
+        "output_sha256": "b790372024c23e8882fafb893a1c2a6216f4aeaf8f8b090d29d817794c701243",
+        "pyoptix_median_ns": 240146.5,
+        "v4_median_ns": 9486212.0,
+        "v4_over_pyoptix": 39.50177079407778,
+        "valid": true
+      },
+      "unit_id": "librts__parks__point_contains"
+    },
+    {
+      "block": 2,
+      "endpoint": "prepared",
+      "pair": {
+        "output_sha256": "b790372024c23e8882fafb893a1c2a6216f4aeaf8f8b090d29d817794c701243",
+        "pyoptix_median_ns": 230396.0,
+        "v4_median_ns": 12369253.5,
+        "v4_over_pyoptix": 53.68692815847497,
+        "valid": true
+      },
+      "unit_id": "librts__parks__point_contains"
+    },
+    {
+      "block": 3,
+      "endpoint": "prepared",
+      "pair": {
+        "output_sha256": "b790372024c23e8882fafb893a1c2a6216f4aeaf8f8b090d29d817794c701243",
+        "pyoptix_median_ns": 231551.0,
+        "v4_median_ns": 8244732.5,
+        "v4_over_pyoptix": 35.60655104059149,
+        "valid": true
+      },
+      "unit_id": "librts__parks__point_contains"
+    },
+    {
+      "block": 4,
+      "endpoint": "prepared",
+      "pair": {
+        "output_sha256": "b790372024c23e8882fafb893a1c2a6216f4aeaf8f8b090d29d817794c701243",
+        "pyoptix_median_ns": 249252.0,
+        "v4_median_ns": 9029954.0,
+        "v4_over_pyoptix": 36.22821080673375,
+        "valid": true
+      },
+      "unit_id": "librts__parks__point_contains"
+    },
+    {
+      "block": 5,
+      "endpoint": "prepared",
+      "pair": {
+        "output_sha256": "b790372024c23e8882fafb893a1c2a6216f4aeaf8f8b090d29d817794c701243",
+        "pyoptix_median_ns": 230026.0,
+        "v4_median_ns": 13162961.5,
+        "v4_over_pyoptix": 57.223798614069715,
+        "valid": true
+      },
+      "unit_id": "librts__parks__point_contains"
+    },
+    {
+      "block": 6,
+      "endpoint": "prepared",
+      "pair": {
+        "output_sha256": "b790372024c23e8882fafb893a1c2a6216f4aeaf8f8b090d29d817794c701243",
+        "pyoptix_median_ns": 226066.0,
+        "v4_median_ns": 10393807.5,
+        "v4_over_pyoptix": 45.97687179850132,
+        "valid": true
+      },
+      "unit_id": "librts__parks__point_contains"
+    },
+    {
+      "block": 7,
+      "endpoint": "prepared",
+      "pair": {
+        "output_sha256": "b790372024c23e8882fafb893a1c2a6216f4aeaf8f8b090d29d817794c701243",
+        "pyoptix_median_ns": 227786.5,
+        "v4_median_ns": 7522576.5,
+        "v4_over_pyoptix": 33.02468100611757,
+        "valid": true
+      },
+      "unit_id": "librts__parks__point_contains"
+    },
+    {
+      "block": 0,
+      "endpoint": "complete",
+      "pair": {
+        "output_sha256": "ce12d9de8ed2fb51211f9c192801f0c32744edd6d18e9576b453afcc4f37b687",
+        "pyoptix_median_ns": 4386669678,
+        "v4_median_ns": 4241856129,
+        "v4_over_pyoptix": 0.9669878154431668,
+        "valid": true
+      },
+      "unit_id": "librts__parks__range_contains"
+    },
+    {
+      "block": 1,
+      "endpoint": "complete",
+      "pair": {
+        "output_sha256": "ce12d9de8ed2fb51211f9c192801f0c32744edd6d18e9576b453afcc4f37b687",
+        "pyoptix_median_ns": 4191919714,
+        "v4_median_ns": 4721915839,
+        "v4_over_pyoptix": 1.1264327947956496,
+        "valid": true
+      },
+      "unit_id": "librts__parks__range_contains"
+    },
+    {
+      "block": 2,
+      "endpoint": "complete",
+      "pair": {
+        "output_sha256": "ce12d9de8ed2fb51211f9c192801f0c32744edd6d18e9576b453afcc4f37b687",
+        "pyoptix_median_ns": 3987805576,
+        "v4_median_ns": 4480638924,
+        "v4_over_pyoptix": 1.1235850992751608,
+        "valid": true
+      },
+      "unit_id": "librts__parks__range_contains"
+    },
+    {
+      "block": 3,
+      "endpoint": "complete",
+      "pair": {
+        "output_sha256": "ce12d9de8ed2fb51211f9c192801f0c32744edd6d18e9576b453afcc4f37b687",
+        "pyoptix_median_ns": 4020078095,
+        "v4_median_ns": 4527267677,
+        "v4_over_pyoptix": 1.1261641117446999,
+        "valid": true
+      },
+      "unit_id": "librts__parks__range_contains"
+    },
+    {
+      "block": 4,
+      "endpoint": "complete",
+      "pair": {
+        "output_sha256": "ce12d9de8ed2fb51211f9c192801f0c32744edd6d18e9576b453afcc4f37b687",
+        "pyoptix_median_ns": 4123308022,
+        "v4_median_ns": 4453432748,
+        "v4_over_pyoptix": 1.0800630765973855,
+        "valid": true
+      },
+      "unit_id": "librts__parks__range_contains"
+    },
+    {
+      "block": 5,
+      "endpoint": "complete",
+      "pair": {
+        "output_sha256": "ce12d9de8ed2fb51211f9c192801f0c32744edd6d18e9576b453afcc4f37b687",
+        "pyoptix_median_ns": 4139781356,
+        "v4_median_ns": 4620416170,
+        "v4_over_pyoptix": 1.1161014973178212,
+        "valid": true
+      },
+      "unit_id": "librts__parks__range_contains"
+    },
+    {
+      "block": 6,
+      "endpoint": "complete",
+      "pair": {
+        "output_sha256": "ce12d9de8ed2fb51211f9c192801f0c32744edd6d18e9576b453afcc4f37b687",
+        "pyoptix_median_ns": 4181959963,
+        "v4_median_ns": 4450040552,
+        "v4_over_pyoptix": 1.064104054407945,
+        "valid": true
+      },
+      "unit_id": "librts__parks__range_contains"
+    },
+    {
+      "block": 7,
+      "endpoint": "complete",
+      "pair": {
+        "output_sha256": "ce12d9de8ed2fb51211f9c192801f0c32744edd6d18e9576b453afcc4f37b687",
+        "pyoptix_median_ns": 4025037485,
+        "v4_median_ns": 4611062387,
+        "v4_over_pyoptix": 1.1455948930125306,
+        "valid": true
+      },
+      "unit_id": "librts__parks__range_contains"
+    },
+    {
+      "block": 0,
+      "endpoint": "first_result",
+      "pair": {
+        "output_sha256": "ce12d9de8ed2fb51211f9c192801f0c32744edd6d18e9576b453afcc4f37b687",
+        "pyoptix_median_ns": 879965,
+        "v4_median_ns": 12760949,
+        "v4_over_pyoptix": 14.501655179467365,
+        "valid": true
+      },
+      "unit_id": "librts__parks__range_contains"
+    },
+    {
+      "block": 1,
+      "endpoint": "first_result",
+      "pair": {
+        "output_sha256": "ce12d9de8ed2fb51211f9c192801f0c32744edd6d18e9576b453afcc4f37b687",
+        "pyoptix_median_ns": 879734,
+        "v4_median_ns": 12326407,
+        "v4_over_pyoptix": 14.011515980966974,
+        "valid": true
+      },
+      "unit_id": "librts__parks__range_contains"
+    },
+    {
+      "block": 2,
+      "endpoint": "first_result",
+      "pair": {
+        "output_sha256": "ce12d9de8ed2fb51211f9c192801f0c32744edd6d18e9576b453afcc4f37b687",
+        "pyoptix_median_ns": 884955,
+        "v4_median_ns": 11776171,
+        "v4_over_pyoptix": 13.30708454102186,
+        "valid": true
+      },
+      "unit_id": "librts__parks__range_contains"
+    },
+    {
+      "block": 3,
+      "endpoint": "first_result",
+      "pair": {
+        "output_sha256": "ce12d9de8ed2fb51211f9c192801f0c32744edd6d18e9576b453afcc4f37b687",
+        "pyoptix_median_ns": 904075,
+        "v4_median_ns": 27701600,
+        "v4_over_pyoptix": 30.640820728368773,
+        "valid": true
+      },
+      "unit_id": "librts__parks__range_contains"
+    },
+    {
+      "block": 4,
+      "endpoint": "first_result",
+      "pair": {
+        "output_sha256": "ce12d9de8ed2fb51211f9c192801f0c32744edd6d18e9576b453afcc4f37b687",
+        "pyoptix_median_ns": 867984,
+        "v4_median_ns": 12097241,
+        "v4_over_pyoptix": 13.937170500838725,
+        "valid": true
+      },
+      "unit_id": "librts__parks__range_contains"
+    },
+    {
+      "block": 5,
+      "endpoint": "first_result",
+      "pair": {
+        "output_sha256": "ce12d9de8ed2fb51211f9c192801f0c32744edd6d18e9576b453afcc4f37b687",
+        "pyoptix_median_ns": 885335,
+        "v4_median_ns": 11662359,
+        "v4_over_pyoptix": 13.172820457792813,
+        "valid": true
+      },
+      "unit_id": "librts__parks__range_contains"
+    },
+    {
+      "block": 6,
+      "endpoint": "first_result",
+      "pair": {
+        "output_sha256": "ce12d9de8ed2fb51211f9c192801f0c32744edd6d18e9576b453afcc4f37b687",
+        "pyoptix_median_ns": 933776,
+        "v4_median_ns": 25627302,
+        "v4_over_pyoptix": 27.44480689158856,
+        "valid": true
+      },
+      "unit_id": "librts__parks__range_contains"
+    },
+    {
+      "block": 7,
+      "endpoint": "first_result",
+      "pair": {
+        "output_sha256": "ce12d9de8ed2fb51211f9c192801f0c32744edd6d18e9576b453afcc4f37b687",
+        "pyoptix_median_ns": 893855,
+        "v4_median_ns": 10992290,
+        "v4_over_pyoptix": 12.2976209787941,
+        "valid": true
+      },
+      "unit_id": "librts__parks__range_contains"
+    },
+    {
+      "block": 0,
+      "endpoint": "prepared",
+      "pair": {
+        "output_sha256": "ce12d9de8ed2fb51211f9c192801f0c32744edd6d18e9576b453afcc4f37b687",
+        "pyoptix_median_ns": 231477.0,
+        "v4_median_ns": 7701667.0,
+        "v4_over_pyoptix": 33.27184558293049,
+        "valid": true
+      },
+      "unit_id": "librts__parks__range_contains"
+    },
+    {
+      "block": 1,
+      "endpoint": "prepared",
+      "pair": {
+        "output_sha256": "ce12d9de8ed2fb51211f9c192801f0c32744edd6d18e9576b453afcc4f37b687",
+        "pyoptix_median_ns": 279133.0,
+        "v4_median_ns": 10608699.0,
+        "v4_over_pyoptix": 38.00589324802155,
+        "valid": true
+      },
+      "unit_id": "librts__parks__range_contains"
+    },
+    {
+      "block": 2,
+      "endpoint": "prepared",
+      "pair": {
+        "output_sha256": "ce12d9de8ed2fb51211f9c192801f0c32744edd6d18e9576b453afcc4f37b687",
+        "pyoptix_median_ns": 282223.0,
+        "v4_median_ns": 9079361.0,
+        "v4_over_pyoptix": 32.1708755133352,
+        "valid": true
+      },
+      "unit_id": "librts__parks__range_contains"
+    },
+    {
+      "block": 3,
+      "endpoint": "prepared",
+      "pair": {
+        "output_sha256": "ce12d9de8ed2fb51211f9c192801f0c32744edd6d18e9576b453afcc4f37b687",
+        "pyoptix_median_ns": 234277.0,
+        "v4_median_ns": 7865701.5,
+        "v4_over_pyoptix": 33.57436496113575,
+        "valid": true
+      },
+      "unit_id": "librts__parks__range_contains"
+    },
+    {
+      "block": 4,
+      "endpoint": "prepared",
+      "pair": {
+        "output_sha256": "ce12d9de8ed2fb51211f9c192801f0c32744edd6d18e9576b453afcc4f37b687",
+        "pyoptix_median_ns": 233561.5,
+        "v4_median_ns": 8342395.0,
+        "v4_over_pyoptix": 35.71819413730431,
+        "valid": true
+      },
+      "unit_id": "librts__parks__range_contains"
+    },
+    {
+      "block": 5,
+      "endpoint": "prepared",
+      "pair": {
+        "output_sha256": "ce12d9de8ed2fb51211f9c192801f0c32744edd6d18e9576b453afcc4f37b687",
+        "pyoptix_median_ns": 231476.0,
+        "v4_median_ns": 8889200.5,
+        "v4_over_pyoptix": 38.402255525410844,
+        "valid": true
+      },
+      "unit_id": "librts__parks__range_contains"
+    },
+    {
+      "block": 6,
+      "endpoint": "prepared",
+      "pair": {
+        "output_sha256": "ce12d9de8ed2fb51211f9c192801f0c32744edd6d18e9576b453afcc4f37b687",
+        "pyoptix_median_ns": 235531.0,
+        "v4_median_ns": 11095167.5,
+        "v4_over_pyoptix": 47.10703686563552,
+        "valid": true
+      },
+      "unit_id": "librts__parks__range_contains"
+    },
+    {
+      "block": 7,
+      "endpoint": "prepared",
+      "pair": {
+        "output_sha256": "ce12d9de8ed2fb51211f9c192801f0c32744edd6d18e9576b453afcc4f37b687",
+        "pyoptix_median_ns": 238081.5,
+        "v4_median_ns": 9838662.5,
+        "v4_over_pyoptix": 41.32476693905238,
+        "valid": true
+      },
+      "unit_id": "librts__parks__range_contains"
+    }
+  ],
+  "retry_count": 0,
+  "schema": "rtdl.v4_paper_apps_pyoptix.independent_recount.v1",
+  "status": "RECOUNT_MATCH",
+  "worker_file_count": 192,
+  "worker_files": [
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/particle_tracking__complete__b00__p0__v4.json",
+      "relative_path": "workers/particle_tracking__complete__b00__p0__v4.json",
+      "sha256": "d3207c33de3ad94be3a245b61a67003000024966e7545d6f3882cb3aea5c62ca"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/particle_tracking__complete__b00__p1__pyoptix.json",
+      "relative_path": "workers/particle_tracking__complete__b00__p1__pyoptix.json",
+      "sha256": "9f0561604e65fe7331e8e18bc76ccb2b0aef5620fc276f015cf3f21a0d88e354"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/particle_tracking__complete__b01__p0__pyoptix.json",
+      "relative_path": "workers/particle_tracking__complete__b01__p0__pyoptix.json",
+      "sha256": "761cc70d1c4d4fd5fdf818f070bd7ae2270f6c77a5346721122500cca2bca07c"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/particle_tracking__complete__b01__p1__v4.json",
+      "relative_path": "workers/particle_tracking__complete__b01__p1__v4.json",
+      "sha256": "7f09a0e6e09f27b6fd5b6311cc4244c056ba379b7e6f9b7dff6ceda6280add99"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/particle_tracking__complete__b02__p0__v4.json",
+      "relative_path": "workers/particle_tracking__complete__b02__p0__v4.json",
+      "sha256": "f7ae43dca828b7f244fac0d7a6e2dad99fd0bb1a5f89cba8e07906f56bf1b571"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/particle_tracking__complete__b02__p1__pyoptix.json",
+      "relative_path": "workers/particle_tracking__complete__b02__p1__pyoptix.json",
+      "sha256": "989122e7f1d32c19b85459ac1936eb05f8557f9a74b1883699f74ace694ce9d4"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/particle_tracking__complete__b03__p0__pyoptix.json",
+      "relative_path": "workers/particle_tracking__complete__b03__p0__pyoptix.json",
+      "sha256": "39251e2019bd300a043e50e217074caf0bc01344a223ad356375c131c2ba3f90"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/particle_tracking__complete__b03__p1__v4.json",
+      "relative_path": "workers/particle_tracking__complete__b03__p1__v4.json",
+      "sha256": "310429eee976eb9e30ab2fb8a59484c56fc9ee7e3aa54b11f7abd4021b6ed302"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/particle_tracking__complete__b04__p0__pyoptix.json",
+      "relative_path": "workers/particle_tracking__complete__b04__p0__pyoptix.json",
+      "sha256": "5d3b75df8a2ceda32ef7a757f79fd6d691ca84dc885af1bd5e641d28396da7ca"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/particle_tracking__complete__b04__p1__v4.json",
+      "relative_path": "workers/particle_tracking__complete__b04__p1__v4.json",
+      "sha256": "fc24c7637d8b91a02f4703310336ce1eea437765071275992b619f46d47970d0"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/particle_tracking__complete__b05__p0__v4.json",
+      "relative_path": "workers/particle_tracking__complete__b05__p0__v4.json",
+      "sha256": "5d6756ee4206386461f23bbcdaa7633e37fd37be666625095b7fd51ba7eec306"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/particle_tracking__complete__b05__p1__pyoptix.json",
+      "relative_path": "workers/particle_tracking__complete__b05__p1__pyoptix.json",
+      "sha256": "542b74d223d1572eba855e87fb8f834d3f82e7f5b0600c50df87bd21f01d450d"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/particle_tracking__complete__b06__p0__pyoptix.json",
+      "relative_path": "workers/particle_tracking__complete__b06__p0__pyoptix.json",
+      "sha256": "91430ee649b07166d005035f01c0908dc5915774708bb76259cc5b82c680f912"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/particle_tracking__complete__b06__p1__v4.json",
+      "relative_path": "workers/particle_tracking__complete__b06__p1__v4.json",
+      "sha256": "8bade7f0f14fdde6a300a90200e23ef7e8443f84302497370ecfeec7d1bf021e"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/particle_tracking__complete__b07__p0__v4.json",
+      "relative_path": "workers/particle_tracking__complete__b07__p0__v4.json",
+      "sha256": "b113ca6d8bf9c08df5202eef5aaa1a0819598d6298a04af2c37b4ff695e25495"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/particle_tracking__complete__b07__p1__pyoptix.json",
+      "relative_path": "workers/particle_tracking__complete__b07__p1__pyoptix.json",
+      "sha256": "a4ed8e9ef80df6f2dd25f7149f07b0b97769b00009fb64cb181c7adecb08bb55"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/particle_tracking__first_result__b00__p0__v4.json",
+      "relative_path": "workers/particle_tracking__first_result__b00__p0__v4.json",
+      "sha256": "791c7e6eb0caac992957bb80cb4f2e5e9350a7becbfa8b1d43531dc3ec62bbad"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/particle_tracking__first_result__b00__p1__pyoptix.json",
+      "relative_path": "workers/particle_tracking__first_result__b00__p1__pyoptix.json",
+      "sha256": "f46bcae0bc2f712cf49df4aa094d53accdf2ba6a36a97377ca99c90e4b13eb12"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/particle_tracking__first_result__b01__p0__pyoptix.json",
+      "relative_path": "workers/particle_tracking__first_result__b01__p0__pyoptix.json",
+      "sha256": "d2c9c7c6e4a16ff16351b8816d3b1fa42e192047e47020b96e6a41f6dd53b221"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/particle_tracking__first_result__b01__p1__v4.json",
+      "relative_path": "workers/particle_tracking__first_result__b01__p1__v4.json",
+      "sha256": "95cae2c493ab82eba5ec5254a9f2124d404715beab08d975805a1e31d8e7219d"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/particle_tracking__first_result__b02__p0__v4.json",
+      "relative_path": "workers/particle_tracking__first_result__b02__p0__v4.json",
+      "sha256": "8627ac774ca46475d0084cb430ecbbf273705b6795589973e9a8dceab37b5f76"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/particle_tracking__first_result__b02__p1__pyoptix.json",
+      "relative_path": "workers/particle_tracking__first_result__b02__p1__pyoptix.json",
+      "sha256": "e13e8aa32610a5fc998597ce933f6ed7e77f244eaec36580dbaf6990d4ffe2ec"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/particle_tracking__first_result__b03__p0__pyoptix.json",
+      "relative_path": "workers/particle_tracking__first_result__b03__p0__pyoptix.json",
+      "sha256": "52f7836895907a3b3c6d05f2cf506bc7693f0a5a2c07c4e36364a6088a3c94f9"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/particle_tracking__first_result__b03__p1__v4.json",
+      "relative_path": "workers/particle_tracking__first_result__b03__p1__v4.json",
+      "sha256": "21497ac3f33539979f58a02613cd0e3f84fb84f2cbe73bbd39b5c9fb184a012b"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/particle_tracking__first_result__b04__p0__pyoptix.json",
+      "relative_path": "workers/particle_tracking__first_result__b04__p0__pyoptix.json",
+      "sha256": "0f537bca1231bc670a905bf4a53517140d3a59e7b570ac558fa76ee58c5fbb68"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/particle_tracking__first_result__b04__p1__v4.json",
+      "relative_path": "workers/particle_tracking__first_result__b04__p1__v4.json",
+      "sha256": "156ef57c2d816e663ddfdad809aab90e56d13c2a526d69c2c0705a53623c8045"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/particle_tracking__first_result__b05__p0__v4.json",
+      "relative_path": "workers/particle_tracking__first_result__b05__p0__v4.json",
+      "sha256": "ba5710d77e071d97882d63d4b44ee51cb102a30f9dd6b398045b4e9bf9356ee4"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/particle_tracking__first_result__b05__p1__pyoptix.json",
+      "relative_path": "workers/particle_tracking__first_result__b05__p1__pyoptix.json",
+      "sha256": "7e1889a93e076c7fd2bce196f5052434648d9c35de35f6fc0ddb560ca45d043d"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/particle_tracking__first_result__b06__p0__pyoptix.json",
+      "relative_path": "workers/particle_tracking__first_result__b06__p0__pyoptix.json",
+      "sha256": "5649ae0d1368e8cb5cee957b4e4d65b021ec1127f139e53487d67df371749fd8"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/particle_tracking__first_result__b06__p1__v4.json",
+      "relative_path": "workers/particle_tracking__first_result__b06__p1__v4.json",
+      "sha256": "e874677c250a8638d75efc7c5ec027262d49a1bc0ae808e0f0d8e48e5953d914"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/particle_tracking__first_result__b07__p0__v4.json",
+      "relative_path": "workers/particle_tracking__first_result__b07__p0__v4.json",
+      "sha256": "d483ed1e024e840f63eea4dc7430dd6562135eb7dacdb40d44cd15502bbb509f"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/particle_tracking__first_result__b07__p1__pyoptix.json",
+      "relative_path": "workers/particle_tracking__first_result__b07__p1__pyoptix.json",
+      "sha256": "7b2399d6e72b53291d125aff621b74d1e78df148b484b2a01deca588852d7416"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/particle_tracking__prepared__b00__p0__v4.json",
+      "relative_path": "workers/particle_tracking__prepared__b00__p0__v4.json",
+      "sha256": "8e4e7fbdd48caa31d6101accbe8edd3650bafe9987cef8892d474d84bbebdbf2"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/particle_tracking__prepared__b00__p1__pyoptix.json",
+      "relative_path": "workers/particle_tracking__prepared__b00__p1__pyoptix.json",
+      "sha256": "4f4f85278bdd137e873a367ef2f9ea0190dff1c74638635ceef4b41fa42b1f1a"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/particle_tracking__prepared__b01__p0__pyoptix.json",
+      "relative_path": "workers/particle_tracking__prepared__b01__p0__pyoptix.json",
+      "sha256": "63a1d047fd5ac16ed68909ebec87bc3ae5a5bfa58875878e964ed836c3643ac8"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/particle_tracking__prepared__b01__p1__v4.json",
+      "relative_path": "workers/particle_tracking__prepared__b01__p1__v4.json",
+      "sha256": "477a7c25956b1c2dcc601b4e08a5cfe5f98370e737a92f65cd9c5c3e68355306"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/particle_tracking__prepared__b02__p0__v4.json",
+      "relative_path": "workers/particle_tracking__prepared__b02__p0__v4.json",
+      "sha256": "aef0c735f2ebea1d8565537489787a54114197a5e654af677c348bd30cb81b11"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/particle_tracking__prepared__b02__p1__pyoptix.json",
+      "relative_path": "workers/particle_tracking__prepared__b02__p1__pyoptix.json",
+      "sha256": "5346a3eb8ef70bd8cb198f617a729ceca74ad67b20ffa59835f44a8e5caf6fe7"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/particle_tracking__prepared__b03__p0__pyoptix.json",
+      "relative_path": "workers/particle_tracking__prepared__b03__p0__pyoptix.json",
+      "sha256": "bc07d0f0831f412e0b72e51e99fa1e7425633d454e124d97ed18cf14f696546f"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/particle_tracking__prepared__b03__p1__v4.json",
+      "relative_path": "workers/particle_tracking__prepared__b03__p1__v4.json",
+      "sha256": "340b3da26a262d8ae644b0727dcf3f9e0e569f02d9e45131d2f172f03b2a922d"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/particle_tracking__prepared__b04__p0__pyoptix.json",
+      "relative_path": "workers/particle_tracking__prepared__b04__p0__pyoptix.json",
+      "sha256": "cb78eb4426a344666b002057306d95340d137789cdd3e61b16d53c6b942ee948"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/particle_tracking__prepared__b04__p1__v4.json",
+      "relative_path": "workers/particle_tracking__prepared__b04__p1__v4.json",
+      "sha256": "a13377ca48ca978be8e22e987258813ac3d08a2bcb6eb49569ebd3609aa20c44"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/particle_tracking__prepared__b05__p0__v4.json",
+      "relative_path": "workers/particle_tracking__prepared__b05__p0__v4.json",
+      "sha256": "cc75759c40d6ce06c87b9cc62bc73012cf4bbd0cd4a34318e8220f60745a98c5"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/particle_tracking__prepared__b05__p1__pyoptix.json",
+      "relative_path": "workers/particle_tracking__prepared__b05__p1__pyoptix.json",
+      "sha256": "3624d6a6e8f40ba8d399ebc00a6fadfa1a943d1e412a31b3134992c76cc80d2e"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/particle_tracking__prepared__b06__p0__pyoptix.json",
+      "relative_path": "workers/particle_tracking__prepared__b06__p0__pyoptix.json",
+      "sha256": "d6e0fd269c4c0456b0c3064ba8f448306c064a53ecc9c1b795260aca54938007"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/particle_tracking__prepared__b06__p1__v4.json",
+      "relative_path": "workers/particle_tracking__prepared__b06__p1__v4.json",
+      "sha256": "d6dcdc616adbaf903c27e8978e26edf4124fd1c450318753dfce3e96e13d6688"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/particle_tracking__prepared__b07__p0__v4.json",
+      "relative_path": "workers/particle_tracking__prepared__b07__p0__v4.json",
+      "sha256": "10a44aa5986f8c923e5c14a0c5c7f7bafd3456884928b0dd7db73a551dfd22c1"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/particle_tracking__prepared__b07__p1__pyoptix.json",
+      "relative_path": "workers/particle_tracking__prepared__b07__p1__pyoptix.json",
+      "sha256": "ec05e103b36feb922f24013d7a5af954803c7c5bdb52e19548dc3bd09187bff2"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/triangle_counting__com_dblp__rt_2a1__complete__b00__p0__v4.json",
+      "relative_path": "workers/triangle_counting__com_dblp__rt_2a1__complete__b00__p0__v4.json",
+      "sha256": "3767feddf068cfd16d43ce7f727c2217e3e82127244062235b8598f1a2e1d1de"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/triangle_counting__com_dblp__rt_2a1__complete__b00__p1__pyoptix.json",
+      "relative_path": "workers/triangle_counting__com_dblp__rt_2a1__complete__b00__p1__pyoptix.json",
+      "sha256": "2ee2bd1e13ce4fae9189c5e9b2c139a3975b6eb698fb5ecaa6e371f1ade76ec3"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/triangle_counting__com_dblp__rt_2a1__complete__b01__p0__pyoptix.json",
+      "relative_path": "workers/triangle_counting__com_dblp__rt_2a1__complete__b01__p0__pyoptix.json",
+      "sha256": "065a3beca3d100986de490173ab9131c3b7b1d9b70644106206f062f009303c5"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/triangle_counting__com_dblp__rt_2a1__complete__b01__p1__v4.json",
+      "relative_path": "workers/triangle_counting__com_dblp__rt_2a1__complete__b01__p1__v4.json",
+      "sha256": "3861c4fd409322114838cf22ea0c6c5f23598b45e1e9fa911780634a53eb6151"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/triangle_counting__com_dblp__rt_2a1__complete__b02__p0__v4.json",
+      "relative_path": "workers/triangle_counting__com_dblp__rt_2a1__complete__b02__p0__v4.json",
+      "sha256": "984e4b4b4eac494e73ca073a590855388e011af1bf6fe5756fbd43980e3a4a4b"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/triangle_counting__com_dblp__rt_2a1__complete__b02__p1__pyoptix.json",
+      "relative_path": "workers/triangle_counting__com_dblp__rt_2a1__complete__b02__p1__pyoptix.json",
+      "sha256": "d5458d364a8d692fe1dc428fb53145d5019b4ba6b5c7c5e00d62fb1c9d879378"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/triangle_counting__com_dblp__rt_2a1__complete__b03__p0__pyoptix.json",
+      "relative_path": "workers/triangle_counting__com_dblp__rt_2a1__complete__b03__p0__pyoptix.json",
+      "sha256": "535e55dc808b85b365d3e740d01faa7ecf5fa8e38d4f835767bd192d3cd50124"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/triangle_counting__com_dblp__rt_2a1__complete__b03__p1__v4.json",
+      "relative_path": "workers/triangle_counting__com_dblp__rt_2a1__complete__b03__p1__v4.json",
+      "sha256": "407daf9406413ee64419daaa072fc23ae81d495cedce498273ec4cfc56634ccc"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/triangle_counting__com_dblp__rt_2a1__complete__b04__p0__pyoptix.json",
+      "relative_path": "workers/triangle_counting__com_dblp__rt_2a1__complete__b04__p0__pyoptix.json",
+      "sha256": "fa9bf03af25f34adfdec447b12cee5faf34656d262be36d234e7bd73cf504614"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/triangle_counting__com_dblp__rt_2a1__complete__b04__p1__v4.json",
+      "relative_path": "workers/triangle_counting__com_dblp__rt_2a1__complete__b04__p1__v4.json",
+      "sha256": "1a2dd5adbfb763c448f052c5886c8804efb3fd6fb609952b2f2661cf477173cc"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/triangle_counting__com_dblp__rt_2a1__complete__b05__p0__v4.json",
+      "relative_path": "workers/triangle_counting__com_dblp__rt_2a1__complete__b05__p0__v4.json",
+      "sha256": "fa9a46e82bf537dd41ddbb6772f9f69709d6e4caf7c49b9fbe62525afeceb734"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/triangle_counting__com_dblp__rt_2a1__complete__b05__p1__pyoptix.json",
+      "relative_path": "workers/triangle_counting__com_dblp__rt_2a1__complete__b05__p1__pyoptix.json",
+      "sha256": "023afbe5407eaf989cade65586b307a82c2c9f6c84885852880907bb873dd895"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/triangle_counting__com_dblp__rt_2a1__complete__b06__p0__pyoptix.json",
+      "relative_path": "workers/triangle_counting__com_dblp__rt_2a1__complete__b06__p0__pyoptix.json",
+      "sha256": "71663989531cdc03c7b5fea1e0f97aa6460c170ad75f7da5fffd28d9a2e46b17"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/triangle_counting__com_dblp__rt_2a1__complete__b06__p1__v4.json",
+      "relative_path": "workers/triangle_counting__com_dblp__rt_2a1__complete__b06__p1__v4.json",
+      "sha256": "523d51995a68a875b1aa50d6f1c9a62dc0e03e9d82e71395d7d4ee8d0fbca9f7"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/triangle_counting__com_dblp__rt_2a1__complete__b07__p0__v4.json",
+      "relative_path": "workers/triangle_counting__com_dblp__rt_2a1__complete__b07__p0__v4.json",
+      "sha256": "c5659f13337653cd36f50276aead417f4c993f294f55d7eabe88581d9649162d"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/triangle_counting__com_dblp__rt_2a1__complete__b07__p1__pyoptix.json",
+      "relative_path": "workers/triangle_counting__com_dblp__rt_2a1__complete__b07__p1__pyoptix.json",
+      "sha256": "3d927d478a223229f0be9cb747492cd4aa8afe203eb6c8ca3fb93a4922e57bf9"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/triangle_counting__com_dblp__rt_2a1__first_result__b00__p0__v4.json",
+      "relative_path": "workers/triangle_counting__com_dblp__rt_2a1__first_result__b00__p0__v4.json",
+      "sha256": "8fa5bf7f81dd13a4d9662992cfafb2d934ffb99e00399a312f07f3f2c48a6612"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/triangle_counting__com_dblp__rt_2a1__first_result__b00__p1__pyoptix.json",
+      "relative_path": "workers/triangle_counting__com_dblp__rt_2a1__first_result__b00__p1__pyoptix.json",
+      "sha256": "1afc8895c93fdd070af11062d33332ed0271224ba9ca4382281380fec9043bbb"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/triangle_counting__com_dblp__rt_2a1__first_result__b01__p0__pyoptix.json",
+      "relative_path": "workers/triangle_counting__com_dblp__rt_2a1__first_result__b01__p0__pyoptix.json",
+      "sha256": "d6162db43875a095a35ab8dae18d5b0f574bf0ea67023241ec6fb25f99c44c41"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/triangle_counting__com_dblp__rt_2a1__first_result__b01__p1__v4.json",
+      "relative_path": "workers/triangle_counting__com_dblp__rt_2a1__first_result__b01__p1__v4.json",
+      "sha256": "98d11f6868356bd0583e3f0bf4c0ba16f4b87bfdf87fff691b0ebd4363159aec"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/triangle_counting__com_dblp__rt_2a1__first_result__b02__p0__v4.json",
+      "relative_path": "workers/triangle_counting__com_dblp__rt_2a1__first_result__b02__p0__v4.json",
+      "sha256": "425642c0170ac57cacf9e6709456c17a52a09865f3046f5822ef9a60703eaaee"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/triangle_counting__com_dblp__rt_2a1__first_result__b02__p1__pyoptix.json",
+      "relative_path": "workers/triangle_counting__com_dblp__rt_2a1__first_result__b02__p1__pyoptix.json",
+      "sha256": "b141e2b742b31cdf2cfbcafdf52a7c9e1f5ef2c23ece012321bfe1fbd587422a"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/triangle_counting__com_dblp__rt_2a1__first_result__b03__p0__pyoptix.json",
+      "relative_path": "workers/triangle_counting__com_dblp__rt_2a1__first_result__b03__p0__pyoptix.json",
+      "sha256": "8f8a2cad0e79c045597dc211abeee6e5ab0f47a4dc729f3549b9bf2603f0e29f"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/triangle_counting__com_dblp__rt_2a1__first_result__b03__p1__v4.json",
+      "relative_path": "workers/triangle_counting__com_dblp__rt_2a1__first_result__b03__p1__v4.json",
+      "sha256": "2f6f9985065041f83e1e97de79981f817817990eb29a122c5fb984fe8102c03a"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/triangle_counting__com_dblp__rt_2a1__first_result__b04__p0__pyoptix.json",
+      "relative_path": "workers/triangle_counting__com_dblp__rt_2a1__first_result__b04__p0__pyoptix.json",
+      "sha256": "645a670c538a6710b912f445627e701be8fba9ef0a2d6fd5de99d281df25676f"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/triangle_counting__com_dblp__rt_2a1__first_result__b04__p1__v4.json",
+      "relative_path": "workers/triangle_counting__com_dblp__rt_2a1__first_result__b04__p1__v4.json",
+      "sha256": "336c389033f3f1489282e0e9bd5750d6f0487b247bb5d07bb86ff3bed1f25c20"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/triangle_counting__com_dblp__rt_2a1__first_result__b05__p0__v4.json",
+      "relative_path": "workers/triangle_counting__com_dblp__rt_2a1__first_result__b05__p0__v4.json",
+      "sha256": "340f01d186ae183f6c5ac30bdca0dadd9891bff7e9f6e140cca1ab64a3adc55d"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/triangle_counting__com_dblp__rt_2a1__first_result__b05__p1__pyoptix.json",
+      "relative_path": "workers/triangle_counting__com_dblp__rt_2a1__first_result__b05__p1__pyoptix.json",
+      "sha256": "03df9bc31ab31de7aeaabaecb40f3eba120c5f6bc386278977ec983bb00d1b94"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/triangle_counting__com_dblp__rt_2a1__first_result__b06__p0__pyoptix.json",
+      "relative_path": "workers/triangle_counting__com_dblp__rt_2a1__first_result__b06__p0__pyoptix.json",
+      "sha256": "0082dc4ba849c9b7890eacd5b385a38fdec465e4cae83841cc639ea3e3b8283e"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/triangle_counting__com_dblp__rt_2a1__first_result__b06__p1__v4.json",
+      "relative_path": "workers/triangle_counting__com_dblp__rt_2a1__first_result__b06__p1__v4.json",
+      "sha256": "0792b29003eb95a61c99f761f62ad387e9e9303db4e99e7f1b0fc26bad59589c"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/triangle_counting__com_dblp__rt_2a1__first_result__b07__p0__v4.json",
+      "relative_path": "workers/triangle_counting__com_dblp__rt_2a1__first_result__b07__p0__v4.json",
+      "sha256": "fd0467157c26105895f069e3897baf66ead6c7beea33b54c9218636cb7bbef22"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/triangle_counting__com_dblp__rt_2a1__first_result__b07__p1__pyoptix.json",
+      "relative_path": "workers/triangle_counting__com_dblp__rt_2a1__first_result__b07__p1__pyoptix.json",
+      "sha256": "59141a18cf80facbe683431ab9e8cbf96f4c6a70fda27095ae0b1730b8abbeee"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/triangle_counting__com_dblp__rt_2a1__prepared__b00__p0__v4.json",
+      "relative_path": "workers/triangle_counting__com_dblp__rt_2a1__prepared__b00__p0__v4.json",
+      "sha256": "a1e3a5f8e845a2123fbf462962e97c7d4a769f2142ee7bd70080152fef79f8a1"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/triangle_counting__com_dblp__rt_2a1__prepared__b00__p1__pyoptix.json",
+      "relative_path": "workers/triangle_counting__com_dblp__rt_2a1__prepared__b00__p1__pyoptix.json",
+      "sha256": "9bdbc7f155d367cf244f351cdab7e9c4b2b3a5372490da7757956a1c1ab2bd68"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/triangle_counting__com_dblp__rt_2a1__prepared__b01__p0__pyoptix.json",
+      "relative_path": "workers/triangle_counting__com_dblp__rt_2a1__prepared__b01__p0__pyoptix.json",
+      "sha256": "873c7f173f501411c0136b89ab3281c999fecc3a21ec2706f1dbf975a5b10059"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/triangle_counting__com_dblp__rt_2a1__prepared__b01__p1__v4.json",
+      "relative_path": "workers/triangle_counting__com_dblp__rt_2a1__prepared__b01__p1__v4.json",
+      "sha256": "9e6a05ba3f9c0e21f848e8d26e8827f010f670f9ceaf9a18f14cd39ba67b5935"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/triangle_counting__com_dblp__rt_2a1__prepared__b02__p0__v4.json",
+      "relative_path": "workers/triangle_counting__com_dblp__rt_2a1__prepared__b02__p0__v4.json",
+      "sha256": "5e8f65bc607c0d1d1463ff0db7ae1c57ef46c732e0000663fd02228e041cc455"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/triangle_counting__com_dblp__rt_2a1__prepared__b02__p1__pyoptix.json",
+      "relative_path": "workers/triangle_counting__com_dblp__rt_2a1__prepared__b02__p1__pyoptix.json",
+      "sha256": "3b2db9acbe0fcda7f62ea90b461ff33ca8c2d56071cf2135791ca833f5423abb"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/triangle_counting__com_dblp__rt_2a1__prepared__b03__p0__pyoptix.json",
+      "relative_path": "workers/triangle_counting__com_dblp__rt_2a1__prepared__b03__p0__pyoptix.json",
+      "sha256": "f5319341670ed3afc71f1867a2fa9f452ff298c1d92709e7658794a2da5c3878"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/triangle_counting__com_dblp__rt_2a1__prepared__b03__p1__v4.json",
+      "relative_path": "workers/triangle_counting__com_dblp__rt_2a1__prepared__b03__p1__v4.json",
+      "sha256": "f0335029e79afb5c6ff426e46b8068fdc48df560c821190d82e8b5338483542b"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/triangle_counting__com_dblp__rt_2a1__prepared__b04__p0__pyoptix.json",
+      "relative_path": "workers/triangle_counting__com_dblp__rt_2a1__prepared__b04__p0__pyoptix.json",
+      "sha256": "4f445a1b497837d97342e6befc0e1c746c10a03058203d37253bdce8c9120c5e"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/triangle_counting__com_dblp__rt_2a1__prepared__b04__p1__v4.json",
+      "relative_path": "workers/triangle_counting__com_dblp__rt_2a1__prepared__b04__p1__v4.json",
+      "sha256": "08547dbe8609025206a59dbd92979d1a77edce9183cf91800802bf07da377375"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/triangle_counting__com_dblp__rt_2a1__prepared__b05__p0__v4.json",
+      "relative_path": "workers/triangle_counting__com_dblp__rt_2a1__prepared__b05__p0__v4.json",
+      "sha256": "8b9e0eb73f78a11277aacdce45a029fb17a9ba73edfd6cc003e9635b2e08e964"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/triangle_counting__com_dblp__rt_2a1__prepared__b05__p1__pyoptix.json",
+      "relative_path": "workers/triangle_counting__com_dblp__rt_2a1__prepared__b05__p1__pyoptix.json",
+      "sha256": "cdced022fabc8acfcfaabb5dfaa0f1376eb7d8c9e076e4c357f1fb560af67886"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/triangle_counting__com_dblp__rt_2a1__prepared__b06__p0__pyoptix.json",
+      "relative_path": "workers/triangle_counting__com_dblp__rt_2a1__prepared__b06__p0__pyoptix.json",
+      "sha256": "e72cc189e78bff2bb58db9fb46d80864c66638ba284a000f7ec1373cf8c6dfca"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/triangle_counting__com_dblp__rt_2a1__prepared__b06__p1__v4.json",
+      "relative_path": "workers/triangle_counting__com_dblp__rt_2a1__prepared__b06__p1__v4.json",
+      "sha256": "86be6a592fd5e5493d99027bb27aa150a5a6907daee6daf21b38d56a0042bf40"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/triangle_counting__com_dblp__rt_2a1__prepared__b07__p0__v4.json",
+      "relative_path": "workers/triangle_counting__com_dblp__rt_2a1__prepared__b07__p0__v4.json",
+      "sha256": "687e1f25a4324bc40884ac3e5101e826438d8027ec643c2b7907e5993729ae3c"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/triangle_counting__com_dblp__rt_2a1__prepared__b07__p1__pyoptix.json",
+      "relative_path": "workers/triangle_counting__com_dblp__rt_2a1__prepared__b07__p1__pyoptix.json",
+      "sha256": "11178f23d5d51417d6bc4b2ee6536d0573103f27b4277f8802713c0ccf56bf66"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__point_contains__complete__b00__p0__v4.json",
+      "relative_path": "workers/librts__parks__point_contains__complete__b00__p0__v4.json",
+      "sha256": "b42a88230f3fe50efb9094fae1e98c31bea722fcfa20d80e89a3a058c51d0543"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__point_contains__complete__b00__p1__pyoptix.json",
+      "relative_path": "workers/librts__parks__point_contains__complete__b00__p1__pyoptix.json",
+      "sha256": "5ecaf2bb2166a0e58af438516d0c3dcaa30ef8421fe542ef4d1bc209193be347"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__point_contains__complete__b01__p0__pyoptix.json",
+      "relative_path": "workers/librts__parks__point_contains__complete__b01__p0__pyoptix.json",
+      "sha256": "d24e454cf8a0a0e2fc630c1a1287d6681361c618365c7c08d1b069ad9ac0ebb9"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__point_contains__complete__b01__p1__v4.json",
+      "relative_path": "workers/librts__parks__point_contains__complete__b01__p1__v4.json",
+      "sha256": "538c9fd85a1ceb5933707e276e9e2fcfc699f801ffe657f89517f80c8d1dc382"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__point_contains__complete__b02__p0__v4.json",
+      "relative_path": "workers/librts__parks__point_contains__complete__b02__p0__v4.json",
+      "sha256": "2e1ae6052ccd77a29e261e908afe700656479bb5a4d65db98708620e9b3741ae"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__point_contains__complete__b02__p1__pyoptix.json",
+      "relative_path": "workers/librts__parks__point_contains__complete__b02__p1__pyoptix.json",
+      "sha256": "929820d9b4b555e1f837bbc2970aaadfb037c208fbcf9fb44828c0ee0097e206"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__point_contains__complete__b03__p0__pyoptix.json",
+      "relative_path": "workers/librts__parks__point_contains__complete__b03__p0__pyoptix.json",
+      "sha256": "0116b8346bcc745f32253c5a83081d74e9e5f49f0a04dc540b7f34db121a67f2"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__point_contains__complete__b03__p1__v4.json",
+      "relative_path": "workers/librts__parks__point_contains__complete__b03__p1__v4.json",
+      "sha256": "ef0b1ca3061b10bc53ff5a7e42cbe797f7dbc93e8e93dad9773733a38a2c162e"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__point_contains__complete__b04__p0__pyoptix.json",
+      "relative_path": "workers/librts__parks__point_contains__complete__b04__p0__pyoptix.json",
+      "sha256": "d076330daa16eaf6e512a5e6dde91f87b32849c908c3ccd2302293b9999bc6e8"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__point_contains__complete__b04__p1__v4.json",
+      "relative_path": "workers/librts__parks__point_contains__complete__b04__p1__v4.json",
+      "sha256": "93bc68add1d2e26d7614b4172b33caa6982e7c72a6fe7a230e9d5225677f0d21"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__point_contains__complete__b05__p0__v4.json",
+      "relative_path": "workers/librts__parks__point_contains__complete__b05__p0__v4.json",
+      "sha256": "29ff63b5bc2335793bafda2ae4be333c69509f7ea2c513c92259a7b913e7ae6f"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__point_contains__complete__b05__p1__pyoptix.json",
+      "relative_path": "workers/librts__parks__point_contains__complete__b05__p1__pyoptix.json",
+      "sha256": "0b2f330017c170c2b6ee62e6f1974df4eeb59f328a0b514c58116c2362a445f4"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__point_contains__complete__b06__p0__pyoptix.json",
+      "relative_path": "workers/librts__parks__point_contains__complete__b06__p0__pyoptix.json",
+      "sha256": "b00b4742a4276108f74f6bf6fca56a8d23f7120892aa6ecd7abf13567322f4a4"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__point_contains__complete__b06__p1__v4.json",
+      "relative_path": "workers/librts__parks__point_contains__complete__b06__p1__v4.json",
+      "sha256": "d591a0ff3b5a06bff21c78ea7c9c17df419cc84df43d2bc3b50fa7ee36571938"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__point_contains__complete__b07__p0__v4.json",
+      "relative_path": "workers/librts__parks__point_contains__complete__b07__p0__v4.json",
+      "sha256": "937715435db3c94ea102a48f8911e1106036a938690276423b4d3fc2bc0c4cbc"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__point_contains__complete__b07__p1__pyoptix.json",
+      "relative_path": "workers/librts__parks__point_contains__complete__b07__p1__pyoptix.json",
+      "sha256": "708c7b8010e83ade64b8205dcd497c6e6eeea096240c51d3e67a595862e6bad3"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__point_contains__first_result__b00__p0__v4.json",
+      "relative_path": "workers/librts__parks__point_contains__first_result__b00__p0__v4.json",
+      "sha256": "fa5b16c261c4d53b9a068859e0e6ad366bb34b192b49bf7c3b153cfeac49f737"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__point_contains__first_result__b00__p1__pyoptix.json",
+      "relative_path": "workers/librts__parks__point_contains__first_result__b00__p1__pyoptix.json",
+      "sha256": "d528fd7b3e013eb397d1346a9383c6e5fa25e02d9d33cea46c9a2ef15951ce17"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__point_contains__first_result__b01__p0__pyoptix.json",
+      "relative_path": "workers/librts__parks__point_contains__first_result__b01__p0__pyoptix.json",
+      "sha256": "855f6ff4ee17d1ad587333b73520df7efeef9cd201338904bffdcbf9098fdc5f"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__point_contains__first_result__b01__p1__v4.json",
+      "relative_path": "workers/librts__parks__point_contains__first_result__b01__p1__v4.json",
+      "sha256": "b43a4f8fc2393103b9bade3f544b4fd660f95224b43704b01e5301767bc7884b"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__point_contains__first_result__b02__p0__v4.json",
+      "relative_path": "workers/librts__parks__point_contains__first_result__b02__p0__v4.json",
+      "sha256": "1f493503eb93e563d08b6a787c4339dadda4c3fe8692f4abd7ee847da429e282"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__point_contains__first_result__b02__p1__pyoptix.json",
+      "relative_path": "workers/librts__parks__point_contains__first_result__b02__p1__pyoptix.json",
+      "sha256": "2c6197f12593961c0c0199b803df278cd1c07b022488e6358a8c65ed31753478"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__point_contains__first_result__b03__p0__pyoptix.json",
+      "relative_path": "workers/librts__parks__point_contains__first_result__b03__p0__pyoptix.json",
+      "sha256": "a1cbe88f9d05392713041415a65e702ffd18b17c6e4ce7bd1d831904cba9fbb5"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__point_contains__first_result__b03__p1__v4.json",
+      "relative_path": "workers/librts__parks__point_contains__first_result__b03__p1__v4.json",
+      "sha256": "dd0c740ef5028461b183949705efd2eda68b5c6d69641dd429f3bb2184b8a2ce"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__point_contains__first_result__b04__p0__pyoptix.json",
+      "relative_path": "workers/librts__parks__point_contains__first_result__b04__p0__pyoptix.json",
+      "sha256": "769abf54e2069891993701367204c89f5b12b82bbb9c9cb95585c0cf42e220af"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__point_contains__first_result__b04__p1__v4.json",
+      "relative_path": "workers/librts__parks__point_contains__first_result__b04__p1__v4.json",
+      "sha256": "f9076a1446a8d24544b54f5f6b6bb6d37b133dccceca851332a27ae599da1cb2"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__point_contains__first_result__b05__p0__v4.json",
+      "relative_path": "workers/librts__parks__point_contains__first_result__b05__p0__v4.json",
+      "sha256": "b3f16675a3e57d2adde52f92762b67c12020203a31647860026cb4807cad4245"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__point_contains__first_result__b05__p1__pyoptix.json",
+      "relative_path": "workers/librts__parks__point_contains__first_result__b05__p1__pyoptix.json",
+      "sha256": "b5bea2448c57cbb11b4e66f2440438847f72ee88ce490f3f31c8400417a4dc56"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__point_contains__first_result__b06__p0__pyoptix.json",
+      "relative_path": "workers/librts__parks__point_contains__first_result__b06__p0__pyoptix.json",
+      "sha256": "09c95f70a79fb631e5717c9ff498d66b179fd737b826e9462345156c1dd19a34"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__point_contains__first_result__b06__p1__v4.json",
+      "relative_path": "workers/librts__parks__point_contains__first_result__b06__p1__v4.json",
+      "sha256": "9e34d84ecc8e7735687464faac9767e3ba9e8590fda29d89ce25f38721566570"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__point_contains__first_result__b07__p0__v4.json",
+      "relative_path": "workers/librts__parks__point_contains__first_result__b07__p0__v4.json",
+      "sha256": "ba95f0c40c83610efb7f3d3fb28b1cb60588ca572457ed7e6c60fc3f9788ee5e"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__point_contains__first_result__b07__p1__pyoptix.json",
+      "relative_path": "workers/librts__parks__point_contains__first_result__b07__p1__pyoptix.json",
+      "sha256": "99bfc72ebe5ea05c3859f88fae35d4b2a29b7b8449b89dbee1fa030d261883fd"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__point_contains__prepared__b00__p0__v4.json",
+      "relative_path": "workers/librts__parks__point_contains__prepared__b00__p0__v4.json",
+      "sha256": "d8590c4c27e7bbb58c58dddaa871c1c30736c0a80e39ed1c2d405021178f18b3"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__point_contains__prepared__b00__p1__pyoptix.json",
+      "relative_path": "workers/librts__parks__point_contains__prepared__b00__p1__pyoptix.json",
+      "sha256": "5c31111ce4c1555349b1a059545532e0e2f281b3e29eb6ee3cb0543e41a17bc1"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__point_contains__prepared__b01__p0__pyoptix.json",
+      "relative_path": "workers/librts__parks__point_contains__prepared__b01__p0__pyoptix.json",
+      "sha256": "627ac58a07273777205093f0d817c903b770c3a55ef4185dc0130ff380d90b39"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__point_contains__prepared__b01__p1__v4.json",
+      "relative_path": "workers/librts__parks__point_contains__prepared__b01__p1__v4.json",
+      "sha256": "0db541e517d546a4409f4c8ebc31ae5f862b29a34f05efe37ae52661e4f3d781"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__point_contains__prepared__b02__p0__v4.json",
+      "relative_path": "workers/librts__parks__point_contains__prepared__b02__p0__v4.json",
+      "sha256": "01d9598aa380cbca148e39e4d81210b480c463b2be66a4bfd5da25cc348f5b82"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__point_contains__prepared__b02__p1__pyoptix.json",
+      "relative_path": "workers/librts__parks__point_contains__prepared__b02__p1__pyoptix.json",
+      "sha256": "853797d55748c5677c8abce99f7e75a152a1446a3b64758f976ec46ee8137922"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__point_contains__prepared__b03__p0__pyoptix.json",
+      "relative_path": "workers/librts__parks__point_contains__prepared__b03__p0__pyoptix.json",
+      "sha256": "03b94c677758f6e31788e6e9ebbdcc7ef1c1fde273fcf42e7454627428b8ac17"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__point_contains__prepared__b03__p1__v4.json",
+      "relative_path": "workers/librts__parks__point_contains__prepared__b03__p1__v4.json",
+      "sha256": "241a97b88049fbc84299d9fa6f8b70fb1b74db912232b1af134b7b1b106a08b9"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__point_contains__prepared__b04__p0__pyoptix.json",
+      "relative_path": "workers/librts__parks__point_contains__prepared__b04__p0__pyoptix.json",
+      "sha256": "279cad84793a42e9de40716414d73749c9a80b91f3240b1dc89671c048772148"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__point_contains__prepared__b04__p1__v4.json",
+      "relative_path": "workers/librts__parks__point_contains__prepared__b04__p1__v4.json",
+      "sha256": "66d5f4b750665023790515b06ec1ff4da228fa2c1b0c9cb2e586a59ff13c29c4"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__point_contains__prepared__b05__p0__v4.json",
+      "relative_path": "workers/librts__parks__point_contains__prepared__b05__p0__v4.json",
+      "sha256": "031b0a7b420fbc5c9aca95540fe453999ee3ba411aed9acc9171cd8246b21ce5"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__point_contains__prepared__b05__p1__pyoptix.json",
+      "relative_path": "workers/librts__parks__point_contains__prepared__b05__p1__pyoptix.json",
+      "sha256": "b2f8500a0bfc3679df41d33945992569450822ab960f24a390e9aa32ddc829ba"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__point_contains__prepared__b06__p0__pyoptix.json",
+      "relative_path": "workers/librts__parks__point_contains__prepared__b06__p0__pyoptix.json",
+      "sha256": "24a86c5a63ac8cc666f5c69c55c5a519c67dd6d1952a935d6cf5c076f137c1f8"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__point_contains__prepared__b06__p1__v4.json",
+      "relative_path": "workers/librts__parks__point_contains__prepared__b06__p1__v4.json",
+      "sha256": "828026b6f8ad037a7485c529989d4994d9fb3820c7ee328085d4194baaf3b8bf"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__point_contains__prepared__b07__p0__v4.json",
+      "relative_path": "workers/librts__parks__point_contains__prepared__b07__p0__v4.json",
+      "sha256": "9306d6620f5f562e29e81da4d00b7abce8296739f07cbd9695a4d4cc809e15a1"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__point_contains__prepared__b07__p1__pyoptix.json",
+      "relative_path": "workers/librts__parks__point_contains__prepared__b07__p1__pyoptix.json",
+      "sha256": "4139cae0b716a2105b351bb5305929ac6bbfb47013ee9c2d24640a6e16ee4c83"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__range_contains__complete__b00__p0__v4.json",
+      "relative_path": "workers/librts__parks__range_contains__complete__b00__p0__v4.json",
+      "sha256": "0f8c93de1e8227b215c4a9a308588b6a083caf8acb2b24ae3128f01e31c48780"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__range_contains__complete__b00__p1__pyoptix.json",
+      "relative_path": "workers/librts__parks__range_contains__complete__b00__p1__pyoptix.json",
+      "sha256": "7d7d6e627f022343c2c7d61c069a1feb873978ab38648f082035136ae7111bf0"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__range_contains__complete__b01__p0__pyoptix.json",
+      "relative_path": "workers/librts__parks__range_contains__complete__b01__p0__pyoptix.json",
+      "sha256": "cd7ed03a68a4bb41af1b96c0537d9e7e2103b581fa01bac290a6c1bcac872adc"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__range_contains__complete__b01__p1__v4.json",
+      "relative_path": "workers/librts__parks__range_contains__complete__b01__p1__v4.json",
+      "sha256": "92004fe648fad4444e4fde8292fbb4adc8103c4cd1870bdb4887e0123bb82c96"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__range_contains__complete__b02__p0__v4.json",
+      "relative_path": "workers/librts__parks__range_contains__complete__b02__p0__v4.json",
+      "sha256": "4c671b88920a950dbbf545b92661eaa89fcae48167d66d46adf0be232b0c31f0"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__range_contains__complete__b02__p1__pyoptix.json",
+      "relative_path": "workers/librts__parks__range_contains__complete__b02__p1__pyoptix.json",
+      "sha256": "3aeafdce6519caea9bd2240e1d02b4983394c119dc9754c0978e15a622efbb8e"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__range_contains__complete__b03__p0__pyoptix.json",
+      "relative_path": "workers/librts__parks__range_contains__complete__b03__p0__pyoptix.json",
+      "sha256": "9ae4634960f53bacddd97b74861cf2c0e992a290144bcc72634987942fc9bd25"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__range_contains__complete__b03__p1__v4.json",
+      "relative_path": "workers/librts__parks__range_contains__complete__b03__p1__v4.json",
+      "sha256": "b84c2650f64cce69902c277816a1507c77024dbb9da731711d42ff5e5fab5706"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__range_contains__complete__b04__p0__pyoptix.json",
+      "relative_path": "workers/librts__parks__range_contains__complete__b04__p0__pyoptix.json",
+      "sha256": "2b90109c237647c4f5ed5bdd0ad6486f70d3e3c8b24cfb81a0549e4e94bcdcec"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__range_contains__complete__b04__p1__v4.json",
+      "relative_path": "workers/librts__parks__range_contains__complete__b04__p1__v4.json",
+      "sha256": "09639cca2fe061cda5d287a5bf9264bda2b1e2550bd867327cb931683f8c6903"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__range_contains__complete__b05__p0__v4.json",
+      "relative_path": "workers/librts__parks__range_contains__complete__b05__p0__v4.json",
+      "sha256": "61619c31c1ba36066a9b8c29a602af88517086fab67078b50d360663c659b0ac"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__range_contains__complete__b05__p1__pyoptix.json",
+      "relative_path": "workers/librts__parks__range_contains__complete__b05__p1__pyoptix.json",
+      "sha256": "ebd6d698b5cc5b973cfed7d4cd78a23fc8b12bbc01f65c71b2075c2030515768"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__range_contains__complete__b06__p0__pyoptix.json",
+      "relative_path": "workers/librts__parks__range_contains__complete__b06__p0__pyoptix.json",
+      "sha256": "a566db09503e4188ce95e5fb665a6e79baaf35acab7ec16da6d8f2a541bbf538"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__range_contains__complete__b06__p1__v4.json",
+      "relative_path": "workers/librts__parks__range_contains__complete__b06__p1__v4.json",
+      "sha256": "82fb17f4bdbf432f4ac46bc4f9027758254e12fbf44076243d39a5e56236c983"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__range_contains__complete__b07__p0__v4.json",
+      "relative_path": "workers/librts__parks__range_contains__complete__b07__p0__v4.json",
+      "sha256": "b29a474b2b267f8605bf2bfc46d2850d28641a88715ecb32f204887a08aeee4d"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__range_contains__complete__b07__p1__pyoptix.json",
+      "relative_path": "workers/librts__parks__range_contains__complete__b07__p1__pyoptix.json",
+      "sha256": "48dc19b07dc297c4d3a02181afec47fa9bbd9cde52bf77d39ecdeea472056091"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__range_contains__first_result__b00__p0__v4.json",
+      "relative_path": "workers/librts__parks__range_contains__first_result__b00__p0__v4.json",
+      "sha256": "3290b9c437b4968faaf3dab60fd99a807fc714ce53a29f6715728276fcf02159"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__range_contains__first_result__b00__p1__pyoptix.json",
+      "relative_path": "workers/librts__parks__range_contains__first_result__b00__p1__pyoptix.json",
+      "sha256": "da5274d80dfc464b1eb952fc009d19a5cce426516e32987c729e617576c6d127"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__range_contains__first_result__b01__p0__pyoptix.json",
+      "relative_path": "workers/librts__parks__range_contains__first_result__b01__p0__pyoptix.json",
+      "sha256": "619f46dfa08dd38cf86790c2db1b8842afeba6c37cc423b4d07583330ad5ed50"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__range_contains__first_result__b01__p1__v4.json",
+      "relative_path": "workers/librts__parks__range_contains__first_result__b01__p1__v4.json",
+      "sha256": "cfa1d5b558a82ff30197eeda12702224b13ee0c853ec81cc2ddad078f548b6ce"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__range_contains__first_result__b02__p0__v4.json",
+      "relative_path": "workers/librts__parks__range_contains__first_result__b02__p0__v4.json",
+      "sha256": "8e81116c1eadba9424e0700b166e60b2c61c5722ac7be3f40abc37a45284c621"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__range_contains__first_result__b02__p1__pyoptix.json",
+      "relative_path": "workers/librts__parks__range_contains__first_result__b02__p1__pyoptix.json",
+      "sha256": "077fc721d757fee1b82b3c9e9aecbb21ee38817d2a00dded9c6d83b11c33c06c"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__range_contains__first_result__b03__p0__pyoptix.json",
+      "relative_path": "workers/librts__parks__range_contains__first_result__b03__p0__pyoptix.json",
+      "sha256": "551beb70f2f904edceae30ebbcd6a655d0ffa420dad8b8249e7dabb1a3964f1a"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__range_contains__first_result__b03__p1__v4.json",
+      "relative_path": "workers/librts__parks__range_contains__first_result__b03__p1__v4.json",
+      "sha256": "1353fc6d577869a715c0ded3836c0d1604480729dd93eb1a50d6b660f36e9cdc"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__range_contains__first_result__b04__p0__pyoptix.json",
+      "relative_path": "workers/librts__parks__range_contains__first_result__b04__p0__pyoptix.json",
+      "sha256": "7ef798a08714685cbc739158a11cdf4539be6ed45b47da6e899446c368582dfa"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__range_contains__first_result__b04__p1__v4.json",
+      "relative_path": "workers/librts__parks__range_contains__first_result__b04__p1__v4.json",
+      "sha256": "6144f732bf07a141a07936123f8044c26e4dc07f3497d72f0a1be4bfc249d771"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__range_contains__first_result__b05__p0__v4.json",
+      "relative_path": "workers/librts__parks__range_contains__first_result__b05__p0__v4.json",
+      "sha256": "5d8d9a8405476e13f7e55e4d2fd71db17cd04534f247f55a019d2082c164c497"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__range_contains__first_result__b05__p1__pyoptix.json",
+      "relative_path": "workers/librts__parks__range_contains__first_result__b05__p1__pyoptix.json",
+      "sha256": "80ed37c993402c1762a8d3aca78c46b1ae8f07d22f334fb33c8f73d0167d475f"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__range_contains__first_result__b06__p0__pyoptix.json",
+      "relative_path": "workers/librts__parks__range_contains__first_result__b06__p0__pyoptix.json",
+      "sha256": "641dd8f0cfa24fdacac5ee6459d72a36939f7c38828b6107f08795303f2ae393"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__range_contains__first_result__b06__p1__v4.json",
+      "relative_path": "workers/librts__parks__range_contains__first_result__b06__p1__v4.json",
+      "sha256": "acf727499cb6594e2b15bdaede15af8ee6bc100a9a923f4ce0f2322924b82d95"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__range_contains__first_result__b07__p0__v4.json",
+      "relative_path": "workers/librts__parks__range_contains__first_result__b07__p0__v4.json",
+      "sha256": "655aff3676014624e46bfcb36c37e9dbb17a1ba4173362871f9109b0b55b0b9b"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__range_contains__first_result__b07__p1__pyoptix.json",
+      "relative_path": "workers/librts__parks__range_contains__first_result__b07__p1__pyoptix.json",
+      "sha256": "6dd51b7fd37c4fc9307e9fef0eb5532e14f28390aea043e4c6e99b00c97799c0"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__range_contains__prepared__b00__p0__v4.json",
+      "relative_path": "workers/librts__parks__range_contains__prepared__b00__p0__v4.json",
+      "sha256": "c59b5cae6413e2ef4239b027f7a2b97ddda9305f472aa0014f9a1cc58e06f87f"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__range_contains__prepared__b00__p1__pyoptix.json",
+      "relative_path": "workers/librts__parks__range_contains__prepared__b00__p1__pyoptix.json",
+      "sha256": "946073390a7ca43c61162966f4a26339004b566d96bef1b33afb174613113dc4"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__range_contains__prepared__b01__p0__pyoptix.json",
+      "relative_path": "workers/librts__parks__range_contains__prepared__b01__p0__pyoptix.json",
+      "sha256": "c1e9485c8fb0b512d2b2771fdd65aebade157136dcb2b58b5cca6d19f3db4e6f"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__range_contains__prepared__b01__p1__v4.json",
+      "relative_path": "workers/librts__parks__range_contains__prepared__b01__p1__v4.json",
+      "sha256": "4ebecf6618c2e432974147fb7b0648276adb02d6b808f0106e0ff8c235c7bb3b"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__range_contains__prepared__b02__p0__v4.json",
+      "relative_path": "workers/librts__parks__range_contains__prepared__b02__p0__v4.json",
+      "sha256": "e26e9bea786455d03219730a12cb6c04dc6237800aa6b94e5e1eacf61de79d21"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__range_contains__prepared__b02__p1__pyoptix.json",
+      "relative_path": "workers/librts__parks__range_contains__prepared__b02__p1__pyoptix.json",
+      "sha256": "07a11bd41e7cf376b06164ba3e47d610cbdc864cf3e5d06ad0dba256869d4537"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__range_contains__prepared__b03__p0__pyoptix.json",
+      "relative_path": "workers/librts__parks__range_contains__prepared__b03__p0__pyoptix.json",
+      "sha256": "6cd5ed6644c8932535e6556901a1e3e60097600537a268667270ffe682878e17"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__range_contains__prepared__b03__p1__v4.json",
+      "relative_path": "workers/librts__parks__range_contains__prepared__b03__p1__v4.json",
+      "sha256": "ff57f79abde02622d0820cc595b435715d7cb9a0b8524b46bc57ca8152d1b13d"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__range_contains__prepared__b04__p0__pyoptix.json",
+      "relative_path": "workers/librts__parks__range_contains__prepared__b04__p0__pyoptix.json",
+      "sha256": "b71472e1a8898a92176be0177277e01c1f13b1c608702108f30ff809c5f65b5d"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__range_contains__prepared__b04__p1__v4.json",
+      "relative_path": "workers/librts__parks__range_contains__prepared__b04__p1__v4.json",
+      "sha256": "fc6e98ee76e5ca554359bbf368a1d742a749b7d52da58894455d39c1e44415f8"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__range_contains__prepared__b05__p0__v4.json",
+      "relative_path": "workers/librts__parks__range_contains__prepared__b05__p0__v4.json",
+      "sha256": "202a08124f8a131e7756963d4299e933377e1fbe449126804350353fb225488e"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__range_contains__prepared__b05__p1__pyoptix.json",
+      "relative_path": "workers/librts__parks__range_contains__prepared__b05__p1__pyoptix.json",
+      "sha256": "74d11f43c9fa434df5fd91688f6c888dbf3d599181eb2cfeaa6ab1b3e3d04017"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__range_contains__prepared__b06__p0__pyoptix.json",
+      "relative_path": "workers/librts__parks__range_contains__prepared__b06__p0__pyoptix.json",
+      "sha256": "bc56ca52598e385423068a0d50abe9595bbc6e339f632ff3e62773c93456706a"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__range_contains__prepared__b06__p1__v4.json",
+      "relative_path": "workers/librts__parks__range_contains__prepared__b06__p1__v4.json",
+      "sha256": "98d3d4776573d737acb8207f083b1db809c94671027e01ad102581b0c38d6706"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__range_contains__prepared__b07__p0__v4.json",
+      "relative_path": "workers/librts__parks__range_contains__prepared__b07__p0__v4.json",
+      "sha256": "bde3b02b86b6e1f318636e4c250731579fe168aa11d3e468d43ee9d1c6376511"
+    },
+    {
+      "path": "/workspace/rtdl-v4-paper-apps-run/formal-df7db5c38/workers/librts__parks__range_contains__prepared__b07__p1__pyoptix.json",
+      "relative_path": "workers/librts__parks__range_contains__prepared__b07__p1__pyoptix.json",
+      "sha256": "cc6ffbb895bf1627b0249d196478a1a93db4bc74d1d9abf303500cb94a9d8662"
+    }
+  ]
+}

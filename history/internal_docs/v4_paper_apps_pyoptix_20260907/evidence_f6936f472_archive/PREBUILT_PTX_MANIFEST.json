@@ -1,0 +1,45 @@
+{
+  "compile_time_in_primary_a_c_timer": false,
+  "compute_capability": [
+    8,
+    6
+  ],
+  "cuda_bindings_version": "12.9.7",
+  "cuda_header_sha256": "4568cc9e7a321e47707cd6403980f21ac2e2e55170500d0e0a3f54feb03a9acb",
+  "formal_worker_zero_reached": false,
+  "optix_device_header_sha256": "dfd4f7db48315de784c6a309f2d04981108994d01548e4bd262f9ed7a30f6ff3",
+  "optix_header_sha256": "071e3aae8352d7a53b5d15bf475301a5ac416089cd3b51adb01fd1f5deb7d936",
+  "performance_result_exists": false,
+  "programs": {
+    "librts": {
+      "compile_ns_diagnostic_only": 154576220,
+      "ptx_path": "/workspace/rtdl-v4-paper-apps-run/prebuilt-ptx-f6936f472/librts.ptx",
+      "ptx_sha256": "d7c820d87231edde81b93906136d972a8a7d570025d02bade0257578a8a0dfe7",
+      "ptx_size_bytes": 5319,
+      "source_path": "experiments/v4_paper_apps_pyoptix/librts_device.cu",
+      "source_sha256": "4d71a0d3d0b052cb68305e5b6b138a8df83c90c3a33184e66088e7296d218598"
+    },
+    "particle_tracking": {
+      "compile_ns_diagnostic_only": 837842431,
+      "ptx_path": "/workspace/rtdl-v4-paper-apps-run/prebuilt-ptx-f6936f472/particle_tracking.ptx",
+      "ptx_sha256": "53cd6c9a45b5bc9e4d7cb2259a2426cf22434db7a647e23ff66706a068af685e",
+      "ptx_size_bytes": 8210,
+      "source_path": "experiments/v4_paper_apps_pyoptix/particle_device.cu",
+      "source_sha256": "955c4124df87eeb53c8558f5210f7ff5d45b2608f9b58639738f39d764ee590b"
+    },
+    "triangle_counting": {
+      "compile_ns_diagnostic_only": 144412246,
+      "ptx_path": "/workspace/rtdl-v4-paper-apps-run/prebuilt-ptx-f6936f472/triangle_counting.ptx",
+      "ptx_sha256": "ba2723d6d23cc6c055ced00437a79c56c12aae0116ae27601ac62a388cc428e1",
+      "ptx_size_bytes": 4233,
+      "source_path": "experiments/v4_paper_apps_pyoptix/triangle_counting_device.cu",
+      "source_sha256": "857b5e6dc5254894130d36deae3f4439d964bb0ec74211f2c199f2fb513b581f"
+    }
+  },
+  "python_executable": "/workspace/rtdl-v4-paper-apps-run/venv/bin/python",
+  "schema": "rtdl.v4_paper_apps_pyoptix.prebuilt_ptx.v1",
+  "source_clean_after_build": true,
+  "source_commit": "f6936f47291ad28825244d2cb3c996c62193a57d",
+  "source_tree": "8d23c301b2d17f9f749e7e7e1518387288be9b65",
+  "status": "PASS__PREBUILT_PTX_READY_FOR_UNTIMED_DRY_RUN"
+}

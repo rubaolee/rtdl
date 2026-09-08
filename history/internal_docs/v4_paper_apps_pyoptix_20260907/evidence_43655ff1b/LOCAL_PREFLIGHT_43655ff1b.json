@@ -1,0 +1,89 @@
+{
+  "formal_worker_zero_reached": false,
+  "gpu_used": false,
+  "performance_result_exists": false,
+  "public_or_manuscript_claim_authorized": false,
+  "schedule": {
+    "endpoint_count": 3,
+    "fixed_block_orders": [
+      [
+        "v4",
+        "pyoptix"
+      ],
+      [
+        "pyoptix",
+        "v4"
+      ],
+      [
+        "v4",
+        "pyoptix"
+      ],
+      [
+        "pyoptix",
+        "v4"
+      ],
+      [
+        "pyoptix",
+        "v4"
+      ],
+      [
+        "v4",
+        "pyoptix"
+      ],
+      [
+        "pyoptix",
+        "v4"
+      ],
+      [
+        "v4",
+        "pyoptix"
+      ]
+    ],
+    "formal_worker_process_count": 192,
+    "paired_block_count_per_unit_endpoint": 8,
+    "registered_unit_count": 4
+  },
+  "schema": "rtdl.v4_paper_apps_pyoptix.local_preflight.v1",
+  "source": {
+    "application_count": 9,
+    "executable_source_sha256": {
+      "examples/current/research_benchmarks/triangle_counting/segmented_rt_graph.py": "09561d10b873bbe42e9cb1c2988a66e6ef188fb7a61259dc5552c12ff0637a94",
+      "experiments/goal5814_particle/public_pyoptix_owner.py": "bca1c416ef9cfbc0865914081b8e2f761710f071986d394b85c5e339215c1eda",
+      "experiments/v4_paper_apps_pyoptix/contracts.py": "3f2fe223b930a03700fc0170ef2bdb24bbcd9f4e177409998967a3eb3b5248c8",
+      "experiments/v4_paper_apps_pyoptix/inputs.py": "972268c33ea85552049412a008862feec741ebc40b30625b13c162ad16e92706",
+      "experiments/v4_paper_apps_pyoptix/librts_device.cu": "4d71a0d3d0b052cb68305e5b6b138a8df83c90c3a33184e66088e7296d218598",
+      "experiments/v4_paper_apps_pyoptix/librts_owner.py": "79f43defaac138dff414f84063d5cd376567aa24de72bead9cd0f2f58b9271f9",
+      "experiments/v4_paper_apps_pyoptix/particle_adapter.py": "75c516c816e3086a875ffd2acbe139e2f1be3a918b3bfd8098dbebceb1b11a71",
+      "experiments/v4_paper_apps_pyoptix/particle_device.cu": "955c4124df87eeb53c8558f5210f7ff5d45b2608f9b58639738f39d764ee590b",
+      "experiments/v4_paper_apps_pyoptix/public_runtime.py": "0eda98efd3105b67a8b0a2d457ad40d1b608811315d545960dfd1dcf5cc3eaf8",
+      "experiments/v4_paper_apps_pyoptix/triangle_counting_device.cu": "857b5e6dc5254894130d36deae3f4439d964bb0ec74211f2c199f2fb513b581f",
+      "experiments/v4_paper_apps_pyoptix/triangle_owner.py": "b9fd08fe3c17d53cd1700c07f706805d3899257b09f58cf7cd8a549795b1e54a",
+      "scripts/build_v4_paper_apps_source_manifest.py": "760fa72d806bdf2bca35f3fee824c279a7925151919cd72ce699cd6e47f9036b",
+      "scripts/v4_paper_apps_pyoptix_controller.py": "4e0a32bed3dacd4874af6dc895ea31c2c3184d976e8681f1a85e453dc71c33e2",
+      "scripts/v4_paper_apps_pyoptix_extract_data.py": "7deac279d3b1280ecc0534518e09a8d1a5bf5926f32daa9cf87a183b8b74bb76",
+      "scripts/v4_paper_apps_pyoptix_local_preflight.py": "3cee28cba14b1015476a3b5418f0785b81ec28d33a4b62195d2814660609abb1",
+      "scripts/v4_paper_apps_pyoptix_make_config.py": "8432bf85cf77301c92a62913c2792abd9926456aac48e160a78577c6ec527a28",
+      "scripts/v4_paper_apps_pyoptix_prepare_ptx.py": "956ded81f0cae07b7d32d6ae5ab6f2f7d339dee698f052a52c548853e46e1aec",
+      "scripts/v4_paper_apps_pyoptix_recount.py": "a97964a0e5fae0a4d8b3631f7eef26e3d9c75e7a120ad548288fdf54ab19af89",
+      "scripts/v4_paper_apps_pyoptix_worker.py": "72ed5180988e98ff0d8fd5337fc27781b78df0a69f9b421dc06efaada77caba0"
+    },
+    "source_manifest_sha256": "80f3d9a3fdb6e78d2f2d1b7cbcf605ae88a04141e15a350cec8375a426f19029"
+  },
+  "source_commit": "43655ff1bd9f85022e3e1b541d086bcccbc055c4",
+  "source_tree": "35724a495f79d29229ae2bf8f1ed23a5851d20b5",
+  "status": "PASS__LOCAL_STATIC_ONLY__GPU_DRY_RUN_REQUIRED",
+  "tests": {
+    "command": [
+      "/workspace/rtdl-v4-paper-apps-run/venv/bin/python",
+      "-m",
+      "unittest",
+      "tests.v4_paper_apps_pyoptix_contract_test",
+      "tests.v4_paper_apps_pyoptix_owners_test",
+      "tests.v4_paper_apps_pyoptix_harness_test"
+    ],
+    "return_code": 0,
+    "stderr": "............................\n----------------------------------------------------------------------\nRan 28 tests in 1.688s\n\nOK\n",
+    "stdout": ""
+  },
+  "working_tree_clean": true
+}

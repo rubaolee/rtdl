@@ -1,0 +1,73 @@
+{
+  "compute_capability": [
+    8,
+    6
+  ],
+  "cuda_include": "/usr/local/cuda-12.8/targets/x86_64-linux/include",
+  "data_manifest_path": "/workspace/rtdl-v4-paper-apps-run/data/DATA_MANIFEST.json",
+  "data_manifest_sha256": "ba76299358fe3449048f4ae756885e7a6d80930cbc70178a6c818bb7c492fe83",
+  "data_root": "/workspace/rtdl-v4-paper-apps-run/data/DATA",
+  "discard_allowed": false,
+  "native_build_manifest_path": "/workspace/rtdl-v4-paper-apps-run/native-c5c8be48b/BUILD_MANIFEST.json",
+  "native_build_manifest_sha256": "99dba18f030fb7c1f4128ce74d37a424f1ab52a7cf17e064dfc752a2d7f04ab8",
+  "native_library_path": "/workspace/rtdl-v4-paper-apps-run/native-c5c8be48b/librtdl_optix.so",
+  "native_library_sha256": "719ac27d884c93634f8b3a9ed2936b95d6231fccb437da7da62448adf2ec15ba",
+  "optix_include": "/workspace/rtdl-v4-paper-apps-run/optix-dev/include",
+  "optix_sdk": "8.0.0",
+  "package_versions": {
+    "cuda-bindings": "12.9.7",
+    "cuda-python": "12.9.7",
+    "cupy-cuda12x": "14.0.1",
+    "numba": "0.65.1",
+    "numpy": "2.4.4",
+    "pyoptix": "9.1.0"
+  },
+  "performance_threshold_present": false,
+  "prepared_repetitions": {
+    "librts__parks__point_contains": 4,
+    "librts__parks__range_contains": 4,
+    "particle_tracking": 32,
+    "triangle_counting__com_dblp__rt_2a1": 4
+  },
+  "prepared_warmups": 1,
+  "pyoptix_build_receipt_path": "/workspace/rtdl-v4-paper-apps-run/pyoptix-build-final/build_receipt.json",
+  "pyoptix_build_receipt_sha256": "debcb6f6c04d692787fb55c0bfd66827135d54b825a12404cceb4d7ba41ef960",
+  "pyoptix_loaded_extension_sha256": "0a05db8ccb565ec513a391809bd8b539ccefdd25bd7b75a573ffc7bc5ad55933",
+  "pyoptix_prebuilt_ptx": {
+    "librts": {
+      "path": "/workspace/rtdl-v4-paper-apps-run/prebuilt-ptx-c5c8be48b/librts.ptx",
+      "sha256": "d7c820d87231edde81b93906136d972a8a7d570025d02bade0257578a8a0dfe7",
+      "source_sha256": "4d71a0d3d0b052cb68305e5b6b138a8df83c90c3a33184e66088e7296d218598"
+    },
+    "particle_tracking": {
+      "path": "/workspace/rtdl-v4-paper-apps-run/prebuilt-ptx-c5c8be48b/particle_tracking.ptx",
+      "sha256": "53cd6c9a45b5bc9e4d7cb2259a2426cf22434db7a647e23ff66706a068af685e",
+      "source_sha256": "955c4124df87eeb53c8558f5210f7ff5d45b2608f9b58639738f39d764ee590b"
+    },
+    "triangle_counting": {
+      "path": "/workspace/rtdl-v4-paper-apps-run/prebuilt-ptx-c5c8be48b/triangle_counting.ptx",
+      "sha256": "ba2723d6d23cc6c055ced00437a79c56c12aae0116ae27601ac62a388cc428e1",
+      "source_sha256": "857b5e6dc5254894130d36deae3f4439d964bb0ec74211f2c199f2fb513b581f"
+    }
+  },
+  "pyoptix_ptx_manifest_path": "/workspace/rtdl-v4-paper-apps-run/prebuilt-ptx-c5c8be48b/PREBUILT_PTX_MANIFEST.json",
+  "pyoptix_ptx_manifest_sha256": "8752fbd1be888be7419bafd44f8458fee4951358ca1bf8e17c17a6e7a4dc1dbb",
+  "python_executable": "/workspace/rtdl-v4-paper-apps-run/venv/bin/python",
+  "python_executable_sha256": "1d3cf64f97cadc79fdc6fe2496a21b7b456cb94211978cfef5a65f616af74fd5",
+  "python_version": "3.12.3",
+  "registered_before_performance_observation": true,
+  "registered_machine": {
+    "cuda_visible_devices": "0",
+    "gpu": {
+      "compute_capability": "8.6",
+      "driver": "550.127.05",
+      "name": "NVIDIA RTX A4500",
+      "uuid": "GPU-5dbda20d-af85-650e-7250-10b265a77143"
+    }
+  },
+  "retry_allowed": false,
+  "schema": "rtdl.v4_paper_apps_pyoptix.config.v1",
+  "source_commit": "c5c8be48b743aa001e9c16c3344cc97c200600d1",
+  "source_root": "/workspace/rtdl-v4-paper-apps-source-c5c8be48b",
+  "source_tree": "e3bb0001f4c2d1e3171ab0431c0479500dfc7136"
+}

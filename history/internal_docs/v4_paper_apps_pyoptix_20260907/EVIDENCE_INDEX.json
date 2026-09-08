@@ -1,0 +1,114 @@
+{
+  "schema": "rtdl.v4_paper_apps_pyoptix.evidence_index.v1",
+  "created_at": "2026-09-07T23:55:00-04:00",
+  "machine": {
+    "gpu": "NVIDIA RTX A4500",
+    "compute_capability": "8.6",
+    "uuid": "GPU-5dbda20d-af85-650e-7250-10b265a77143",
+    "driver": "550.127.05",
+    "optix_sdk": "8.0.0"
+  },
+  "target_application_count": 9,
+  "executed_application_count": 3,
+  "executed_operation_unit_count": 4,
+  "transactions_poolable": false,
+  "transactions": [
+    {
+      "source_commit": "f6936f47291ad28825244d2cb3c996c62193a57d",
+      "source_tree": "8d23c301b2d17f9f749e7e7e1518387288be9b65",
+      "local_directory": "evidence_f6936f472_archive",
+      "formal_summary": {
+        "path": "evidence_f6936f472_archive/FORMAL_SUMMARY.json",
+        "sha256": "30e8bd8c715a586c4918d43eb44aca48d948f30b67601bea68a410ebc00105b0"
+      },
+      "independent_recount": {
+        "path": "evidence_f6936f472_archive/INDEPENDENT_RECOUNT_f6936f472.json",
+        "sha256": "6d0632514bb3afda3610b15498347798a353b567259f158ed28bb1d7e494f293",
+        "status": "RECOUNT_MATCH"
+      },
+      "compact_archive": {
+        "path": "evidence_f6936f472_archive/rtdl-v4-paper-apps-evidence-f6936f472-compact.tar.gz",
+        "sha256": "689117c3ebd03107e87cec3c444fac815beb462014838866999539464b4ead90"
+      },
+      "original_full_archive_sha256": "8cff51d39818d61a26cebe8d413fdf75d5e9003d2d722a5027f7639453cbbd5b",
+      "worker_count": 192,
+      "retry_count": 0,
+      "discard_count": 0
+    },
+    {
+      "source_commit": "43655ff1bd9f85022e3e1b541d086bcccbc055c4",
+      "source_tree": "35724a495f79d29229ae2bf8f1ed23a5851d20b5",
+      "local_directory": "evidence_43655ff1b",
+      "formal_summary": {
+        "path": "evidence_43655ff1b/FORMAL_SUMMARY.json",
+        "sha256": "66decbd89a1bdd8e431cbbf69231e9ed89672d1c1f463f32cdd65acfe7f23166"
+      },
+      "independent_recount": {
+        "path": "evidence_43655ff1b/INDEPENDENT_RECOUNT_43655ff1b.json",
+        "sha256": "06c68f04fc59637b5e7d9697226f536b6dff3508a8c159578a0fa6e261bfdb5f",
+        "status": "RECOUNT_MATCH"
+      },
+      "compact_archive": {
+        "path": "evidence_43655ff1b/rtdl-v4-paper-apps-evidence-43655ff1b.tar.gz",
+        "sha256": "1283adeacdbadf14825087579b2202d8fcd5e3c2d6b0c4ee2b9ae3ac871edb07"
+      },
+      "worker_count": 192,
+      "retry_count": 0,
+      "discard_count": 0
+    },
+    {
+      "source_commit": "df7db5c38922bb108338142ce471151d5f9caf5a",
+      "source_tree": "006ef9d2d2082447b2981b611ad38812c733519d",
+      "local_directory": "evidence_df7db5c38",
+      "formal_summary": {
+        "path": "evidence_df7db5c38/FORMAL_SUMMARY.json",
+        "sha256": "a5c4db7d8a6ae93a876d64979576387520bd7a95af9d317cd67fe49b7a22a1b7"
+      },
+      "independent_recount": {
+        "path": "evidence_df7db5c38/INDEPENDENT_RECOUNT_df7db5c38.json",
+        "sha256": "d541683338c41d486737a2395efde9dc7cc980c5b00a7cc15ad859fb39d61d84",
+        "status": "RECOUNT_MATCH"
+      },
+      "compact_archive": {
+        "path": "evidence_df7db5c38/rtdl-v4-paper-apps-evidence-df7db5c38.tar.gz",
+        "sha256": "ba897afe42470691dd00db002759475fe60c055b7938ff037dbf9d2332a31d05"
+      },
+      "worker_count": 192,
+      "retry_count": 0,
+      "discard_count": 0
+    },
+    {
+      "source_commit": "c5c8be48b743aa001e9c16c3344cc97c200600d1",
+      "source_tree": "e3bb0001f4c2d1e3171ab0431c0479500dfc7136",
+      "local_directory": "evidence_c5c8be48b",
+      "formal_summary": {
+        "path": "evidence_c5c8be48b/FORMAL_SUMMARY.json",
+        "sha256": "67a353cd796080b06442dcef64624bd176f65c513d185e0198aca0b7640df4bf"
+      },
+      "independent_recount": {
+        "path": "evidence_c5c8be48b/INDEPENDENT_RECOUNT_c5c8be48b.json",
+        "sha256": "667cafd0f3599b62b77aab96f92e18eaac4cb925832c077004b1ced2b09d7b64",
+        "status": "RECOUNT_MATCH"
+      },
+      "config": {
+        "path": "evidence_c5c8be48b/CONFIG_c5c8be48b.json",
+        "sha256": "29a070b67d9756dda08dd8be6a006bc77be8990a1e584a8295e322c2fdba2e38"
+      },
+      "native_library_sha256": "719ac27d884c93634f8b3a9ed2936b95d6231fccb437da7da62448adf2ec15ba",
+      "dry_run_summary_sha256": "405fb6939d0b2925ae5074b4ef31ce11cb60780a2f7c5d6985a79740c4f6d9a8",
+      "compact_archive": {
+        "path": "evidence_c5c8be48b/rtdl-v4-paper-apps-evidence-c5c8be48b.tar.gz",
+        "sha256": "2d7dc4413639e46994ca74251d230b74d5e9d775a23b457336cb00f9df80f4ff"
+      },
+      "worker_count": 192,
+      "retry_count": 0,
+      "discard_count": 0
+    }
+  ],
+  "claim_boundary": {
+    "public_or_manuscript_performance_claim_authorized": false,
+    "nine_application_completion_claim_authorized": false,
+    "usability_claim_authorized": false,
+    "submission_or_upload_authorized": false
+  }
+}

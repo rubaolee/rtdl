@@ -1,0 +1,1140 @@
+{
+  "config_sha256": "4d71d2492891e35ced0fc9642f0ee163abfce3745ea505c09d90e3dd4763a9d4",
+  "config_unchanged_during_dry_run": true,
+  "controller_sha256": "4e0a32bed3dacd4874af6dc895ea31c2c3184d976e8681f1a85e453dc71c33e2",
+  "discard_count": 0,
+  "formal_worker_zero_reached": false,
+  "records": [
+    {
+      "app": "particle_tracking",
+      "input_identity_parity": true,
+      "operation": null,
+      "output_parity": true,
+      "unit_id": "particle_tracking",
+      "valid": true,
+      "workers": [
+        {
+          "arm": "v4",
+          "launch": {
+            "command": [
+              "/workspace/rtdl-v4-paper-apps-run/venv/bin/python",
+              "/workspace/rtdl-v4-paper-apps-source-43655ff1b/scripts/v4_paper_apps_pyoptix_worker.py",
+              "--config",
+              "/workspace/rtdl-v4-paper-apps-run/CONFIG_43655ff1b.json",
+              "--app",
+              "particle_tracking",
+              "--arm",
+              "v4",
+              "--endpoint",
+              "first_result",
+              "--repetitions",
+              "1",
+              "--warmups",
+              "0",
+              "--output",
+              "/workspace/rtdl-v4-paper-apps-run/dry-run-43655ff1b/workers/particle_tracking__v4.json"
+            ],
+            "log": "/workspace/rtdl-v4-paper-apps-run/dry-run-43655ff1b/logs/particle_tracking__v4.log",
+            "return_code": 0,
+            "timeout": false,
+            "wall_ns": 30942322076
+          },
+          "position": 0,
+          "worker": {
+            "app": "particle_tracking",
+            "arm": "v4",
+            "complete_timer_includes_prepare_execute_close": false,
+            "discard_count": 0,
+            "endpoint": "first_result",
+            "execute_samples_ns": [
+              40734399
+            ],
+            "input_identity": {
+              "input_sha256": "7f21844610c4c9ad8ccdf6ec6961de28d6f1099af8b1bf0e37e41bf53fb55743"
+            },
+            "input_load_included_in_primary_timer": false,
+            "machine": {
+              "cuda_visible_devices": "0",
+              "gpu": {
+                "compute_capability": "8.6",
+                "driver": "550.127.05",
+                "name": "NVIDIA RTX A4500",
+                "uuid": "GPU-5dbda20d-af85-650e-7250-10b265a77143"
+              },
+              "hostname": "4735c6e75b0c",
+              "platform": "Linux-6.5.0-45-generic-x86_64-with-glibc2.39",
+              "python": "3.12.3",
+              "python_executable": "/workspace/rtdl-v4-paper-apps-run/venv/bin/python"
+            },
+            "method": {
+              "device_semantics_matched_with_pyoptix": true,
+              "device_source_shared_with_pyoptix": false,
+              "path_class": "v4_public_paper_app_prepared_owner",
+              "private_checker_off_path": false,
+              "restricted_callback_compile_in_complete": true,
+              "rtdlexe_lifecycle_used": false
+            },
+            "operation": null,
+            "output_sha256": "81dea3f2ad83c6c239a372d699b6133a088fe7171356b298b9aeace4074370c7",
+            "outputs": [
+              {
+                "compact_execution_evidence": {
+                  "expected_program_bundle": null,
+                  "physical_executor_classification": "optix_traversal_observed",
+                  "receipt_sha256": "fd08c815bd73661e5f9e7168ad7f400e7ae7b7eea56d0b5b2b54e6f098797e48",
+                  "route_identity": "v4_builtin_triangle_callback_ir:four_role_composed_v1",
+                  "schema": "rtdl.physical_execution.traversal_receipt.v1"
+                },
+                "detailed_receipt_retention_count": 0,
+                "full_50000_step_advection": false,
+                "matched": true,
+                "output_sha256": "81dea3f2ad83c6c239a372d699b6133a088fe7171356b298b9aeace4074370c7",
+                "public_output_materialized_inside_call": true,
+                "schema": "rtdl.v4_paper_apps_pyoptix.particle_v4_observation.v1"
+              }
+            ],
+            "phase_ns": {
+              "close": 6705779,
+              "load": 1468461522,
+              "prepare": 27197889289
+            },
+            "primary_samples_ns": [
+              40734399
+            ],
+            "process_id": 40370,
+            "retained_sample_count": 1,
+            "retry_count": 0,
+            "runtime_identity": {
+              "package_versions": {
+                "cuda-bindings": "12.9.7",
+                "cuda-python": "12.9.7",
+                "cupy-cuda12x": "14.0.1",
+                "numba": "0.65.1",
+                "numpy": "2.4.4",
+                "pyoptix": "9.1.0"
+              },
+              "python_executable": "/workspace/rtdl-v4-paper-apps-run/venv/bin/python",
+              "python_executable_sha256": "1d3cf64f97cadc79fdc6fe2496a21b7b456cb94211978cfef5a65f616af74fd5",
+              "python_version": "3.12.3"
+            },
+            "schema": "rtdl.v4_paper_apps_pyoptix.worker_result.v1",
+            "source_identity": {
+              "config_sha256": "4d71d2492891e35ced0fc9642f0ee163abfce3745ea505c09d90e3dd4763a9d4",
+              "git_commit": "43655ff1bd9f85022e3e1b541d086bcccbc055c4",
+              "git_status_clean": true,
+              "git_tree": "35724a495f79d29229ae2bf8f1ed23a5851d20b5",
+              "worker_sha256": "72ed5180988e98ff0d8fd5337fc27781b78df0a69f9b421dc06efaada77caba0"
+            },
+            "status": "PASS",
+            "warmup_count": 0,
+            "worker_wall_ns": 30264113891
+          }
+        },
+        {
+          "arm": "pyoptix",
+          "launch": {
+            "command": [
+              "/workspace/rtdl-v4-paper-apps-run/venv/bin/python",
+              "/workspace/rtdl-v4-paper-apps-source-43655ff1b/scripts/v4_paper_apps_pyoptix_worker.py",
+              "--config",
+              "/workspace/rtdl-v4-paper-apps-run/CONFIG_43655ff1b.json",
+              "--app",
+              "particle_tracking",
+              "--arm",
+              "pyoptix",
+              "--endpoint",
+              "first_result",
+              "--repetitions",
+              "1",
+              "--warmups",
+              "0",
+              "--output",
+              "/workspace/rtdl-v4-paper-apps-run/dry-run-43655ff1b/workers/particle_tracking__pyoptix.json"
+            ],
+            "log": "/workspace/rtdl-v4-paper-apps-run/dry-run-43655ff1b/logs/particle_tracking__pyoptix.log",
+            "return_code": 0,
+            "timeout": false,
+            "wall_ns": 7315280218
+          },
+          "position": 1,
+          "worker": {
+            "app": "particle_tracking",
+            "arm": "pyoptix",
+            "complete_timer_includes_prepare_execute_close": false,
+            "discard_count": 0,
+            "endpoint": "first_result",
+            "execute_samples_ns": [
+              706490
+            ],
+            "input_identity": {
+              "input_sha256": "7f21844610c4c9ad8ccdf6ec6961de28d6f1099af8b1bf0e37e41bf53fb55743"
+            },
+            "input_load_included_in_primary_timer": false,
+            "machine": {
+              "cuda_visible_devices": "0",
+              "gpu": {
+                "compute_capability": "8.6",
+                "driver": "550.127.05",
+                "name": "NVIDIA RTX A4500",
+                "uuid": "GPU-5dbda20d-af85-650e-7250-10b265a77143"
+              },
+              "hostname": "4735c6e75b0c",
+              "platform": "Linux-6.5.0-45-generic-x86_64-with-glibc2.39",
+              "python": "3.12.3",
+              "python_executable": "/workspace/rtdl-v4-paper-apps-run/venv/bin/python"
+            },
+            "method": {
+              "device_semantics_matched_with_v4": true,
+              "device_source_shared_with_v4": false,
+              "path_class": "public_pyoptix_semantically_matched_particle_program",
+              "private_rtdl_native_called": false,
+              "ptx_sha256": "53cd6c9a45b5bc9e4d7cb2259a2426cf22434db7a647e23ff66706a068af685e"
+            },
+            "operation": null,
+            "output_sha256": "81dea3f2ad83c6c239a372d699b6133a088fe7171356b298b9aeace4074370c7",
+            "outputs": [
+              {
+                "compact_execution_evidence": {
+                  "control": [
+                    5000,
+                    4294967295,
+                    0,
+                    0
+                  ],
+                  "kind": "public_pyoptix_device_status_and_operation_counts",
+                  "operation_counts": {
+                    "accel_build_call_count": 0,
+                    "context_creation_call_count": 0,
+                    "control_d2h_bytes": 16,
+                    "control_d2h_copy_call_count": 1,
+                    "control_reset_h2d_bytes": 16,
+                    "control_reset_h2d_copy_call_count": 1,
+                    "d2h_copy_bytes": 60016,
+                    "d2h_copy_call_count": 2,
+                    "device_memset_bytes": 0,
+                    "device_memset_call_count": 0,
+                    "explicit_stream_sync_call_count": 2,
+                    "h2d_copy_bytes": 140136,
+                    "h2d_copy_call_count": 9,
+                    "module_creation_call_count": 0,
+                    "optix_launch_call_count": 1,
+                    "output_d2h_after_status_failure": 0,
+                    "output_d2h_bytes": 60000,
+                    "output_d2h_copy_call_count": 1,
+                    "parameter_h2d_bytes": 120,
+                    "parameter_h2d_copy_call_count": 1,
+                    "pinned_host_allocation_bytes": 0,
+                    "pinned_host_allocation_call_count": 0,
+                    "pipeline_creation_call_count": 0,
+                    "program_group_creation_call_count": 0,
+                    "query_h2d_bytes": 140000,
+                    "query_h2d_copy_call_count": 7,
+                    "raw_device_allocation_bytes": 0,
+                    "raw_device_allocation_call_count": 0,
+                    "raygen_invocation_count": 5000,
+                    "status_before_output": 1,
+                    "stream_creation_call_count": 0
+                  }
+                },
+                "control": [
+                  5000,
+                  4294967295,
+                  0,
+                  0
+                ],
+                "detailed_receipt_retention_count": 0,
+                "full_50000_step_advection": false,
+                "matched": true,
+                "operation_counts": {
+                  "accel_build_call_count": 0,
+                  "context_creation_call_count": 0,
+                  "control_d2h_bytes": 16,
+                  "control_d2h_copy_call_count": 1,
+                  "control_reset_h2d_bytes": 16,
+                  "control_reset_h2d_copy_call_count": 1,
+                  "d2h_copy_bytes": 60016,
+                  "d2h_copy_call_count": 2,
+                  "device_memset_bytes": 0,
+                  "device_memset_call_count": 0,
+                  "explicit_stream_sync_call_count": 2,
+                  "h2d_copy_bytes": 140136,
+                  "h2d_copy_call_count": 9,
+                  "module_creation_call_count": 0,
+                  "optix_launch_call_count": 1,
+                  "output_d2h_after_status_failure": 0,
+                  "output_d2h_bytes": 60000,
+                  "output_d2h_copy_call_count": 1,
+                  "parameter_h2d_bytes": 120,
+                  "parameter_h2d_copy_call_count": 1,
+                  "pinned_host_allocation_bytes": 0,
+                  "pinned_host_allocation_call_count": 0,
+                  "pipeline_creation_call_count": 0,
+                  "program_group_creation_call_count": 0,
+                  "query_h2d_bytes": 140000,
+                  "query_h2d_copy_call_count": 7,
+                  "raw_device_allocation_bytes": 0,
+                  "raw_device_allocation_call_count": 0,
+                  "raygen_invocation_count": 5000,
+                  "status_before_output": 1,
+                  "stream_creation_call_count": 0
+                },
+                "output_sha256": "81dea3f2ad83c6c239a372d699b6133a088fe7171356b298b9aeace4074370c7",
+                "public_output_materialized_inside_call": true,
+                "schema": "rtdl.v4_paper_apps_pyoptix.particle.v1"
+              }
+            ],
+            "phase_ns": {
+              "close": 44011,
+              "load": 1304294720,
+              "prepare": 3651517406
+            },
+            "primary_samples_ns": [
+              706490
+            ],
+            "process_id": 40631,
+            "retained_sample_count": 1,
+            "retry_count": 0,
+            "runtime_identity": {
+              "package_versions": {
+                "cuda-bindings": "12.9.7",
+                "cuda-python": "12.9.7",
+                "cupy-cuda12x": "14.0.1",
+                "numba": "0.65.1",
+                "numpy": "2.4.4",
+                "pyoptix": "9.1.0"
+              },
+              "pyoptix_loaded_extension_path": "/workspace/rtdl-v4-paper-apps-run/venv/lib/python3.12/site-packages/optix/_optix.cpython-312-x86_64-linux-gnu.so",
+              "pyoptix_loaded_extension_sha256": "0a05db8ccb565ec513a391809bd8b539ccefdd25bd7b75a573ffc7bc5ad55933",
+              "python_executable": "/workspace/rtdl-v4-paper-apps-run/venv/bin/python",
+              "python_executable_sha256": "1d3cf64f97cadc79fdc6fe2496a21b7b456cb94211978cfef5a65f616af74fd5",
+              "python_version": "3.12.3"
+            },
+            "schema": "rtdl.v4_paper_apps_pyoptix.worker_result.v1",
+            "source_identity": {
+              "config_sha256": "4d71d2492891e35ced0fc9642f0ee163abfce3745ea505c09d90e3dd4763a9d4",
+              "git_commit": "43655ff1bd9f85022e3e1b541d086bcccbc055c4",
+              "git_status_clean": true,
+              "git_tree": "35724a495f79d29229ae2bf8f1ed23a5851d20b5",
+              "worker_sha256": "72ed5180988e98ff0d8fd5337fc27781b78df0a69f9b421dc06efaada77caba0"
+            },
+            "status": "PASS",
+            "warmup_count": 0,
+            "worker_wall_ns": 6669249500
+          }
+        }
+      ]
+    },
+    {
+      "app": "triangle_counting",
+      "input_identity_parity": true,
+      "operation": null,
+      "output_parity": true,
+      "unit_id": "triangle_counting__com_dblp__rt_2a1",
+      "valid": true,
+      "workers": [
+        {
+          "arm": "v4",
+          "launch": {
+            "command": [
+              "/workspace/rtdl-v4-paper-apps-run/venv/bin/python",
+              "/workspace/rtdl-v4-paper-apps-source-43655ff1b/scripts/v4_paper_apps_pyoptix_worker.py",
+              "--config",
+              "/workspace/rtdl-v4-paper-apps-run/CONFIG_43655ff1b.json",
+              "--app",
+              "triangle_counting",
+              "--arm",
+              "v4",
+              "--endpoint",
+              "first_result",
+              "--repetitions",
+              "1",
+              "--warmups",
+              "0",
+              "--output",
+              "/workspace/rtdl-v4-paper-apps-run/dry-run-43655ff1b/workers/triangle_counting__com_dblp__rt_2a1__v4.json"
+            ],
+            "log": "/workspace/rtdl-v4-paper-apps-run/dry-run-43655ff1b/logs/triangle_counting__com_dblp__rt_2a1__v4.log",
+            "return_code": 0,
+            "timeout": false,
+            "wall_ns": 22264597027
+          },
+          "position": 0,
+          "worker": {
+            "app": "triangle_counting",
+            "arm": "v4",
+            "complete_timer_includes_prepare_execute_close": false,
+            "discard_count": 0,
+            "endpoint": "first_result",
+            "execute_samples_ns": [
+              9002224524
+            ],
+            "input_identity": {
+              "dataset": "com-dblp",
+              "edge_file_sha256": "e9647564c1ca96589cc52314cabf5569ec80b9f5d697578a55d47fbe7aafca67",
+              "expected_triangle_count": 2224385,
+              "paper_algorithm": "RT-2A1"
+            },
+            "input_load_included_in_primary_timer": false,
+            "machine": {
+              "cuda_visible_devices": "0",
+              "gpu": {
+                "compute_capability": "8.6",
+                "driver": "550.127.05",
+                "name": "NVIDIA RTX A4500",
+                "uuid": "GPU-5dbda20d-af85-650e-7250-10b265a77143"
+              },
+              "hostname": "4735c6e75b0c",
+              "platform": "Linux-6.5.0-45-generic-x86_64-with-glibc2.39",
+              "python": "3.12.3",
+              "python_executable": "/workspace/rtdl-v4-paper-apps-run/venv/bin/python"
+            },
+            "method": {
+              "device_columns_preserved": true,
+              "path_class": "v4_standard_callback_general_leaf_device_columns",
+              "post_traversal_reduction": "cupy_checked_u64_weighted_sum_device",
+              "private_checker_off_path": false,
+              "standard_count_fast_control_used": false
+            },
+            "operation": null,
+            "output_sha256": "ffc4373270ebfb830803df134ca09bf0aa265de91c409d104588408a0273f1f5",
+            "outputs": [
+              {
+                "compact_execution_evidence": {
+                  "kind": "rtdl_segmented_traversal_receipt_projection",
+                  "segment_receipts": [
+                    {
+                      "expected_program_bundle": null,
+                      "physical_executor_classification": "optix_traversal_observed",
+                      "receipt_sha256": "6ed9bb4224d033c88ec6a14c3957b1fc862162c0995ae4a2fd427b7a5dc9fea9",
+                      "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+                      "schema": "rtdl.physical_execution.traversal_receipt.v1"
+                    },
+                    {
+                      "expected_program_bundle": null,
+                      "physical_executor_classification": "optix_traversal_observed",
+                      "receipt_sha256": "9d18e35bb319ae0c9c6f9f25c9c1c9728ead7301b856aea37630147bca7da273",
+                      "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+                      "schema": "rtdl.physical_execution.traversal_receipt.v1"
+                    },
+                    {
+                      "expected_program_bundle": null,
+                      "physical_executor_classification": "optix_traversal_observed",
+                      "receipt_sha256": "8a25dfe4864249808b92883741525fd2cc09b7f9ef7c6b08e9ba72a2393bde35",
+                      "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+                      "schema": "rtdl.physical_execution.traversal_receipt.v1"
+                    },
+                    {
+                      "expected_program_bundle": null,
+                      "physical_executor_classification": "optix_traversal_observed",
+                      "receipt_sha256": "9efe636d840eae970b8ccc4447a1c451ff3d079f0e5b33bd1e1f27ccec0cb988",
+                      "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+                      "schema": "rtdl.physical_execution.traversal_receipt.v1"
+                    },
+                    {
+                      "expected_program_bundle": null,
+                      "physical_executor_classification": "optix_traversal_observed",
+                      "receipt_sha256": "6b25dd68ea3fcca758158406e863b44824d6472534ef816209a4924ee15fd0f0",
+                      "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+                      "schema": "rtdl.physical_execution.traversal_receipt.v1"
+                    },
+                    {
+                      "expected_program_bundle": null,
+                      "physical_executor_classification": "optix_traversal_observed",
+                      "receipt_sha256": "61587cab3d77ffb5e4f83f1062ec87af9c57ca977b58d9d8b9be82cb6aae8048",
+                      "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+                      "schema": "rtdl.physical_execution.traversal_receipt.v1"
+                    },
+                    {
+                      "expected_program_bundle": null,
+                      "physical_executor_classification": "optix_traversal_observed",
+                      "receipt_sha256": "0038ef552ece0be8a61dc6cf480422c3505ecae59face6848990c9737a5ce76a",
+                      "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+                      "schema": "rtdl.physical_execution.traversal_receipt.v1"
+                    },
+                    {
+                      "expected_program_bundle": null,
+                      "physical_executor_classification": "optix_traversal_observed",
+                      "receipt_sha256": "9a299606266f467da0acbee947d103c50744564d7f8d72576e4ea8ff035aa11a",
+                      "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+                      "schema": "rtdl.physical_execution.traversal_receipt.v1"
+                    }
+                  ]
+                },
+                "detailed_receipt_retention_count": 0,
+                "matched": true,
+                "output_sha256": "ffc4373270ebfb830803df134ca09bf0aa265de91c409d104588408a0273f1f5",
+                "public_output_materialized_inside_call": true,
+                "segment_count": 8,
+                "triangle_count": 2224385
+              }
+            ],
+            "phase_ns": {
+              "close": 5290,
+              "load": 1738371508,
+              "prepare": 9226940115
+            },
+            "primary_samples_ns": [
+              9002224524
+            ],
+            "process_id": 40712,
+            "retained_sample_count": 1,
+            "retry_count": 0,
+            "runtime_identity": {
+              "package_versions": {
+                "cuda-bindings": "12.9.7",
+                "cuda-python": "12.9.7",
+                "cupy-cuda12x": "14.0.1",
+                "numba": "0.65.1",
+                "numpy": "2.4.4",
+                "pyoptix": "9.1.0"
+              },
+              "python_executable": "/workspace/rtdl-v4-paper-apps-run/venv/bin/python",
+              "python_executable_sha256": "1d3cf64f97cadc79fdc6fe2496a21b7b456cb94211978cfef5a65f616af74fd5",
+              "python_version": "3.12.3"
+            },
+            "schema": "rtdl.v4_paper_apps_pyoptix.worker_result.v1",
+            "source_identity": {
+              "config_sha256": "4d71d2492891e35ced0fc9642f0ee163abfce3745ea505c09d90e3dd4763a9d4",
+              "git_commit": "43655ff1bd9f85022e3e1b541d086bcccbc055c4",
+              "git_status_clean": true,
+              "git_tree": "35724a495f79d29229ae2bf8f1ed23a5851d20b5",
+              "worker_sha256": "72ed5180988e98ff0d8fd5337fc27781b78df0a69f9b421dc06efaada77caba0"
+            },
+            "status": "PASS",
+            "warmup_count": 0,
+            "worker_wall_ns": 21590069185
+          }
+        },
+        {
+          "arm": "pyoptix",
+          "launch": {
+            "command": [
+              "/workspace/rtdl-v4-paper-apps-run/venv/bin/python",
+              "/workspace/rtdl-v4-paper-apps-source-43655ff1b/scripts/v4_paper_apps_pyoptix_worker.py",
+              "--config",
+              "/workspace/rtdl-v4-paper-apps-run/CONFIG_43655ff1b.json",
+              "--app",
+              "triangle_counting",
+              "--arm",
+              "pyoptix",
+              "--endpoint",
+              "first_result",
+              "--repetitions",
+              "1",
+              "--warmups",
+              "0",
+              "--output",
+              "/workspace/rtdl-v4-paper-apps-run/dry-run-43655ff1b/workers/triangle_counting__com_dblp__rt_2a1__pyoptix.json"
+            ],
+            "log": "/workspace/rtdl-v4-paper-apps-run/dry-run-43655ff1b/logs/triangle_counting__com_dblp__rt_2a1__pyoptix.log",
+            "return_code": 0,
+            "timeout": false,
+            "wall_ns": 10649256014
+          },
+          "position": 1,
+          "worker": {
+            "app": "triangle_counting",
+            "arm": "pyoptix",
+            "complete_timer_includes_prepare_execute_close": false,
+            "discard_count": 0,
+            "endpoint": "first_result",
+            "execute_samples_ns": [
+              4749573088
+            ],
+            "input_identity": {
+              "dataset": "com-dblp",
+              "edge_file_sha256": "e9647564c1ca96589cc52314cabf5569ec80b9f5d697578a55d47fbe7aafca67",
+              "expected_triangle_count": 2224385,
+              "paper_algorithm": "RT-2A1"
+            },
+            "input_load_included_in_primary_timer": false,
+            "machine": {
+              "cuda_visible_devices": "0",
+              "gpu": {
+                "compute_capability": "8.6",
+                "driver": "550.127.05",
+                "name": "NVIDIA RTX A4500",
+                "uuid": "GPU-5dbda20d-af85-650e-7250-10b265a77143"
+              },
+              "hostname": "4735c6e75b0c",
+              "platform": "Linux-6.5.0-45-generic-x86_64-with-glibc2.39",
+              "python": "3.12.3",
+              "python_executable": "/workspace/rtdl-v4-paper-apps-run/venv/bin/python"
+            },
+            "method": {
+              "path_class": "public_pyoptix_rt_2a1_device_weighted_reduction",
+              "private_rtdl_native_called": false,
+              "ptx_sha256": "ba2723d6d23cc6c055ced00437a79c56c12aae0116ae27601ac62a388cc428e1"
+            },
+            "operation": null,
+            "output_sha256": "ffc4373270ebfb830803df134ca09bf0aa265de91c409d104588408a0273f1f5",
+            "outputs": [
+              {
+                "compact_execution_evidence": {
+                  "kind": "public_pyoptix_segment_device_status",
+                  "segment_statuses": [
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0
+                  ]
+                },
+                "detailed_receipt_retention_count": 0,
+                "matched": true,
+                "output_sha256": "ffc4373270ebfb830803df134ca09bf0aa265de91c409d104588408a0273f1f5",
+                "public_output_materialized_inside_call": true,
+                "segment_count": 8,
+                "triangle_count": 2224385
+              }
+            ],
+            "phase_ns": {
+              "close": 34501,
+              "load": 1568190195,
+              "prepare": 2159826229
+            },
+            "primary_samples_ns": [
+              4749573088
+            ],
+            "process_id": 40852,
+            "retained_sample_count": 1,
+            "retry_count": 0,
+            "runtime_identity": {
+              "package_versions": {
+                "cuda-bindings": "12.9.7",
+                "cuda-python": "12.9.7",
+                "cupy-cuda12x": "14.0.1",
+                "numba": "0.65.1",
+                "numpy": "2.4.4",
+                "pyoptix": "9.1.0"
+              },
+              "pyoptix_loaded_extension_path": "/workspace/rtdl-v4-paper-apps-run/venv/lib/python3.12/site-packages/optix/_optix.cpython-312-x86_64-linux-gnu.so",
+              "pyoptix_loaded_extension_sha256": "0a05db8ccb565ec513a391809bd8b539ccefdd25bd7b75a573ffc7bc5ad55933",
+              "python_executable": "/workspace/rtdl-v4-paper-apps-run/venv/bin/python",
+              "python_executable_sha256": "1d3cf64f97cadc79fdc6fe2496a21b7b456cb94211978cfef5a65f616af74fd5",
+              "python_version": "3.12.3"
+            },
+            "schema": "rtdl.v4_paper_apps_pyoptix.worker_result.v1",
+            "source_identity": {
+              "config_sha256": "4d71d2492891e35ced0fc9642f0ee163abfce3745ea505c09d90e3dd4763a9d4",
+              "git_commit": "43655ff1bd9f85022e3e1b541d086bcccbc055c4",
+              "git_status_clean": true,
+              "git_tree": "35724a495f79d29229ae2bf8f1ed23a5851d20b5",
+              "worker_sha256": "72ed5180988e98ff0d8fd5337fc27781b78df0a69f9b421dc06efaada77caba0"
+            },
+            "status": "PASS",
+            "warmup_count": 0,
+            "worker_wall_ns": 9999341647
+          }
+        }
+      ]
+    },
+    {
+      "app": "librts",
+      "input_identity_parity": true,
+      "operation": "point_contains",
+      "output_parity": true,
+      "unit_id": "librts__parks__point_contains",
+      "valid": true,
+      "workers": [
+        {
+          "arm": "v4",
+          "launch": {
+            "command": [
+              "/workspace/rtdl-v4-paper-apps-run/venv/bin/python",
+              "/workspace/rtdl-v4-paper-apps-source-43655ff1b/scripts/v4_paper_apps_pyoptix_worker.py",
+              "--config",
+              "/workspace/rtdl-v4-paper-apps-run/CONFIG_43655ff1b.json",
+              "--app",
+              "librts",
+              "--arm",
+              "v4",
+              "--endpoint",
+              "first_result",
+              "--repetitions",
+              "1",
+              "--warmups",
+              "0",
+              "--output",
+              "/workspace/rtdl-v4-paper-apps-run/dry-run-43655ff1b/workers/librts__parks__point_contains__v4.json",
+              "--operation",
+              "point_contains"
+            ],
+            "log": "/workspace/rtdl-v4-paper-apps-run/dry-run-43655ff1b/logs/librts__parks__point_contains__v4.log",
+            "return_code": 0,
+            "timeout": false,
+            "wall_ns": 10086952119
+          },
+          "position": 0,
+          "worker": {
+            "app": "librts",
+            "arm": "v4",
+            "complete_timer_includes_prepare_execute_close": false,
+            "discard_count": 0,
+            "endpoint": "first_result",
+            "execute_samples_ns": [
+              148139930
+            ],
+            "input_identity": {
+              "cache_json_sha256": "428b1fe1600db318e86c8f1e77861eef7a46a15b1e95441f37a6c528f99f2c74",
+              "cache_npz_sha256": "64f8e9d4f567c4e694ab1da67a74299f588880c47696d82dcc56e4369cfca0b5",
+              "expected_count": 112729,
+              "operation": "point_contains",
+              "query_sha256": "736e2f3acc5c2875ca1a787a87b16f6fdf9216251e0d231df78bce1e9bb68ff9"
+            },
+            "input_load_included_in_primary_timer": false,
+            "machine": {
+              "cuda_visible_devices": "0",
+              "gpu": {
+                "compute_capability": "8.6",
+                "driver": "550.127.05",
+                "name": "NVIDIA RTX A4500",
+                "uuid": "GPU-5dbda20d-af85-650e-7250-10b265a77143"
+              },
+              "hostname": "4735c6e75b0c",
+              "platform": "Linux-6.5.0-45-generic-x86_64-with-glibc2.39",
+              "python": "3.12.3",
+              "python_executable": "/workspace/rtdl-v4-paper-apps-run/venv/bin/python"
+            },
+            "method": {
+              "path_class": "v4_fixed_aabb_count_specialization",
+              "private_checker_off_path": false
+            },
+            "operation": "point_contains",
+            "output_sha256": "b790372024c23e8882fafb893a1c2a6216f4aeaf8f8b090d29d817794c701243",
+            "outputs": [
+              {
+                "compact_execution_evidence": {
+                  "expected_program_bundle": null,
+                  "physical_executor_classification": "optix_traversal_observed",
+                  "receipt_sha256": "abb11423ab5e8166ad7af2a1ef673a9ed1bf85ea019ef5405a908364dcd486b8",
+                  "route_identity": "v4_callback_ir:closed_aabb_relation:device_count_v1",
+                  "schema": "rtdl.physical_execution.traversal_receipt.v1"
+                },
+                "count": 112729,
+                "detailed_receipt_retention_count": 0,
+                "matched": true,
+                "operation": "point_contains",
+                "output_sha256": "b790372024c23e8882fafb893a1c2a6216f4aeaf8f8b090d29d817794c701243",
+                "public_output_materialized_inside_call": true
+              }
+            ],
+            "phase_ns": {
+              "close": 68507203,
+              "load": 3322632867,
+              "prepare": 4296645728
+            },
+            "primary_samples_ns": [
+              148139930
+            ],
+            "process_id": 40923,
+            "retained_sample_count": 1,
+            "retry_count": 0,
+            "runtime_identity": {
+              "package_versions": {
+                "cuda-bindings": "12.9.7",
+                "cuda-python": "12.9.7",
+                "cupy-cuda12x": "14.0.1",
+                "numba": "0.65.1",
+                "numpy": "2.4.4",
+                "pyoptix": "9.1.0"
+              },
+              "python_executable": "/workspace/rtdl-v4-paper-apps-run/venv/bin/python",
+              "python_executable_sha256": "1d3cf64f97cadc79fdc6fe2496a21b7b456cb94211978cfef5a65f616af74fd5",
+              "python_version": "3.12.3"
+            },
+            "schema": "rtdl.v4_paper_apps_pyoptix.worker_result.v1",
+            "source_identity": {
+              "config_sha256": "4d71d2492891e35ced0fc9642f0ee163abfce3745ea505c09d90e3dd4763a9d4",
+              "git_commit": "43655ff1bd9f85022e3e1b541d086bcccbc055c4",
+              "git_status_clean": true,
+              "git_tree": "35724a495f79d29229ae2bf8f1ed23a5851d20b5",
+              "worker_sha256": "72ed5180988e98ff0d8fd5337fc27781b78df0a69f9b421dc06efaada77caba0"
+            },
+            "status": "PASS",
+            "warmup_count": 0,
+            "worker_wall_ns": 9469809957
+          }
+        },
+        {
+          "arm": "pyoptix",
+          "launch": {
+            "command": [
+              "/workspace/rtdl-v4-paper-apps-run/venv/bin/python",
+              "/workspace/rtdl-v4-paper-apps-source-43655ff1b/scripts/v4_paper_apps_pyoptix_worker.py",
+              "--config",
+              "/workspace/rtdl-v4-paper-apps-run/CONFIG_43655ff1b.json",
+              "--app",
+              "librts",
+              "--arm",
+              "pyoptix",
+              "--endpoint",
+              "first_result",
+              "--repetitions",
+              "1",
+              "--warmups",
+              "0",
+              "--output",
+              "/workspace/rtdl-v4-paper-apps-run/dry-run-43655ff1b/workers/librts__parks__point_contains__pyoptix.json",
+              "--operation",
+              "point_contains"
+            ],
+            "log": "/workspace/rtdl-v4-paper-apps-run/dry-run-43655ff1b/logs/librts__parks__point_contains__pyoptix.log",
+            "return_code": 0,
+            "timeout": false,
+            "wall_ns": 16913969091
+          },
+          "position": 1,
+          "worker": {
+            "app": "librts",
+            "arm": "pyoptix",
+            "complete_timer_includes_prepare_execute_close": false,
+            "discard_count": 0,
+            "endpoint": "first_result",
+            "execute_samples_ns": [
+              1092878075
+            ],
+            "input_identity": {
+              "cache_json_sha256": "428b1fe1600db318e86c8f1e77861eef7a46a15b1e95441f37a6c528f99f2c74",
+              "cache_npz_sha256": "64f8e9d4f567c4e694ab1da67a74299f588880c47696d82dcc56e4369cfca0b5",
+              "expected_count": 112729,
+              "operation": "point_contains",
+              "query_sha256": "736e2f3acc5c2875ca1a787a87b16f6fdf9216251e0d231df78bce1e9bb68ff9"
+            },
+            "input_load_included_in_primary_timer": false,
+            "machine": {
+              "cuda_visible_devices": "0",
+              "gpu": {
+                "compute_capability": "8.6",
+                "driver": "550.127.05",
+                "name": "NVIDIA RTX A4500",
+                "uuid": "GPU-5dbda20d-af85-650e-7250-10b265a77143"
+              },
+              "hostname": "4735c6e75b0c",
+              "platform": "Linux-6.5.0-45-generic-x86_64-with-glibc2.39",
+              "python": "3.12.3",
+              "python_executable": "/workspace/rtdl-v4-paper-apps-run/venv/bin/python"
+            },
+            "method": {
+              "path_class": "public_pyoptix_custom_aabb_device_count",
+              "prepared_query_columns": true,
+              "private_rtdl_native_called": false,
+              "ptx_sha256": "d7c820d87231edde81b93906136d972a8a7d570025d02bade0257578a8a0dfe7"
+            },
+            "operation": "point_contains",
+            "output_sha256": "b790372024c23e8882fafb893a1c2a6216f4aeaf8f8b090d29d817794c701243",
+            "outputs": [
+              {
+                "compact_execution_evidence": {
+                  "device_status": 0,
+                  "kind": "public_pyoptix_device_status"
+                },
+                "count": 112729,
+                "detailed_receipt_retention_count": 0,
+                "matched": true,
+                "operation": "point_contains",
+                "output_sha256": "b790372024c23e8882fafb893a1c2a6216f4aeaf8f8b090d29d817794c701243",
+                "public_output_materialized_inside_call": true
+              }
+            ],
+            "phase_ns": {
+              "close": 64262,
+              "load": 2114792717,
+              "prepare": 11323722345
+            },
+            "primary_samples_ns": [
+              1092878075
+            ],
+            "process_id": 41004,
+            "retained_sample_count": 1,
+            "retry_count": 0,
+            "runtime_identity": {
+              "package_versions": {
+                "cuda-bindings": "12.9.7",
+                "cuda-python": "12.9.7",
+                "cupy-cuda12x": "14.0.1",
+                "numba": "0.65.1",
+                "numpy": "2.4.4",
+                "pyoptix": "9.1.0"
+              },
+              "pyoptix_loaded_extension_path": "/workspace/rtdl-v4-paper-apps-run/venv/lib/python3.12/site-packages/optix/_optix.cpython-312-x86_64-linux-gnu.so",
+              "pyoptix_loaded_extension_sha256": "0a05db8ccb565ec513a391809bd8b539ccefdd25bd7b75a573ffc7bc5ad55933",
+              "python_executable": "/workspace/rtdl-v4-paper-apps-run/venv/bin/python",
+              "python_executable_sha256": "1d3cf64f97cadc79fdc6fe2496a21b7b456cb94211978cfef5a65f616af74fd5",
+              "python_version": "3.12.3"
+            },
+            "schema": "rtdl.v4_paper_apps_pyoptix.worker_result.v1",
+            "source_identity": {
+              "config_sha256": "4d71d2492891e35ced0fc9642f0ee163abfce3745ea505c09d90e3dd4763a9d4",
+              "git_commit": "43655ff1bd9f85022e3e1b541d086bcccbc055c4",
+              "git_status_clean": true,
+              "git_tree": "35724a495f79d29229ae2bf8f1ed23a5851d20b5",
+              "worker_sha256": "72ed5180988e98ff0d8fd5337fc27781b78df0a69f9b421dc06efaada77caba0"
+            },
+            "status": "PASS",
+            "warmup_count": 0,
+            "worker_wall_ns": 16151844808
+          }
+        }
+      ]
+    },
+    {
+      "app": "librts",
+      "input_identity_parity": true,
+      "operation": "range_contains",
+      "output_parity": true,
+      "unit_id": "librts__parks__range_contains",
+      "valid": true,
+      "workers": [
+        {
+          "arm": "v4",
+          "launch": {
+            "command": [
+              "/workspace/rtdl-v4-paper-apps-run/venv/bin/python",
+              "/workspace/rtdl-v4-paper-apps-source-43655ff1b/scripts/v4_paper_apps_pyoptix_worker.py",
+              "--config",
+              "/workspace/rtdl-v4-paper-apps-run/CONFIG_43655ff1b.json",
+              "--app",
+              "librts",
+              "--arm",
+              "v4",
+              "--endpoint",
+              "first_result",
+              "--repetitions",
+              "1",
+              "--warmups",
+              "0",
+              "--output",
+              "/workspace/rtdl-v4-paper-apps-run/dry-run-43655ff1b/workers/librts__parks__range_contains__v4.json",
+              "--operation",
+              "range_contains"
+            ],
+            "log": "/workspace/rtdl-v4-paper-apps-run/dry-run-43655ff1b/logs/librts__parks__range_contains__v4.log",
+            "return_code": 0,
+            "timeout": false,
+            "wall_ns": 10464302276
+          },
+          "position": 0,
+          "worker": {
+            "app": "librts",
+            "arm": "v4",
+            "complete_timer_includes_prepare_execute_close": false,
+            "discard_count": 0,
+            "endpoint": "first_result",
+            "execute_samples_ns": [
+              161654731
+            ],
+            "input_identity": {
+              "cache_json_sha256": "428b1fe1600db318e86c8f1e77861eef7a46a15b1e95441f37a6c528f99f2c74",
+              "cache_npz_sha256": "64f8e9d4f567c4e694ab1da67a74299f588880c47696d82dcc56e4369cfca0b5",
+              "expected_count": 105826,
+              "operation": "range_contains",
+              "query_sha256": "0b7f2e6e21f3dca821f8913823cd59a20c47be0c5c0426268d4c42b38acf2c46"
+            },
+            "input_load_included_in_primary_timer": false,
+            "machine": {
+              "cuda_visible_devices": "0",
+              "gpu": {
+                "compute_capability": "8.6",
+                "driver": "550.127.05",
+                "name": "NVIDIA RTX A4500",
+                "uuid": "GPU-5dbda20d-af85-650e-7250-10b265a77143"
+              },
+              "hostname": "4735c6e75b0c",
+              "platform": "Linux-6.5.0-45-generic-x86_64-with-glibc2.39",
+              "python": "3.12.3",
+              "python_executable": "/workspace/rtdl-v4-paper-apps-run/venv/bin/python"
+            },
+            "method": {
+              "path_class": "v4_fixed_aabb_count_specialization",
+              "private_checker_off_path": false
+            },
+            "operation": "range_contains",
+            "output_sha256": "ce12d9de8ed2fb51211f9c192801f0c32744edd6d18e9576b453afcc4f37b687",
+            "outputs": [
+              {
+                "compact_execution_evidence": {
+                  "expected_program_bundle": null,
+                  "physical_executor_classification": "optix_traversal_observed",
+                  "receipt_sha256": "4f136678dca7f1a407730deed66590500feb4924ca958939fea2dcd35559edbc",
+                  "route_identity": "v4_callback_ir:closed_aabb_relation:device_count_v1",
+                  "schema": "rtdl.physical_execution.traversal_receipt.v1"
+                },
+                "count": 105826,
+                "detailed_receipt_retention_count": 0,
+                "matched": true,
+                "operation": "range_contains",
+                "output_sha256": "ce12d9de8ed2fb51211f9c192801f0c32744edd6d18e9576b453afcc4f37b687",
+                "public_output_materialized_inside_call": true
+              }
+            ],
+            "phase_ns": {
+              "close": 70612642,
+              "load": 3828732997,
+              "prepare": 4290479614
+            },
+            "primary_samples_ns": [
+              161654731
+            ],
+            "process_id": 41075,
+            "retained_sample_count": 1,
+            "retry_count": 0,
+            "runtime_identity": {
+              "package_versions": {
+                "cuda-bindings": "12.9.7",
+                "cuda-python": "12.9.7",
+                "cupy-cuda12x": "14.0.1",
+                "numba": "0.65.1",
+                "numpy": "2.4.4",
+                "pyoptix": "9.1.0"
+              },
+              "python_executable": "/workspace/rtdl-v4-paper-apps-run/venv/bin/python",
+              "python_executable_sha256": "1d3cf64f97cadc79fdc6fe2496a21b7b456cb94211978cfef5a65f616af74fd5",
+              "python_version": "3.12.3"
+            },
+            "schema": "rtdl.v4_paper_apps_pyoptix.worker_result.v1",
+            "source_identity": {
+              "config_sha256": "4d71d2492891e35ced0fc9642f0ee163abfce3745ea505c09d90e3dd4763a9d4",
+              "git_commit": "43655ff1bd9f85022e3e1b541d086bcccbc055c4",
+              "git_status_clean": true,
+              "git_tree": "35724a495f79d29229ae2bf8f1ed23a5851d20b5",
+              "worker_sha256": "72ed5180988e98ff0d8fd5337fc27781b78df0a69f9b421dc06efaada77caba0"
+            },
+            "status": "PASS",
+            "warmup_count": 0,
+            "worker_wall_ns": 9848254035
+          }
+        },
+        {
+          "arm": "pyoptix",
+          "launch": {
+            "command": [
+              "/workspace/rtdl-v4-paper-apps-run/venv/bin/python",
+              "/workspace/rtdl-v4-paper-apps-source-43655ff1b/scripts/v4_paper_apps_pyoptix_worker.py",
+              "--config",
+              "/workspace/rtdl-v4-paper-apps-run/CONFIG_43655ff1b.json",
+              "--app",
+              "librts",
+              "--arm",
+              "pyoptix",
+              "--endpoint",
+              "first_result",
+              "--repetitions",
+              "1",
+              "--warmups",
+              "0",
+              "--output",
+              "/workspace/rtdl-v4-paper-apps-run/dry-run-43655ff1b/workers/librts__parks__range_contains__pyoptix.json",
+              "--operation",
+              "range_contains"
+            ],
+            "log": "/workspace/rtdl-v4-paper-apps-run/dry-run-43655ff1b/logs/librts__parks__range_contains__pyoptix.log",
+            "return_code": 0,
+            "timeout": false,
+            "wall_ns": 9901803276
+          },
+          "position": 1,
+          "worker": {
+            "app": "librts",
+            "arm": "pyoptix",
+            "complete_timer_includes_prepare_execute_close": false,
+            "discard_count": 0,
+            "endpoint": "first_result",
+            "execute_samples_ns": [
+              979648
+            ],
+            "input_identity": {
+              "cache_json_sha256": "428b1fe1600db318e86c8f1e77861eef7a46a15b1e95441f37a6c528f99f2c74",
+              "cache_npz_sha256": "64f8e9d4f567c4e694ab1da67a74299f588880c47696d82dcc56e4369cfca0b5",
+              "expected_count": 105826,
+              "operation": "range_contains",
+              "query_sha256": "0b7f2e6e21f3dca821f8913823cd59a20c47be0c5c0426268d4c42b38acf2c46"
+            },
+            "input_load_included_in_primary_timer": false,
+            "machine": {
+              "cuda_visible_devices": "0",
+              "gpu": {
+                "compute_capability": "8.6",
+                "driver": "550.127.05",
+                "name": "NVIDIA RTX A4500",
+                "uuid": "GPU-5dbda20d-af85-650e-7250-10b265a77143"
+              },
+              "hostname": "4735c6e75b0c",
+              "platform": "Linux-6.5.0-45-generic-x86_64-with-glibc2.39",
+              "python": "3.12.3",
+              "python_executable": "/workspace/rtdl-v4-paper-apps-run/venv/bin/python"
+            },
+            "method": {
+              "path_class": "public_pyoptix_custom_aabb_device_count",
+              "prepared_query_columns": true,
+              "private_rtdl_native_called": false,
+              "ptx_sha256": "d7c820d87231edde81b93906136d972a8a7d570025d02bade0257578a8a0dfe7"
+            },
+            "operation": "range_contains",
+            "output_sha256": "ce12d9de8ed2fb51211f9c192801f0c32744edd6d18e9576b453afcc4f37b687",
+            "outputs": [
+              {
+                "compact_execution_evidence": {
+                  "device_status": 0,
+                  "kind": "public_pyoptix_device_status"
+                },
+                "count": 105826,
+                "detailed_receipt_retention_count": 0,
+                "matched": true,
+                "operation": "range_contains",
+                "output_sha256": "ce12d9de8ed2fb51211f9c192801f0c32744edd6d18e9576b453afcc4f37b687",
+                "public_output_materialized_inside_call": true
+              }
+            ],
+            "phase_ns": {
+              "close": 58162,
+              "load": 3790337813,
+              "prepare": 3861933723
+            },
+            "primary_samples_ns": [
+              979648
+            ],
+            "process_id": 41144,
+            "retained_sample_count": 1,
+            "retry_count": 0,
+            "runtime_identity": {
+              "package_versions": {
+                "cuda-bindings": "12.9.7",
+                "cuda-python": "12.9.7",
+                "cupy-cuda12x": "14.0.1",
+                "numba": "0.65.1",
+                "numpy": "2.4.4",
+                "pyoptix": "9.1.0"
+              },
+              "pyoptix_loaded_extension_path": "/workspace/rtdl-v4-paper-apps-run/venv/lib/python3.12/site-packages/optix/_optix.cpython-312-x86_64-linux-gnu.so",
+              "pyoptix_loaded_extension_sha256": "0a05db8ccb565ec513a391809bd8b539ccefdd25bd7b75a573ffc7bc5ad55933",
+              "python_executable": "/workspace/rtdl-v4-paper-apps-run/venv/bin/python",
+              "python_executable_sha256": "1d3cf64f97cadc79fdc6fe2496a21b7b456cb94211978cfef5a65f616af74fd5",
+              "python_version": "3.12.3"
+            },
+            "schema": "rtdl.v4_paper_apps_pyoptix.worker_result.v1",
+            "source_identity": {
+              "config_sha256": "4d71d2492891e35ced0fc9642f0ee163abfce3745ea505c09d90e3dd4763a9d4",
+              "git_commit": "43655ff1bd9f85022e3e1b541d086bcccbc055c4",
+              "git_status_clean": true,
+              "git_tree": "35724a495f79d29229ae2bf8f1ed23a5851d20b5",
+              "worker_sha256": "72ed5180988e98ff0d8fd5337fc27781b78df0a69f9b421dc06efaada77caba0"
+            },
+            "status": "PASS",
+            "warmup_count": 0,
+            "worker_wall_ns": 9191952488
+          }
+        }
+      ]
+    }
+  ],
+  "retry_count": 0,
+  "schema": "rtdl.v4_paper_apps_pyoptix.dry_run.v1",
+  "status": "PASS",
+  "unit_count": 4,
+  "worker_sha256": "72ed5180988e98ff0d8fd5337fc27781b78df0a69f9b421dc06efaada77caba0",
+  "worker_unchanged_during_dry_run": true
+}
