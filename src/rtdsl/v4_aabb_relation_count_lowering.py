@@ -23,7 +23,10 @@ from .optix_runtime import (
     prepare_optix_aabb_box_queries_2d,
     prepare_optix_aabb_point_queries_2d,
 )
-from .physical_execution_provenance import OptixTraversalAuditSession
+from .physical_execution_provenance import (
+    OptixTraversalAuditSession,
+    validate_bound_compact_traversal_receipt,
+)
 from .v4_box_relation_callback import compile_callback, physical_schema
 from .v4_typed_physical_schema import verify_typed_physical_schema
 
@@ -198,22 +201,33 @@ class PreparedVerifiedAabbRelationCountV4:
                     operation=operation)
                 query_count = len(point_values) + len(box_values)
             value = int(result["counts"][operation])
-            receipt = audit.finish(
-                semantic_digest=_digest({
-                    "authority": self._authority.authority_nonce,
-                    "algebra": self._authority.algebra.value,
-                    "query_count": query_count,
-                    "native": self._native_sha256,
-                }),
-                output_digest=_digest({"count": value}),
+            semantic_digest = _digest({
+                "authority": self._authority.authority_nonce,
+                "algebra": self._authority.algebra.value,
+                "query_count": query_count,
+                "native": self._native_sha256,
+            })
+            output_digest = _digest({"count": value})
+            receipt = audit.finish_validated_compact(
+                semantic_digest=semantic_digest,
+                output_digest=output_digest,
                 route_identity=(
                     "v4_callback_ir:closed_aabb_relation:device_count_v1"),
+                expected_program_bundle="aabb_index_count_2d",
+                expected_raygen_invocation_count=query_count,
             )
         except Exception:
             audit.abort()
             raise
-        if receipt["physical_executor_classification"] != "optix_traversal_observed":
-            raise RuntimeError("AABB relation-count lowering lacked OptiX traversal")
+        validate_bound_compact_traversal_receipt(
+            receipt,
+            provider_library_sha256=self._native_sha256,
+            route_identity=(
+                "v4_callback_ir:closed_aabb_relation:device_count_v1"),
+            output_digest=output_digest,
+            expected_program_bundle="aabb_index_count_2d",
+            expected_raygen_invocation_count=query_count,
+        )
         if value < 0 or result.get("rt_core_accelerated") is not True:
             raise RuntimeError("AABB relation-count route returned invalid metadata")
         self._execution_count += 1

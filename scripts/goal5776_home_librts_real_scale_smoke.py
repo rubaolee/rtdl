@@ -120,7 +120,9 @@ def main() -> None:
             "execute_seconds_observed_not_formal": execute_seconds,
             "physical_lowering": observed["physical_lowering"],
             "lifecycle_receipt": lifecycle,
-            "traversal_receipt": observed["traversal_receipt"],
+            # Compact receipts defer their JSON envelope until evidence leaves
+            # the registered execution interval.
+            "traversal_receipt": dict(observed["traversal_receipt"]),
         }
 
     library = _load_optix_library()

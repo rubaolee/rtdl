@@ -100,6 +100,52 @@ class Goal5776AabbRelationCountLoweringTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "rejects box queries"):
             owner.execute_count(box_queries=np.asarray([[0.0, 0.0, 1.0, 1.0]]))
 
+    def test_execute_uses_bound_compact_aabb_traversal_receipt(self):
+        owner = object.__new__(PreparedVerifiedAabbRelationCountV4)
+        owner._closed = False
+        owner._pid = os.getpid()
+        owner._thread = threading.get_ident()
+        owner._authority = SimpleNamespace(
+            algebra=AabbCountAlgebra.POINT_CONTAINS,
+            authority_nonce="authority",
+        )
+        owner._prepared_queries = SimpleNamespace(count=3)
+        owner._prepared = SimpleNamespace(
+            count_prepared_queries=mock.Mock(return_value={
+                "counts": {"point_contains": 7},
+                "rt_core_accelerated": True,
+            })
+        )
+        owner._library = object()
+        owner._native_sha256 = "a" * 64
+        owner._execution_count = 0
+        receipt = object()
+        audit = SimpleNamespace(
+            finish_validated_compact=mock.Mock(return_value=receipt),
+            abort=mock.Mock(),
+        )
+        with mock.patch(
+            "rtdsl.v4_aabb_relation_count_lowering.OptixTraversalAuditSession.open",
+            return_value=audit,
+        ), mock.patch(
+            "rtdsl.v4_aabb_relation_count_lowering."
+            "validate_bound_compact_traversal_receipt",
+            return_value=receipt,
+        ) as validate:
+            result = owner.execute_count()
+        self.assertEqual(result["count"], 7)
+        self.assertIs(result["traversal_receipt"], receipt)
+        finish = audit.finish_validated_compact.call_args.kwargs
+        self.assertEqual(finish["expected_program_bundle"], "aabb_index_count_2d")
+        self.assertEqual(finish["expected_raygen_invocation_count"], 3)
+        self.assertEqual(
+            finish["output_digest"], validate.call_args.kwargs["output_digest"]
+        )
+        self.assertEqual(
+            validate.call_args.kwargs["provider_library_sha256"], "a" * 64
+        )
+        self.assertEqual(owner._execution_count, 1)
+
 
 if __name__ == "__main__":
     unittest.main()
