@@ -1,0 +1,9 @@
+{"arm": "pyoptix", "endpoint": "prepared", "event": "worker_started", "pid": 5200, "schema": "rtdl.v4_long_workload.worker_journal.v1", "unit_id": "triangle_counting__cit_patents__rt_2a1__4m"}
+{"event": "cpu_affinity_preflight", "observation": {"cpu_ids": [8]}, "schema": "rtdl.v4_long_workload.worker_journal.v1"}
+{"event": "prepared", "prepare_ns": 446726394, "schema": "rtdl.v4_long_workload.worker_journal.v1"}
+{"event": "warmup_complete", "index": 0, "output_sha256": "f3a9d76129db60b207374aef74b6d5abb6a126a6d4fc7bc88b830a7fc1995e2c", "schema": "rtdl.v4_long_workload.worker_journal.v1"}
+{"elapsed_ns": 8669637110, "event": "sample_complete", "index": 0, "output_sha256": "f3a9d76129db60b207374aef74b6d5abb6a126a6d4fc7bc88b830a7fc1995e2c", "schema": "rtdl.v4_long_workload.worker_journal.v1"}
+{"elapsed_ns": 8664173755, "event": "sample_complete", "index": 1, "output_sha256": "f3a9d76129db60b207374aef74b6d5abb6a126a6d4fc7bc88b830a7fc1995e2c", "schema": "rtdl.v4_long_workload.worker_journal.v1"}
+{"elapsed_ns": 8728185616, "event": "sample_complete", "index": 2, "output_sha256": "f3a9d76129db60b207374aef74b6d5abb6a126a6d4fc7bc88b830a7fc1995e2c", "schema": "rtdl.v4_long_workload.worker_journal.v1"}
+{"close_ns": 52592, "event": "close_complete", "schema": "rtdl.v4_long_workload.worker_journal.v1"}
+{"event": "cpu_affinity_postflight", "observation": {"cpu_ids": [8]}, "schema": "rtdl.v4_long_workload.worker_journal.v1"}

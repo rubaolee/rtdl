@@ -1,0 +1,21 @@
+{
+  "claim_boundary": "This is a new single-input replication manifest, not the complete Goal5776 data bundle.",
+  "file_count": 1,
+  "files": [
+    {
+      "encoding": "little_endian_int32_pairs",
+      "path": "triangle/cit-Patents.edge",
+      "record_count": 16518948,
+      "sha256": "c5b2c9203eeabb46414965755c33befdb1810e71cb51155eb940a68a6179d855",
+      "size_bytes": 132151584
+    }
+  ],
+  "payload_bytes": 132151584,
+  "provenance": {
+    "downloaded_gzip_sha256": "9d05955aa997fbc84953c9eb7786675af80336a356404e75dc18aaa90d3553b0",
+    "prepare_record": "CIT_PATENTS_PREPARE.json",
+    "source_url": "https://snap.stanford.edu/data/cit-Patents.txt.gz"
+  },
+  "schema": "rtdl.v4_long_workload.single_input_manifest.v1",
+  "scope": "cit_patents_triangle_only"
+}

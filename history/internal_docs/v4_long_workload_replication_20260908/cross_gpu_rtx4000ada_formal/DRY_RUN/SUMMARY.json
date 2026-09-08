@@ -1,0 +1,573 @@
+{
+  "cells": [
+    {
+      "block": null,
+      "endpoint": "prepared",
+      "medians_ns": {
+        "new_v4": 10068177610,
+        "pyoptix": 9056743928
+      },
+      "new_v4_over_pyoptix": 1.111677407470143,
+      "reason": null,
+      "unit_id": "triangle_counting__cit_patents__rt_2a1__4m",
+      "valid": true
+    }
+  ],
+  "config_sha256": "d9df1b75cb39139f0b580f91319447b9eca24bd27031bd02d125f1ddcc199643",
+  "controller_sha256": "71b3a0f65c675d4e6ea97c954a28136a2f2c781d00da946df573bb90062272d6",
+  "discard_count": 0,
+  "engineering_target_met": false,
+  "formal_worker_zero_reached": false,
+  "max_new_v4_over_pyoptix": 1.111677407470143,
+  "median_new_v4_over_pyoptix": 1.111677407470143,
+  "method_complete": true,
+  "mode": "dry-run",
+  "progress_file_sha256": "f807dc3711b83bd229291cd0d4275cc883d25b63d7647076fa8df429c3194cb5",
+  "registered_block_count": 1,
+  "retry_count": 0,
+  "rows": [
+    {
+      "arm": "new_v4",
+      "block": null,
+      "endpoint": "prepared",
+      "launch": {
+        "command": [
+          "/tmp/rtdl-crossgpu/venv/bin/python",
+          "/tmp/rtdl-tools/scripts/v4_long_workload_worker.py",
+          "--config",
+          "/tmp/rtdl-crossgpu/FORMAL_CONFIG_RTX4000ADA_CPU8.json",
+          "--unit",
+          "triangle_counting__cit_patents__rt_2a1__4m",
+          "--arm",
+          "new_v4",
+          "--endpoint",
+          "prepared",
+          "--repetitions",
+          "1",
+          "--warmups",
+          "0",
+          "--output",
+          "/tmp/rtdl-crossgpu/DRY_RUN/workers/w000__triangle_counting__cit_patents__rt_2a1__4m__prepared__bdry__p0__new_v4.json",
+          "--journal",
+          "/tmp/rtdl-crossgpu/DRY_RUN/journals/w000__triangle_counting__cit_patents__rt_2a1__4m__prepared__bdry__p0__new_v4.jsonl"
+        ],
+        "journal_relative": "journals/w000__triangle_counting__cit_patents__rt_2a1__4m__prepared__bdry__p0__new_v4.jsonl",
+        "journal_sha256": "7fefff0992ee1dbe6f8e4fe68fcfcb6b7d962b4173a4ea81a59bc70c67c8afe7",
+        "launch_error": null,
+        "output_relative": "workers/w000__triangle_counting__cit_patents__rt_2a1__4m__prepared__bdry__p0__new_v4.json",
+        "output_sha256": "ac2927a4ffa55794451f9b18abdce936dd98f60001b076127fb268a97246b596",
+        "return_code": 0,
+        "stderr_relative": "stderr/w000__triangle_counting__cit_patents__rt_2a1__4m__prepared__bdry__p0__new_v4.bin",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_relative": "stdout/w000__triangle_counting__cit_patents__rt_2a1__4m__prepared__bdry__p0__new_v4.bin",
+        "stdout_sha256": "aa00b38ab8f2480b9c325c737cf1b6232f31c019fe31a359417aab2f461daf4f",
+        "timeout": false,
+        "wall_ns": 25470556616
+      },
+      "ordinal": 0,
+      "position": 0,
+      "repetitions": 1,
+      "unit_id": "triangle_counting__cit_patents__rt_2a1__4m",
+      "warmups": 0,
+      "worker": {
+        "app": "triangle_counting",
+        "arm": "new_v4",
+        "complete_timer_includes_prepare_execute_close": false,
+        "discard_count": 0,
+        "endpoint": "prepared",
+        "execute_samples_ns": [
+          10068177610
+        ],
+        "formal_config_sha256": "d9df1b75cb39139f0b580f91319447b9eca24bd27031bd02d125f1ddcc199643",
+        "formal_worker_sha256": "0009137c032dc13f03065898283c95ed087153eb11a36a69723fea32a4b7ed50",
+        "implementation_identity": {
+          "base_worker_sha256": "ebcb71ccf9d86e9405205564fa979283f102d43a190a04d602f61ea1eb23ab9e",
+          "native_library_path": "/tmp/rtdl-crossgpu/native/librtdl_optix.so",
+          "native_library_sha256": "94d9e42be75c86c3186dac1d2a280873206698ea620f5666b83e4d49ce00686d",
+          "source_commit": "02e84374fc092d2bb916cca633eda9592b4ecf07",
+          "source_root": "/tmp/rtdl-successor",
+          "source_status_clean": true,
+          "source_tree": "8aad15d686bbc9e1c3b11df998898a0a063a01f1"
+        },
+        "input_identity": {
+          "dataset": "cit-Patents",
+          "edge_file_sha256": "c5b2c9203eeabb46414965755c33befdb1810e71cb51155eb940a68a6179d855",
+          "expected_triangle_count": 7515023,
+          "max_relation_rows": 4000000,
+          "paper_algorithm": "RT-2A1"
+        },
+        "input_load_included_in_primary_timer": false,
+        "journal_io_included_in_primary_timer": false,
+        "journal_sha256": "7fefff0992ee1dbe6f8e4fe68fcfcb6b7d962b4173a4ea81a59bc70c67c8afe7",
+        "machine": {
+          "cpu_affinity": {
+            "postflight": {
+              "cpu_ids": [
+                8
+              ]
+            },
+            "preflight": {
+              "cpu_ids": [
+                8
+              ]
+            }
+          },
+          "cuda_visible_devices": "0",
+          "gpu": {
+            "compute_capability": "8.9",
+            "driver": "550.127.05",
+            "name": "NVIDIA RTX 4000 Ada Generation",
+            "uuid": "GPU-2a00572b-6cef-b9e6-db0a-c127783a5d46"
+          },
+          "hostname": "4adbab12e6d1",
+          "platform": "Linux-6.8.0-40-generic-x86_64-with-glibc2.39",
+          "python": "3.12.3",
+          "python_executable": "/tmp/rtdl-crossgpu/venv/bin/python"
+        },
+        "method": {
+          "app_specific_native_engine_logic": false,
+          "device_columns_preserved": true,
+          "path_class": "v4_verified_family_rtdlexe_general_leaf_device_columns",
+          "post_traversal_reduction": "cupy_checked_u64_weighted_sum_device",
+          "private_checker_off_path": false,
+          "restricted_callback_compile_in_complete": false,
+          "rtdlexe_lifecycle_used": true,
+          "standard_count_fast_control_used": false
+        },
+        "operation": null,
+        "output_sha256": "f3a9d76129db60b207374aef74b6d5abb6a126a6d4fc7bc88b830a7fc1995e2c",
+        "outputs": [
+          {
+            "compact_execution_evidence": {
+              "kind": "rtdl_segmented_traversal_receipt_projection",
+              "segment_receipts": [
+                {
+                  "expected_program_bundle": null,
+                  "physical_executor_classification": "optix_traversal_observed",
+                  "receipt_sha256": "4f53507a93bde0760df323115d0197735cb74c68ce2ed17566f9495df5fdec78",
+                  "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+                  "schema": "rtdl.physical_execution.traversal_receipt.v1"
+                },
+                {
+                  "expected_program_bundle": null,
+                  "physical_executor_classification": "optix_traversal_observed",
+                  "receipt_sha256": "7211e1014d0b0649796ef1d420d65b530ed5a1c0c33c7b31d9d3693766c440c7",
+                  "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+                  "schema": "rtdl.physical_execution.traversal_receipt.v1"
+                },
+                {
+                  "expected_program_bundle": null,
+                  "physical_executor_classification": "optix_traversal_observed",
+                  "receipt_sha256": "5c0f15f3661e9f86cd2a6f966c42665addbbae7924a00b0721e6caa26bbb500b",
+                  "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+                  "schema": "rtdl.physical_execution.traversal_receipt.v1"
+                },
+                {
+                  "expected_program_bundle": null,
+                  "physical_executor_classification": "optix_traversal_observed",
+                  "receipt_sha256": "0763b393975ae771c30958e8f1eea9ea5506da60fdb3d5cd4026e73b06e4b4fb",
+                  "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+                  "schema": "rtdl.physical_execution.traversal_receipt.v1"
+                },
+                {
+                  "expected_program_bundle": null,
+                  "physical_executor_classification": "optix_traversal_observed",
+                  "receipt_sha256": "f88e0bba6d14cb57f5f016a4fd0836ef47e441ffb79aef199ca0a1fef1b2ee3f",
+                  "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+                  "schema": "rtdl.physical_execution.traversal_receipt.v1"
+                },
+                {
+                  "expected_program_bundle": null,
+                  "physical_executor_classification": "optix_traversal_observed",
+                  "receipt_sha256": "30b6daaf5b133fef568a4cb882baf1d40e83f003dbfe6a7b346047b734451e00",
+                  "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+                  "schema": "rtdl.physical_execution.traversal_receipt.v1"
+                },
+                {
+                  "expected_program_bundle": null,
+                  "physical_executor_classification": "optix_traversal_observed",
+                  "receipt_sha256": "b89f68a09d4c549c117adf4524b2b735f2dfa13ea306b0a9505ed700b38fa1a0",
+                  "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+                  "schema": "rtdl.physical_execution.traversal_receipt.v1"
+                },
+                {
+                  "expected_program_bundle": null,
+                  "physical_executor_classification": "optix_traversal_observed",
+                  "receipt_sha256": "ecfc9d3e1b9e34e7c363c0940e61e49000ce9401a7347a24561b961d6798d79f",
+                  "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+                  "schema": "rtdl.physical_execution.traversal_receipt.v1"
+                },
+                {
+                  "expected_program_bundle": null,
+                  "physical_executor_classification": "optix_traversal_observed",
+                  "receipt_sha256": "dd30777b89df3957225c6a5610d1669f7ac98b6b5c832712d46799b24d8c23a4",
+                  "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+                  "schema": "rtdl.physical_execution.traversal_receipt.v1"
+                },
+                {
+                  "expected_program_bundle": null,
+                  "physical_executor_classification": "optix_traversal_observed",
+                  "receipt_sha256": "be560fce76b77562b52304086f233bafa5531575d65a86882620b54243659235",
+                  "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+                  "schema": "rtdl.physical_execution.traversal_receipt.v1"
+                },
+                {
+                  "expected_program_bundle": null,
+                  "physical_executor_classification": "optix_traversal_observed",
+                  "receipt_sha256": "ebb7e8442056728558b5f2973a6ecad69786bfbf260b3c00d96f54e7c993f1e3",
+                  "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+                  "schema": "rtdl.physical_execution.traversal_receipt.v1"
+                },
+                {
+                  "expected_program_bundle": null,
+                  "physical_executor_classification": "optix_traversal_observed",
+                  "receipt_sha256": "bf1aec4b6ad9e02d55cc6ae4acbbd86c545f8199ac25ed8bfe1b0fb9c5439214",
+                  "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+                  "schema": "rtdl.physical_execution.traversal_receipt.v1"
+                },
+                {
+                  "expected_program_bundle": null,
+                  "physical_executor_classification": "optix_traversal_observed",
+                  "receipt_sha256": "042313be3f63f79ca91999a07f86b71f5533bc5d23bbd703a781415367d2ee88",
+                  "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+                  "schema": "rtdl.physical_execution.traversal_receipt.v1"
+                },
+                {
+                  "expected_program_bundle": null,
+                  "physical_executor_classification": "optix_traversal_observed",
+                  "receipt_sha256": "4128e8dd09927244fd1f83ddf6935d1e587f84889b72dba78fcab46947113900",
+                  "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+                  "schema": "rtdl.physical_execution.traversal_receipt.v1"
+                },
+                {
+                  "expected_program_bundle": null,
+                  "physical_executor_classification": "optix_traversal_observed",
+                  "receipt_sha256": "fb757f9dbd5a36a6a9d3bc79fa044c7cd76d4b1de7bdc3e316945661c0ee18c8",
+                  "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+                  "schema": "rtdl.physical_execution.traversal_receipt.v1"
+                },
+                {
+                  "expected_program_bundle": null,
+                  "physical_executor_classification": "optix_traversal_observed",
+                  "receipt_sha256": "4a5e30af91a7331236b4831b6cb9c58df5132236942598b831815568bed30b49",
+                  "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+                  "schema": "rtdl.physical_execution.traversal_receipt.v1"
+                },
+                {
+                  "expected_program_bundle": null,
+                  "physical_executor_classification": "optix_traversal_observed",
+                  "receipt_sha256": "7a5a51eeb1b1e4fe079d4c9c4829e4f112e5ac960ea4f272d4254eb19d3d8b75",
+                  "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+                  "schema": "rtdl.physical_execution.traversal_receipt.v1"
+                },
+                {
+                  "expected_program_bundle": null,
+                  "physical_executor_classification": "optix_traversal_observed",
+                  "receipt_sha256": "7ae84ef0ed4e3413bf9aede8670da53a6fc48be635da474dd23b75124ea3529c",
+                  "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+                  "schema": "rtdl.physical_execution.traversal_receipt.v1"
+                },
+                {
+                  "expected_program_bundle": null,
+                  "physical_executor_classification": "optix_traversal_observed",
+                  "receipt_sha256": "d02e01f4073e859feaf128d0d6fe3fb1a4e04464c1c4a97bd5ccd1bd94c99684",
+                  "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+                  "schema": "rtdl.physical_execution.traversal_receipt.v1"
+                },
+                {
+                  "expected_program_bundle": null,
+                  "physical_executor_classification": "optix_traversal_observed",
+                  "receipt_sha256": "1e5be866938b58e04962885460a76f996df72a89a9de2d9ef0fe0df2b7ad3755",
+                  "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+                  "schema": "rtdl.physical_execution.traversal_receipt.v1"
+                },
+                {
+                  "expected_program_bundle": null,
+                  "physical_executor_classification": "optix_traversal_observed",
+                  "receipt_sha256": "8cb46792f8c1cf839757a4e1fed6aab501105f981b18407aeb05c2426a3a37d6",
+                  "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+                  "schema": "rtdl.physical_execution.traversal_receipt.v1"
+                },
+                {
+                  "expected_program_bundle": null,
+                  "physical_executor_classification": "optix_traversal_observed",
+                  "receipt_sha256": "de428756b68583661775f315b97f7ef3ac864376996cafa3e00cb8879cc87481",
+                  "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+                  "schema": "rtdl.physical_execution.traversal_receipt.v1"
+                },
+                {
+                  "expected_program_bundle": null,
+                  "physical_executor_classification": "optix_traversal_observed",
+                  "receipt_sha256": "34eafad1ee083abcd2873d82593632a80f8bb92d37757bf021842d645dbd4caa",
+                  "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+                  "schema": "rtdl.physical_execution.traversal_receipt.v1"
+                },
+                {
+                  "expected_program_bundle": null,
+                  "physical_executor_classification": "optix_traversal_observed",
+                  "receipt_sha256": "484112598a41af5004a401ad9de7f63af9b43cb8fe193acc617356ac4bc3a9a8",
+                  "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+                  "schema": "rtdl.physical_execution.traversal_receipt.v1"
+                },
+                {
+                  "expected_program_bundle": null,
+                  "physical_executor_classification": "optix_traversal_observed",
+                  "receipt_sha256": "732bfda0d888534ee641f287b3050f1423728e8eb77888afb5c968a7aa6ad195",
+                  "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+                  "schema": "rtdl.physical_execution.traversal_receipt.v1"
+                },
+                {
+                  "expected_program_bundle": null,
+                  "physical_executor_classification": "optix_traversal_observed",
+                  "receipt_sha256": "6cfeafb78aa28a0fd8c649fd63ad06ce7fdb64430794cf614a8858fb9e4eb67d",
+                  "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+                  "schema": "rtdl.physical_execution.traversal_receipt.v1"
+                },
+                {
+                  "expected_program_bundle": null,
+                  "physical_executor_classification": "optix_traversal_observed",
+                  "receipt_sha256": "c3536fe1bfc45214c0115ee3cbc679ccdc13805df19fab2ace930c03e70fbb03",
+                  "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+                  "schema": "rtdl.physical_execution.traversal_receipt.v1"
+                },
+                {
+                  "expected_program_bundle": null,
+                  "physical_executor_classification": "optix_traversal_observed",
+                  "receipt_sha256": "fd7b5ad30d64a3981a8c8cb467790a5210281c1826bcc29e500f8f9f38bdd8c4",
+                  "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+                  "schema": "rtdl.physical_execution.traversal_receipt.v1"
+                }
+              ]
+            },
+            "detailed_receipt_retention_count": 0,
+            "matched": true,
+            "output_sha256": "f3a9d76129db60b207374aef74b6d5abb6a126a6d4fc7bc88b830a7fc1995e2c",
+            "public_output_materialized_inside_call": true,
+            "segment_count": 28,
+            "triangle_count": 7515023
+          }
+        ],
+        "phase_ns": {
+          "close": 535248,
+          "load": 14333752110,
+          "prepare": 407259734
+        },
+        "primary_median_ns": 10068177610,
+        "primary_samples_ns": [
+          10068177610
+        ],
+        "process_id": 4475,
+        "retained_sample_count": 1,
+        "retry_count": 0,
+        "runtime_identity": {
+          "package_versions": {
+            "cuda-bindings": "12.9.7",
+            "cuda-python": "12.9.7",
+            "cupy-cuda12x": "14.0.1",
+            "numba": "0.65.1",
+            "numpy": "2.4.4",
+            "pyoptix": "9.1.0"
+          },
+          "python_executable": "/tmp/rtdl-crossgpu/venv/bin/python",
+          "python_executable_sha256": "1d3cf64f97cadc79fdc6fe2496a21b7b456cb94211978cfef5a65f616af74fd5",
+          "python_version": "3.12.3"
+        },
+        "schema": "rtdl.v4_long_workload.worker_result.v1",
+        "status": "PASS",
+        "unit_id": "triangle_counting__cit_patents__rt_2a1__4m",
+        "warmup_count": 0,
+        "worker_wall_ns": 24941999108
+      },
+      "worker_parse_error": null
+    },
+    {
+      "arm": "pyoptix",
+      "block": null,
+      "endpoint": "prepared",
+      "launch": {
+        "command": [
+          "/tmp/rtdl-crossgpu/venv/bin/python",
+          "/tmp/rtdl-tools/scripts/v4_long_workload_worker.py",
+          "--config",
+          "/tmp/rtdl-crossgpu/FORMAL_CONFIG_RTX4000ADA_CPU8.json",
+          "--unit",
+          "triangle_counting__cit_patents__rt_2a1__4m",
+          "--arm",
+          "pyoptix",
+          "--endpoint",
+          "prepared",
+          "--repetitions",
+          "1",
+          "--warmups",
+          "0",
+          "--output",
+          "/tmp/rtdl-crossgpu/DRY_RUN/workers/w001__triangle_counting__cit_patents__rt_2a1__4m__prepared__bdry__p1__pyoptix.json",
+          "--journal",
+          "/tmp/rtdl-crossgpu/DRY_RUN/journals/w001__triangle_counting__cit_patents__rt_2a1__4m__prepared__bdry__p1__pyoptix.jsonl"
+        ],
+        "journal_relative": "journals/w001__triangle_counting__cit_patents__rt_2a1__4m__prepared__bdry__p1__pyoptix.jsonl",
+        "journal_sha256": "72f7cf14eb57533ef6e5b50b7c188e136b15de8b49670b59542276aef8ffbb42",
+        "launch_error": null,
+        "output_relative": "workers/w001__triangle_counting__cit_patents__rt_2a1__4m__prepared__bdry__p1__pyoptix.json",
+        "output_sha256": "7237b344f225b2d17980291154635bb1f399f55a4c80d2a500c174109aa51fd4",
+        "return_code": 0,
+        "stderr_relative": "stderr/w001__triangle_counting__cit_patents__rt_2a1__4m__prepared__bdry__p1__pyoptix.bin",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_relative": "stdout/w001__triangle_counting__cit_patents__rt_2a1__4m__prepared__bdry__p1__pyoptix.bin",
+        "stdout_sha256": "055e744d9c1f8f559db1337a314645db5d04c3d9e3048fe1341ccf5d31a71f86",
+        "timeout": false,
+        "wall_ns": 24217505800
+      },
+      "ordinal": 1,
+      "position": 1,
+      "repetitions": 1,
+      "unit_id": "triangle_counting__cit_patents__rt_2a1__4m",
+      "warmups": 0,
+      "worker": {
+        "app": "triangle_counting",
+        "arm": "pyoptix",
+        "complete_timer_includes_prepare_execute_close": false,
+        "discard_count": 0,
+        "endpoint": "prepared",
+        "execute_samples_ns": [
+          9056743928
+        ],
+        "formal_config_sha256": "d9df1b75cb39139f0b580f91319447b9eca24bd27031bd02d125f1ddcc199643",
+        "formal_worker_sha256": "0009137c032dc13f03065898283c95ed087153eb11a36a69723fea32a4b7ed50",
+        "implementation_identity": {
+          "base_worker_sha256": "ebcb71ccf9d86e9405205564fa979283f102d43a190a04d602f61ea1eb23ab9e",
+          "native_library_path": "/tmp/rtdl-crossgpu/native/librtdl_optix.so",
+          "native_library_sha256": "94d9e42be75c86c3186dac1d2a280873206698ea620f5666b83e4d49ce00686d",
+          "source_commit": "02e84374fc092d2bb916cca633eda9592b4ecf07",
+          "source_root": "/tmp/rtdl-successor",
+          "source_status_clean": true,
+          "source_tree": "8aad15d686bbc9e1c3b11df998898a0a063a01f1"
+        },
+        "input_identity": {
+          "dataset": "cit-Patents",
+          "edge_file_sha256": "c5b2c9203eeabb46414965755c33befdb1810e71cb51155eb940a68a6179d855",
+          "expected_triangle_count": 7515023,
+          "max_relation_rows": 4000000,
+          "paper_algorithm": "RT-2A1"
+        },
+        "input_load_included_in_primary_timer": false,
+        "journal_io_included_in_primary_timer": false,
+        "journal_sha256": "72f7cf14eb57533ef6e5b50b7c188e136b15de8b49670b59542276aef8ffbb42",
+        "machine": {
+          "cpu_affinity": {
+            "postflight": {
+              "cpu_ids": [
+                8
+              ]
+            },
+            "preflight": {
+              "cpu_ids": [
+                8
+              ]
+            }
+          },
+          "cuda_visible_devices": "0",
+          "gpu": {
+            "compute_capability": "8.9",
+            "driver": "550.127.05",
+            "name": "NVIDIA RTX 4000 Ada Generation",
+            "uuid": "GPU-2a00572b-6cef-b9e6-db0a-c127783a5d46"
+          },
+          "hostname": "4adbab12e6d1",
+          "platform": "Linux-6.8.0-40-generic-x86_64-with-glibc2.39",
+          "python": "3.12.3",
+          "python_executable": "/tmp/rtdl-crossgpu/venv/bin/python"
+        },
+        "method": {
+          "path_class": "public_pyoptix_rt_2a1_device_weighted_reduction",
+          "private_rtdl_native_called": false,
+          "ptx_sha256": "754112ee98002772ffa246b93b168d569d028f56c47182eb23588741c6b3a5a6"
+        },
+        "operation": null,
+        "output_sha256": "f3a9d76129db60b207374aef74b6d5abb6a126a6d4fc7bc88b830a7fc1995e2c",
+        "outputs": [
+          {
+            "compact_execution_evidence": {
+              "kind": "public_pyoptix_segment_device_status",
+              "segment_statuses": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            "detailed_receipt_retention_count": 0,
+            "matched": true,
+            "output_sha256": "f3a9d76129db60b207374aef74b6d5abb6a126a6d4fc7bc88b830a7fc1995e2c",
+            "public_output_materialized_inside_call": true,
+            "segment_count": 28,
+            "triangle_count": 7515023
+          }
+        ],
+        "phase_ns": {
+          "close": 42631,
+          "load": 14348233002,
+          "prepare": 406073473
+        },
+        "primary_median_ns": 9056743928,
+        "primary_samples_ns": [
+          9056743928
+        ],
+        "process_id": 4534,
+        "retained_sample_count": 1,
+        "retry_count": 0,
+        "runtime_identity": {
+          "package_versions": {
+            "cuda-bindings": "12.9.7",
+            "cuda-python": "12.9.7",
+            "cupy-cuda12x": "14.0.1",
+            "numba": "0.65.1",
+            "numpy": "2.4.4",
+            "pyoptix": "9.1.0"
+          },
+          "pyoptix_loaded_extension_path": "/tmp/rtdl-crossgpu/venv/lib/python3.12/site-packages/optix/_optix.cpython-312-x86_64-linux-gnu.so",
+          "pyoptix_loaded_extension_sha256": "0a05db8ccb565ec513a391809bd8b539ccefdd25bd7b75a573ffc7bc5ad55933",
+          "python_executable": "/tmp/rtdl-crossgpu/venv/bin/python",
+          "python_executable_sha256": "1d3cf64f97cadc79fdc6fe2496a21b7b456cb94211978cfef5a65f616af74fd5",
+          "python_version": "3.12.3"
+        },
+        "schema": "rtdl.v4_long_workload.worker_result.v1",
+        "status": "PASS",
+        "unit_id": "triangle_counting__cit_patents__rt_2a1__4m",
+        "warmup_count": 0,
+        "worker_wall_ns": 23940884967
+      },
+      "worker_parse_error": null
+    }
+  ],
+  "schedule_file_sha256": "42dd3ab4a27cd3c8914740698d4a022600acf9f8285fb0712c89fd9595075163",
+  "schema": "rtdl.v4_long_workload.replication_summary.v1",
+  "status": "COMPLETE__DRY_RUN_PARITY_PASS",
+  "valid_block_count": 1,
+  "worker_count": 2,
+  "worker_sha256": "0009137c032dc13f03065898283c95ed087153eb11a36a69723fea32a4b7ed50"
+}

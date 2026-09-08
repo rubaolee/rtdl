@@ -1,0 +1,66 @@
+{
+  "formal_config_fragment": {
+    "artifact_path": "/tmp/rtdl-crossgpu/triangle-rtdlexe/artifacts/596642ec516415197677685ae660362e86d9ba6001a888ac8fab4afa1700d1ed.rtdlexe",
+    "authority_path": "/tmp/rtdl-crossgpu/triangle-rtdlexe/triangle.authority.json",
+    "deployment_id": "replication-20260908-rtx4000ada/triangle-weighted",
+    "expected_any_hit_proof_sha256": "0487d9c7ba513d360897ba31544a01ec11adbfb666f3fbd5be6a7115843a5f18",
+    "expected_artifact_sha256": "596642ec516415197677685ae660362e86d9ba6001a888ac8fab4afa1700d1ed",
+    "expected_authority_sha256": "2f493f70c5874c5897365c900aed4fa6d560f60cb59e2d7a6769cedce6b78bef",
+    "expected_family_executable_identity_sha256": "bf85b24f01f31dcead5c987d5f728bc73d8603c1bd3bb5109b5271ab24576fa4",
+    "expected_native_sha256": "94d9e42be75c86c3186dac1d2a280873206698ea620f5666b83e4d49ce00686d",
+    "expected_trust_head_sha256": "9e8e6fb670045d3b4a2e9becd43fd0c44292e5a58f1c29639304005a2667d569",
+    "expected_trust_package_sha256": "bf82ee4e395cbfacbfd9ee679c9c68e627fffea61ce216df89042582e1b5acde",
+    "expected_trust_root_sha256": "591763a4d1269ed1a57a5c212326c90eb24b7edac9bd846f4b4add11ebbb8cfb",
+    "trust_head_path": "/tmp/rtdl-crossgpu/triangle-rtdlexe/head.json",
+    "trust_package_path": "/tmp/rtdl-crossgpu/triangle-rtdlexe/package.json",
+    "trust_root_path": "/tmp/rtdl-crossgpu/triangle-rtdlexe/TEST_ONLY_public.json"
+  },
+  "product": {
+    "artifact_path": "/tmp/rtdl-crossgpu/triangle-rtdlexe/artifacts/596642ec516415197677685ae660362e86d9ba6001a888ac8fab4afa1700d1ed.rtdlexe",
+    "artifact_sha256": "596642ec516415197677685ae660362e86d9ba6001a888ac8fab4afa1700d1ed",
+    "authority_path": "/tmp/rtdl-crossgpu/triangle-rtdlexe/triangle.authority.json",
+    "authority_sha256": "2f493f70c5874c5897365c900aed4fa6d560f60cb59e2d7a6769cedce6b78bef",
+    "compile_inside_measurement": false,
+    "device_program_prepare_round_trip_verified": true,
+    "executable_identity_sha256": "a99f90252648e994915a72b11489c9c18809508263a445a06a237cad5bfbaf78",
+    "family_executable_identity_sha256": "bf85b24f01f31dcead5c987d5f728bc73d8603c1bd3bb5109b5271ab24576fa4",
+    "test_only_private_key_deleted": true
+  },
+  "protocol": {
+    "app_source_sha256": "2695dfa8da94c2a133a8aca75f55622001001368ae5e21f6a54c7c173e28d53e",
+    "app_specific_native_engine_logic": false,
+    "benchmark_source_sha256": "29dc0985d5d0c382e8e51377df36108e9f589819c21ad5ea4d05828ecbd0da2d",
+    "family": "builtin_triangle_reduction_v1",
+    "proof_kind": "external_machine_checked_order_independence_v1",
+    "proof_sha256": "0487d9c7ba513d360897ba31544a01ec11adbfb666f3fbd5be6a7115843a5f18",
+    "triangle_mode": "weighted_hit_count"
+  },
+  "runtime": {
+    "llvmlite_version": "0.47.0",
+    "numba_version": "0.65.1",
+    "numpy_version": "2.4.4",
+    "python_executable": "/tmp/rtdl-crossgpu/venv/bin/python",
+    "python_version": "3.12.3"
+  },
+  "schema": "rtdl.v4_long_workload.triangle_rtdlexe_build.v1",
+  "source": {
+    "builder_path": "/tmp/rtdl-successor/scripts/v4_long_workload_build_triangle_rtdlexe.py",
+    "builder_sha256": "3d6e210b8db89ba82ed2656f9bfb80f707694f409f65de3fbcd43928e3ae6d83",
+    "commit": "02e84374fc092d2bb916cca633eda9592b4ecf07",
+    "root": "/tmp/rtdl-successor",
+    "tree": "8aad15d686bbc9e1c3b11df998898a0a063a01f1"
+  },
+  "status": "PASS__SIGNED_PUBLIC_LOAD_AND_DEVICE_PROGRAM_PREPARE_VERIFIED",
+  "target": {
+    "compute_capability": "8.9",
+    "cuda_include": "/usr/local/cuda-12.8/targets/x86_64-linux/include",
+    "native_path": "/tmp/rtdl-crossgpu/native/librtdl_optix.so",
+    "native_sha256": "94d9e42be75c86c3186dac1d2a280873206698ea620f5666b83e4d49ce00686d",
+    "nvcc_path": "/usr/local/cuda-12.8/bin/nvcc",
+    "nvcc_sha256": "59e4e55f9a38b78c590df1e28a69dad91052958f18a03868ca4a547c043fbba7",
+    "optix_include": "/tmp/rtdl-crossgpu/optix-dev/include",
+    "optix_sdk": "8.0.0",
+    "provider": "optix",
+    "target_sha256": "324853c98efedd44d371877a5d53db08809389e6fb5f7c53ace34b5396eff6b8"
+  }
+}

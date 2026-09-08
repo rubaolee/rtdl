@@ -1,0 +1,170 @@
+{
+  "config_sha256": "d9df1b75cb39139f0b580f91319447b9eca24bd27031bd02d125f1ddcc199643",
+  "controller_sha256": "71b3a0f65c675d4e6ea97c954a28136a2f2c781d00da946df573bb90062272d6",
+  "mode": "formal",
+  "rows": [
+    {
+      "arm": "new_v4",
+      "block": 0,
+      "endpoint": "prepared",
+      "ordinal": 0,
+      "position": 0,
+      "repetitions": 3,
+      "unit_id": "triangle_counting__cit_patents__rt_2a1__4m",
+      "warmups": 1
+    },
+    {
+      "arm": "pyoptix",
+      "block": 0,
+      "endpoint": "prepared",
+      "ordinal": 1,
+      "position": 1,
+      "repetitions": 3,
+      "unit_id": "triangle_counting__cit_patents__rt_2a1__4m",
+      "warmups": 1
+    },
+    {
+      "arm": "pyoptix",
+      "block": 1,
+      "endpoint": "prepared",
+      "ordinal": 2,
+      "position": 0,
+      "repetitions": 3,
+      "unit_id": "triangle_counting__cit_patents__rt_2a1__4m",
+      "warmups": 1
+    },
+    {
+      "arm": "new_v4",
+      "block": 1,
+      "endpoint": "prepared",
+      "ordinal": 3,
+      "position": 1,
+      "repetitions": 3,
+      "unit_id": "triangle_counting__cit_patents__rt_2a1__4m",
+      "warmups": 1
+    },
+    {
+      "arm": "new_v4",
+      "block": 2,
+      "endpoint": "prepared",
+      "ordinal": 4,
+      "position": 0,
+      "repetitions": 3,
+      "unit_id": "triangle_counting__cit_patents__rt_2a1__4m",
+      "warmups": 1
+    },
+    {
+      "arm": "pyoptix",
+      "block": 2,
+      "endpoint": "prepared",
+      "ordinal": 5,
+      "position": 1,
+      "repetitions": 3,
+      "unit_id": "triangle_counting__cit_patents__rt_2a1__4m",
+      "warmups": 1
+    },
+    {
+      "arm": "pyoptix",
+      "block": 3,
+      "endpoint": "prepared",
+      "ordinal": 6,
+      "position": 0,
+      "repetitions": 3,
+      "unit_id": "triangle_counting__cit_patents__rt_2a1__4m",
+      "warmups": 1
+    },
+    {
+      "arm": "new_v4",
+      "block": 3,
+      "endpoint": "prepared",
+      "ordinal": 7,
+      "position": 1,
+      "repetitions": 3,
+      "unit_id": "triangle_counting__cit_patents__rt_2a1__4m",
+      "warmups": 1
+    },
+    {
+      "arm": "new_v4",
+      "block": 4,
+      "endpoint": "prepared",
+      "ordinal": 8,
+      "position": 0,
+      "repetitions": 3,
+      "unit_id": "triangle_counting__cit_patents__rt_2a1__4m",
+      "warmups": 1
+    },
+    {
+      "arm": "pyoptix",
+      "block": 4,
+      "endpoint": "prepared",
+      "ordinal": 9,
+      "position": 1,
+      "repetitions": 3,
+      "unit_id": "triangle_counting__cit_patents__rt_2a1__4m",
+      "warmups": 1
+    },
+    {
+      "arm": "pyoptix",
+      "block": 5,
+      "endpoint": "prepared",
+      "ordinal": 10,
+      "position": 0,
+      "repetitions": 3,
+      "unit_id": "triangle_counting__cit_patents__rt_2a1__4m",
+      "warmups": 1
+    },
+    {
+      "arm": "new_v4",
+      "block": 5,
+      "endpoint": "prepared",
+      "ordinal": 11,
+      "position": 1,
+      "repetitions": 3,
+      "unit_id": "triangle_counting__cit_patents__rt_2a1__4m",
+      "warmups": 1
+    },
+    {
+      "arm": "new_v4",
+      "block": 6,
+      "endpoint": "prepared",
+      "ordinal": 12,
+      "position": 0,
+      "repetitions": 3,
+      "unit_id": "triangle_counting__cit_patents__rt_2a1__4m",
+      "warmups": 1
+    },
+    {
+      "arm": "pyoptix",
+      "block": 6,
+      "endpoint": "prepared",
+      "ordinal": 13,
+      "position": 1,
+      "repetitions": 3,
+      "unit_id": "triangle_counting__cit_patents__rt_2a1__4m",
+      "warmups": 1
+    },
+    {
+      "arm": "pyoptix",
+      "block": 7,
+      "endpoint": "prepared",
+      "ordinal": 14,
+      "position": 0,
+      "repetitions": 3,
+      "unit_id": "triangle_counting__cit_patents__rt_2a1__4m",
+      "warmups": 1
+    },
+    {
+      "arm": "new_v4",
+      "block": 7,
+      "endpoint": "prepared",
+      "ordinal": 15,
+      "position": 1,
+      "repetitions": 3,
+      "unit_id": "triangle_counting__cit_patents__rt_2a1__4m",
+      "warmups": 1
+    }
+  ],
+  "schema": "rtdl.v4_long_workload.replication_schedule.v1",
+  "worker_count": 16,
+  "worker_sha256": "0009137c032dc13f03065898283c95ed087153eb11a36a69723fea32a4b7ed50"
+}

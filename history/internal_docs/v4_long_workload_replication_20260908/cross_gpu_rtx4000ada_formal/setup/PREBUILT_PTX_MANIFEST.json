@@ -1,0 +1,45 @@
+{
+  "compile_time_in_primary_a_c_timer": false,
+  "compute_capability": [
+    8,
+    9
+  ],
+  "cuda_bindings_version": "12.9.7",
+  "cuda_header_sha256": "4568cc9e7a321e47707cd6403980f21ac2e2e55170500d0e0a3f54feb03a9acb",
+  "formal_worker_zero_reached": false,
+  "optix_device_header_sha256": "dfd4f7db48315de784c6a309f2d04981108994d01548e4bd262f9ed7a30f6ff3",
+  "optix_header_sha256": "071e3aae8352d7a53b5d15bf475301a5ac416089cd3b51adb01fd1f5deb7d936",
+  "performance_result_exists": false,
+  "programs": {
+    "librts": {
+      "compile_ns_diagnostic_only": 56660556,
+      "ptx_path": "/tmp/rtdl-crossgpu/prebuilt-ptx/librts.ptx",
+      "ptx_sha256": "c14abf9dd73d477f790c0f29b8321e42a07d9bb6ecc32d0846599c5ec887c3e6",
+      "ptx_size_bytes": 5319,
+      "source_path": "experiments/v4_paper_apps_pyoptix/librts_device.cu",
+      "source_sha256": "4d71a0d3d0b052cb68305e5b6b138a8df83c90c3a33184e66088e7296d218598"
+    },
+    "particle_tracking": {
+      "compile_ns_diagnostic_only": 243258159,
+      "ptx_path": "/tmp/rtdl-crossgpu/prebuilt-ptx/particle_tracking.ptx",
+      "ptx_sha256": "133cc9d63032d3f9d544d3b66a43abb725d3289f06b614a695d89d87b1a5257b",
+      "ptx_size_bytes": 8210,
+      "source_path": "experiments/v4_paper_apps_pyoptix/particle_device.cu",
+      "source_sha256": "955c4124df87eeb53c8558f5210f7ff5d45b2608f9b58639738f39d764ee590b"
+    },
+    "triangle_counting": {
+      "compile_ns_diagnostic_only": 57701971,
+      "ptx_path": "/tmp/rtdl-crossgpu/prebuilt-ptx/triangle_counting.ptx",
+      "ptx_sha256": "754112ee98002772ffa246b93b168d569d028f56c47182eb23588741c6b3a5a6",
+      "ptx_size_bytes": 4233,
+      "source_path": "experiments/v4_paper_apps_pyoptix/triangle_counting_device.cu",
+      "source_sha256": "857b5e6dc5254894130d36deae3f4439d964bb0ec74211f2c199f2fb513b581f"
+    }
+  },
+  "python_executable": "/tmp/rtdl-crossgpu/venv/bin/python",
+  "schema": "rtdl.v4_paper_apps_pyoptix.prebuilt_ptx.v1",
+  "source_clean_after_build": true,
+  "source_commit": "02e84374fc092d2bb916cca633eda9592b4ecf07",
+  "source_tree": "8aad15d686bbc9e1c3b11df998898a0a063a01f1",
+  "status": "PASS__PREBUILT_PTX_READY_FOR_UNTIMED_DRY_RUN"
+}

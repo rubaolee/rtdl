@@ -1,0 +1,731 @@
+{
+  "app": "triangle_counting",
+  "arm": "new_v4",
+  "complete_timer_includes_prepare_execute_close": false,
+  "discard_count": 0,
+  "endpoint": "prepared",
+  "execute_samples_ns": [
+    8803530213,
+    8901344120,
+    8774552999
+  ],
+  "formal_config_sha256": "d9df1b75cb39139f0b580f91319447b9eca24bd27031bd02d125f1ddcc199643",
+  "formal_worker_sha256": "0009137c032dc13f03065898283c95ed087153eb11a36a69723fea32a4b7ed50",
+  "implementation_identity": {
+    "base_worker_sha256": "ebcb71ccf9d86e9405205564fa979283f102d43a190a04d602f61ea1eb23ab9e",
+    "native_library_path": "/tmp/rtdl-crossgpu/native/librtdl_optix.so",
+    "native_library_sha256": "94d9e42be75c86c3186dac1d2a280873206698ea620f5666b83e4d49ce00686d",
+    "source_commit": "02e84374fc092d2bb916cca633eda9592b4ecf07",
+    "source_root": "/tmp/rtdl-successor",
+    "source_status_clean": true,
+    "source_tree": "8aad15d686bbc9e1c3b11df998898a0a063a01f1"
+  },
+  "input_identity": {
+    "dataset": "cit-Patents",
+    "edge_file_sha256": "c5b2c9203eeabb46414965755c33befdb1810e71cb51155eb940a68a6179d855",
+    "expected_triangle_count": 7515023,
+    "max_relation_rows": 4000000,
+    "paper_algorithm": "RT-2A1"
+  },
+  "input_load_included_in_primary_timer": false,
+  "journal_io_included_in_primary_timer": false,
+  "journal_sha256": "49081f7f9a81088a81b6a2c1843151fcbbbc410f7bcd7adedae0e9e531f48b13",
+  "machine": {
+    "cpu_affinity": {
+      "postflight": {
+        "cpu_ids": [
+          8
+        ]
+      },
+      "preflight": {
+        "cpu_ids": [
+          8
+        ]
+      }
+    },
+    "cuda_visible_devices": "0",
+    "gpu": {
+      "compute_capability": "8.9",
+      "driver": "550.127.05",
+      "name": "NVIDIA RTX 4000 Ada Generation",
+      "uuid": "GPU-2a00572b-6cef-b9e6-db0a-c127783a5d46"
+    },
+    "hostname": "4adbab12e6d1",
+    "platform": "Linux-6.8.0-40-generic-x86_64-with-glibc2.39",
+    "python": "3.12.3",
+    "python_executable": "/tmp/rtdl-crossgpu/venv/bin/python"
+  },
+  "method": {
+    "app_specific_native_engine_logic": false,
+    "device_columns_preserved": true,
+    "path_class": "v4_verified_family_rtdlexe_general_leaf_device_columns",
+    "post_traversal_reduction": "cupy_checked_u64_weighted_sum_device",
+    "private_checker_off_path": false,
+    "restricted_callback_compile_in_complete": false,
+    "rtdlexe_lifecycle_used": true,
+    "standard_count_fast_control_used": false
+  },
+  "operation": null,
+  "output_sha256": "f3a9d76129db60b207374aef74b6d5abb6a126a6d4fc7bc88b830a7fc1995e2c",
+  "outputs": [
+    {
+      "compact_execution_evidence": {
+        "kind": "rtdl_segmented_traversal_receipt_projection",
+        "segment_receipts": [
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "0313d89eeac199ea39fef0e3fdfc2bc5c382f8418f89403c02951e7fabcbab02",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          },
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "c4f2d8f1f777d9cebcbabdbeed5ea6c50b9b9df83e0a491b2c825d117ac3a906",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          },
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "e6b8b56a936799cea1f7a29a441c66b94290c13639adfe6aaf31b2d9cdf89723",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          },
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "1f261e0e6c71868c32811fb93788b8b02d6c0631a5180959a7510e8990804d33",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          },
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "69b6aa304cfbda7d28a7431a680f0f7b430b18f66ec8897a896078f20ab25a31",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          },
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "65702ea3d5fc7d8eee373c45117bcc4aef3a20ad4f91b72d2f85cb1d68d89398",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          },
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "8779e16c3d106b09eef7734174629309a90b165fe7885a4df56691bd6aee1f1f",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          },
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "1da94f3f7c67ac61380bef9788d7d4357db3b43b027b6545d2b9784f4b3e2bc4",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          },
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "bbca141911a162cd6d323f9cde6730eda23a07871e6db8e1649a6b87b9747c9f",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          },
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "9612bcf02cc6aa7018a632f87703bc15f1f78853f9059cb254cb3382fae4ec28",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          },
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "db777912b44b628173688c470bd6e7c8d5eaa78614ce7ff928b08f36bd2b454a",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          },
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "65e0238d7a29d1cde72e18f1abe04882627952252729028c6b38b56532fb2729",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          },
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "3e0c7196d18bf74495e5b6663362fcb1e062b8a56d06a8fdd2d31a2de1c9c7ab",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          },
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "57dabdaa4808941e6d0185020c8a44edab4d84f61abb9a92523f688c70e0d50e",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          },
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "26e2e6e0a934844668ea3193dfd7da1d74cbca2519d807a9c97d2be101e96a3f",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          },
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "bf4827a24662c11a08e3d10d8315c4049c6f51ac0501f0168380014e0c177a02",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          },
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "0499950312ceca814baa31557176d58216c9bf5a4a9a34193348a8f5531ae257",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          },
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "d28de012c0d4d3863ab5b0921be992ec39da2a47e087ce0a0872095aa76ee1e0",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          },
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "1759a432aa2a53111171c599c12d0d9c38687026fc3da67412f4aecaaf7cd023",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          },
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "db795e8768cd711297294fc629cb440d8db203b2c2e659c7519ed750de2de3a9",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          },
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "63b66de7377d7602f7f161fb57201140baf40408b41f21b3b5e9aab28ff1425e",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          },
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "ce32f79bec4fbac892efac89879085d4b12a4c0ea79a52332a8a2edda703e9cf",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          },
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "64be31c8f2c48c51eab8bda27e5f6a1240425634124024ef97e0494c4ae551d7",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          },
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "86c7065ec263246be3ecf7bb0668eecec6021ef3d39df4d45c580d7c2034cb50",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          },
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "37b83eb77b33dc38cc74b14b32a4c797505f48d4c2ac027930c466788e9e54b7",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          },
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "ceb0d1066c573f8a0d5d8da559574ebef4ab48d940cb25fb364c2d1f9adbb4a2",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          },
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "076ba18a4c0efef259d19d221fa5d067861664a4775cc9a1dc6305600feaa9d9",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          },
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "ecfc6d1e8a14709a3ad6ba9a4eeeb1dc4e458f4952f19e3f19c5e3d4bdc1ab6a",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          }
+        ]
+      },
+      "detailed_receipt_retention_count": 0,
+      "matched": true,
+      "output_sha256": "f3a9d76129db60b207374aef74b6d5abb6a126a6d4fc7bc88b830a7fc1995e2c",
+      "public_output_materialized_inside_call": true,
+      "segment_count": 28,
+      "triangle_count": 7515023
+    },
+    {
+      "compact_execution_evidence": {
+        "kind": "rtdl_segmented_traversal_receipt_projection",
+        "segment_receipts": [
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "59b0d9f038bcc6ab2466879f8a49626af99c90336718c655fdd5bb6dc1b3b0ca",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          },
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "656913f185e4395a5b900ac9b2e16ef54c6da193bc9bdec54920a59f5168e009",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          },
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "64cefd0845e1df24edd74325c9008fd7f42534c532a88993d36e714017894f75",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          },
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "a593142c5769e1fa4cfc258ac378bb4091a360e4ad0ffba8e8983a25aa546bbf",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          },
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "9ad02ce246d5c9d39b3a108d91ebcd441b455330891a42f9b8a39c68ea5a6b8e",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          },
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "33b719e402fb3b1b17ebc643719067fbc69bff9a8e8f7099783197758b9a1d0f",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          },
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "1b366ee4fed78ba83e35737e91ba96dfcb4dedea4ae0b452633fd13c88c40f89",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          },
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "ffb9290209116c0fca9fe762ca6e3d6e02fc195abf43a0001cefaaf6d56313b9",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          },
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "11796523d3526f62bcd91b3368ab3f5970ccaac7ac771978d9705f86987b8eb3",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          },
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "5e488f5decfb86b11771245032aecf535a86ce4540e90ec17e640fb25c4ad741",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          },
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "76e1d8869f870f1bfa0123d2f5e959ac6ce468f6fc7ebd71348df9356e4e8323",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          },
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "32cb257104b700126db8ac752f5686ca339d30ae4f7a59aacda84db29501e9c7",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          },
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "2eff2b75271aaa065c17885d4c9adfa614522012d4dc7e57a0a6723ecf45c3de",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          },
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "88afb41f42aca8accb0a001394d8a5b05993635b2f2d5ac30fe3f80f3a938d39",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          },
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "404fdd192625dec22c12422bba55f056c41e937bbda91704f232d1cfaa4b951c",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          },
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "85a1db2d5e2b7aca3c26f2ba97a4f25d4ab77bd6d8cdc0d2879098ef08bb667c",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          },
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "30a05b6a770e78fd316c23710f407a686ff097ea4b19554df1bdd9c97fccdc22",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          },
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "eeca904f24c9767da223317dbe712df4cf3edca9391afc13839b15d95ccbaec2",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          },
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "9e8bee215c6890d9621c2b91fa43cfc1b7cb5ca7df2db7f59ebcee327b0827d3",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          },
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "b2181fe8fb0fdc424ce657ba30bd31f2b1583885c34c05ae4222aa2009b17068",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          },
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "78a7fdc650265783c126ba388c43d93fc15890be9a81edc23e4b7b89106c2a71",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          },
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "cb36a1c5f4d82162e76f8afd7205ac7b928f402bc6a65d0b0227a09f3ff78946",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          },
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "a1f2ee4347019f535da689d11e28b620e591b0d68a4337c370b9d922243eaaf7",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          },
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "475d84d70c1adec43b0a9846b06e6f6973ec375f52c3105a91cd83cb0ace2166",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          },
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "5c4f105240f6278b9078827365ad8a7608d24ba8fc0f56955f5f8adcba66b5be",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          },
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "f5eb9b1533b666e0b1c7b56113785505683a1f2fe28752f189098b11d135c99c",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          },
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "a180abd1452cb971c24652d07d31fcc908d106a5ce5c765bd82b9b57896d1d8d",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          },
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "340f2a5750c600ad7c9c8ed1e82e3454935f0f24fae556c1859572081cc7a2a4",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          }
+        ]
+      },
+      "detailed_receipt_retention_count": 0,
+      "matched": true,
+      "output_sha256": "f3a9d76129db60b207374aef74b6d5abb6a126a6d4fc7bc88b830a7fc1995e2c",
+      "public_output_materialized_inside_call": true,
+      "segment_count": 28,
+      "triangle_count": 7515023
+    },
+    {
+      "compact_execution_evidence": {
+        "kind": "rtdl_segmented_traversal_receipt_projection",
+        "segment_receipts": [
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "5a63b32a1d208017ce18e759de8d187da5078ff6ef6f93591869440e5615219e",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          },
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "f14071495684219d90b5f001194364decbdbd2e85fc31b9bf2c2ff5400edf3e8",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          },
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "436d3d01797b0706809f4c9d29f9fb520a7c409fbbfe8ee966b0c74aecd8a774",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          },
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "e2e149fcb6d1112e2d6d189895417f17e5f0f7e19598ebc2325384ef1f33e35b",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          },
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "9dff5c97e4427242a15af0d5a5752556f77f62279b596183255a03937a556cad",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          },
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "896231a59aad7ec0571e0bdd3d67a5bd3f8a13011f8572983f5b6781277aae60",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          },
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "052a9983f314d511c86eaa5a1e85f07e0319764b12581c346cf6245e4301353f",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          },
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "180875be4ae11a460888152837a34e5cff13c4b5b31cfe619cd845e35898d983",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          },
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "8cf5d25b45614c6a1fb8e103d363de73410af2fc04a48f68fe716e2efc0ba316",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          },
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "877f489c33483006836a09cc25c570ddd7e053fea489198b0062ad95c0619db8",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          },
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "9bb244542333384fb5983dfc855e099f0aab0c9dea3b5a82d9c55ea6b28fcab4",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          },
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "fe668cebf6e3d30297c58887423db626f86dd05a83de2691286bfeff6a272b6b",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          },
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "4af2c5f0b2252c9255e7e5ee1dfe930a510b39c5799a9103805d22a94d49422c",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          },
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "5016c613833006145e7321185182491d66c375da44edec8b3eae2da2c4629137",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          },
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "6f6061146e6ad38b30073fc10b8126467142243dc13d6c5fb9965ddc1e8aa68e",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          },
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "dcda780d17b1a25cf629d6c9f0f02f10c37043cafdbae8a3cb03fbcf3d194cab",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          },
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "9451cfde4850584707a3e0b0b03cbc08fd84bb9455f00a90564787d5eb142c3b",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          },
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "81891308010df5abb02a8e24829fed9d2ddce330ccdbdfc4163199eb9d57661c",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          },
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "d351dc2c64289549ef2de7c40311483f4e27c7b7043d897f990388366fd2be30",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          },
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "31da98370f5225b9ccb4cee16492d443f1e2da99ce137fa5b2835d2fc728358c",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          },
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "b4bf449270d66ee1ba399e64ef2af0eb931b207f651313de679b4701f9b027ca",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          },
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "f7a31844bd9740fa839b61f4f70aff439e9a9849a3fc922d305ed5d24fc68c4a",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          },
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "244c513e72400b1f7f5a1e49fc57875569e2d149fc647d52461210f7b261bdc8",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          },
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "0eca2b57155c55e8aa9f1119201180fb1f8a9c51de9c09df4842cec38dd09ae4",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          },
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "536bdacca950e32811838fa27c474f2c1d5f973c46584b2a6cafa96219c364e9",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          },
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "aa7f12d4433b84bf95d366a2a3b4046a5478fc47bcb26e34e21240f395434a9b",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          },
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "1e4bd4beae49c675ce65eaf9e8c6388c25a3656447229c5d520c7234693f7a06",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          },
+          {
+            "expected_program_bundle": null,
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "76d905435310e5f0f7d80df0aca96ac9b8a46f684c76d71a215a7975578f5f2b",
+            "route_identity": "v4_builtin_triangle_callback_ir:partner_resident_checked_count_v1",
+            "schema": "rtdl.physical_execution.traversal_receipt.v1"
+          }
+        ]
+      },
+      "detailed_receipt_retention_count": 0,
+      "matched": true,
+      "output_sha256": "f3a9d76129db60b207374aef74b6d5abb6a126a6d4fc7bc88b830a7fc1995e2c",
+      "public_output_materialized_inside_call": true,
+      "segment_count": 28,
+      "triangle_count": 7515023
+    }
+  ],
+  "phase_ns": {
+    "close": 444555,
+    "load": 14258113685,
+    "prepare": 380117064
+  },
+  "primary_median_ns": 8803530213,
+  "primary_samples_ns": [
+    8803530213,
+    8901344120,
+    8774552999
+  ],
+  "process_id": 5316,
+  "retained_sample_count": 3,
+  "retry_count": 0,
+  "runtime_identity": {
+    "package_versions": {
+      "cuda-bindings": "12.9.7",
+      "cuda-python": "12.9.7",
+      "cupy-cuda12x": "14.0.1",
+      "numba": "0.65.1",
+      "numpy": "2.4.4",
+      "pyoptix": "9.1.0"
+    },
+    "python_executable": "/tmp/rtdl-crossgpu/venv/bin/python",
+    "python_executable_sha256": "1d3cf64f97cadc79fdc6fe2496a21b7b456cb94211978cfef5a65f616af74fd5",
+    "python_version": "3.12.3"
+  },
+  "schema": "rtdl.v4_long_workload.worker_result.v1",
+  "status": "PASS",
+  "unit_id": "triangle_counting__cit_patents__rt_2a1__4m",
+  "warmup_count": 1,
+  "worker_wall_ns": 50399350920
+}

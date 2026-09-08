@@ -1,0 +1,1003 @@
+{
+  "version": "1",
+  "pip_version": "26.2.1",
+  "install": [
+    {
+      "download_info": {
+        "url": "https://files.pythonhosted.org/packages/59/e8/096984b89133681533650b9078c5ed1c5c9b534e869b5487f22d4de1935c/cmake-3.31.6-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl",
+        "archive_info": {
+          "hashes": {
+            "sha256": "1c8b05df0602365da91ee6a3336fe57525b137706c4ab5675498f662ae1dbcec"
+          },
+          "hash": "sha256=1c8b05df0602365da91ee6a3336fe57525b137706c4ab5675498f662ae1dbcec"
+        }
+      },
+      "is_direct": false,
+      "is_yanked": false,
+      "requested": true,
+      "metadata": {
+        "metadata_version": "2.1",
+        "name": "cmake",
+        "version": "3.31.6",
+        "summary": "CMake is an open-source, cross-platform family of tools designed to build, test and package software",
+        "description": "==========================\nCMake Python Distributions\n==========================\n\n`CMake <https://cmake.org>`_ is used to control the software compilation\nprocess using simple platform and compiler independent configuration files,\nand generate native makefiles and workspaces that can be used in the\ncompiler environment of your choice.\n\nThe suite of CMake tools were created by Kitware in response to the need\nfor a powerful, cross-platform build environment for open-source projects\nsuch as ITK and VTK.\n\nThe CMake python wheels provide `CMake 3.31.6 <https://cmake.org/cmake/help/v3.31/index.html>`_.\n\nLatest Release\n--------------\n\n.. table::\n\n  +----------------------------------------------------------------------+---------------------------------------------------------------------------+\n  | Versions                                                             | Downloads                                                                 |\n  +======================================================================+===========================================================================+\n  | .. image:: https://img.shields.io/pypi/v/cmake.svg                   | .. image:: https://static.pepy.tech/badge/cmake                           |\n  |     :target: https://pypi.python.org/pypi/cmake                      |     :target: https://pypi.python.org/pypi/cmake                           |\n  |                                                                      | .. image:: https://img.shields.io/pypi/dm/cmake                           |\n  |                                                                      |     :target: https://pypi.python.org/pypi/cmake                           |\n  +----------------------------------------------------------------------+---------------------------------------------------------------------------+\n\nBuild Status\n------------\n\n.. table::\n\n  +---------------+--------------------------------------------------------------------------------------------------------------+\n  |               | GitHub Actions (Windows, macOS, Linux)                                                                       |\n  +===============+==============================================================================================================+\n  | PyPI          | .. image:: https://github.com/scikit-build/cmake-python-distributions/actions/workflows/build.yml/badge.svg  |\n  |               |     :target: https://github.com/scikit-build/cmake-python-distributions/actions/workflows/build.yml          |\n  +---------------+--------------------------------------------------------------------------------------------------------------+\n\nPlatforms\n---------\n\nThe following platforms are supported with binary wheels:\n\n.. table::\n\n  +---------------+---------------------------+\n  | OS            | Arch                      |\n  +===============+===========================+\n  | Windows       | | 64-bit                  |\n  |               | | 32-bit                  |\n  +---------------+---------------------------+\n  | Linux Intel   | | manylinux2010+  x86_64  |\n  |               | | musllinux_1_1+  x86_64  |\n  |               | | manylinux2010+  i686    |\n  |               | | musllinux_1_1+  i686    |\n  +---------------+---------------------------+\n  | Linux ARM     | | manylinux2014+  AArch64 |\n  |               | | musllinux_1_1+  AArch64 |\n  |               | | manylinux_2_31+ armv7l  |\n  |               | | musllinux_1_2+  armv7l  |\n  +---------------+---------------------------+\n  | Linux PowerPC | | manylinux2014+  ppc64le |\n  |               | | musllinux_1_1+  ppc64le |\n  +---------------+---------------------------+\n  | Linux IBM Z   | | manylinux2014+  s390x   |\n  |               | | musllinux_1_1+  s390x   |\n  +---------------+---------------------------+\n  | macOS 10.10+  | Intel                     |\n  +---------------+---------------------------+\n  | macOS 11+     | Apple Silicon             |\n  +---------------+---------------------------+\n\nThe last version to provide ``manylinux1`` wheels was ``3.22.x``.\nThe last version to provide Python 2 to Python 3.6 support was ``3.28.x``.\n\nMaintainers\n-----------\n\n* `How to update CMake version? <https://cmake-python-distributions.readthedocs.io/en/latest/update_cmake_version.html>`_\n\n* `How to make a release? <https://cmake-python-distributions.readthedocs.io/en/latest/make_a_release.html>`_\n\nMiscellaneous\n-------------\n\n* Documentation: https://cmake-python-distributions.readthedocs.io/en/latest/\n* Source code: https://github.com/scikit-build/cmake-python-distributions\n* Mailing list: https://groups.google.com/forum/#!forum/scikit-build\n\nLicense\n-------\n\nThis project is maintained by Jean-Christophe Fillion-Robin from Kitware Inc.\nIt is covered by the `Apache License, Version 2.0 <https://www.apache.org/licenses/LICENSE-2.0>`_.\n\nCMake is distributed under the OSI-approved BSD 3-clause License.\nFor more information about CMake, visit https://cmake.org\n",
+        "description_content_type": "text/x-rst",
+        "keywords": [
+          "CMake",
+          "build",
+          "c++",
+          "fortran",
+          "cross-platform",
+          "cross-compilation"
+        ],
+        "author_email": "Jean-Christophe Fillion-Robin <jchris.fillionr@kitware.com>",
+        "license": "Apache 2.0",
+        "classifier": [
+          "License :: OSI Approved :: Apache Software License",
+          "License :: OSI Approved :: BSD License",
+          "Programming Language :: C",
+          "Programming Language :: C++",
+          "Programming Language :: Fortran",
+          "Programming Language :: Python",
+          "Operating System :: OS Independent",
+          "Development Status :: 5 - Production/Stable",
+          "Intended Audience :: Developers",
+          "Topic :: Software Development :: Build Tools",
+          "Typing :: Typed"
+        ],
+        "requires_dist": [
+          "importlib_metadata>=1.4; python_version < \"3.8\""
+        ],
+        "requires_python": ">=3.7",
+        "project_url": [
+          "Homepage, https://cmake.org",
+          "Documentation, https://cmake-python-distributions.readthedocs.io",
+          "Source, https://github.com/scikit-build/cmake-python-distributions",
+          "Mailing list, https://groups.google.com/forum/#!forum/scikit-build",
+          "Bug Tracker, https://github.com/scikit-build/cmake-python-distributions/issues"
+        ]
+      }
+    },
+    {
+      "download_info": {
+        "url": "https://files.pythonhosted.org/packages/0b/2c/87f3254fd8ffd29e4c02732eee68a83a1d3c346ae39bc6822dcbcb697f2b/wheel-0.45.1-py3-none-any.whl",
+        "archive_info": {
+          "hashes": {
+            "sha256": "708e7481cc80179af0e556bbf0cc00b8444c7321e2700b8d8580231d13017248"
+          },
+          "hash": "sha256=708e7481cc80179af0e556bbf0cc00b8444c7321e2700b8d8580231d13017248"
+        }
+      },
+      "is_direct": false,
+      "is_yanked": false,
+      "requested": true,
+      "metadata": {
+        "metadata_version": "2.3",
+        "name": "wheel",
+        "version": "0.45.1",
+        "summary": "A built-package format for Python",
+        "description": "wheel\n=====\n\nThis is a command line tool for manipulating Python wheel files, as defined in\n`PEP 427`_. It contains the following functionality:\n\n* Convert ``.egg`` archives into ``.whl``\n* Unpack wheel archives\n* Repack wheel archives\n* Add or remove tags in existing wheel archives\n\n.. _PEP 427: https://www.python.org/dev/peps/pep-0427/\n\nHistorical note\n---------------\n\nThis project used to contain the implementation of the setuptools_ ``bdist_wheel``\ncommand, but as of setuptools v70.1, it no longer needs ``wheel`` installed for that to\nwork. Thus, you should install this **only** if you intend to use the ``wheel`` command\nline tool!\n\n.. _setuptools: https://pypi.org/project/setuptools/\n\nDocumentation\n-------------\n\nThe documentation_ can be found on Read The Docs.\n\n.. _documentation: https://wheel.readthedocs.io/\n\nCode of Conduct\n---------------\n\nEveryone interacting in the wheel project's codebases, issue trackers, chat\nrooms, and mailing lists is expected to follow the `PSF Code of Conduct`_.\n\n.. _PSF Code of Conduct: https://github.com/pypa/.github/blob/main/CODE_OF_CONDUCT.md\n\n",
+        "description_content_type": "text/x-rst",
+        "keywords": [
+          "wheel",
+          "packaging"
+        ],
+        "author_email": "Daniel Holth <dholth@fastmail.fm>",
+        "maintainer_email": "Alex Grönholm <alex.gronholm@nextday.fi>",
+        "classifier": [
+          "Development Status :: 5 - Production/Stable",
+          "Intended Audience :: Developers",
+          "Topic :: System :: Archiving :: Packaging",
+          "License :: OSI Approved :: MIT License",
+          "Programming Language :: Python",
+          "Programming Language :: Python :: 3 :: Only",
+          "Programming Language :: Python :: 3.8",
+          "Programming Language :: Python :: 3.9",
+          "Programming Language :: Python :: 3.10",
+          "Programming Language :: Python :: 3.11",
+          "Programming Language :: Python :: 3.12"
+        ],
+        "requires_dist": [
+          "pytest >= 6.0.0 ; extra == \"test\"",
+          "setuptools >= 65 ; extra == \"test\""
+        ],
+        "requires_python": ">=3.8",
+        "project_url": [
+          "Changelog, https://wheel.readthedocs.io/en/stable/news.html",
+          "Documentation, https://wheel.readthedocs.io/",
+          "Issue Tracker, https://github.com/pypa/wheel/issues",
+          "Source, https://github.com/pypa/wheel"
+        ],
+        "provides_extra": [
+          "test"
+        ]
+      }
+    },
+    {
+      "download_info": {
+        "url": "https://files.pythonhosted.org/packages/b7/b0/7ad8fa9aebb0835b2e20afebf1483cbe175d1612fe01e85042ce9ced8755/scikit_build_core-1.0.3-py3-none-any.whl",
+        "archive_info": {
+          "hashes": {
+            "sha256": "ae95427b7d3c14a6cf8bbfd4d901f6138ab64c99e20cbe8ea7d75cd26093f085"
+          },
+          "hash": "sha256=ae95427b7d3c14a6cf8bbfd4d901f6138ab64c99e20cbe8ea7d75cd26093f085"
+        }
+      },
+      "is_direct": false,
+      "is_yanked": false,
+      "requested": true,
+      "metadata": {
+        "metadata_version": "2.4",
+        "name": "scikit_build_core",
+        "version": "1.0.3",
+        "summary": "Build backend for CMake based projects",
+        "description": "# scikit-build-core\n\n[![Documentation Status][rtd-badge]][rtd-link]\n[![GitHub Discussion][github-discussions-badge]][github-discussions-link]\n[![Discord][discord-badge]][discord-link]\n\n[![Actions Status][actions-badge]][actions-link]\n[![codecov][codecov-badge]][codecov-link]\n\n[![PyPI version][pypi-version]][pypi-link]\n[![Conda-Forge][conda-badge]][conda-link]\n[![PyPI platforms][pypi-platforms]][pypi-link]\n[![Downloads][download-badge]][download-link]\n\n> [!NOTE]\n>\n> We have a public Scikit-build community meeting every month!\n> [Join us on Google Meet](https://meet.google.com/tgz-umhu-onf) on the third\n> Friday of every month at [12:00 PM ET][]. Some of our past meeting minutes are\n> [available here](https://github.com/orgs/scikit-build/discussions/categories/community-meeting-notes).\n\n<!-- prettier-ignore-start -->\n[12:00 PM ET]: https://howlonghowmany.com/my-time/eastern-time/12-pm\n<!-- prettier-ignore-end -->\n\n<!-- SPHINX-START -->\n\nScikit-build-core is a build backend for Python that uses CMake to build\nextension modules. It has a simple yet powerful static configuration system in\npyproject.toml, and supports almost unlimited flexibility via CMake. It was\ninitially developed to support the demanding needs of scientific users, but can\nbuild any sort of package that uses CMake.\n\nScikit-build-core is a ground-up rewrite of the classic Scikit-build. The key\nfeatures of scikit-build classic (which is setuptools based) are also present\nhere:\n\n- Great support for or by most OSs, compilers, IDEs, and libraries\n- Support for C++ features and other languages like Fortran\n- Support for multithreaded builds\n- Simple CMakeLists.txt files instead of up to thousands of lines of fragile\n  setuptools/distutils code\n- Cross-compile support for Apple Silicon and Windows ARM\n\nScikit-build-core was built using Python packaging standards developed after\nscikit-build (classic) was written. Using it directly provides the following\nfeatures over classic Scikit-build:\n\n- Better warnings, errors, and logging\n- No warning about unused variables\n- Automatically adds Ninja and/or CMake only as required\n- No dependency on setuptools, distutils, or wheel\n- Powerful config system, including config options support\n- Automatic inclusion of site-packages in `CMAKE_PREFIX_PATH`\n- FindPython is backported if running on CMake < 3.26.1 (configurable), supports\n  PyPy SOABI & Limited API / Stable ABI\n- Limited API / Stable ABI and pythonless tags supported via config option\n- No slow generator search, ninja/make or MSVC used by default, respects\n  `CMAKE_GENERATOR`\n- SDists are reproducible by default (UNIX, Python 3.9+, uncompressed comparison\n  recommended), and wheels can be made reproducible too (opt-in)\n- Support for caching between builds (opt-in by setting `build-dir`)\n- Support for writing out to extra wheel folders (scripts, headers, data)\n- Support for selecting install components and build targets\n- Dedicated entrypoints for module and prefix directories\n- Several integrated dynamic metadata plugins, supporting the cross-backend\n  `[[tool.dynamic-metadata]]` standard\n- Editable mode support, with optional experimental auto rebuilds on import and\n  optional in-place mode\n- Supports WebAssembly (Emscripten/[Pyodide](https://pyodide.org)).\n- Supports [free-threaded Python 3.13+](https://py-free-threading.github.io),\n  including the free-threaded stable ABI (PEP 803).\n- A `scikit-build` CLI, including `scikit-build init` to scaffold a new project.\n\nCurrent requirements:\n\n- The minimum supported CMake is 3.15\n- The minimum supported Python is 3.8 (3.7+ for 0.10.x and older)\n\nThe recommended interface is the native pyproject builder. Other backends are\nalso available:\n\n- Setuptools integration (use the `[setuptools]` extra)\n- Hatchling plugin (use the `[hatchling]` extra)\n\n> [!WARNING]\n>\n> The setuptools and hatchling backends might move to standalone packages in the\n> future, so depend on them via the `scikit-build-core[setuptools]` and\n> `scikit-build-core[hatchling]` extras to stay protected if they do.\n\n## Example\n\nThe fastest way to start a new project is `scikit-build init` (available via\n`uvx scikit-build-core init` as well), which generates a minimal CMake +\nscikit-build-core starter project. The pieces are described below.\n\nTo use scikit-build-core, add it to your `build-system.requires`, and specify\nthe `scikit_build_core.build` builder as your `build-system.build-backend`. You\ndo _not_ need to specify `cmake` or `ninja`; scikit-build-core will require them\nautomatically if the system versions are not sufficient.\n\n```toml\n[build-system]\nrequires = [\"scikit-build-core\"]\nbuild-backend = \"scikit_build_core.build\"\n\n[project]\nname = \"scikit_build_simplest\"\nversion = \"0.0.1\"\n```\n\nYou can (and should) specify the rest of the entries in `project`, but these are\nthe minimum to get started.\n\nAn example `CMakeLists.txt`:\n\n```cmake\ncmake_minimum_required(VERSION 3.15...4.3)\nproject(scikit_build_simplest LANGUAGES C)\n\nfind_package(Python COMPONENTS Interpreter Development.Module REQUIRED)\n\nPython_add_library(_module MODULE src/module.c WITH_SOABI)\ninstall(TARGETS _module DESTINATION scikit_build_simplest)\n```\n\nThe `install(DESTINATION ...)` is relative to site-packages, so the `_module`\nextension above lands at `scikit_build_simplest/_module.*` when the package is\n`pip install`ed. Scikit-build-core will backport FindPython from CMake 3.26.1 to\nolder versions of Python, and will handle PyPy for you if you are building from\nPyPy. You will need to install everything you want into the full final path\ninside site-packages (so you will usually prefix everything by the package name)\n-- including any `__init__.py`, which CMake can place alongside the extension\nwith `install(FILES src/__init__.py DESTINATION scikit_build_simplest)`.\n\nThe most important optional configuration is this:\n\n```toml\n[build-system]\nrequires = [\"scikit-build-core>=1.0\"]\nbuild-backend = \"scikit_build_core.build\"\n\n[tool.scikit-build]\nminimum-version = \"build-system.requires\"\n```\n\nThis will enable scikit-build-core to read your minimum requirement on itself\nand stay in compatibility mode for that version; if we make changes to defaults\nin the future, your package will continue to build exactly the same.\n\nThe [Getting started guide][getting-started] walks through a complete package\nstep by step. More examples are in the\n[tests/packages](https://github.com/scikit-build/scikit-build-core/tree/main/tests/packages).\n\n## Configuration\n\nAll configuration options can be placed in `pyproject.toml`, passed via `-C` in\npip, uv, and build, or set as environment variables. `tool.scikit-build` is used\nin toml, `skbuild.` for `-C` options, or `SKBUILD_*` for environment variables.\n\nFor a full reference and explanation of the variables see the [online\ndocumentation][conf-ref]\n\nA quick summary and some defaults are listed below:\n\n<!-- prettier-ignore-start -->\n<!-- [[[cog\nfrom scikit_build_core.settings.skbuild_docs_readme import mk_skbuild_docs\n\nprint()\nprint(mk_skbuild_docs())\nprint()\n]]] -->\n\n### Top-level\n\n| Option | Default | Description |\n| - | - | - |\n| `metadata` | `{}` | List dynamic metadata fields and hook locations in this table. |\n| `env` | `{}` | A table of environment variables to set for the CMake subprocesses. |\n| `strict-config` | `true` | Strictly check all config options. |\n| `experimental` | `false` | Enable early previews of features not finalized yet. |\n| `minimum-version` | `\"1.0\"` (current version) | If set, this will provide a method for backward compatibility. |\n| `build-dir` | `\"\"` | The CMake build directory. Defaults to a unique temporary directory. |\n\n### `cmake`\n\n| Option | Default | Description |\n| - | - | - |\n| `cmake.version` | `\"\"` | The versions of CMake to allow as a python-compatible specifier. |\n| `cmake.args` | `[]` | A list of args to pass to CMake when configuring the project. |\n| `cmake.define` | `{}` | A table of defines to pass to CMake when configuring the project. Additive. |\n| `cmake.build-type` | `\"Release\"` | The build type to use when building the project. |\n| `cmake.source-dir` | `\".\"` | The source directory to use when building the project. |\n| `cmake.python-hints` | `true` | Do not pass the current environment's python hints such as ``Python_EXECUTABLE``. |\n\n### `ninja`\n\n| Option | Default | Description |\n| - | - | - |\n| `ninja.version` | `\">=1.5\"` | The versions of Ninja to allow. |\n| `ninja.make-fallback` | `true` | Use Make as a fallback if a suitable Ninja executable is not found. |\n\n### `logging`\n\n| Option | Default | Description |\n| - | - | - |\n| `logging.level` | `\"WARNING\"` | The logging level to display. (choices: `NOTSET`, `DEBUG`, `INFO`, `WARNING`, `ERROR`, `CRITICAL`) |\n\n### `sdist`\n\n| Option | Default | Description |\n| - | - | - |\n| `sdist.include` | `[]` | Files to include in the SDist even if they are skipped by default. Supports gitignore syntax. |\n| `sdist.exclude` | `[]` | Files to exclude from the SDist even if they are included by default. Supports gitignore syntax. |\n| `sdist.inclusion-mode` | `\"default\"` (\"classic\") | Method to use to compute the files to include and exclude. (choices: `classic`, `default`, `manual`, `explicit`) |\n| `sdist.reproducible` | `true` | Try to build a reproducible distribution. |\n| `sdist.cmake` | `false` | If set to True, CMake will be run before building the SDist. |\n| `sdist.force-include` | `{}` | Force-include files into the SDist. |\n| `sdist.resolve-symlinks` | `\"all\"` | Which symlinks to resolve in the SDist, storing the target's contents instead. (choices: `all`, `external`, `none`, `classic`) |\n\n### `wheel`\n\n| Option | Default | Description |\n| - | - | - |\n| `wheel.packages` | `[\"src/<package>\", \"python/<package>\", \"<package>\"]` | A list of packages to auto-copy into the wheel. |\n| `wheel.py-api` | `\"\"` | The Python version tag used in the wheel file. |\n| `wheel.expand-macos-universal-tags` | `false` | Fill out extra tags that are not required. |\n| `wheel.install-dir` | `\"\"` | The CMake install prefix relative to the platlib wheel path. |\n| `wheel.license-files` | `\"\"` | A list of license files to include in the wheel. Supports glob patterns. |\n| `wheel.cmake` | `true` | Run CMake as part of building the wheel. |\n| `wheel.platlib` | `\"\"` | Target the platlib or the purelib. |\n| `wheel.exclude` | `[]` | A set of patterns to exclude from the wheel. |\n| `wheel.build-tag` | `\"\"` | The build tag to use for the wheel. If empty, no build tag is used. |\n| `wheel.force-include` | `{}` | Force-include files into the wheel. |\n| `wheel.reproducible` | `false` | Try to build a reproducible wheel. |\n\n### `backport`\n\n| Option | Default | Description |\n| - | - | - |\n| `backport.find-python` | `\"3.26.1\"` | If CMake is less than this value, backport a copy of FindPython. |\n\n### `editable`\n\n| Option | Default | Description |\n| - | - | - |\n| `editable.mode` | `\"redirect\"` | Select the editable mode to use. (choices: `redirect`, `inplace`) |\n| `editable.verbose` | `true` | Turn on verbose output for the editable mode rebuilds. |\n| `editable.rebuild` | `false` | Rebuild the project when the package is imported. |\n| `editable.rebuild-dir` | `\"\"` | Install rebuildable editables into this tree (a newer alternative to ``editable.rebuild``). |\n\n### `build`\n\n| Option | Default | Description |\n| - | - | - |\n| `build.tool-args` | `[]` | Extra args to pass directly to the builder in the build step. |\n| `build.targets` | `[]` | The build targets to use when building the project. |\n| `build.verbose` | `false` | Verbose printout when building. |\n| `build.requires` | `[]` | Additional ``build-system.requires``. |\n\n### `install`\n\n| Option | Default | Description |\n| - | - | - |\n| `install.components` | `[]` | The components to install. |\n| `install.targets` | `[]` | Build targets to run during the install step via ``cmake --build --target``. |\n| `install.strip` | `true` | Whether to strip the binaries. |\n\n### `generate[]`\n\n| Option | Default | Description |\n| - | - | - |\n| `generate[].path` | `\"\"` | The path (relative to platlib) for the file to generate. |\n| `generate[].template` | `\"\"` | The template string to use for the file. |\n| `generate[].template-path` | `\"\"` | The path to the template file. If empty, a template must be set. |\n| `generate[].location` | `\"install\"` | The place to put the generated file. (choices: `install`, `build`, `source`) |\n\n### `messages`\n\n| Option | Default | Description |\n| - | - | - |\n| `messages.after-failure` | `\"\"` | A message to print after a build failure. |\n| `messages.after-success` | `\"\"` | A message to print after a successful build. |\n\n### `search`\n\n| Option | Default | Description |\n| - | - | - |\n| `search.site-packages` | `true` | Add the python build environment site_packages folder to the CMake prefix paths. |\n\n<!-- [[[end]]] -->\n<!-- prettier-ignore-end -->\n\nMost CMake environment variables should be supported, and `CMAKE_ARGS` can be\nused to set extra CMake args. `ARCHFLAGS` is used to specify macOS universal2 or\ncross-compiles, just like setuptools.\n\nYou can also specify `[[tool.scikit-build.overrides]]` to customize values for\ndifferent systems. See the docs for details.\n\n## Other projects for building\n\nScikit-build-core is a binary build backend. There are also other binary build\nbackends:\n\n- [py-build-cmake][]: A different attempt at a standards compliant builder for\n  CMake. Strong focus on cross-compilation. Uses Flit internals.\n- [cmeel][]: A different attempt at a standards compliant builder for CMake.\n  Focus on building an ecosystem around a special unimportable folder in\n  site-packages (similar to scikit-build's usage of `cmake.*` entrypoints, but\n  folder-based).\n- [meson-python][]: A meson-based build backend; has some maintainer overlap\n  with scikit-build-core.\n- [maturin][]: A build backend for Rust projects, using Cargo.\n- [enscons][]: A SCons based backend, not very actively developed (but it\n  predates all the others in modern standard support!)\n\nIf you don't need a binary build, you don't need to use a binary build backend!\nThere are some very good Python build backends; we recommend [hatchling][] as a\ngood balance between good defaults for beginners and good support for advanced\nuse cases. This is the tool scikit-build-core itself uses.\n\n## Acknowledgements\n\nSupport for this work was provided by NSF grant [OAC-2209877][]. Any opinions,\nfindings, and conclusions or recommendations expressed in this material are\nthose of the author(s) and do not necessarily reflect the views of the National\nScience Foundation.\n\n<!-- prettier-ignore-start -->\n[OAC-2209877]:              https://www.nsf.gov/awardsearch/show-award/?AWD_ID=2209877&HistoricalAwards=false\n[actions-badge]:            https://github.com/scikit-build/scikit-build-core/actions/workflows/ci.yml/badge.svg\n[actions-link]:             https://github.com/scikit-build/scikit-build-core/actions\n[cmeel]:                    https://github.com/cmake-wheel/cmeel\n[codecov-badge]:            https://codecov.io/gh/scikit-build/scikit-build-core/branch/main/graph/badge.svg?token=ZLbQzIvyG8\n[codecov-link]:             https://codecov.io/gh/scikit-build/scikit-build-core\n[conda-badge]:              https://img.shields.io/conda/vn/conda-forge/scikit-build-core\n[conda-link]:               https://github.com/conda-forge/scikit-build-core-feedstock\n[conf-ref]:                 https://scikit-build-core.readthedocs.io/en/latest/reference/configs.html\n[discord-badge]:            https://img.shields.io/discord/803025117553754132?label=Discord%20chat%20%23scikit-build\n[discord-link]:             https://discord.gg/pypa\n[download-badge]:           https://static.pepy.tech/badge/scikit-build-core/month\n[download-link]:            https://pepy.tech/project/scikit-build-core\n[enscons]:                  https://pypi.org/project/enscons\n[getting-started]:          https://scikit-build-core.readthedocs.io/en/latest/guide/getting_started.html\n[github-discussions-badge]: https://img.shields.io/static/v1?label=Discussions&message=Ask&color=blue&logo=github\n[github-discussions-link]:  https://github.com/orgs/scikit-build/discussions\n[hatchling]:                https://hatch.pypa.io/latest\n[maturin]:                  https://www.maturin.rs\n[meson-python]:             https://mesonbuild.com/meson-python\n[py-build-cmake]:           https://tttapa.github.io/py-build-cmake\n[pypi-link]:                https://pypi.org/project/scikit-build-core/\n[pypi-platforms]:           https://img.shields.io/pypi/pyversions/scikit-build-core\n[pypi-version]:             https://badge.fury.io/py/scikit-build-core.svg\n[rtd-badge]:                https://readthedocs.org/projects/scikit-build-core/badge/?version=latest\n[rtd-link]:                 https://scikit-build-core.readthedocs.io/en/latest/?badge=latest\n<!-- prettier-ignore-end -->\n",
+        "description_content_type": "text/markdown",
+        "author_email": "Henry Schreiner <henryfs@princeton.edu>",
+        "license_expression": "Apache-2.0",
+        "license_file": [
+          "LICENSE"
+        ],
+        "classifier": [
+          "Development Status :: 5 - Production/Stable",
+          "Intended Audience :: Developers",
+          "Intended Audience :: Science/Research",
+          "Operating System :: OS Independent",
+          "Programming Language :: Python",
+          "Programming Language :: Python :: 3",
+          "Programming Language :: Python :: 3 :: Only",
+          "Programming Language :: Python :: 3.8",
+          "Programming Language :: Python :: 3.9",
+          "Programming Language :: Python :: 3.10",
+          "Programming Language :: Python :: 3.11",
+          "Programming Language :: Python :: 3.12",
+          "Programming Language :: Python :: 3.13",
+          "Programming Language :: Python :: 3.14",
+          "Programming Language :: Python :: 3.15",
+          "Programming Language :: Python :: Free Threading :: 4 - Resilient",
+          "Topic :: Scientific/Engineering",
+          "Topic :: Software Development :: Build Tools",
+          "Typing :: Typed"
+        ],
+        "requires_dist": [
+          "exceptiongroup>=1.0; python_version < '3.11'",
+          "importlib-resources>=1.3; python_version < '3.9'",
+          "packaging>=23.2",
+          "pathspec>=0.12.0",
+          "tomli>=1.2.2; python_version < '3.11'",
+          "typing-extensions>=4; python_version < '3.11'",
+          "hatchling>=1.24; extra == 'hatchling'",
+          "setuptools>=43; (python_version < '3.9') and extra == 'setuptools'",
+          "setuptools>=45; (python_version == '3.9') and extra == 'setuptools'",
+          "setuptools>=49; (python_version >= '3.10' and python_version < '3.12') and extra == 'setuptools'",
+          "setuptools>=66.1; (python_version >= '3.12') and extra == 'setuptools'",
+          "setuptools>=70.1; (python_version >= '3.8') and extra == 'wheel-free-setuptools'",
+          "cmake; extra == 'wheels'",
+          "ninja; (sys_platform != 'win32') and extra == 'wheels'"
+        ],
+        "requires_python": ">=3.8",
+        "project_url": [
+          "Changelog, https://scikit-build-core.readthedocs.io/en/latest/changelog.html",
+          "Discussions, https://github.com/orgs/scikit-build/discussions",
+          "Documentation, https://scikit-build-core.readthedocs.io",
+          "Homepage, https://github.com/scikit-build/scikit-build-core",
+          "Issues, https://github.com/scikit-build/scikit-build-core/issues"
+        ],
+        "provides_extra": [
+          "hatchling",
+          "setuptools",
+          "wheel-free-setuptools",
+          "wheels"
+        ]
+      }
+    },
+    {
+      "download_info": {
+        "url": "https://files.pythonhosted.org/packages/33/fd/8762f7ee3e4e4be6d1d846cffb4916dd9bb02b2f800d3603718a0efe494c/pybind11-3.1.0-py3-none-any.whl",
+        "archive_info": {
+          "hashes": {
+            "sha256": "b8488090f8acffbcb6b5d6a85571a6827a0a2981ffb75e5a0b27b87c4a6b7dd0"
+          },
+          "hash": "sha256=b8488090f8acffbcb6b5d6a85571a6827a0a2981ffb75e5a0b27b87c4a6b7dd0"
+        }
+      },
+      "is_direct": false,
+      "is_yanked": false,
+      "requested": true,
+      "metadata": {
+        "metadata_version": "2.4",
+        "name": "pybind11",
+        "version": "3.1.0",
+        "summary": "Seamless operability between C++11 and Python",
+        "description": ".. figure:: https://github.com/pybind/pybind11/raw/master/docs/pybind11-logo.png\n   :alt: pybind11 logo\n\n**pybind11 (v3)  — Seamless interoperability between C++ and Python**\n\n|Latest Documentation Status| |Stable Documentation Status| |Gitter chat| |GitHub Discussions|\n\n|CI| |Build status| |SPEC 4 — Using and Creating Nightly Wheels|\n\n|Repology| |PyPI package| |Conda-forge| |Python Versions|\n\n`Setuptools example <https://github.com/pybind/python_example>`_\n• `Scikit-build example <https://github.com/pybind/scikit_build_example>`_\n• `CMake example <https://github.com/pybind/cmake_example>`_\n\n.. start\n\n\n**pybind11** is a lightweight header-only library that exposes C++ types\nin Python and vice versa, mainly to create Python bindings of existing\nC++ code. Its goals and syntax are similar to the excellent\n`Boost.Python <http://www.boost.org/doc/libs/1_58_0/libs/python/doc/>`_\nlibrary by David Abrahams: to minimize boilerplate code in traditional\nextension modules by inferring type information using compile-time\nintrospection.\n\nThe main issue with Boost.Python—and the reason for creating such a\nsimilar project—is Boost. Boost is an enormously large and complex suite\nof utility libraries that works with almost every C++ compiler in\nexistence. This compatibility has its cost: arcane template tricks and\nworkarounds are necessary to support the oldest and buggiest of compiler\nspecimens. Now that C++11-compatible compilers are widely available,\nthis heavy machinery has become an excessively large and unnecessary\ndependency.\n\nThink of this library as a tiny self-contained version of Boost.Python\nwith everything stripped away that isn't relevant for binding\ngeneration. Without comments, the core header files only require ~4K\nlines of code and depend on Python (CPython 3.9+, PyPy, or GraalPy) and the C++\nstandard library. This compact implementation was possible thanks to some C++11\nlanguage features (specifically: tuples, lambda functions and variadic\ntemplates). Since its creation, this library has grown beyond Boost.Python in\nmany ways, leading to dramatically simpler binding code in many common\nsituations.\n\nTutorial and reference documentation is provided at\n`pybind11.readthedocs.io <https://pybind11.readthedocs.io/en/latest>`_.\nA PDF version of the manual is available\n`here <https://pybind11.readthedocs.io/_/downloads/en/latest/pdf/>`_.\nAnd the source code is always available at\n`github.com/pybind/pybind11 <https://github.com/pybind/pybind11>`_.\n\n\nCore features\n-------------\n\n\npybind11 can map the following core C++ features to Python:\n\n- Functions accepting and returning custom data structures per value,\n  reference, or pointer\n- Instance methods and static methods\n- Overloaded functions\n- Instance attributes and static attributes\n- Arbitrary exception types\n- Enumerations\n- Callbacks\n- Iterators and ranges\n- Custom operators\n- Single and multiple inheritance\n- STL data structures\n- Smart pointers with reference counting like ``std::shared_ptr``\n- Internal references with correct reference counting\n- C++ classes with virtual (and pure virtual) methods can be extended\n  in Python\n- Integrated NumPy support (NumPy 2 requires pybind11 2.12+)\n\nGoodies\n-------\n\nIn addition to the core functionality, pybind11 provides some extra\ngoodies:\n\n- CPython 3.9+, PyPy3 7.3.17+, and GraalPy 24.1+ are supported with an\n  implementation-agnostic interface (see older versions for older CPython\n  and PyPy versions).\n\n- It is possible to bind C++11 lambda functions with captured\n  variables. The lambda capture data is stored inside the resulting\n  Python function object.\n\n- pybind11 uses C++11 move constructors and move assignment operators\n  whenever possible to efficiently transfer custom data types.\n\n- It's easy to expose the internal storage of custom data types through\n  Pythons' buffer protocols. This is handy e.g. for fast conversion\n  between C++ matrix classes like Eigen and NumPy without expensive\n  copy operations.\n\n- pybind11 can automatically vectorize functions so that they are\n  transparently applied to all entries of one or more NumPy array\n  arguments.\n\n- Python's slice-based access and assignment operations can be\n  supported with just a few lines of code.\n\n- Everything is contained in just a few header files; there is no need\n  to link against any additional libraries.\n\n- Binaries are generally smaller by a factor of at least 2 compared to\n  equivalent bindings generated by Boost.Python. A recent pybind11\n  conversion of PyRosetta, an enormous Boost.Python binding project,\n  `reported <https://graylab.jhu.edu/Sergey/2016.RosettaCon/PyRosetta-4.pdf>`_\n  a binary size reduction of **5.4x** and compile time reduction by\n  **5.8x**.\n\n- Function signatures are precomputed at compile time (using\n  ``constexpr``), leading to smaller binaries.\n\n- With little extra effort, C++ types can be pickled and unpickled\n  similar to regular Python objects.\n\nSupported platforms & compilers\n-------------------------------\n\npybind11 is exercised in continuous integration across a range of operating\nsystems, Python versions, C++ standards, and toolchains. For an up-to-date\nview of the combinations we currently test, please see the\n`pybind11 GitHub Actions <https://github.com/pybind/pybind11/actions?query=branch%3Amaster>`_\nand `AppVeyor <https://ci.appveyor.com/project/wjakob/pybind11>`_ logs.\n\nThe test matrix naturally evolves over time as older platforms and compilers\nfall out of use and new ones are added by the community. Closely related\nversions of a tested compiler or platform will often work as well in practice,\nbut we cannot promise to validate every possible combination. If a\nconfiguration you rely on is missing from the matrix or regresses, issues and\npull requests to extend coverage are very welcome. At the same time, we need\nto balance the size of the test matrix with the available CI resources,\nsuch as GitHub's limits on concurrent jobs under the free tier.\n\nAbout\n-----\n\nThis project was created by `Wenzel\nJakob <http://rgl.epfl.ch/people/wjakob>`_. Significant features and/or\nimprovements to the code were contributed by\nJonas Adler,\nLori A. Burns,\nSylvain Corlay,\nEric Cousineau,\nAaron Gokaslan,\nRalf Grosse-Kunstleve,\nTrent Houliston,\nAxel Huebl,\n@hulucc,\nYannick Jadoul,\nSergey Lyskov,\nJohan Mabille,\nTomasz Miąsko,\nDean Moldovan,\nBen Pritchard,\nJason Rhinelander,\nBoris Schäling,\nPim Schellart,\nHenry Schreiner,\nIvan Smirnov,\nDustin Spicuzza,\nBoris Staletic,\nEthan Steinberg,\nPatrick Stewart,\nIvor Wanders,\nand\nXiaofei Wang.\n\nWe thank Google for a generous financial contribution to the continuous\nintegration infrastructure used by this project.\n\n\nContributing\n~~~~~~~~~~~~\n\nSee the `contributing\nguide <https://github.com/pybind/pybind11/blob/master/.github/CONTRIBUTING.md>`_\nfor information on building and contributing to pybind11.\n\nLicense\n~~~~~~~\n\npybind11 is provided under a BSD-style license that can be found in the\n`LICENSE <https://github.com/pybind/pybind11/blob/master/LICENSE>`_\nfile. By using, distributing, or contributing to this project, you agree\nto the terms and conditions of this license.\n\n.. |Latest Documentation Status| image:: https://readthedocs.org/projects/pybind11/badge?version=latest\n   :target: http://pybind11.readthedocs.org/en/latest\n.. |Stable Documentation Status| image:: https://img.shields.io/badge/docs-stable-blue.svg\n   :target: http://pybind11.readthedocs.org/en/stable\n.. |Gitter chat| image:: https://img.shields.io/gitter/room/gitterHQ/gitter.svg\n   :target: https://gitter.im/pybind/Lobby\n.. |CI| image:: https://github.com/pybind/pybind11/workflows/CI/badge.svg\n   :target: https://github.com/pybind/pybind11/actions\n.. |Build status| image:: https://ci.appveyor.com/api/projects/status/riaj54pn4h08xy40?svg=true\n   :target: https://ci.appveyor.com/project/wjakob/pybind11\n.. |PyPI package| image:: https://img.shields.io/pypi/v/pybind11.svg\n   :target: https://pypi.org/project/pybind11/\n.. |Conda-forge| image:: https://img.shields.io/conda/vn/conda-forge/pybind11.svg\n   :target: https://github.com/conda-forge/pybind11-feedstock\n.. |Repology| image:: https://repology.org/badge/latest-versions/python:pybind11.svg\n   :target: https://repology.org/project/python:pybind11/versions\n.. |Python Versions| image:: https://img.shields.io/pypi/pyversions/pybind11.svg\n   :target: https://pypi.org/project/pybind11/\n.. |GitHub Discussions| image:: https://img.shields.io/static/v1?label=Discussions&message=Ask&color=blue&logo=github\n   :target: https://github.com/pybind/pybind11/discussions\n.. |SPEC 4 — Using and Creating Nightly Wheels| image:: https://img.shields.io/badge/SPEC-4-green?labelColor=%23004811&color=%235CA038\n   :target: https://scientific-python.org/specs/spec-0004/\n",
+        "description_content_type": "text/x-rst",
+        "keywords": [
+          "C++11",
+          "Python bindings"
+        ],
+        "author_email": "Wenzel Jakob <wenzel.jakob@epfl.ch>",
+        "license_expression": "BSD-3-Clause",
+        "license_file": [
+          "LICENSE"
+        ],
+        "classifier": [
+          "Development Status :: 5 - Production/Stable",
+          "Intended Audience :: Developers",
+          "Topic :: Software Development :: Libraries :: Python Modules",
+          "Topic :: Utilities",
+          "Programming Language :: C++",
+          "Programming Language :: Python :: 3 :: Only",
+          "Programming Language :: Python :: 3.9",
+          "Programming Language :: Python :: 3.10",
+          "Programming Language :: Python :: 3.11",
+          "Programming Language :: Python :: 3.12",
+          "Programming Language :: Python :: 3.13",
+          "Programming Language :: Python :: 3.14",
+          "Programming Language :: Python :: 3.15",
+          "Programming Language :: Python :: Implementation :: PyPy",
+          "Programming Language :: Python :: Implementation :: CPython",
+          "Programming Language :: C++",
+          "Topic :: Software Development :: Libraries :: Python Modules"
+        ],
+        "requires_dist": [
+          "pybind11-global==3.1.0; extra == \"global\""
+        ],
+        "requires_python": ">=3.9",
+        "project_url": [
+          "Homepage, https://github.com/pybind/pybind11",
+          "Documentation, https://pybind11.readthedocs.io/",
+          "Issue Tracker, https://github.com/pybind/pybind11/issues",
+          "Discussions, https://github.com/pybind/pybind11/discussions",
+          "Changelog, https://pybind11.readthedocs.io/en/latest/changelog.html",
+          "Chat, https://gitter.im/pybind/Lobby"
+        ],
+        "provides_extra": [
+          "global"
+        ]
+      }
+    },
+    {
+      "download_info": {
+        "url": "https://files.pythonhosted.org/packages/ed/de/0e6edf44d6a04dabd0318a519125ed0415ce437ad5a1ec9b9be03d9048cf/ninja-1.13.0-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl",
+        "archive_info": {
+          "hashes": {
+            "sha256": "fb46acf6b93b8dd0322adc3a4945452a4e774b75b91293bafcc7b7f8e6517dfa"
+          },
+          "hash": "sha256=fb46acf6b93b8dd0322adc3a4945452a4e774b75b91293bafcc7b7f8e6517dfa"
+        }
+      },
+      "is_direct": false,
+      "is_yanked": false,
+      "requested": true,
+      "metadata": {
+        "metadata_version": "2.1",
+        "name": "ninja",
+        "version": "1.13.0",
+        "summary": "Ninja is a small build system with a focus on speed",
+        "description": "==========================\nNinja Python Distributions\n==========================\n\n`Ninja <http://www.ninja-build.org>`_ is a small build system with a focus on speed.\n\nThe latest Ninja python wheels provide `ninja 1.13.0.gd74ef.kitware.jobserver-pipe-1 <https://ninja-build.org/manual.html>`_ executable\nand `ninja_syntax.py` for generating `.ninja` files.\n\n.. image:: https://raw.githubusercontent.com/scikit-build/ninja-python-distributions/master/ninja-python-distributions-logo.png\n\nLatest Release\n--------------\n\n.. table::\n\n  +----------------------------------------------------------------------+---------------------------------------------------------------------------+\n  | Versions                                                             | Downloads                                                                 |\n  +======================================================================+===========================================================================+\n  | .. image:: https://img.shields.io/pypi/v/ninja.svg                   | .. image:: https://img.shields.io/badge/downloads-2535k%20total-green.svg |\n  |     :target: https://pypi.python.org/pypi/ninja                      |     :target: https://pypi.python.org/pypi/ninja                           |\n  +----------------------------------------------------------------------+---------------------------------------------------------------------------+\n\nBuild Status\n------------\n\n.. table::\n\n  +---------------+-------------------------------------------------------------------------------------------------------------+\n  |               | GitHub Actions (Windows, macOS, Linux)                                                                      |\n  +===============+=============================================================================================================+\n  | PyPI          | .. image:: https://github.com/scikit-build/ninja-python-distributions/actions/workflows/build.yml/badge.svg |\n  |               |     :target: https://github.com/scikit-build/ninja-python-distributions/actions/workflows/build.yml         |\n  +---------------+-------------------------------------------------------------------------------------------------------------+\n\nMaintainers\n-----------\n\n* `How to update ninja version ? <https://github.com/scikit-build/ninja-python-distributions/blob/master/docs/update_ninja_version.rst>`_\n\n* `How to make a release ? <https://github.com/scikit-build/ninja-python-distributions/blob/master/docs/make_a_release.rst>`_\n\n\nMiscellaneous\n-------------\n\n* Documentation: https://github.com/scikit-build/ninja-python-distributions#readme\n* Source code: https://github.com/scikit-build/ninja-python-distributions\n* Mailing list: https://groups.google.com/forum/#!forum/scikit-build\n\nPython Version Support\n----------------------\n\nVersions after 1.11.1.1 no longer support Python 2-3.6, and require manylinux2010+ on linux.\nVersions after 1.13 no longer support Python 3.7, and require manylinux2014+/musllinux_1_2+ on linux.\n\nLicense\n-------\n\nThis project is maintained by Jean-Christophe Fillion-Robin from Kitware Inc.\nIt is covered by the `Apache License, Version 2.0 <http://www.apache.org/licenses/LICENSE-2.0>`_.\n\nNinja is also distributed under the `Apache License, Version 2.0 <http://www.apache.org/licenses/LICENSE-2.0>`_.\nFor more information about Ninja, visit https://ninja-build.org\n\nLogo was originally created by Libby Rose from Kitware Inc.\nIt is covered by `CC BY 4.0 <https://creativecommons.org/licenses/by/4.0/>`_.\n\n\nHistory\n-------\n\nninja-python-distributions was initially developed in November 2016 by\nJean-Christophe Fillion-Robin to facilitate the distribution of project using\n`scikit-build <http://scikit-build.readthedocs.io/>`_ and depending on CMake\nand Ninja.\n",
+        "description_content_type": "text/x-rst",
+        "keywords": [
+          "build",
+          "c++",
+          "cross-compilation",
+          "cross-platform",
+          "fortran",
+          "ninja"
+        ],
+        "author_email": "Jean-Christophe Fillion-Robin <scikit-build@googlegroups.com>, Henry Schreiner <henryfs@princeton.edu>",
+        "classifier": [
+          "Development Status :: 5 - Production/Stable",
+          "Intended Audience :: Developers",
+          "License :: OSI Approved :: Apache Software License",
+          "License :: OSI Approved :: BSD License",
+          "Operating System :: OS Independent",
+          "Programming Language :: C",
+          "Programming Language :: C++",
+          "Programming Language :: Fortran",
+          "Programming Language :: Python",
+          "Topic :: Software Development :: Build Tools",
+          "Typing :: Typed"
+        ],
+        "requires_python": ">=3.8",
+        "project_url": [
+          "Bug Tracker, https://github.com/scikit-build/ninja-python-distributions/issues",
+          "Documentation, https://github.com/scikit-build/ninja-python-distributions#readme",
+          "Download, https://github.com/ninja-build/ninja/releases",
+          "Homepage, http://ninja-build.org/",
+          "Mailing list, https://groups.google.com/forum/#!forum/scikit-build",
+          "Source Code, https://github.com/scikit-build/ninja-python-distributions"
+        ]
+      }
+    },
+    {
+      "download_info": {
+        "url": "https://files.pythonhosted.org/packages/63/34/ba1c580383c9eada3711951fef0795c80b829a078d72188184bcab9dd527/packaging-26.3-py3-none-any.whl",
+        "archive_info": {
+          "hashes": {
+            "sha256": "d7193f7c8e4e93f444fde0262bf90af30e16fa0ad0ad44cb553c87339b23cd1c"
+          },
+          "hash": "sha256=d7193f7c8e4e93f444fde0262bf90af30e16fa0ad0ad44cb553c87339b23cd1c"
+        }
+      },
+      "is_direct": false,
+      "is_yanked": false,
+      "requested": true,
+      "metadata": {
+        "metadata_version": "2.4",
+        "name": "packaging",
+        "version": "26.3",
+        "summary": "Core utilities for Python packages",
+        "description": "packaging\n=========\n\n.. start-intro\n\nReusable core utilities for various Python Packaging\n`interoperability specifications <https://packaging.python.org/specifications/>`_.\n\nThis library provides utilities that implement the interoperability\nspecifications which have clearly one correct behaviour (eg: :pep:`440`)\nor benefit greatly from having a single shared implementation (eg: :pep:`425`).\n\n.. end-intro\n\nThe ``packaging`` project includes the following: version handling, specifiers,\nmarkers, requirements, tags, metadata, lockfiles, utilities.\n\nDocumentation\n-------------\n\nThe `documentation`_ provides information and the API for the following:\n\n- Version Handling\n- Specifiers\n- Markers\n- Licenses\n- Requirements\n- Metadata\n- Tags\n- Lockfiles (pylock)\n- Direct URL helpers\n- Dependency groups\n- Errors\n- Utilities\n\nInstallation\n------------\n\nUse ``pip`` to install these utilities::\n\n    pip install packaging\n\nThe ``packaging`` library uses calendar-based versioning (``YY.N``).\n\nDiscussion\n----------\n\nIf you run into bugs, you can file them in our `issue tracker`_.\n\nYou can also join discussions on `GitHub Discussions`_ to ask questions or get involved.\n\n.. _`documentation`: https://packaging.pypa.io/\n.. _`issue tracker`: https://github.com/pypa/packaging/issues\n.. _`GitHub Discussions`: https://github.com/pypa/packaging/discussions\n\n\nCode of Conduct\n---------------\n\nEveryone interacting in the packaging project's codebases, issue trackers, chat\nrooms, and mailing lists is expected to follow the `PSF Code of Conduct`_.\n\n.. _PSF Code of Conduct: https://github.com/pypa/.github/blob/main/CODE_OF_CONDUCT.md\n\nContributing\n------------\n\nThe ``CONTRIBUTING.rst`` file outlines how to contribute to this project as\nwell as how to report a potential security issue. The documentation for this\nproject also covers information about `project development`_ and `security`_.\n\n.. _`project development`: https://packaging.pypa.io/en/latest/development/\n.. _`security`: https://packaging.pypa.io/en/latest/security/\n\nProject History\n---------------\n\nPlease review the ``CHANGELOG.rst`` file or the `Changelog documentation`_ for\nrecent changes and project history.\n\n.. _`Changelog documentation`: https://packaging.pypa.io/en/latest/changelog/\n\n",
+        "description_content_type": "text/x-rst",
+        "author_email": "Donald Stufft <donald@stufft.io>",
+        "license_expression": "Apache-2.0 OR BSD-2-Clause",
+        "license_file": [
+          "LICENSE",
+          "LICENSE.APACHE",
+          "LICENSE.BSD"
+        ],
+        "classifier": [
+          "Development Status :: 5 - Production/Stable",
+          "Intended Audience :: Developers",
+          "Programming Language :: Python",
+          "Programming Language :: Python :: 3",
+          "Programming Language :: Python :: 3 :: Only",
+          "Programming Language :: Python :: 3.9",
+          "Programming Language :: Python :: 3.10",
+          "Programming Language :: Python :: 3.11",
+          "Programming Language :: Python :: 3.12",
+          "Programming Language :: Python :: 3.13",
+          "Programming Language :: Python :: 3.14",
+          "Programming Language :: Python :: 3.15",
+          "Programming Language :: Python :: Implementation :: CPython",
+          "Programming Language :: Python :: Implementation :: PyPy",
+          "Programming Language :: Python :: Free Threading :: 4 - Resilient",
+          "Typing :: Typed"
+        ],
+        "requires_python": ">=3.9",
+        "project_url": [
+          "Documentation, https://packaging.pypa.io/",
+          "Source, https://github.com/pypa/packaging"
+        ]
+      }
+    },
+    {
+      "download_info": {
+        "url": "https://files.pythonhosted.org/packages/f1/d9/7fb5aa316bc299258e68c73ba3bddbc499654a07f151cba08f6153988714/pathspec-1.1.1-py3-none-any.whl",
+        "archive_info": {
+          "hashes": {
+            "sha256": "a00ce642f577bf7f473932318056212bc4f8bfdf53128c78bbd5af0b9b20b189"
+          },
+          "hash": "sha256=a00ce642f577bf7f473932318056212bc4f8bfdf53128c78bbd5af0b9b20b189"
+        }
+      },
+      "is_direct": false,
+      "is_yanked": false,
+      "requested": true,
+      "metadata": {
+        "metadata_version": "2.4",
+        "name": "pathspec",
+        "version": "1.1.1",
+        "summary": "Utility library for gitignore style pattern matching of file paths.",
+        "description": "\nPathSpec\n========\n\n*pathspec* is a utility library for pattern matching of file paths. So far this\nonly includes Git's `gitignore`_ pattern matching.\n\n.. _`gitignore`: http://git-scm.com/docs/gitignore\n\n\nTutorial\n--------\n\nSay you have a \"Projects\" directory and you want to back it up, but only\ncertain files, and ignore others depending on certain conditions::\n\n\t>>> from pathspec import PathSpec\n\t>>> # The gitignore-style patterns for files to select, but we're including\n\t>>> # instead of ignoring.\n\t>>> spec_text = \"\"\"\n\t...\n\t... # This is a comment because the line begins with a hash: \"#\"\n\t...\n\t... # Include several project directories (and all descendants) relative to\n\t... # the current directory. To reference only a directory you must end with a\n\t... # slash: \"/\"\n\t... /project-a/\n\t... /project-b/\n\t... /project-c/\n\t...\n\t... # Patterns can be negated by prefixing with exclamation mark: \"!\"\n\t...\n\t... # Ignore temporary files beginning or ending with \"~\" and ending with\n\t... # \".swp\".\n\t... !~*\n\t... !*~\n\t... !*.swp\n\t...\n\t... # These are python projects so ignore compiled python files from\n\t... # testing.\n\t... !*.pyc\n\t...\n\t... # Ignore the build directories but only directly under the project\n\t... # directories.\n\t... !/*/build/\n\t...\n\t... \"\"\"\n\nThe ``PathSpec`` class provides an abstraction around pattern implementations,\nand we want to compile our patterns as \"gitignore\" patterns. You could call it a\nwrapper for a list of compiled patterns::\n\n\t>>> spec = PathSpec.from_lines('gitignore', spec_text.splitlines())\n\nIf we wanted to manually compile the patterns, we can use the ``GitIgnoreBasicPattern``\nclass directly. It is used in the background for \"gitignore\" which internally\nconverts patterns to regular expressions::\n\n\t>>> from pathspec.patterns.gitignore.basic import GitIgnoreBasicPattern\n\t>>> patterns = map(GitIgnoreBasicPattern, spec_text.splitlines())\n\t>>> spec = PathSpec(patterns)\n\n``PathSpec.from_lines()`` is a class method which simplifies that.\n\nIf you want to load the patterns from file, you can pass the file object\ndirectly as well::\n\n\t>>> with open('patterns.list', 'r') as fh:\n\t>>>     spec = PathSpec.from_lines('gitignore', fh)\n\nYou can perform matching on a whole directory tree with::\n\n\t>>> matches = set(spec.match_tree_files('path/to/directory'))\n\nOr you can perform matching on a specific set of file paths with::\n\n\t>>> matches = set(spec.match_files(file_paths))\n\nOr check to see if an individual file matches::\n\n\t>>> is_matched = spec.match_file(file_path)\n\nThere's actually two implementations of \"gitignore\". The basic implementation is\nused by ``PathSpec`` and follows patterns as documented by `gitignore`_.\nHowever, Git's behavior differs from the documented patterns. There's some\nedge-cases, and in particular, Git allows including files from excluded\ndirectories which appears to contradict the documentation. ``GitIgnoreSpec``\nhandles these cases to more closely replicate Git's behavior::\n\n\t>>> from pathspec import GitIgnoreSpec\n\t>>> spec = GitIgnoreSpec.from_lines(spec_text.splitlines())\n\nYou do not specify the style of pattern for ``GitIgnoreSpec`` because it should\nalways use ``GitIgnoreSpecPattern`` internally.\n\n\nPerformance\n-----------\n\nRunning lots of regular expression matches against thousands of files in Python\nis slow. Alternate regular expression backends can be used to improve\nperformance. ``PathSpec`` and ``GitIgnoreSpec`` both accept a ``backend``\nparameter to control the backend. The default is \"best\" to automatically choose\nthe best available backend. There are currently 3 backends.\n\nThe \"simple\" backend is the default and it simply uses Python's ``re.Pattern``\nobjects that are normally created. This can be the fastest when there's only 1\nor 2 patterns.\n\nThe \"hyperscan\" backend uses the `hyperscan`_ library. Hyperscan tends to be at\nleast 2 times faster than \"simple\", and generally slower than \"re2\". This can be\nfaster than \"re2\" under the right conditions with pattern counts of 1-25.\n\nThe \"re2\" backend uses the `google-re2`_ library (not to be confused with the\n*re2* library on PyPI which is unrelated and abandoned). Google's re2 tends to\nbe significantly faster than \"simple\", and 3 times faster than \"hyperscan\" at\nhigh pattern counts.\n\nSee `benchmarks_backends.md`_ for comparisons between native Python regular\nexpressions and the optional backends.\n\n\n.. _`benchmarks_backends.md`: https://github.com/cpburnz/python-pathspec/blob/master/benchmarks_backends.md\n.. _`google-re2`: https://pypi.org/project/google-re2/\n.. _`hyperscan`: https://pypi.org/project/hyperscan/\n\n\nFAQ\n---\n\n\n1. How do I ignore files like *.gitignore*?\n+++++++++++++++++++++++++++++++++++++++++++\n\n``GitIgnoreSpec`` (and ``PathSpec``) positively match files by default. To find\nthe files to keep, and exclude files like *.gitignore*, you need to set\n``negate=True`` to flip the results::\n\n\t>>> from pathspec import GitIgnoreSpec\n\t>>> spec = GitIgnoreSpec.from_lines([...])\n\t>>> keep_files = set(spec.match_tree_files('path/to/directory', negate=True))\n\t>>> ignore_files = set(spec.match_tree_files('path/to/directory'))\n\n\nLicense\n-------\n\n*pathspec* is licensed under the `Mozilla Public License Version 2.0`_. See\n`LICENSE`_ or the `FAQ`_ for more information.\n\nIn summary, you may use *pathspec* with any closed or open source project\nwithout affecting the license of the larger work so long as you:\n\n- give credit where credit is due,\n\n- and release any custom changes made to *pathspec*.\n\n.. _`Mozilla Public License Version 2.0`: http://www.mozilla.org/MPL/2.0\n.. _`LICENSE`: LICENSE\n.. _`FAQ`: http://www.mozilla.org/MPL/2.0/FAQ.html\n\n\nSource\n------\n\nThe source code for *pathspec* is available from the GitHub repo\n`cpburnz/python-pathspec`_.\n\n.. _`cpburnz/python-pathspec`: https://github.com/cpburnz/python-pathspec\n\n\nInstallation\n------------\n\n*pathspec* is available for install through `PyPI`_::\n\n\tpip install pathspec\n\n*pathspec* can also be built from source. The following packages will be\nrequired:\n\n- `build`_ (>=0.6.0)\n\n*pathspec* can then be built and installed with::\n\n\tpython -m build\n\tpip install dist/pathspec-*-py3-none-any.whl\n\nThe following optional dependencies can be installed:\n\n- `google-re2`_: Enables optional \"re2\" backend.\n- `hyperscan`_: Enables optional \"hyperscan\" backend.\n- `typing-extensions`_: Improves some type hints.\n\n.. _`PyPI`: http://pypi.python.org/pypi/pathspec\n.. _`build`: https://pypi.org/project/build/\n.. _`typing-extensions`: https://pypi.org/project/typing-extensions/\n\n\nDocumentation\n-------------\n\nDocumentation for *pathspec* is available on `Read the Docs`_.\n\nThe full change history can be found in `CHANGES.rst`_ and `Change History`_.\n\nAn upgrade guide is available in `UPGRADING.rst`_ and `Upgrade Guide`_.\n\n.. _`CHANGES.rst`: https://github.com/cpburnz/python-pathspec/blob/master/CHANGES.rst\n.. _`Change History`: https://python-path-specification.readthedocs.io/en/stable/changes.html\n.. _`Read the Docs`: https://python-path-specification.readthedocs.io\n.. _`UPGRADING.rst`: https://github.com/cpburnz/python-pathspec/blob/master/UPGRADING.rst\n.. _`Upgrade Guide`: https://python-path-specification.readthedocs.io/en/stable/upgrading.html\n\n\nOther Languages\n---------------\n\nThe related project `pathspec-ruby`_ (by *highb*) provides a similar library as\na `Ruby gem`_.\n\n.. _`pathspec-ruby`: https://github.com/highb/pathspec-ruby\n.. _`Ruby gem`: https://rubygems.org/gems/pathspec\n\n\nChange History\n==============\n\n\n1.1.1 (2026-04-26)\n------------------\n\nImprovements:\n\n- Improved type checking with mypy and pyright.\n\nBug fixes:\n\n- Fixed typing on `PathSpec[TPattern]` to `PathSpec[TPattern_co]`.\n- Added missing variant type-hint `type[Pattern]` to `PathSpec.from_lines()` parameter `pattern_factory`.\n- Fixed possible type error when using `+` and `+=` operators on `PathSpec`.\n\n\n1.1.0 (2026-04-22)\n------------------\n\nNew features:\n\n- `Issue #108`_: Specialize pattern type for `PathSpec` as `PathSpec[TPattern]` for better debugging of `PathSpec().patterns`.\n\nBug fixes:\n\n- `Issue #93`_: Git discards invalid range notation. `GitIgnoreSpecPattern` now discards patterns with invalid range notation like Git.\n- `Pull #106`_: Fix escape() not escaping backslash characters.\n\nImprovements:\n\n- `Pull #110`_: Nicer debug print outs (and str for regex pattern).\n\n\n.. _`Pull #106`: https://github.com/cpburnz/python-pathspec/pull/106\n.. _`Issue #108`: https://github.com/cpburnz/python-pathspec/issues/108\n.. _`Pull #110`: https://github.com/cpburnz/python-pathspec/pull/110\n\n\n1.0.4 (2026-01-26)\n------------------\n\nBug fixes:\n\n- `Issue #103`_: Using re2 fails if pyre2 is also installed.\n\n.. _`Issue #103`: https://github.com/cpburnz/python-pathspec/issues/103\n\n\n1.0.3 (2026-01-09)\n------------------\n\nBug fixes:\n\n- `Issue #101`_: pyright strict errors with pathspec >= 1.0.0.\n- `Issue #102`_: No module named 'tomllib'.\n\n\n.. _`Issue #101`: https://github.com/cpburnz/python-pathspec/issues/101\n.. _`Issue #102`: https://github.com/cpburnz/python-pathspec/issues/102\n\n\n1.0.2 (2026-01-07)\n------------------\n\nBug fixes:\n\n- Type hint `collections.abc.Callable` does not properly replace `typing.Callable` until Python 3.9.2.\n\n\n1.0.1 (2026-01-06)\n------------------\n\nBug fixes:\n\n- `Issue #100`_: ValueError(f\"{patterns=!r} cannot be empty.\") when using black.\n\n\n.. _`Issue #100`: https://github.com/cpburnz/python-pathspec/issues/100\n\n\n1.0.0 (2026-01-05)\n------------------\n\nMajor changes:\n\n- `Issue #91`_: Dropped support of EoL Python 3.8.\n- Added concept of backends to allow for faster regular expression matching. The backend can be controlled using the `backend` argument to `PathSpec()`, `PathSpec.from_lines()`, `GitIgnoreSpec()`, and `GitIgnoreSpec.from_lines()`.\n- Renamed \"gitwildmatch\" pattern back to \"gitignore\". The \"gitignore\" pattern behaves slightly differently when used with `PathSpec` (*gitignore* as documented) than with `GitIgnoreSpec` (replicates *Git*'s edge cases).\n\nAPI changes:\n\n- Breaking: protected method `pathspec.pathspec.PathSpec._match_file()` (with a leading underscore) has been removed and replaced by backends. This does not affect normal usage of `PathSpec` or `GitIgnoreSpec`. Only custom subclasses will be affected. If this breaks your usage, let me know by `opening an issue <https://github.com/cpburnz/python-pathspec/issues>`_.\n- Deprecated: \"gitwildmatch\" is now an alias for \"gitignore\".\n- Deprecated: `pathspec.patterns.GitWildMatchPattern` is now an alias for `pathspec.patterns.gitignore.spec.GitIgnoreSpecPattern`.\n- Deprecated: `pathspec.patterns.gitwildmatch` module has been replaced by the `pathspec.patterns.gitignore` package.\n- Deprecated: `pathspec.patterns.gitwildmatch.GitWildMatchPattern` is now an alias for `pathspec.patterns.gitignore.spec.GitIgnoreSpecPattern`.\n- Deprecated: `pathspec.patterns.gitwildmatch.GitWildMatchPatternError` is now an alias for `pathspec.patterns.gitignore.GitIgnorePatternError`.\n- Removed: `pathspec.patterns.gitwildmatch.GitIgnorePattern` has been deprecated since v0.4 (2016-07-15).\n- Signature of method `pathspec.pattern.RegexPattern.match_file()` has been changed from `def match_file(self, file: str) -> RegexMatchResult | None` to `def match_file(self, file: AnyStr) -> RegexMatchResult | None` to reflect usage.\n- Signature of class method `pathspec.pattern.RegexPattern.pattern_to_regex()` has been changed from `def pattern_to_regex(cls, pattern: str) -> tuple[str, bool]` to `def pattern_to_regex(cls, pattern: AnyStr) -> tuple[AnyStr | None, bool | None]` to reflect usage and documentation.\n\nNew features:\n\n- Added optional \"hyperscan\" backend using `hyperscan`_ library. It will automatically be used when installed. This dependency can be installed with ``pip install 'pathspec[hyperscan]'``.\n- Added optional \"re2\" backend using the `google-re2`_ library. It will automatically be used when installed. This dependency can be installed with ``pip install 'pathspec[re2]'``.\n- Added optional dependency on `typing-extensions`_ library to improve some type hints.\n\nBug fixes:\n\n- `Issue #93`_: Do not remove leading spaces.\n- `Issue #95`_: Matching for files inside folder does not seem to behave like .gitignore's.\n- `Issue #98`_: UnboundLocalError in RegexPattern when initialized with `pattern=None`.\n- Type hint on return value of `pathspec.pattern.RegexPattern.match_file()` to match documentation.\n\nImprovements:\n\n- Mark Python 3.13 and 3.14 as supported.\n- No-op patterns are now filtered out when matching files, slightly improving performance.\n- Fix performance regression in `iter_tree_files()` from v0.10.\n\n\n.. _`Issue #38`: https://github.com/cpburnz/python-pathspec/issues/38\n.. _`Issue #91`: https://github.com/cpburnz/python-pathspec/issues/91\n.. _`Issue #93`: https://github.com/cpburnz/python-pathspec/issues/93\n.. _`Issue #95`: https://github.com/cpburnz/python-pathspec/issues/95\n.. _`Issue #98`: https://github.com/cpburnz/python-pathspec/issues/98\n.. _`google-re2`: https://pypi.org/project/google-re2/\n.. _`hyperscan`: https://pypi.org/project/hyperscan/\n.. _`typing-extensions`: https://pypi.org/project/typing-extensions/\n\n",
+        "description_content_type": "text/x-rst",
+        "author_email": "\"Caleb P. Burns\" <cpburnz@gmail.com>",
+        "license_file": [
+          "LICENSE"
+        ],
+        "classifier": [
+          "Development Status :: 5 - Production/Stable",
+          "Intended Audience :: Developers",
+          "License :: OSI Approved :: Mozilla Public License 2.0 (MPL 2.0)",
+          "Operating System :: OS Independent",
+          "Programming Language :: Python",
+          "Programming Language :: Python :: 3",
+          "Programming Language :: Python :: 3.9",
+          "Programming Language :: Python :: 3.10",
+          "Programming Language :: Python :: 3.11",
+          "Programming Language :: Python :: 3.12",
+          "Programming Language :: Python :: 3.13",
+          "Programming Language :: Python :: 3.14",
+          "Programming Language :: Python :: Implementation :: CPython",
+          "Programming Language :: Python :: Implementation :: PyPy",
+          "Topic :: Software Development :: Libraries :: Python Modules",
+          "Topic :: Utilities"
+        ],
+        "requires_dist": [
+          "hyperscan >=0.7 ; extra == \"hyperscan\"",
+          "typing-extensions >=4 ; extra == \"optional\"",
+          "google-re2 >=1.1 ; extra == \"re2\""
+        ],
+        "requires_python": ">=3.9",
+        "project_url": [
+          "Change Log, https://python-path-specification.readthedocs.io/en/latest/changes.html",
+          "Documentation, https://python-path-specification.readthedocs.io/en/latest/index.html",
+          "Issue Tracker, https://github.com/cpburnz/python-pathspec/issues",
+          "Source Code, https://github.com/cpburnz/python-pathspec"
+        ],
+        "provides_extra": [
+          "hyperscan",
+          "optional",
+          "re2"
+        ]
+      }
+    },
+    {
+      "download_info": {
+        "url": "https://files.pythonhosted.org/packages/0a/0d/0e3ecece05b7a7e87ab9fb587855548da437a061326fff64a223b6dcb78a/numpy-2.4.4-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl",
+        "archive_info": {
+          "hashes": {
+            "sha256": "81f4a14bee47aec54f883e0cad2d73986640c1590eb9bfaaba7ad17394481e6e"
+          },
+          "hash": "sha256=81f4a14bee47aec54f883e0cad2d73986640c1590eb9bfaaba7ad17394481e6e"
+        }
+      },
+      "is_direct": false,
+      "is_yanked": false,
+      "requested": true,
+      "metadata": {
+        "metadata_version": "2.4",
+        "name": "numpy",
+        "version": "2.4.4",
+        "summary": "Fundamental package for array computing in Python",
+        "description": "<h1 align=\"center\">\n<img src=\"https://raw.githubusercontent.com/numpy/numpy/main/branding/logo/primary/numpylogo.svg\" width=\"300\">\n</h1><br>\n\n\n[![Powered by NumFOCUS](https://img.shields.io/badge/powered%20by-NumFOCUS-orange.svg?style=flat&colorA=E1523D&colorB=007D8A)](\nhttps://numfocus.org)\n[![PyPI Downloads](https://img.shields.io/pypi/dm/numpy.svg?label=PyPI%20downloads)](\nhttps://pypi.org/project/numpy/)\n[![Conda Downloads](https://img.shields.io/conda/dn/conda-forge/numpy.svg?label=Conda%20downloads)](\nhttps://anaconda.org/conda-forge/numpy)\n[![Stack Overflow](https://img.shields.io/badge/stackoverflow-Ask%20questions-blue.svg)](\nhttps://stackoverflow.com/questions/tagged/numpy)\n[![Nature Paper](https://img.shields.io/badge/DOI-10.1038%2Fs41586--020--2649--2-blue)](\nhttps://doi.org/10.1038/s41586-020-2649-2)\n[![LFX Health Score](https://insights.linuxfoundation.org/api/badge/health-score?project=numpy)](https://insights.linuxfoundation.org/project/numpy)\n[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/numpy/numpy/badge)](https://securityscorecards.dev/viewer/?uri=github.com/numpy/numpy)\n[![Typing](https://img.shields.io/pypi/types/numpy)](https://pypi.org/project/numpy/)\n\n\nNumPy is the fundamental package for scientific computing with Python.\n\n- **Website:** https://numpy.org\n- **Documentation:** https://numpy.org/doc\n- **Mailing list:** https://mail.python.org/mailman/listinfo/numpy-discussion\n- **Source code:** https://github.com/numpy/numpy\n- **Contributing:** https://numpy.org/devdocs/dev/index.html\n- **Bug reports:** https://github.com/numpy/numpy/issues\n- **Report a security vulnerability:** https://tidelift.com/docs/security\n\nIt provides:\n\n- a powerful N-dimensional array object\n- sophisticated (broadcasting) functions\n- tools for integrating C/C++ and Fortran code\n- useful linear algebra, Fourier transform, and random number capabilities\n\nTesting:\n\nNumPy requires `pytest` and `hypothesis`.  Tests can then be run after installation with:\n\n    python -c \"import numpy, sys; sys.exit(numpy.test() is False)\"\n\nCode of Conduct\n----------------------\n\nNumPy is a community-driven open source project developed by a diverse group of\n[contributors](https://numpy.org/teams/). The NumPy leadership has made a strong\ncommitment to creating an open, inclusive, and positive community. Please read the\n[NumPy Code of Conduct](https://numpy.org/code-of-conduct/) for guidance on how to interact\nwith others in a way that makes our community thrive.\n\nCall for Contributions\n----------------------\n\nThe NumPy project welcomes your expertise and enthusiasm!\n\nSmall improvements or fixes are always appreciated. If you are considering larger contributions\nto the source code, please contact us through the [mailing\nlist](https://mail.python.org/mailman/listinfo/numpy-discussion) first.\n\nWriting code isn’t the only way to contribute to NumPy. You can also:\n- review pull requests\n- help us stay on top of new and old issues\n- develop tutorials, presentations, and other educational materials\n- maintain and improve [our website](https://github.com/numpy/numpy.org)\n- develop graphic design for our brand assets and promotional materials\n- translate website content\n- help with outreach and onboard new contributors\n- write grant proposals and help with other fundraising efforts\n\nFor more information about the ways you can contribute to NumPy, visit [our website](https://numpy.org/contribute/). \nIf you’re unsure where to start or how your skills fit in, reach out! You can\nask on the mailing list or here, on GitHub, by opening a new issue or leaving a\ncomment on a relevant issue that is already open.\n\nOur preferred channels of communication are all public, but if you’d like to\nspeak to us in private first, contact our community coordinators at\nnumpy-team@googlegroups.com or on Slack (write numpy-team@googlegroups.com for\nan invitation).\n\nWe also have a biweekly community call, details of which are announced on the\nmailing list. You are very welcome to join.\n\nIf you are new to contributing to open source, [this\nguide](https://opensource.guide/how-to-contribute/) helps explain why, what,\nand how to successfully get involved.\n",
+        "description_content_type": "text/markdown",
+        "author": "Travis E. Oliphant et al.",
+        "maintainer_email": "NumPy Developers <numpy-discussion@python.org>",
+        "license_expression": "BSD-3-Clause AND 0BSD AND MIT AND Zlib AND CC0-1.0",
+        "license_file": [
+          "LICENSE.txt",
+          "numpy/_core/include/numpy/libdivide/LICENSE.txt",
+          "numpy/_core/src/common/pythoncapi-compat/COPYING",
+          "numpy/_core/src/highway/LICENSE",
+          "numpy/_core/src/multiarray/dragon4_LICENSE.txt",
+          "numpy/_core/src/npysort/x86-simd-sort/LICENSE.md",
+          "numpy/_core/src/umath/svml/LICENSE",
+          "numpy/fft/pocketfft/LICENSE.md",
+          "numpy/linalg/lapack_lite/LICENSE.txt",
+          "numpy/ma/LICENSE",
+          "numpy/random/LICENSE.md",
+          "numpy/random/src/distributions/LICENSE.md",
+          "numpy/random/src/mt19937/LICENSE.md",
+          "numpy/random/src/pcg64/LICENSE.md",
+          "numpy/random/src/philox/LICENSE.md",
+          "numpy/random/src/sfc64/LICENSE.md",
+          "numpy/random/src/splitmix64/LICENSE.md"
+        ],
+        "classifier": [
+          "Development Status :: 5 - Production/Stable",
+          "Intended Audience :: Science/Research",
+          "Intended Audience :: Developers",
+          "Programming Language :: C",
+          "Programming Language :: Python",
+          "Programming Language :: Python :: 3",
+          "Programming Language :: Python :: 3.11",
+          "Programming Language :: Python :: 3.12",
+          "Programming Language :: Python :: 3.13",
+          "Programming Language :: Python :: 3.14",
+          "Programming Language :: Python :: 3 :: Only",
+          "Programming Language :: Python :: Implementation :: CPython",
+          "Topic :: Software Development",
+          "Topic :: Scientific/Engineering",
+          "Typing :: Typed",
+          "Operating System :: Microsoft :: Windows",
+          "Operating System :: POSIX",
+          "Operating System :: Unix",
+          "Operating System :: MacOS"
+        ],
+        "requires_python": ">=3.11",
+        "project_url": [
+          "homepage, https://numpy.org",
+          "documentation, https://numpy.org/doc/",
+          "source, https://github.com/numpy/numpy",
+          "download, https://pypi.org/project/numpy/#files",
+          "tracker, https://github.com/numpy/numpy/issues",
+          "release notes, https://numpy.org/doc/stable/release"
+        ]
+      }
+    },
+    {
+      "download_info": {
+        "url": "https://files.pythonhosted.org/packages/5c/c6/5b6b1f7362267494a423b45af684d604491565e81436e3ebeefee68f78fd/pillow-10.2.0-cp312-cp312-manylinux_2_28_x86_64.whl",
+        "archive_info": {
+          "hashes": {
+            "sha256": "127cee571038f252a552760076407f9cff79761c3d436a12af6000cd182a9d04"
+          },
+          "hash": "sha256=127cee571038f252a552760076407f9cff79761c3d436a12af6000cd182a9d04"
+        }
+      },
+      "is_direct": false,
+      "is_yanked": false,
+      "requested": true,
+      "metadata": {
+        "metadata_version": "2.1",
+        "name": "pillow",
+        "version": "10.2.0",
+        "summary": "Python Imaging Library (Fork)",
+        "description": "<p align=\"center\">\n    <img width=\"248\" height=\"250\" src=\"https://raw.githubusercontent.com/python-pillow/pillow-logo/main/pillow-logo-248x250.png\" alt=\"Pillow logo\">\n</p>\n\n# Pillow\n\n## Python Imaging Library (Fork)\n\nPillow is the friendly PIL fork by [Jeffrey A. Clark (Alex) and\ncontributors](https://github.com/python-pillow/Pillow/graphs/contributors).\nPIL is the Python Imaging Library by Fredrik Lundh and Contributors.\nAs of 2019, Pillow development is\n[supported by Tidelift](https://tidelift.com/subscription/pkg/pypi-pillow?utm_source=pypi-pillow&utm_medium=readme&utm_campaign=enterprise).\n\n<table>\n    <tr>\n        <th>docs</th>\n        <td>\n            <a href=\"https://pillow.readthedocs.io/?badge=latest\"><img\n                alt=\"Documentation Status\"\n                src=\"https://readthedocs.org/projects/pillow/badge/?version=latest\"></a>\n        </td>\n    </tr>\n    <tr>\n        <th>tests</th>\n        <td>\n            <a href=\"https://github.com/python-pillow/Pillow/actions/workflows/lint.yml\"><img\n                alt=\"GitHub Actions build status (Lint)\"\n                src=\"https://github.com/python-pillow/Pillow/workflows/Lint/badge.svg\"></a>\n            <a href=\"https://github.com/python-pillow/Pillow/actions/workflows/test.yml\"><img\n                alt=\"GitHub Actions build status (Test Linux and macOS)\"\n                src=\"https://github.com/python-pillow/Pillow/workflows/Test/badge.svg\"></a>\n            <a href=\"https://github.com/python-pillow/Pillow/actions/workflows/test-windows.yml\"><img\n                alt=\"GitHub Actions build status (Test Windows)\"\n                src=\"https://github.com/python-pillow/Pillow/workflows/Test%20Windows/badge.svg\"></a>\n            <a href=\"https://github.com/python-pillow/Pillow/actions/workflows/test-mingw.yml\"><img\n                alt=\"GitHub Actions build status (Test MinGW)\"\n                src=\"https://github.com/python-pillow/Pillow/workflows/Test%20MinGW/badge.svg\"></a>\n            <a href=\"https://github.com/python-pillow/Pillow/actions/workflows/test-cygwin.yml\"><img\n                alt=\"GitHub Actions build status (Test Cygwin)\"\n                src=\"https://github.com/python-pillow/Pillow/workflows/Test%20Cygwin/badge.svg\"></a>\n            <a href=\"https://github.com/python-pillow/Pillow/actions/workflows/test-docker.yml\"><img\n                alt=\"GitHub Actions build status (Test Docker)\"\n                src=\"https://github.com/python-pillow/Pillow/workflows/Test%20Docker/badge.svg\"></a>\n            <a href=\"https://ci.appveyor.com/project/python-pillow/Pillow\"><img\n                alt=\"AppVeyor CI build status (Windows)\"\n                src=\"https://img.shields.io/appveyor/build/python-pillow/Pillow/main.svg?label=Windows%20build\"></a>\n            <a href=\"https://github.com/python-pillow/Pillow/actions/workflows/wheels.yml\"><img\n                alt=\"GitHub Actions build status (Wheels)\"\n                src=\"https://github.com/python-pillow/Pillow/workflows/Wheels/badge.svg\"></a>\n            <a href=\"https://app.travis-ci.com/github/python-pillow/Pillow\"><img\n                alt=\"Travis CI wheels build status (aarch64)\"\n                src=\"https://img.shields.io/travis/com/python-pillow/Pillow/main.svg?label=aarch64%20wheels\"></a>\n            <a href=\"https://app.codecov.io/gh/python-pillow/Pillow\"><img\n                alt=\"Code coverage\"\n                src=\"https://codecov.io/gh/python-pillow/Pillow/branch/main/graph/badge.svg\"></a>\n            <a href=\"https://bugs.chromium.org/p/oss-fuzz/issues/list?sort=-opened&can=1&q=proj:pillow\"><img\n                alt=\"Fuzzing Status\"\n                src=\"https://oss-fuzz-build-logs.storage.googleapis.com/badges/pillow.svg\"></a>\n        </td>\n    </tr>\n    <tr>\n        <th>package</th>\n        <td>\n            <a href=\"https://zenodo.org/badge/latestdoi/17549/python-pillow/Pillow\"><img\n                alt=\"Zenodo\"\n                src=\"https://zenodo.org/badge/17549/python-pillow/Pillow.svg\"></a>\n            <a href=\"https://tidelift.com/subscription/pkg/pypi-pillow?utm_source=pypi-pillow&utm_medium=badge\"><img\n                alt=\"Tidelift\"\n                src=\"https://tidelift.com/badges/package/pypi/Pillow?style=flat\"></a>\n            <a href=\"https://pypi.org/project/Pillow/\"><img\n                alt=\"Newest PyPI version\"\n                src=\"https://img.shields.io/pypi/v/pillow.svg\"></a>\n            <a href=\"https://pypi.org/project/Pillow/\"><img\n                alt=\"Number of PyPI downloads\"\n                src=\"https://img.shields.io/pypi/dm/pillow.svg\"></a>\n            <a href=\"https://www.bestpractices.dev/projects/6331\"><img\n                alt=\"OpenSSF Best Practices\"\n                src=\"https://www.bestpractices.dev/projects/6331/badge\"></a>\n        </td>\n    </tr>\n    <tr>\n        <th>social</th>\n        <td>\n            <a href=\"https://gitter.im/python-pillow/Pillow?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge\"><img\n                alt=\"Join the chat at https://gitter.im/python-pillow/Pillow\"\n                src=\"https://badges.gitter.im/python-pillow/Pillow.svg\"></a>\n            <a href=\"https://twitter.com/PythonPillow\"><img\n                alt=\"Follow on https://twitter.com/PythonPillow\"\n                src=\"https://img.shields.io/badge/tweet-on%20Twitter-00aced.svg\"></a>\n            <a href=\"https://fosstodon.org/@pillow\"><img\n                alt=\"Follow on https://fosstodon.org/@pillow\"\n                src=\"https://img.shields.io/badge/publish-on%20Mastodon-595aff.svg\"\n                rel=\"me\"></a>\n        </td>\n    </tr>\n</table>\n\n## Overview\n\nThe Python Imaging Library adds image processing capabilities to your Python interpreter.\n\nThis library provides extensive file format support, an efficient internal representation, and fairly powerful image processing capabilities.\n\nThe core image library is designed for fast access to data stored in a few basic pixel formats. It should provide a solid foundation for a general image processing tool.\n\n## More Information\n\n- [Documentation](https://pillow.readthedocs.io/)\n  - [Installation](https://pillow.readthedocs.io/en/latest/installation.html)\n  - [Handbook](https://pillow.readthedocs.io/en/latest/handbook/index.html)\n- [Contribute](https://github.com/python-pillow/Pillow/blob/main/.github/CONTRIBUTING.md)\n  - [Issues](https://github.com/python-pillow/Pillow/issues)\n  - [Pull requests](https://github.com/python-pillow/Pillow/pulls)\n- [Release notes](https://pillow.readthedocs.io/en/stable/releasenotes/index.html)\n- [Changelog](https://github.com/python-pillow/Pillow/blob/main/CHANGES.rst)\n  - [Pre-fork](https://github.com/python-pillow/Pillow/blob/main/CHANGES.rst#pre-fork)\n\n## Report a Vulnerability\n\nTo report a security vulnerability, please follow the procedure described in the [Tidelift security policy](https://tidelift.com/docs/security).\n",
+        "description_content_type": "text/markdown",
+        "keywords": [
+          "Imaging"
+        ],
+        "author_email": "\"Jeffrey A. Clark (Alex)\" <aclark@aclark.net>",
+        "license": "HPND",
+        "license_file": [
+          "LICENSE"
+        ],
+        "classifier": [
+          "Development Status :: 6 - Mature",
+          "License :: OSI Approved :: Historical Permission Notice and Disclaimer (HPND)",
+          "Programming Language :: Python :: 3 :: Only",
+          "Programming Language :: Python :: 3.8",
+          "Programming Language :: Python :: 3.9",
+          "Programming Language :: Python :: 3.10",
+          "Programming Language :: Python :: 3.11",
+          "Programming Language :: Python :: 3.12",
+          "Programming Language :: Python :: Implementation :: CPython",
+          "Programming Language :: Python :: Implementation :: PyPy",
+          "Topic :: Multimedia :: Graphics",
+          "Topic :: Multimedia :: Graphics :: Capture :: Digital Camera",
+          "Topic :: Multimedia :: Graphics :: Capture :: Screen Capture",
+          "Topic :: Multimedia :: Graphics :: Graphics Conversion",
+          "Topic :: Multimedia :: Graphics :: Viewers"
+        ],
+        "requires_dist": [
+          "furo ; extra == 'docs'",
+          "olefile ; extra == 'docs'",
+          "sphinx >=2.4 ; extra == 'docs'",
+          "sphinx-copybutton ; extra == 'docs'",
+          "sphinx-inline-tabs ; extra == 'docs'",
+          "sphinx-removed-in ; extra == 'docs'",
+          "sphinxext-opengraph ; extra == 'docs'",
+          "olefile ; extra == 'fpx'",
+          "olefile ; extra == 'mic'",
+          "check-manifest ; extra == 'tests'",
+          "coverage ; extra == 'tests'",
+          "defusedxml ; extra == 'tests'",
+          "markdown2 ; extra == 'tests'",
+          "olefile ; extra == 'tests'",
+          "packaging ; extra == 'tests'",
+          "pyroma ; extra == 'tests'",
+          "pytest ; extra == 'tests'",
+          "pytest-cov ; extra == 'tests'",
+          "pytest-timeout ; extra == 'tests'",
+          "typing-extensions ; (python_version < \"3.10\") and extra == 'typing'",
+          "defusedxml ; extra == 'xmp'"
+        ],
+        "requires_python": ">=3.8",
+        "project_url": [
+          "Changelog, https://github.com/python-pillow/Pillow/blob/main/CHANGES.rst",
+          "Documentation, https://pillow.readthedocs.io",
+          "Funding, https://tidelift.com/subscription/pkg/pypi-pillow?utm_source=pypi-pillow&utm_medium=pypi",
+          "Homepage, https://python-pillow.org",
+          "Mastodon, https://fosstodon.org/@pillow",
+          "Release notes, https://pillow.readthedocs.io/en/stable/releasenotes/index.html",
+          "Source, https://github.com/python-pillow/Pillow",
+          "Twitter, https://twitter.com/PythonPillow"
+        ],
+        "provides_extra": [
+          "docs",
+          "fpx",
+          "mic",
+          "tests",
+          "typing",
+          "xmp"
+        ]
+      }
+    },
+    {
+      "download_info": {
+        "url": "https://files.pythonhosted.org/packages/69/47/a415af0283e4db0398104c6d1c11c9861a98dc67a7aa442a7769ed5d6196/numba-0.65.1-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl",
+        "archive_info": {
+          "hashes": {
+            "sha256": "52bc6f3ceb8fcaff9b2ae26b4c6b1e9fee39db8d355534c0fe4f39a901246b84"
+          },
+          "hash": "sha256=52bc6f3ceb8fcaff9b2ae26b4c6b1e9fee39db8d355534c0fe4f39a901246b84"
+        }
+      },
+      "is_direct": false,
+      "is_yanked": false,
+      "requested": true,
+      "metadata": {
+        "metadata_version": "2.4",
+        "name": "numba",
+        "version": "0.65.1",
+        "dynamic": [
+          "classifier",
+          "description",
+          "home-page",
+          "license",
+          "license-file",
+          "requires-dist",
+          "requires-python",
+          "summary"
+        ],
+        "summary": "compiling Python code using LLVM",
+        "description": "*****\nNumba\n*****\n\n.. image:: https://badges.gitter.im/numba/numba.svg\n   :target: https://gitter.im/numba/numba?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge\n   :alt: Gitter\n\n.. image:: https://img.shields.io/badge/discuss-on%20discourse-blue\n   :target: https://numba.discourse.group/\n   :alt: Discourse\n\n.. image:: https://zenodo.org/badge/3659275.svg\n   :target: https://zenodo.org/badge/latestdoi/3659275\n   :alt: Zenodo DOI\n\n.. image:: https://img.shields.io/pypi/v/numba.svg\n   :target: https://pypi.python.org/pypi/numba/\n   :alt: PyPI\n\n.. image:: https://dev.azure.com/numba/numba/_apis/build/status/numba.numba?branchName=main\n    :target: https://dev.azure.com/numba/numba/_build/latest?definitionId=1?branchName=main\n    :alt: Azure Pipelines\n\nA Just-In-Time Compiler for Numerical Functions in Python\n#########################################################\n\nNumba is an open source, NumPy-aware optimizing compiler for Python sponsored\nby Anaconda, Inc.  It uses the LLVM compiler project to generate machine code\nfrom Python syntax.\n\nNumba can compile a large subset of numerically-focused Python, including many\nNumPy functions.  Additionally, Numba has support for automatic\nparallelization of loops, generation of GPU-accelerated code, and creation of\nufuncs and C callbacks.\n\nFor more information about Numba, see the Numba homepage:\nhttps://numba.pydata.org and the online documentation:\nhttps://numba.readthedocs.io/en/stable/index.html\n\nInstallation\n============\n\nPlease follow the instructions:\n\nhttps://numba.readthedocs.io/en/stable/user/installing.html\n\nDemo\n====\n\nPlease have a look and the demo notebooks via the mybinder service:\n\nhttps://mybinder.org/v2/gh/numba/numba-examples/master?filepath=notebooks\n\nContact\n=======\n\nNumba has a discourse forum for discussions:\n\n* https://numba.discourse.group\n\n",
+        "home_page": "https://numba.pydata.org",
+        "license": "BSD",
+        "license_file": [
+          "LICENSE",
+          "LICENSES.third-party"
+        ],
+        "classifier": [
+          "Development Status :: 4 - Beta",
+          "Intended Audience :: Developers",
+          "License :: OSI Approved :: BSD License",
+          "Operating System :: OS Independent",
+          "Programming Language :: Python",
+          "Programming Language :: Python :: 3",
+          "Programming Language :: Python :: 3.10",
+          "Programming Language :: Python :: 3.11",
+          "Programming Language :: Python :: 3.12",
+          "Programming Language :: Python :: 3.13",
+          "Programming Language :: Python :: 3.14",
+          "Topic :: Software Development :: Compilers"
+        ],
+        "requires_dist": [
+          "llvmlite<0.48,>=0.47.0dev0",
+          "numpy>=1.22",
+          "numpy<2.5,>=1.22"
+        ],
+        "requires_python": ">=3.10"
+      }
+    },
+    {
+      "download_info": {
+        "url": "https://files.pythonhosted.org/packages/e3/1e/2942a0d6d52240d439f44384a40c65d359d9ca70325b65b265c020113121/cuda_pathfinder-1.6.1-py3-none-any.whl",
+        "archive_info": {
+          "hashes": {
+            "sha256": "cc8ec4cb0881fa5bcbf96b6dd75d50e55352b74dd33d4f3d884e192e7c2b6ef8"
+          },
+          "hash": "sha256=cc8ec4cb0881fa5bcbf96b6dd75d50e55352b74dd33d4f3d884e192e7c2b6ef8"
+        }
+      },
+      "is_direct": false,
+      "is_yanked": false,
+      "requested": true,
+      "metadata": {
+        "metadata_version": "2.4",
+        "name": "cuda-pathfinder",
+        "version": "1.6.1",
+        "dynamic": [
+          "license-file"
+        ],
+        "summary": "Pathfinder for CUDA components",
+        "description": ".. SPDX-FileCopyrightText: Copyright (c) 2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.\n.. SPDX-License-Identifier: Apache-2.0\n\n*******************************************************\ncuda-pathfinder: Utilities for locating CUDA components\n*******************************************************\n\n.. image:: https://img.shields.io/badge/NVIDIA-black?logo=nvidia\n   :target: https://www.nvidia.com/\n   :alt: NVIDIA\n\n`cuda.pathfinder <https://nvidia.github.io/cuda-python/cuda-pathfinder/>`_\naims to be a one-stop solution for locating CUDA components. Currently\nit supports locating and loading dynamic libraries (``.so``, ``.dll``), and\nlocating CTK header directories. Support for other artifacts is in progress.\n\n* `Documentation <https://nvidia.github.io/cuda-python/cuda-pathfinder/>`_\n* `Releases <https://nvidia.github.io/cuda-python/cuda-pathfinder/latest/release.html>`_\n* `Repository <https://github.com/NVIDIA/cuda-python/tree/main/cuda_pathfinder/>`_\n* `Issue tracker <https://github.com/NVIDIA/cuda-python/issues/>`_ (select component ``cuda.pathfinder``)\n\n``cuda.pathfinder`` is under active development. Feedback and suggestions are welcome.\n\n\nInstallation\n============\n\n.. code-block:: bash\n\n   pip install cuda-pathfinder\n\n``cuda-pathfinder`` is `CUDA Toolkit (CTK) <https://developer.nvidia.com/cuda-toolkit>`_\nversion-agnostic. It follows the general CUDA Toolkit support policy: the\ntwo most recent major versions are supported simultaneously.\n",
+        "description_content_type": "text/x-rst",
+        "author_email": "NVIDIA Corporation <cuda-python-conduct@nvidia.com>",
+        "license_expression": "Apache-2.0",
+        "license_file": [
+          "LICENSE"
+        ],
+        "requires_python": ">=3.10",
+        "project_url": [
+          "Repository, https://github.com/NVIDIA/cuda-python",
+          "Documentation, https://nvidia.github.io/cuda-python/"
+        ]
+      }
+    },
+    {
+      "download_info": {
+        "url": "https://files.pythonhosted.org/packages/91/97/e3c6e58ece26a053419ba0a18444b5443cfc64451bbf37f84e8143b8bdca/cuda_bindings-12.9.7-cp312-cp312-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl",
+        "archive_info": {
+          "hashes": {
+            "sha256": "4c7ef48c5e13ae90f3b2ecfb72f8e99ac43c8f4c43e67e1325b8aae331453687"
+          },
+          "hash": "sha256=4c7ef48c5e13ae90f3b2ecfb72f8e99ac43c8f4c43e67e1325b8aae331453687"
+        }
+      },
+      "is_direct": false,
+      "is_yanked": false,
+      "requested": true,
+      "metadata": {
+        "metadata_version": "2.4",
+        "name": "cuda-bindings",
+        "version": "12.9.7",
+        "dynamic": [
+          "license-file"
+        ],
+        "summary": "Python bindings for CUDA",
+        "description": ".. SPDX-FileCopyrightText: Copyright (c) 2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.\n.. SPDX-License-Identifier: LicenseRef-NVIDIA-SOFTWARE-LICENSE\n\n****************************************\ncuda-bindings: Low-level CUDA interfaces\n****************************************\n\n`cuda.bindings <https://nvidia.github.io/cuda-python/cuda-bindings/>`_ is a standard set of low-level interfaces, providing full coverage of and 1:1 access to the CUDA host APIs from Python. Checkout the `Overview <https://nvidia.github.io/cuda-python/cuda-bindings/latest/overview.html>`_ for the workflow and performance results.\n\n* `Repository <https://github.com/NVIDIA/cuda-python/tree/main/cuda_bindings>`_\n* `Documentation <https://nvidia.github.io/cuda-python/cuda-bindings/>`_\n* `Examples <https://github.com/NVIDIA/cuda-python/tree/main/cuda_bindings/examples>`_\n* `Issue tracker <https://github.com/NVIDIA/cuda-python/issues/>`_\n\nFor the installation instruction, please refer to the `Installation <https://nvidia.github.io/cuda-python/cuda-bindings/latest/install.html>`_ page.\n",
+        "description_content_type": "text/x-rst",
+        "author_email": "NVIDIA Corporation <cuda-python-conduct@nvidia.com>",
+        "license_expression": "LicenseRef-NVIDIA-SOFTWARE-LICENSE",
+        "license_file": [
+          "LICENSE"
+        ],
+        "classifier": [
+          "Intended Audience :: Developers",
+          "Topic :: Database",
+          "Topic :: Scientific/Engineering",
+          "Programming Language :: Python",
+          "Programming Language :: Python :: 3.9",
+          "Programming Language :: Python :: 3.10",
+          "Programming Language :: Python :: 3.11",
+          "Programming Language :: Python :: 3.12",
+          "Programming Language :: Python :: 3.13",
+          "Environment :: GPU :: NVIDIA CUDA"
+        ],
+        "requires_dist": [
+          "cuda-pathfinder~=1.1",
+          "nvidia-cuda-nvcc-cu12; extra == \"all\"",
+          "nvidia-cuda-nvrtc-cu12; extra == \"all\"",
+          "nvidia-nvjitlink-cu12>=12.3; extra == \"all\"",
+          "nvidia-nvfatbin-cu12; extra == \"all\"",
+          "nvidia-cufile-cu12; sys_platform == \"linux\" and extra == \"all\"",
+          "cython<3.3,>=3.2; extra == \"test\"",
+          "setuptools>=77.0.0; extra == \"test\"",
+          "numpy>=1.21.1; extra == \"test\"",
+          "pytest>=6.2.4; extra == \"test\"",
+          "pytest-benchmark>=3.4.1; extra == \"test\"",
+          "pyglet>=2.1.9; extra == \"test\""
+        ],
+        "project_url": [
+          "Repository, https://github.com/NVIDIA/cuda-python",
+          "Documentation, https://nvidia.github.io/cuda-python/"
+        ],
+        "provides_extra": [
+          "all",
+          "test"
+        ]
+      }
+    },
+    {
+      "download_info": {
+        "url": "https://files.pythonhosted.org/packages/c1/9d/05e753afbaac3f92691059b3ba875589c98a425d69e5808cec32b31b580c/cuda_python-12.9.7-py3-none-any.whl",
+        "archive_info": {
+          "hashes": {
+            "sha256": "23a1fc406d491eef7a7e985095725cb7b20a04a7bd9b7a66400e5c86e082e0aa"
+          },
+          "hash": "sha256=23a1fc406d491eef7a7e985095725cb7b20a04a7bd9b7a66400e5c86e082e0aa"
+        }
+      },
+      "is_direct": false,
+      "is_yanked": false,
+      "requested": true,
+      "metadata": {
+        "metadata_version": "2.4",
+        "name": "cuda-python",
+        "version": "12.9.7",
+        "dynamic": [
+          "license-file",
+          "provides-extra",
+          "requires-dist"
+        ],
+        "summary": "CUDA Python: Performance meets Productivity",
+        "description": ".. SPDX-FileCopyrightText: Copyright (c) 2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.\n.. SPDX-License-Identifier: LicenseRef-NVIDIA-SOFTWARE-LICENSE\n\n**************************************************************\ncuda-python: Metapackage collection of CUDA Python subpackages\n**************************************************************\n\nCUDA Python is the home for accessing NVIDIA's CUDA platform from Python. It consists of multiple components:\n\n* `cuda.core <https://nvidia.github.io/cuda-python/cuda-core/latest>`_: Pythonic access to CUDA Runtime and other core functionalities\n* `cuda.bindings <https://nvidia.github.io/cuda-python/cuda-bindings/latest>`_: Low-level Python bindings to CUDA C APIs\n* `cuda.cooperative <https://nvidia.github.io/cccl/cuda_cooperative/>`_: A Python package providing CCCL's reusable block-wide and warp-wide *device* primitives for use within Numba CUDA kernels\n* `cuda.parallel <https://nvidia.github.io/cccl/cuda_parallel/>`_: A Python package for easy access to CCCL's highly efficient and customizable parallel algorithms, like `sort`, `scan`, `reduce`, `transform`, etc, that are callable on the *host*\n* `numba.cuda <https://nvidia.github.io/numba-cuda/>`_: Numba's target for CUDA GPU programming by directly compiling a restricted subset of Python code into CUDA kernels and device functions following the CUDA execution model.\n\nFor access to NVIDIA CPU & GPU Math Libraries, please refer to `nvmath-python <https://docs.nvidia.com/cuda/nvmath-python/latest>`_.\n\nCUDA Python is currently undergoing an overhaul to improve existing and bring up new components. All of the previously available functionalities from the `cuda-python` package will continue to be available, please refer to the `cuda.bindings <https://nvidia.github.io/cuda-python/cuda-bindings/latest>`_ documentation for installation guide and further detail.\n\ncuda-python as a metapackage\n============================\n\n`cuda-python` is now a metapackage that contains a collection of subpackages. Each subpackage is versioned independently, allowing installation of each component as needed.\n\nSubpackage: cuda.core\n---------------------\n\nThe `cuda.core` package offers idiomatic, pythonic access to CUDA Runtime and other functionalities.\n\nThe goals are to\n\n1. Provide **idiomatic (\"pythonic\")** access to CUDA Driver, Runtime, and JIT compiler toolchain\n2. Focus on **developer productivity** by ensuring end-to-end CUDA development can be performed quickly and entirely in Python\n3. **Avoid homegrown** Python abstractions for CUDA for new Python GPU libraries starting from scratch\n4. **Ease** developer **burden of maintaining** and catching up with latest CUDA features\n5. **Flatten the learning curve** for current and future generations of CUDA developers\n\nSubpackage: cuda.bindings\n-------------------------\n\nThe `cuda.bindings` package is a standard set of low-level interfaces, providing full coverage of and access to the CUDA host APIs from Python.\n\nThe list of available interfaces are:\n\n* CUDA Driver\n* CUDA Runtime\n* NVRTC\n* nvJitLink\n* NVVM\n",
+        "description_content_type": "text/x-rst",
+        "author_email": "NVIDIA Corporation <cuda-python-conduct@nvidia.com>",
+        "license_expression": "LicenseRef-NVIDIA-SOFTWARE-LICENSE",
+        "license_file": [
+          "LICENSE"
+        ],
+        "classifier": [
+          "Operating System :: POSIX :: Linux",
+          "Operating System :: Microsoft :: Windows",
+          "Topic :: Software Development :: Libraries",
+          "Topic :: Education",
+          "Topic :: Scientific/Engineering",
+          "Intended Audience :: Developers",
+          "Intended Audience :: Science/Research",
+          "Intended Audience :: End Users/Desktop",
+          "Programming Language :: Python :: 3 :: Only",
+          "Programming Language :: Python :: 3.10",
+          "Programming Language :: Python :: 3.11",
+          "Programming Language :: Python :: 3.12",
+          "Programming Language :: Python :: 3.13",
+          "Programming Language :: Python :: 3.14",
+          "Programming Language :: Python :: Implementation :: CPython",
+          "Environment :: GPU :: NVIDIA CUDA",
+          "Environment :: GPU :: NVIDIA CUDA :: 12"
+        ],
+        "requires_dist": [
+          "cuda-bindings~=12.9.7",
+          "cuda-bindings[all]~=12.9.7; extra == \"all\""
+        ],
+        "project_url": [
+          "homepage, https://nvidia.github.io/cuda-python/",
+          "documentation, https://nvidia.github.io/cuda-python/",
+          "repository, https://github.com/NVIDIA/cuda-python/",
+          "issues, https://github.com/NVIDIA/cuda-python/issues/"
+        ],
+        "provides_extra": [
+          "all"
+        ]
+      }
+    },
+    {
+      "download_info": {
+        "url": "https://files.pythonhosted.org/packages/5a/a6/944406223a190815d9df156a1d66f3b0352bd8827dc4a8c752196d616dbc/cupy_cuda12x-14.0.1-cp312-cp312-manylinux2014_x86_64.whl",
+        "archive_info": {
+          "hashes": {
+            "sha256": "9f0c81c3509f77be3ae8444759d5b314201b2dfcbbf2ae0d0b5fb7a61f20893c"
+          },
+          "hash": "sha256=9f0c81c3509f77be3ae8444759d5b314201b2dfcbbf2ae0d0b5fb7a61f20893c"
+        }
+      },
+      "is_direct": false,
+      "is_yanked": false,
+      "requested": true,
+      "metadata": {
+        "metadata_version": "2.4",
+        "name": "cupy-cuda12x",
+        "version": "14.0.1",
+        "dynamic": [
+          "description",
+          "description-content-type",
+          "license-file",
+          "provides-extra",
+          "requires-dist"
+        ],
+        "summary": "CuPy: NumPy & SciPy for GPU",
+        "description": ".. image:: https://raw.githubusercontent.com/cupy/cupy/main/docs/image/cupy_logo_1000px.png\n   :width: 400\n\nCuPy : NumPy & SciPy for GPU\n============================\n\n`CuPy <https://cupy.dev/>`_ is a NumPy/SciPy-compatible array library for GPU-accelerated computing with Python.\n\nThis is a CuPy wheel (precompiled binary) package for CUDA 12.x.\nYou need to install `CUDA Toolkit 12.x <https://developer.nvidia.com/cuda-toolkit-archive>`_ locally to use these packages.\nAlternatively, you can install this package together with all needed CUDA components from PyPI by passing the ``[ctk]`` tag::\n\n   $ pip install cupy-cuda12x[ctk]\n\nIf you have another version of CUDA, or want to build from source, refer to the `Installation Guide <https://docs.cupy.dev/en/latest/install.html>`_ for instructions.\n",
+        "description_content_type": "text/x-rst",
+        "author_email": "Seiya Tokui <tokui@preferred.jp>",
+        "maintainer": "CuPy Developers",
+        "license_expression": "MIT",
+        "license_file": [
+          "LICENSE",
+          "docs/source/license.rst"
+        ],
+        "classifier": [
+          "Development Status :: 5 - Production/Stable",
+          "Intended Audience :: Science/Research",
+          "Intended Audience :: Developers",
+          "Programming Language :: Python",
+          "Programming Language :: Python :: 3",
+          "Programming Language :: Python :: 3.10",
+          "Programming Language :: Python :: 3.11",
+          "Programming Language :: Python :: 3.12",
+          "Programming Language :: Python :: 3.13",
+          "Programming Language :: Python :: 3.14",
+          "Programming Language :: Python :: 3 :: Only",
+          "Programming Language :: Cython",
+          "Topic :: Software Development",
+          "Topic :: Scientific/Engineering",
+          "Operating System :: POSIX",
+          "Operating System :: Microsoft :: Windows"
+        ],
+        "requires_dist": [
+          "numpy<2.6,>=2.0",
+          "cuda-pathfinder==1.*,>=1.3.3",
+          "scipy<1.17,>=1.10; extra == \"all\"",
+          "Cython>=3; extra == \"all\"",
+          "optuna>=2.0; extra == \"all\"",
+          "packaging; extra == \"test\"",
+          "pytest>=7.2; extra == \"test\"",
+          "hypothesis<6.55.0,>=6.37.2; extra == \"test\"",
+          "mpmath; extra == \"test\"",
+          "cuda-toolkit[cublas,cudart,cufft,curand,cusolver,cusparse,nvrtc]==12.*; extra == \"ctk\""
+        ],
+        "requires_python": ">=3.10",
+        "project_url": [
+          "Homepage, https://cupy.dev/",
+          "Documentation, https://docs.cupy.dev/",
+          "Bug Tracker, https://github.com/cupy/cupy/issues",
+          "Source Code, https://github.com/cupy/cupy"
+        ],
+        "provides_extra": [
+          "all",
+          "test",
+          "ctk"
+        ]
+      }
+    },
+    {
+      "download_info": {
+        "url": "https://files.pythonhosted.org/packages/7f/96/d6d25a4c307d6645f4a9b91d620c0151c544ad38b5e371313a87d2761004/nvidia_ml_py-13.580.82-py3-none-any.whl",
+        "archive_info": {
+          "hashes": {
+            "sha256": "4361db337b0c551e2d101936dae2e9a60f957af26818e8c0c3a1f32b8db8d0a7"
+          },
+          "hash": "sha256=4361db337b0c551e2d101936dae2e9a60f957af26818e8c0c3a1f32b8db8d0a7"
+        }
+      },
+      "is_direct": false,
+      "is_yanked": false,
+      "requested": true,
+      "metadata": {
+        "metadata_version": "2.4",
+        "name": "nvidia-ml-py",
+        "version": "13.580.82",
+        "dynamic": [
+          "author",
+          "author-email",
+          "classifier",
+          "description",
+          "description-content-type",
+          "home-page",
+          "license",
+          "summary"
+        ],
+        "summary": "Python Bindings for the NVIDIA Management Library",
+        "description": "pyNVML\n======\n\nPython bindings to the NVIDIA Management Library\n------------------------------------------------\n\nProvides a Python interface to GPU management and monitoring functions.\n\nThis is a wrapper around the NVML library.\nFor information about the NVML library, see the NVML developer page\nhttp://developer.nvidia.com/nvidia-management-library-nvml\n\nDownload the latest package from:\nhttp://pypi.python.org/pypi/nvidia-ml-py/\n\nNote this file can be run with 'python -m doctest -v README.txt'\nalthough the results are system dependent\n\nThe nvml header file contains function documentation that is relevant\nto this wrapper. The header file is distributed with.\nhttps://developer.nvidia.com/gpu-deployment-kit\n\nThe main difference is this library handles allocating structs and\npassing pointers to the functions, before returning the desired value.\nNon-success return codes are raised as exceptions as described in the\nsection below.\n\nREQUIRES\n--------\nPython 2.5, or an earlier version with the ctypes module.\n\nINSTALLATION\n------------\n\nPip Installation with python3:\n- `python3 -m pip install nvidia-ml-py`\n\nManual Installation:\n```\n$ tar -xzf nvidia-ml-py-$major-$minor-$patch.tar.gz`\n$ cd nvidia-ml-py-$major-$minor-$patch\n$ sudo python setup.py install\n```\n\nUSAGE\n-----\n```\n>>> from pynvml import *\n>>> nvmlInit()\n>>> print(f\"Driver Version: {nvmlSystemGetDriverVersion()}\")\nDriver Version: 11.515.48\n>>> deviceCount = nvmlDeviceGetCount()\n>>> for i in range(deviceCount):\n...     handle = nvmlDeviceGetHandleByIndex(i)\n...     print(f\"Device {i} : {nvmlDeviceGetName(handle)}\")\n...\nDevice 0 : Tesla K40c\n\n>>> nvmlShutdown()\n```\n\nFUNCTIONS\n---------\nPython methods wrap NVML functions, implemented in a C shared library.\nEach function's use is the same with the following exceptions:\n\n- Instead of returning error codes, failing error codes are raised as Python exceptions.\n\n```\n>>> try:\n...     nvmlDeviceGetCount()\n... except NVMLError as error:\n...     print(error)\n...\nUninitialized\n```\n\n- C function output parameters are returned from the corresponding Python function left to right.\n```\nnvmlReturn_t nvmlDeviceGetEccMode(nvmlDevice_t device,\n                                  nvmlEnableState_t *current,\n                                  nvmlEnableState_t *pending);\n\n>>> nvmlInit()\n>>> handle = nvmlDeviceGetHandleByIndex(0)\n>>> (current, pending) = nvmlDeviceGetEccMode(handle)\n```\n- C structs are converted into Python classes.\n\n```\n// C Function and typedef struct\nnvmlReturn_t DECLDIR nvmlDeviceGetMemoryInfo(nvmlDevice_t device,\n                                             nvmlMemory_t *memory);\ntypedef struct nvmlMemory_st {\n    unsigned long long total;\n    unsigned long long free;\n    unsigned long long used;\n} nvmlMemory_t;\n\n\n# Python call to function and accessing members of ctype struct\n>>> info = nvmlDeviceGetMemoryInfo(handle)\n>>> print(f\"Total memory: {info.total}\")\nTotal memory: 5636292608\n>>> print(f\"Free memory:, {info.free}\")\nFree memory: 5578420224\n>>> print(f\"Used memory: {info.used}\")\nUsed memory: 57872384\n```\n\n- Python handles string buffer creation.\n\n```\n// C Function that needs character array and length\nnvmlReturn_t nvmlSystemGetDriverVersion(char* version,\n                                        unsigned int length);\n\n# Python function handles memory\n>>> version = nvmlSystemGetDriverVersion()\n>>> print(version)\n... 11.520.75\n>>> nvmlShutdown()\n```\n\nFor usage information see the NVML documentation.\n\nVARIABLES\n---------\nAll meaningful NVML constants and enums are exposed in Python.\n\nThe NVML_VALUE_NOT_AVAILABLE constant is not used.  Instead None is mapped to the field.\n\nEXCEPTIONS\n----------\nSince the C library uses return codes and python prefers exception handling, the\nlibrary converts all return codes to various exceptions. The exceptions are generated\nautomatically via a function at run time instead of being defined manually.\n\nThe list of exceptions can be found in NVMLError base class.\n\nThe example seen above in the FUNCTIONS section:\n\n```\n>>> try:\n...     nvmlDeviceGetCount()\n... except NVMLError as error:\n...     print(error)\n...\nUninitialized\n```\n\nCan be more accurately caught like this:\n\n```\n>>> try:\n...     nvmlDeviceGetCount()\n... except NVMLError_Uninitialized as error:\n...     print(error)\n...\nUninitialized\n```\n\nThe conversion from name to exception is like this for all exceptions:\n* `NVML_ERROR_UNINITIALIZED` => `NVMLError_Uninitialized`\n* `NVML_ERROR_LIBRARY_NOT_FOUND` => `NVMLError_LibraryNotFound`\n* `NVML_ERROR_ALREADY_INITIALIZED` => `NVMLError_AlreadyInitialized`\n\nRELEASE NOTES\n-------------\nVersion 2.285.0\n- Added new functions for NVML 2.285.  See NVML documentation for more information.\n- Ported to support Python 3.0 and Python 2.0 syntax.\n- Added nvidia_smi.py tool as a sample app.\n\nVersion 3.295.0\n- Added new functions for NVML 3.295.  See NVML documentation for more information.\n- Updated nvidia_smi.py tool\n- Includes additional error handling\n\nVersion 4.304.0\n- Added new functions for NVML 4.304.  See NVML documentation for more information.\n- Updated nvidia_smi.py tool\n\nVersion 4.304.3\n- Fixing nvmlUnitGetDeviceCount bug\n\nVersion 5.319.0\n- Added new functions for NVML 5.319.  See NVML documentation for more information.\n\nVersion 6.340.0\n- Added new functions for NVML 6.340.  See NVML documentation for more information.\n\nVersion 7.346.0\n- Added new functions for NVML 7.346.  See NVML documentation for more information.\n\nVersion 7.352.0\n- Added new functions for NVML 7.352.  See NVML documentation for more information.\n\nVersion 10.418\n- Added new functions for NVML 10.418.  See NVML documentation for more information.\n- Fixed issues with using the bindings with Python 3.x\n- Replaced sample app nvidia_smi.py with example.py\n\nVersion 11.515.48\n- Python3 support added\n- Updated API to add function new to NVML, bringing pynvml up to date with NVML\n- Added auto-version to handle byte and string conversion automatically for both structs and functions\n- Minor bug fixes\n- Added README.txt correctly in long_description for pypi.org\n\nVersion 11.520\n- Updated Long Description to be actual markdown\n- Added new functions for NVML 11.520\n\nVersion 11.525\n- Added new functions for NVML 11.525\n\nVersion 12.535\n- Added new functions for NVML 12.535. See NVML documentation for more information.\n\nVersion 12.550\n- Added new functions for NVML 12.550. See NVML documentation for more information.\n\nVersion 12.555\n- Added new functions for NVML 12.555. See NVML documentation for more information.\n\nVersion 12.560\n- Added new functions for NVML 12.560. See NVML documentation for more information.\n\nVersion 12.565\n- Added new functions for NVML 12.565. See NVML documentation for more information.\n\nVersion 12.575\n- Added new functions for NVML 12.575. See NVML documentation for more information.\n\nVersion 13.580\n- Major version increased to 13.\n- Several APIs are now deprecated and will be removed in a future release. Please see NVML documentation for more information.\n- Added new functions for NVML 13.580. See NVML documentation for more information.\n\nCOPYRIGHT\n---------\nCopyright (c) 2011-2025, NVIDIA Corporation.  All rights reserved.\n\nLICENSE\n-------\nRedistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:\n\n- Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.\n\n- Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.\n\n- Neither the name of the NVIDIA Corporation nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.\n\nTHIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n\n",
+        "description_content_type": "text/markdown",
+        "home_page": "https://forums.developer.nvidia.com",
+        "author": "NVIDIA Corporation",
+        "author_email": "nvml-bindings@nvidia.com",
+        "license": "BSD",
+        "classifier": [
+          "Development Status :: 5 - Production/Stable",
+          "Intended Audience :: Developers",
+          "Intended Audience :: System Administrators",
+          "License :: OSI Approved :: BSD License",
+          "Operating System :: Microsoft :: Windows",
+          "Operating System :: POSIX :: Linux",
+          "Programming Language :: Python",
+          "Topic :: Software Development :: Libraries :: Python Modules",
+          "Topic :: System :: Hardware",
+          "Topic :: System :: Systems Administration"
+        ]
+      }
+    },
+    {
+      "download_info": {
+        "url": "https://files.pythonhosted.org/packages/e6/4b/e3f2cd17822cf772a4a51a0a8080b0032e6d37b2dbe8cfb724eac4e31c52/llvmlite-0.47.0-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl",
+        "archive_info": {
+          "hashes": {
+            "sha256": "5853bf26160857c0c2573415ff4efe01c4c651e59e2c55c2a088740acfee51cd"
+          },
+          "hash": "sha256=5853bf26160857c0c2573415ff4efe01c4c651e59e2c55c2a088740acfee51cd"
+        }
+      },
+      "is_direct": false,
+      "is_yanked": false,
+      "requested": false,
+      "metadata": {
+        "metadata_version": "2.4",
+        "name": "llvmlite",
+        "version": "0.47.0",
+        "dynamic": [
+          "classifier",
+          "description",
+          "home-page",
+          "license-file",
+          "license-expression",
+          "project-url",
+          "requires-python",
+          "summary"
+        ],
+        "summary": "lightweight wrapper around basic LLVM functionality",
+        "description": "========\nllvmlite\n========\n\n.. image:: https://dev.azure.com/numba/numba/_apis/build/status/numba.llvmlite?branchName=main\n   :target: https://dev.azure.com/numba/numba/_build/latest?definitionId=2&branchName=main\n   :alt: Azure Pipelines\n.. image:: https://coveralls.io/repos/github/numba/llvmlite/badge.svg\n   :target: https://coveralls.io/github/numba/llvmlite\n   :alt: Coveralls.io\n.. image:: https://readthedocs.org/projects/llvmlite/badge/\n   :target: https://llvmlite.readthedocs.io\n   :alt: Readthedocs.io\n\nA Lightweight LLVM Python Binding for Writing JIT Compilers\n-----------------------------------------------------------\n\n.. _llvmpy: https://github.com/llvmpy/llvmpy\n\nllvmlite is a project originally tailored for Numba_'s needs, using the\nfollowing approach:\n\n* A small C wrapper around the parts of the LLVM C++ API we need that are\n  not already exposed by the LLVM C API.\n* A ctypes Python wrapper around the C API.\n* A pure Python implementation of the subset of the LLVM IR builder that we\n  need for Numba.\n\nWhy llvmlite\n============\n\nThe old llvmpy_  binding exposes a lot of LLVM APIs but the mapping of\nC++-style memory management to Python is error prone. Numba_ and many JIT\ncompilers do not need a full LLVM API.  Only the IR builder, optimizer,\nand JIT compiler APIs are necessary.\n\nKey Benefits\n============\n\n* The IR builder is pure Python code and decoupled from LLVM's\n  frequently-changing C++ APIs.\n* Materializing a LLVM module calls LLVM's IR parser which provides\n  better error messages than step-by-step IR building through the C++\n  API (no more segfaults or process aborts).\n* Most of llvmlite uses the LLVM C API which is small but very stable\n  (low maintenance when changing LLVM version).\n* The binding is not a Python C-extension, but a plain DLL accessed using\n  ctypes (no need to wrestle with Python's compiler requirements and C++ 11\n  compatibility).\n* The Python binding layer has sane memory management.\n* llvmlite is faster than llvmpy thanks to a much simpler architecture\n  (the Numba_ test suite is twice faster than it was).\n\nCompatibility\n=============\n\nllvmlite has been tested with Python 3.10 -- 3.13 and is likely to work with\ngreater versions.\n\nAs of version 0.45.0, llvmlite requires LLVM 20.x.x on all architectures\n\nHistorical compatibility table:\n\n=================  ========================\nllvmlite versions  compatible LLVM versions\n=================  ========================\n0.45.0 - ......    20.x.x\n0.44.0             15.x.x and 16.x.x\n0.41.0 - 0.43.0    14.x.x\n0.40.0 - 0.40.1    11.x.x and 14.x.x (12.x.x and 13.x.x untested but may work)\n0.37.0 - 0.39.1    11.x.x\n0.34.0 - 0.36.0    10.0.x (9.0.x for  ``aarch64`` only)\n0.33.0             9.0.x\n0.29.0 - 0.32.0    7.0.x, 7.1.x, 8.0.x\n0.27.0 - 0.28.0    7.0.x\n0.23.0 - 0.26.0    6.0.x\n0.21.0 - 0.22.0    5.0.x\n0.17.0 - 0.20.0    4.0.x\n0.16.0 - 0.17.0    3.9.x\n0.13.0 - 0.15.0    3.8.x\n0.9.0 - 0.12.1     3.7.x\n0.6.0 - 0.8.0      3.6.x\n0.1.0 - 0.5.1      3.5.x\n=================  ========================\n\nDocumentation\n=============\n\nYou'll find the documentation at http://llvmlite.pydata.org\n\n\nPre-built binaries\n==================\n\nWe recommend you use the binaries provided by the Numba_ team for\nthe Conda_ package manager.  You can find them in Numba's `anaconda.org\nchannel <https://anaconda.org/numba>`_.  For example::\n\n   $ conda install --channel=numba llvmlite\n\n(or, simply, the official llvmlite package provided in the Anaconda_\ndistribution)\n\n.. _Numba: http://numba.pydata.org/\n.. _Conda: http://conda.pydata.org/\n.. _Anaconda: http://docs.continuum.io/anaconda/index.html\n\n\nOther build methods\n===================\n\nIf you don't want to use our pre-built packages, you can compile\nand install llvmlite yourself.  The documentation will teach you how:\nhttp://llvmlite.pydata.org/en/latest/install/index.html\n",
+        "home_page": "http://llvmlite.readthedocs.io",
+        "license_expression": "BSD-2-Clause AND Apache-2.0 WITH LLVM-exception",
+        "license_file": [
+          "LICENSE",
+          "LICENSE.thirdparty"
+        ],
+        "classifier": [
+          "Development Status :: 4 - Beta",
+          "Intended Audience :: Developers",
+          "Operating System :: OS Independent",
+          "Programming Language :: Python",
+          "Programming Language :: Python :: 3",
+          "Programming Language :: Python :: 3.10",
+          "Programming Language :: Python :: 3.11",
+          "Programming Language :: Python :: 3.12",
+          "Programming Language :: Python :: 3.13",
+          "Programming Language :: Python :: 3.14",
+          "Topic :: Software Development :: Code Generators",
+          "Topic :: Software Development :: Compilers"
+        ],
+        "requires_python": ">=3.10",
+        "project_url": [
+          "Source, https://github.com/numba/llvmlite"
+        ]
+      }
+    }
+  ],
+  "environment": {
+    "implementation_name": "cpython",
+    "implementation_version": "3.12.3",
+    "os_name": "posix",
+    "platform_machine": "x86_64",
+    "platform_release": "6.8.0-40-generic",
+    "platform_system": "Linux",
+    "platform_version": "#40~22.04.3-Ubuntu SMP PREEMPT_DYNAMIC Tue Jul 30 17:30:19 UTC 2",
+    "python_full_version": "3.12.3",
+    "platform_python_implementation": "CPython",
+    "python_version": "3.12",
+    "sys_platform": "linux"
+  }
+}

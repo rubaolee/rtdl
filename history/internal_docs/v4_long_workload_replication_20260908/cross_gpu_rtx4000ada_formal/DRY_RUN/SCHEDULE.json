@@ -1,0 +1,30 @@
+{
+  "config_sha256": "d9df1b75cb39139f0b580f91319447b9eca24bd27031bd02d125f1ddcc199643",
+  "controller_sha256": "71b3a0f65c675d4e6ea97c954a28136a2f2c781d00da946df573bb90062272d6",
+  "mode": "dry-run",
+  "rows": [
+    {
+      "arm": "new_v4",
+      "block": null,
+      "endpoint": "prepared",
+      "ordinal": 0,
+      "position": 0,
+      "repetitions": 1,
+      "unit_id": "triangle_counting__cit_patents__rt_2a1__4m",
+      "warmups": 0
+    },
+    {
+      "arm": "pyoptix",
+      "block": null,
+      "endpoint": "prepared",
+      "ordinal": 1,
+      "position": 1,
+      "repetitions": 1,
+      "unit_id": "triangle_counting__cit_patents__rt_2a1__4m",
+      "warmups": 0
+    }
+  ],
+  "schema": "rtdl.v4_long_workload.replication_schedule.v1",
+  "worker_count": 2,
+  "worker_sha256": "0009137c032dc13f03065898283c95ed087153eb11a36a69723fea32a4b7ed50"
+}

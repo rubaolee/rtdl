@@ -1,0 +1,94 @@
+{
+  "all_input_and_output_identities_verified": true,
+  "all_journals_reconstructed": true,
+  "all_raw_file_hashes_verified": true,
+  "block_results": [
+    {
+      "block": 0,
+      "medians_ns": {
+        "new_v4": 8764671078,
+        "pyoptix": 8559844317
+      },
+      "new_v4_over_pyoptix": 1.023928795129277
+    },
+    {
+      "block": 1,
+      "medians_ns": {
+        "new_v4": 8743435267,
+        "pyoptix": 8629722092
+      },
+      "new_v4_over_pyoptix": 1.013176922012983
+    },
+    {
+      "block": 2,
+      "medians_ns": {
+        "new_v4": 8857158593,
+        "pyoptix": 8647337643
+      },
+      "new_v4_over_pyoptix": 1.0242642254370453
+    },
+    {
+      "block": 3,
+      "medians_ns": {
+        "new_v4": 8837609598,
+        "pyoptix": 8715134383
+      },
+      "new_v4_over_pyoptix": 1.0140531642562969
+    },
+    {
+      "block": 4,
+      "medians_ns": {
+        "new_v4": 8879155447,
+        "pyoptix": 8669637110
+      },
+      "new_v4_over_pyoptix": 1.0241669096804906
+    },
+    {
+      "block": 5,
+      "medians_ns": {
+        "new_v4": 8803530213,
+        "pyoptix": 8665348234
+      },
+      "new_v4_over_pyoptix": 1.0159465003908117
+    },
+    {
+      "block": 6,
+      "medians_ns": {
+        "new_v4": 8774043112,
+        "pyoptix": 8624533281
+      },
+      "new_v4_over_pyoptix": 1.0173354112192219
+    },
+    {
+      "block": 7,
+      "medians_ns": {
+        "new_v4": 8828728826,
+        "pyoptix": 8752792470
+      },
+      "new_v4_over_pyoptix": 1.00867567193673
+    }
+  ],
+  "discard_count": 0,
+  "distinct_process_id_count": 16,
+  "engineering_target_met": true,
+  "formal_cell_count": 8,
+  "formal_worker_count": 16,
+  "identities": {
+    "config_sha256": "d9df1b75cb39139f0b580f91319447b9eca24bd27031bd02d125f1ddcc199643",
+    "controller_sha256": "71b3a0f65c675d4e6ea97c954a28136a2f2c781d00da946df573bb90062272d6",
+    "dry_run_summary_sha256": "26802297b75f119db412f8794892e2cb1506446269f4a3fbfdf09ef96c8ce223",
+    "formal_progress_sha256": "1094012ee167462ddeecbe57b71c7fe8205ed2689d459cf20eebd416c49e3570",
+    "formal_schedule_sha256": "43dc68bd6ff67717ae4ea85f9b64063ab63625b3dc5283cf3adaceec702f29b4",
+    "formal_summary_sha256": "a4fbc96033405d014a26fc366dc369a75afabf5aca7d7c92f39d9a625ac4f07c",
+    "preregistration_sha256": "feb8a8eeb6df43ac679a49b119428d78f7d00cea681e0ac0ba17646eaeff6509",
+    "worker_sha256": "0009137c032dc13f03065898283c95ed087153eb11a36a69723fea32a4b7ed50"
+  },
+  "max_new_v4_over_pyoptix": 1.0242642254370453,
+  "median_new_v4_over_pyoptix": 1.0166409558050167,
+  "prior_transaction_pooled": false,
+  "project_modules_imported": false,
+  "replication_scope": "cross_gpu_reproducibility",
+  "retry_count": 0,
+  "schema": "rtdl.v4_long_workload.replication_recount.v1",
+  "status": "PASS__METHOD_AND_TARGET"
+}

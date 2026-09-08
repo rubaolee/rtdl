@@ -1,0 +1,29 @@
+{
+  "datasets": {
+    "cit_patents": {
+      "binary_edge_path": "/workspace/rtdl-crossgpu/data/DATA/triangle/cit-Patents.edge",
+      "convert": {
+        "bytes": 132151584,
+        "comment_count": 4,
+        "edge_count": 16518948,
+        "elapsed_ms": 26270.326755940914,
+        "max_vertex": 6009554,
+        "min_vertex": 1,
+        "status": "converted"
+      },
+      "download": {
+        "bytes": 85139832,
+        "status": "existing"
+      },
+      "edge_count_matches_snap": true,
+      "expected_edges": 16518948,
+      "expected_nodes": 3774768,
+      "expected_triangles": 7515023,
+      "gzip_path": "/workspace/rtdl-crossgpu/data/cit-Patents.txt.gz",
+      "name": "cit_patents",
+      "snap_name": "cit-Patents",
+      "source_url": "https://snap.stanford.edu/data/cit-Patents.txt.gz"
+    }
+  },
+  "source": "SNAP datasets used by RT-Graph SIGMETRICS 2025 TC section"
+}

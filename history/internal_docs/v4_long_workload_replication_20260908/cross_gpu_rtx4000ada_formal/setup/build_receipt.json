@@ -1,0 +1,203 @@
+{
+  "build": {
+    "build_environment": {
+      "CMAKE_ARGS": "-DFETCHCONTENT_SOURCE_DIR_OPTIX_HEADERS=/tmp/rtdl-crossgpu/optix-dev",
+      "CUDACXX": "/usr/local/cuda-12.8/bin/nvcc",
+      "CUDA_VISIBLE_DEVICES": "0",
+      "CXX": "/usr/bin/x86_64-linux-gnu-g++-13",
+      "PYOPTIX_CMAKE_ARGS": "-DFETCHCONTENT_SOURCE_DIR_OPTIX_HEADERS=/tmp/rtdl-crossgpu/optix-dev"
+    },
+    "build_stderr": {
+      "bytes": 0,
+      "path": "logs/build_stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "build_stdout": {
+      "bytes": 731,
+      "path": "logs/build_stdout.txt",
+      "sha256": "d60c840fcbcd8c19a73c446e79257f0c73e96b35b31e86f5b6b030539c8b568a"
+    },
+    "cmake_args": "-DFETCHCONTENT_SOURCE_DIR_OPTIX_HEADERS=/tmp/rtdl-crossgpu/optix-dev",
+    "dependency_install_report": {
+      "bytes": 124811,
+      "path": "logs/dependency_install_report.json",
+      "sha256": "2d1876e889b761249c2dbd571ca2cafcc5f6d592d5d7f5ad36d082bf4e670750"
+    },
+    "install_command": [
+      "/tmp/rtdl-crossgpu/venv/bin/python",
+      "-m",
+      "pip",
+      "install",
+      "--force-reinstall",
+      "--no-deps",
+      "/tmp/rtdl-crossgpu/pyoptix-build/wheelhouse/pyoptix-9.1.0-cp312-cp312-linux_x86_64.whl"
+    ],
+    "install_stderr": {
+      "bytes": 0,
+      "path": "logs/install_stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "install_stdout": {
+      "bytes": 174,
+      "path": "logs/install_stdout.txt",
+      "sha256": "31882c29de75389c7cc3315fb86226b37767d416be1af7966f3880061fabc898"
+    },
+    "installed_dependencies": {
+      "cmake": "3.31.6",
+      "cuda-bindings": "12.9.7",
+      "cuda-pathfinder": "1.6.1",
+      "cuda-python": "12.9.7",
+      "cupy-cuda12x": "14.0.1",
+      "llvmlite": "0.47.0",
+      "ninja": "1.13.0",
+      "numba": "0.65.1",
+      "numpy": "2.4.4",
+      "nvidia-ml-py": "13.580.82",
+      "packaging": "26.3",
+      "pathspec": "1.1.1",
+      "pillow": "10.2.0",
+      "pip": "26.2.1",
+      "pybind11": "3.1.0",
+      "scikit-build-core": "1.0.3",
+      "wheel": "0.45.1"
+    },
+    "pip_freeze": {
+      "bytes": 472,
+      "path": "logs/pip_freeze.txt",
+      "sha256": "75b282445d99934ca42038f55d1a36b0317403bf04d5830d96459948ad6dfeea"
+    },
+    "platform": "Linux-6.8.0-40-generic-x86_64-with-glibc2.39",
+    "python_executable": "/tmp/rtdl-crossgpu/venv/bin/python",
+    "python_sha256": "1d3cf64f97cadc79fdc6fe2496a21b7b456cb94211978cfef5a65f616af74fd5",
+    "python_version": "3.12.3",
+    "tools": {
+      "cmake": {
+        "bytes": 172,
+        "path": "/tmp/rtdl-crossgpu/venv/bin/cmake",
+        "sha256": "318c255ff083c6d7c6f9df9359a51323074e90ffc7978031add5e0fa2b27a4a3",
+        "version": "cmake version 3.31.6\n\nCMake suite maintained and supported by Kitware (kitware.com/cmake)."
+      },
+      "cxx": {
+        "bytes": 1027128,
+        "path": "/usr/bin/x86_64-linux-gnu-g++-13",
+        "sha256": "52f1ddb33fe78b9441e0f42e9cd22c571f1101938e046c8a26582494e041cc73",
+        "version": "x86_64-linux-gnu-g++-13 (Ubuntu 13.3.0-6ubuntu2~24.04) 13.3.0\nCopyright (C) 2023 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE."
+      },
+      "ninja": {
+        "bytes": 372384,
+        "path": "/tmp/rtdl-crossgpu/venv/bin/ninja",
+        "sha256": "696f9628a79d9ce50314cf9556d7cd1a1d1ec52b8fd52828f6f9db1719565b67",
+        "version": "1.13.0.git.kitware.jobserver-pipe-1"
+      },
+      "nvcc": {
+        "bytes": 24828456,
+        "path": "/usr/local/cuda-12.8/bin/nvcc",
+        "sha256": "59e4e55f9a38b78c590df1e28a69dad91052958f18a03868ca4a547c043fbba7",
+        "version": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2025 NVIDIA Corporation\nBuilt on Fri_Feb_21_20:23:50_PST_2025\nCuda compilation tools, release 12.8, V12.8.93\nBuild cuda_12.8.r12.8/compiler.35583870_0"
+      }
+    },
+    "wheel_command": [
+      "/tmp/rtdl-crossgpu/venv/bin/python",
+      "-m",
+      "pip",
+      "wheel",
+      "--no-build-isolation",
+      "--no-deps",
+      "--wheel-dir",
+      "/tmp/rtdl-crossgpu/pyoptix-build/wheelhouse",
+      "/tmp/rtdl-crossgpu/pyoptix-build/build_source"
+    ]
+  },
+  "builder": {
+    "bytes": 18471,
+    "path": "inputs/goal5844_build_install_pyoptix.py",
+    "sha256": "ac66acae72e7c0905cc510844910244386c7121c491171b5916aaadb7b96ad34"
+  },
+  "claim_boundary": {
+    "clean_source_build_bound": true,
+    "loaded_extension_bound_to_wheel_member": true,
+    "performance_measurement_in_receipt": false,
+    "public_or_manuscript_claim_authorized": false
+  },
+  "installed": {
+    "distribution_name": "pyoptix",
+    "distribution_version": "9.1.0",
+    "installed_distributions": {
+      "cmake": "3.31.6",
+      "cuda-bindings": "12.9.7",
+      "cuda-pathfinder": "1.6.1",
+      "cuda-python": "12.9.7",
+      "cupy-cuda12x": "14.0.1",
+      "llvmlite": "0.47.0",
+      "ninja": "1.13.0",
+      "numba": "0.65.1",
+      "numpy": "2.4.4",
+      "nvidia-ml-py": "13.580.82",
+      "packaging": "26.3",
+      "pathspec": "1.1.1",
+      "pillow": "10.2.0",
+      "pip": "26.2.1",
+      "pybind11": "3.1.0",
+      "pyoptix": "9.1.0",
+      "scikit-build-core": "1.0.3",
+      "wheel": "0.45.1"
+    },
+    "loaded_extension": {
+      "bytes": 2630616,
+      "path": "installed/_optix.cpython-312-x86_64-linux-gnu.so",
+      "sha256": "0a05db8ccb565ec513a391809bd8b539ccefdd25bd7b75a573ffc7bc5ad55933"
+    },
+    "loaded_extension_source_path": "/tmp/rtdl-crossgpu/venv/lib/python3.12/site-packages/optix/_optix.cpython-312-x86_64-linux-gnu.so",
+    "optix_api_version": "8.0.0",
+    "package_initializer": {
+      "bytes": 895,
+      "path": "installed/optix___init__.py",
+      "sha256": "5b0579af1004eba5dd41b9598f40ced6bb418a59af1de1179d996524c5f458b1"
+    }
+  },
+  "optix_headers": {
+    "api_macro": 80000,
+    "api_version": "8.0.0",
+    "archive": {
+      "bytes": 512000,
+      "path": "inputs/optix-dev.tar",
+      "sha256": "5fe3302b241fb5b0986b6ff0a011e1dd6d5a51a5e8430876be47db0602c08bf3"
+    },
+    "checkout_path": "/tmp/rtdl-crossgpu/optix-dev",
+    "clean": true,
+    "commit": "f60c1e44f18426f426a2ed948f28515b3cf67b8a",
+    "key_header_sha256": {
+      "optix.h": "071e3aae8352d7a53b5d15bf475301a5ac416089cd3b51adb01fd1f5deb7d936",
+      "optix_device.h": "dfd4f7db48315de784c6a309f2d04981108994d01548e4bd262f9ed7a30f6ff3"
+    },
+    "repository_url": "https://github.com/NVIDIA/optix-dev.git",
+    "tree": "23e13ed4f7a076b0eb4ebaf20ddff4bc98efb9d6"
+  },
+  "pyoptix_source": {
+    "archive": {
+      "bytes": 9338880,
+      "path": "inputs/otk-pyoptix.tar",
+      "sha256": "a999f8372d8d46d40735e7535e2fc3ede0cb06bf9244635f8cc91b824830e634"
+    },
+    "checkout_path": "/tmp/rtdl-crossgpu/otk-pyoptix",
+    "clean": true,
+    "commit": "3144f224c0fd18733925faf3d8fb82c7376b8dcf",
+    "repository_url": "https://github.com/NVIDIA/otk-pyoptix.git",
+    "tree": "0bf0ec24efb4a43f129aee25dd265aa8149374e3"
+  },
+  "receipt_sha256": "00126d0e04250dcdb137e4deb14bec988bc420eb9e0d30aef0cf7c9ab3ff7994",
+  "registered_performance_timing_count": 0,
+  "schema": "rtdl.goal5844.pyoptix_clean_build_install.v1",
+  "status": "PASS__CLEAN_SOURCE_WHEEL_AND_LOADED_EXTENSION_BOUND",
+  "transaction_kind": "build_install_provenance_not_performance",
+  "wheel": {
+    "extension_bytes": 2630616,
+    "extension_member": "optix/_optix.cpython-312-x86_64-linux-gnu.so",
+    "extension_sha256": "0a05db8ccb565ec513a391809bd8b539ccefdd25bd7b75a573ffc7bc5ad55933",
+    "file": {
+      "bytes": 620087,
+      "path": "wheelhouse/pyoptix-9.1.0-cp312-cp312-linux_x86_64.whl",
+      "sha256": "ee82f0094eda282790d1dac1952fbfe640e49bf2c9a690e6d91c4243454d764d"
+    }
+  }
+}

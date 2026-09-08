@@ -1,0 +1,147 @@
+{
+  "all_adverse_rows_retained": true,
+  "arms": [
+    "new_v4",
+    "pyoptix"
+  ],
+  "block_orders": [
+    [
+      "new_v4",
+      "pyoptix"
+    ],
+    [
+      "pyoptix",
+      "new_v4"
+    ],
+    [
+      "new_v4",
+      "pyoptix"
+    ],
+    [
+      "pyoptix",
+      "new_v4"
+    ],
+    [
+      "new_v4",
+      "pyoptix"
+    ],
+    [
+      "pyoptix",
+      "new_v4"
+    ],
+    [
+      "new_v4",
+      "pyoptix"
+    ],
+    [
+      "pyoptix",
+      "new_v4"
+    ]
+  ],
+  "claim_boundary": "This separately identified cross-GPU reproducibility transaction can test the exact cit-Patents/4M prepared A/C contract on a different physical GPU. It is not a same-host temporal replay, application-coverage, broad language-overhead, or new-workload result and is never pooled with the prior transaction.",
+  "controller_sha256": "71b3a0f65c675d4e6ea97c954a28136a2f2c781d00da946df573bb90062272d6",
+  "cpu_affinity": {
+    "cpu_ids": [
+      8
+    ]
+  },
+  "discard_allowed": false,
+  "dry_run_summary_sha256": "26802297b75f119db412f8794892e2cb1506446269f4a3fbfdf09ef96c8ce223",
+  "endpoint": "prepared",
+  "engineering_thresholds": {
+    "every_block_new_v4_over_pyoptix_max": 1.35,
+    "median_new_v4_over_pyoptix_max": 1.2
+  },
+  "expected_output_sha256": "f3a9d76129db60b207374aef74b6d5abb6a126a6d4fc7bc88b830a7fc1995e2c",
+  "formal_config_sha256": "d9df1b75cb39139f0b580f91319447b9eca24bd27031bd02d125f1ddcc199643",
+  "formal_result_precommitted": false,
+  "formal_schedule_sha256": "236cabd90969d16af3d933f2adeba9788ca8e3c823240f8957d266e61ad0020d",
+  "formal_worker_count": 16,
+  "formal_worker_zero_reached": false,
+  "implementations": {
+    "new_v4": {
+      "native_build_manifest_path": "/tmp/rtdl-crossgpu/native/BUILD_MANIFEST.json",
+      "native_build_manifest_sha256": "fb5be39eb016bfe0d55b5d6956da7dad05d72354e3cfdcbb08ce03f58a0ea154",
+      "native_library_path": "/tmp/rtdl-crossgpu/native/librtdl_optix.so",
+      "native_library_sha256": "94d9e42be75c86c3186dac1d2a280873206698ea620f5666b83e4d49ce00686d",
+      "source_commit": "02e84374fc092d2bb916cca633eda9592b4ecf07",
+      "source_root": "/tmp/rtdl-successor",
+      "source_tree": "8aad15d686bbc9e1c3b11df998898a0a063a01f1",
+      "triangle_rtdlexe": {
+        "artifact_path": "/tmp/rtdl-crossgpu/triangle-rtdlexe/artifacts/596642ec516415197677685ae660362e86d9ba6001a888ac8fab4afa1700d1ed.rtdlexe",
+        "authority_path": "/tmp/rtdl-crossgpu/triangle-rtdlexe/triangle.authority.json",
+        "deployment_id": "replication-20260908-rtx4000ada/triangle-weighted",
+        "expected_any_hit_proof_sha256": "0487d9c7ba513d360897ba31544a01ec11adbfb666f3fbd5be6a7115843a5f18",
+        "expected_artifact_sha256": "596642ec516415197677685ae660362e86d9ba6001a888ac8fab4afa1700d1ed",
+        "expected_authority_sha256": "2f493f70c5874c5897365c900aed4fa6d560f60cb59e2d7a6769cedce6b78bef",
+        "expected_family_executable_identity_sha256": "bf85b24f01f31dcead5c987d5f728bc73d8603c1bd3bb5109b5271ab24576fa4",
+        "expected_native_sha256": "94d9e42be75c86c3186dac1d2a280873206698ea620f5666b83e4d49ce00686d",
+        "expected_trust_head_sha256": "9e8e6fb670045d3b4a2e9becd43fd0c44292e5a58f1c29639304005a2667d569",
+        "expected_trust_package_sha256": "bf82ee4e395cbfacbfd9ee679c9c68e627fffea61ce216df89042582e1b5acde",
+        "expected_trust_root_sha256": "591763a4d1269ed1a57a5c212326c90eb24b7edac9bd846f4b4add11ebbb8cfb",
+        "trust_head_path": "/tmp/rtdl-crossgpu/triangle-rtdlexe/head.json",
+        "trust_package_path": "/tmp/rtdl-crossgpu/triangle-rtdlexe/package.json",
+        "trust_root_path": "/tmp/rtdl-crossgpu/triangle-rtdlexe/TEST_ONLY_public.json"
+      }
+    },
+    "pyoptix": {
+      "native_build_manifest_path": "/tmp/rtdl-crossgpu/native/BUILD_MANIFEST.json",
+      "native_build_manifest_sha256": "fb5be39eb016bfe0d55b5d6956da7dad05d72354e3cfdcbb08ce03f58a0ea154",
+      "native_library_path": "/tmp/rtdl-crossgpu/native/librtdl_optix.so",
+      "native_library_sha256": "94d9e42be75c86c3186dac1d2a280873206698ea620f5666b83e4d49ce00686d",
+      "source_commit": "02e84374fc092d2bb916cca633eda9592b4ecf07",
+      "source_root": "/tmp/rtdl-successor",
+      "source_tree": "8aad15d686bbc9e1c3b11df998898a0a063a01f1"
+    }
+  },
+  "input_identity": {
+    "dataset": "cit-Patents",
+    "edge_file_sha256": "c5b2c9203eeabb46414965755c33befdb1810e71cb51155eb940a68a6179d855",
+    "expected_triangle_count": 7515023,
+    "max_relation_rows": 4000000,
+    "paper_algorithm": "RT-2A1"
+  },
+  "input_identity_sha256": "26471aec102bfb077e7cb2c21689c018b74bb26db6ff4f5ea6094692941f3aa5",
+  "paired_blocks": 8,
+  "prepared_repetitions_per_worker": 3,
+  "prepared_warmups_per_worker": 1,
+  "prior_transaction": {
+    "archive_sha256": "ef2ca7890c9d415dc1edbe71966aabc512209c9d8608d4eaf460c7c1fddf8bdc",
+    "formal_summary_sha256": "74c8196f6e6f8e3fc13f1d4bce312087950d1e38571909042815ff6470d0672d",
+    "observed_max_new_v4_over_pyoptix": 1.083735,
+    "observed_median_new_v4_over_pyoptix": 1.057361,
+    "pooled_into_this_replication": false,
+    "registered_gpu": {
+      "compute_capability": "8.6",
+      "driver": "550.127.05",
+      "name": "NVIDIA RTX A4500",
+      "uuid": "GPU-5dbda20d-af85-650e-7250-10b265a77143"
+    }
+  },
+  "registered_machine": {
+    "cuda_visible_devices": "0",
+    "gpu": {
+      "compute_capability": "8.9",
+      "driver": "550.127.05",
+      "name": "NVIDIA RTX 4000 Ada Generation",
+      "uuid": "GPU-2a00572b-6cef-b9e6-db0a-c127783a5d46"
+    }
+  },
+  "replication_scope": "cross_gpu_reproducibility",
+  "retry_allowed": false,
+  "schema": "rtdl.v4_long_workload.replication_preregistration.v1",
+  "selection_disclosure": "This replication was requested after observing the prior result. It changes no source, input, algorithm, endpoint, repetitions, CPU affinity, output contract, or engineering threshold.",
+  "status": "FROZEN_BEFORE_REPLICATION_WORKER_ZERO",
+  "transaction_id": "citpatents4m-crossgpu-rtx4000ada-2a00572b-20260908",
+  "unit": {
+    "app": "triangle_counting",
+    "dataset": "cit-Patents",
+    "expected_triangle_count": 7515023,
+    "max_relation_rows": 4000000,
+    "operation": null,
+    "prepared_repetitions": 3,
+    "unit_id": "triangle_counting__cit_patents__rt_2a1__4m"
+  },
+  "unit_id": "triangle_counting__cit_patents__rt_2a1__4m",
+  "worker_sha256": "0009137c032dc13f03065898283c95ed087153eb11a36a69723fea32a4b7ed50"
+}
