@@ -100,8 +100,8 @@ class V4LongWorkloadHarnessTest(unittest.TestCase):
     def test_launch_keeps_stdout_and_stderr_as_separate_raw_bytes(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
-            stdout = root / "stdout.bin"
-            stderr = root / "stderr.bin"
+            stdout = root / "stdout" / "worker.bin"
+            stderr = root / "stderr" / "worker.bin"
             result = controller._launch(
                 [sys.executable, "-c",
                  "import sys;sys.stdout.buffer.write(b'out\\x00');"
