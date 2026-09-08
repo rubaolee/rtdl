@@ -518,6 +518,23 @@ def summarize_population(rows: list[dict[str, Any]]) -> dict[str, Any]:
 
 
 def recount(root: Path, controller_script: Path) -> dict[str, Any]:
+    expected_root_members = {
+        "BASE_CONFIG.sha256", "CGROUP_PRE.txt", "COMPLETED_AT.txt",
+        "CONFIGS.sha256", "CONTROLLER_PROGRESS.tsv", "CPUSET_POST.txt",
+        "CPUSET_PRE.txt", "CPU_TOPOLOGY.txt", "GPU_PROCESSES_POST.txt",
+        "GPU_PROCESSES_PRE.txt", "JOURNALS.sha256", "LAST_COMPLETED_ORDINAL.txt",
+        "LAUNCHES.sha256", "LSCPU.txt", "NVIDIA_SMI_POST.txt",
+        "NVIDIA_SMI_PRE.txt", "RAW_COMPLETE.txt", "SCHEDULE.json",
+        "SCHEDULE.sha256", "SCHEDULE.tsv", "SCHEDULE_TSV.sha256",
+        "SOURCE_COMMIT.txt", "SOURCE_STATUS.txt", "SOURCE_TREE.txt",
+        "STARTED_AT.txt", "STDERR.sha256", "STDOUT.sha256", "WORKERS.sha256",
+        "configs", "journals", "launches", "stderr", "stdout", "workers",
+    }
+    members = list(root.iterdir())
+    require(all(not path.is_symlink() for path in members),
+            "raw root contains a symlink")
+    require({path.name for path in members} == expected_root_members,
+            "raw root member set differs")
     raw_complete = root / "RAW_COMPLETE.txt"
     require(raw_complete.is_file(), "raw-complete marker is missing")
     require(raw_complete.read_text(encoding="utf-8")
