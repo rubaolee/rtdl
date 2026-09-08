@@ -126,6 +126,24 @@ class V4PaperAppsPyOptixOwnersTest(unittest.TestCase):
         self.assertIn("result = owner.execute_count()", body)
         self.assertNotIn("queries=data[\"queries\"]", body[body.index("def execute()", body.index("else:")):])
 
+    def test_librts_scalar_count_front_door_avoids_legacy_compiler_imports(self) -> None:
+        root = Path(__file__).resolve().parents[1]
+        worker = (root / "scripts/v4_paper_apps_pyoptix_worker.py").read_text(
+            encoding="utf-8"
+        )
+        worker_body = worker[
+            worker.index("def _librts_case"):worker.index("def _prepare_case")
+        ]
+        self.assertIn("target, _ = _rtdl_target(config)", worker_body)
+        self.assertNotIn("_rtdl_runtime(config)", worker_body)
+
+        app = (
+            root / "Paper-reproduction-apps/librts-paper/v4_whole_app.py"
+        ).read_text(encoding="utf-8")
+        eager_imports = app[:app.index("APP_DIR =")]
+        self.assertNotIn("v4_bounded_relation", eager_imports)
+        self.assertNotIn("v4_callback_abi", eager_imports)
+
     def test_owner_modules_do_not_import_rtdl(self) -> None:
         root = Path(__file__).resolve().parents[1]
         for name in (

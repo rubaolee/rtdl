@@ -10,26 +10,6 @@ from pathlib import Path
 import sys
 import time
 
-from rtdsl.v4_bounded_relation import (
-    BoundedRelationEmissionSchema,
-    compile_bounded_relation_contract,
-    verify_bounded_relation_schema,
-)
-from rtdsl.v4_bounded_relation_optix_compiler import (
-    compile_verified_bounded_relation_executable,
-)
-from rtdsl.v4_bounded_relation_optix_runtime import run_bounded_relation_callback
-from rtdsl.v4_bounded_relation_prepared_runtime import (
-    prepare_bounded_relation_callback,
-)
-from rtdsl.v4_callback_abi import AnyHitProofAuthority, compile_callback_abi
-from rtdsl.v4_callback_ir import AnyHitDeliveryContract
-from rtdsl.v4_typed_physical_schema import verify_typed_physical_schema
-from rtdsl.v4_box_relation_callback import (
-    compile_callback,
-    exact_closed_aabb_relation,
-    physical_schema,
-)
 from rtdsl.v4_aabb_relation_count_lowering import (
     AabbCountAlgebra,
     PreparedVerifiedAabbRelationCountV4,
@@ -73,6 +53,8 @@ def _load_app():
 
 
 def build_v4_input(paper_algorithm: str):
+    from rtdsl.v4_box_relation_callback import exact_closed_aabb_relation
+
     if paper_algorithm not in FORMAL_PAPER_ALGORITHMS:
         raise ValueError("unsupported LibRTS paper algorithm")
     app = _load_app()
@@ -111,7 +93,10 @@ def build_v4_input(paper_algorithm: str):
     }
 
 
-def _proof(callback) -> AnyHitProofAuthority:
+def _proof(callback) -> object:
+    from rtdsl.v4_callback_abi import AnyHitProofAuthority
+    from rtdsl.v4_callback_ir import AnyHitDeliveryContract
+
     return AnyHitProofAuthority(
         callback_ir_sha256=callback.ir_sha256,
         effect_digest=callback.effect_digest,
@@ -138,6 +123,21 @@ def run_v4_complete(
     expected_numpy_version: str,
     native_library_path,
 ):
+    from rtdsl.v4_bounded_relation import (
+        BoundedRelationEmissionSchema,
+        compile_bounded_relation_contract,
+        verify_bounded_relation_schema,
+    )
+    from rtdsl.v4_bounded_relation_optix_compiler import (
+        compile_verified_bounded_relation_executable,
+    )
+    from rtdsl.v4_bounded_relation_optix_runtime import (
+        run_bounded_relation_callback,
+    )
+    from rtdsl.v4_callback_abi import compile_callback_abi
+    from rtdsl.v4_box_relation_callback import compile_callback, physical_schema
+    from rtdsl.v4_typed_physical_schema import verify_typed_physical_schema
+
     started = time.perf_counter()
     app_input = build_v4_input(paper_algorithm)
     callback = compile_callback()
@@ -238,6 +238,21 @@ def prepare_v4(
     cuda_include, expected_python_version, expected_numba_version,
     expected_numpy_version, native_library_path,
 ) -> PreparedLibRTSV4:
+    from rtdsl.v4_bounded_relation import (
+        BoundedRelationEmissionSchema,
+        compile_bounded_relation_contract,
+        verify_bounded_relation_schema,
+    )
+    from rtdsl.v4_bounded_relation_optix_compiler import (
+        compile_verified_bounded_relation_executable,
+    )
+    from rtdsl.v4_bounded_relation_prepared_runtime import (
+        prepare_bounded_relation_callback,
+    )
+    from rtdsl.v4_callback_abi import compile_callback_abi
+    from rtdsl.v4_box_relation_callback import compile_callback, physical_schema
+    from rtdsl.v4_typed_physical_schema import verify_typed_physical_schema
+
     started = time.perf_counter()
     app_input = build_v4_input(paper_algorithm)
     callback = compile_callback()

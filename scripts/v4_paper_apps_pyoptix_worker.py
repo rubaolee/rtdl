@@ -157,10 +157,7 @@ def _source_identity(config: Mapping[str, Any], config_path: Path) -> dict[str, 
     }
 
 
-def _rtdl_runtime(config: Mapping[str, Any]) -> dict[str, Any]:
-    import numba
-    import numpy as np
-
+def _rtdl_target(config: Mapping[str, Any]) -> tuple[object, Path]:
     from rtdsl.v4_typed_physical_schema import ReferenceTargetProfile
 
     native = Path(config["native_library_path"]).resolve(strict=True)
@@ -172,8 +169,8 @@ def _rtdl_runtime(config: Mapping[str, Any]) -> dict[str, Any]:
         raise ValueError("compute_capability must contain major/minor")
     os.environ["RTDL_OPTIX_LIB"] = str(native)
     os.environ["RTDL_OPTIX_LIBRARY"] = str(native)
-    return {
-        "target": ReferenceTargetProfile(
+    return (
+        ReferenceTargetProfile(
             provider="optix",
             optix_sdk=str(config.get("optix_sdk", "9.0.0")),
             compute_capability=f"{cc[0]}.{cc[1]}",
@@ -181,6 +178,18 @@ def _rtdl_runtime(config: Mapping[str, Any]) -> dict[str, Any]:
             supports_custom_aabb=True,
             supports_builtin_triangle=True,
         ),
+        native,
+    )
+
+
+def _rtdl_runtime(config: Mapping[str, Any]) -> dict[str, Any]:
+    import numba
+    import numpy as np
+
+    target, native = _rtdl_target(config)
+    cc = tuple(int(value) for value in config["compute_capability"])
+    return {
+        "target": target,
         "compute_capability": cc,
         "optix_include": Path(config["optix_include"]).resolve(strict=True),
         "cuda_include": Path(config["cuda_include"]).resolve(strict=True),
@@ -495,8 +504,9 @@ def _librts_case(
             source_root / "Paper-reproduction-apps/librts-paper/v4_whole_app.py",
             "v4_pyoptix_worker_librts_app",
         )
+        target, _ = _rtdl_target(config)
         owner = app.prepare_v4_real_scale_count(
-            target=_rtdl_runtime(config)["target"],
+            target=target,
             indexed_columns=data["indexed"],
             operation=operation,
             native_library_path=config["native_library_path"],
