@@ -100,11 +100,6 @@ def _digest(value: object) -> str:
     return hashlib.sha256(_canonical(value)).hexdigest()
 
 
-_BULK_U32X3_DIGEST_DOMAIN = (
-    b"rtdl.v4.builtin_triangle.bulk_output.u32x3.v1\x00"
-)
-
-
 def _bulk_u32x3_digest(value: object) -> str:
     """Independently hash exact bulk-output bytes without Python row objects."""
 
@@ -123,8 +118,8 @@ def _bulk_u32x3_digest(value: object) -> str:
             "bulk execution did not return a contiguous little-endian Nx3 u32 array",
         )
     digest = hashlib.sha256()
-    digest.update(_BULK_U32X3_DIGEST_DOMAIN)
-    digest.update(int(value.shape[0]).to_bytes(8, "little", signed=False))
+    digest.update(value.dtype.str.encode("ascii"))
+    digest.update(str(tuple(value.shape)).encode("ascii"))
     digest.update(memoryview(value).cast("B"))
     return digest.hexdigest()
 

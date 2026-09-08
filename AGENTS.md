@@ -1,5 +1,22 @@
 # RTDL Codex Working Guide
 
+## Current owner-authorized long-workload performance remediation (2026-09-08)
+
+The user's latest instruction explicitly authorizes a new, independently
+identified performance-remediation transaction after the prior development
+freeze. Execute
+`history/internal_docs/lead_long_workload_performance_20260908/EXECUTION_DIRECTIVE.md`.
+This override is limited to the existing Particle, graph triangle-counting, and
+LibRTS application paths, their competent public-PyOptiX baselines, necessary
+measurement tooling, and matching manuscript/evidence work. It does not reopen
+unrelated language development. Preserve M, E, F2, all four prior application
+transactions, their failures, and every adverse result byte-for-byte. New code,
+preregistration, runs, evidence, and claims require new identities. A run longer
+than one second is not success by itself: the engineering target is paired
+RTDL/PyOptiX median <= 1.20 with every block <= 1.35 on the same natural task,
+while every failure and adverse row remains reportable. No upload, external
+sending, or submission is authorized by this override.
+
 ## Current owner-directed novelty work (2026-09-06)
 
 The user's latest instruction requires concrete literature evidence and a CGO

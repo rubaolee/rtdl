@@ -124,6 +124,86 @@ class Goal5775LoadedProviderIdentityTest(unittest.TestCase):
             )
             self.assertEqual(receipt["provider_library_sha256"], expected)
 
+    def test_registered_session_capture_does_not_resolve_provider_again(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            path = Path(temporary) / "librtdl_optix.so"
+            payload = b"registered-provider"
+            path.write_bytes(payload)
+            library = _audit_library(path)
+            provenance._register_loaded_provider_identity(
+                library, path, hashlib.sha256(payload).hexdigest()
+            )
+            try:
+                with mock.patch.object(
+                    Path,
+                    "resolve",
+                    side_effect=AssertionError("registered capture resolved path"),
+                ):
+                    receipt = provenance.OptixTraversalAuditSession.open(
+                        library=library, nonce=(13, 17)
+                    ).finish(
+                        semantic_digest="1" * 64,
+                        output_digest="2" * 64,
+                        route_identity="test:registered-no-resolve",
+                    )
+            finally:
+                provenance._unregister_loaded_provider_identity(library)
+            self.assertEqual(receipt["provider_library_path"], str(path.resolve()))
+
+    def test_external_snapshot_helper_still_resolves_provider_path(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            path = Path(temporary) / "librtdl_optix.so"
+            path.write_bytes(b"external-provider")
+            snapshot = provenance.NativeTraversalAuditSnapshot()
+            snapshot.nonce_hi = 19
+            snapshot.nonce_lo = 23
+            snapshot.attempted_launch_count = 1
+            snapshot.successful_launch_count = 1
+            snapshot.complete_context_launch_count = 1
+            snapshot.context_bind_count = 1
+            snapshot.raygen_invocation_count = 1
+            snapshot.first_traversable = 29
+            snapshot.last_traversable = 29
+            real_resolve = Path.resolve
+            with mock.patch.object(
+                Path, "resolve", autospec=True, side_effect=real_resolve
+            ) as resolve:
+                captured = provenance.captured_traversal_observation_from_snapshot(
+                    snapshot,
+                    provider_library_path=path,
+                    provider_library_sha256=hashlib.sha256(
+                        b"external-provider"
+                    ).hexdigest(),
+                    nonce=(19, 23),
+                )
+            self.assertEqual(resolve.call_count, 1)
+            self.assertEqual(captured.provider_library_path, path.resolve())
+
+    def test_validated_compact_finish_binds_both_nonce_words(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            path = Path(temporary) / "librtdl_optix.so"
+            path.write_bytes(b"compact-provider")
+            library = _audit_library(path)
+            sentinel = object()
+            with mock.patch.object(
+                provenance,
+                "build_validated_compact_traversal_receipt",
+                return_value=sentinel,
+            ) as build:
+                observed = provenance.OptixTraversalAuditSession.open(
+                    library=library, nonce=(31, 37)
+                ).finish_validated_compact(
+                    semantic_digest="1" * 64,
+                    output_digest="2" * 64,
+                    route_identity="test:compact",
+                    expected_program_bundle="test_bundle",
+                    expected_raygen_invocation_count=1,
+                )
+            self.assertIs(observed, sentinel)
+            snapshot = build.call_args.args[0]
+            self.assertEqual((snapshot.nonce_hi, snapshot.nonce_lo), (31, 37))
+            self.assertEqual(build.call_args.kwargs["execution_sequence"], 37)
+
     def test_rtdl_loader_freezes_digest_on_handle(self):
         with tempfile.TemporaryDirectory() as temporary:
             path = Path(temporary) / "librtdl_optix.so"

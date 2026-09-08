@@ -154,12 +154,13 @@ static_assert(sizeof(RtdlV4ParticleControl) == 16,
 static_assert(sizeof(RtdlV4ParticleFastReceipt) == 96,
               "V4 Particle fast receipt layout changed");
 
-// Both modes validate the execution-coupled status mask written by the device
+// All modes validate the execution-coupled status mask written by the device
 // producer.  Mode 1 additionally reduces exact bounded-relation
 // intersection/any-hit multiplicities from their device columns.  It never
-// manufactures required or terminal phase bits. ``reset_summary`` begins a
-// product execution; two-pass relation execution accumulates both launches
-// before the sole D2H.
+// manufactures required or terminal phase bits. Mode 2 validates lifecycle
+// rows and execution-coupled role counters without requiring an application
+// value column. ``reset_summary`` begins a product execution; two-pass
+// relation execution accumulates both launches before the sole D2H.
 void rtdl_cuda_reduce_v4_callback_product_status_precompiled(
     const void* status_device,
     const uint32_t* intersection_count_device,

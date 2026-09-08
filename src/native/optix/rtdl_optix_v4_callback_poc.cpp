@@ -1576,6 +1576,7 @@ static const char* kV4TriangleColumnPackKernelSrc = R"CUDA(
 struct V4Float3 { float x, y, z; };
 struct V4Uint3 { uint32_t x, y, z; };
 extern "C" __global__ void v4_pack_triangle_columns(
+        const uint32_t* ids,
         const double* x0, const double* y0, const double* z0,
         const double* x1, const double* y1, const double* z1,
         const double* x2, const double* y2, const double* z2,
@@ -1585,6 +1586,7 @@ extern "C" __global__ void v4_pack_triangle_columns(
     if (i >= triangle_count) return;
     const double values[9] = {
         x0[i], y0[i], z0[i], x1[i], y1[i], z1[i], x2[i], y2[i], z2[i]};
+    if (ids != nullptr && ids[i] != i) atomicCAS(error, 0u, 2u);
     for (uint32_t j = 0; j < 9; ++j)
         if (!isfinite(values[j])) atomicCAS(error, 0u, 1u);
     vertices[i * 3u + 0u] = {
@@ -1604,6 +1606,7 @@ static const char* kV4RayColumnPackKernelSrc = R"CUDA(
 #include <stdint.h>
 #include <math.h>
 extern "C" __global__ void v4_pack_ray_columns(
+        const uint32_t* ids,
         const double* ox, const double* oy, const double* oz,
         const double* dx, const double* dy, const double* dz,
         const double* tmax, float* qox, float* qoy, float* qoz,
@@ -1614,6 +1617,7 @@ extern "C" __global__ void v4_pack_ray_columns(
     const double values[7] = {
         ox[i], oy[i], oz[i], dx[i], dy[i], dz[i], tmax[i]};
     bool valid = true;
+    if (ids != nullptr && ids[i] != i) atomicCAS(error, 0u, 2u);
     for (uint32_t j = 0; j < 7; ++j) valid = valid && isfinite(values[j]);
     valid = valid && values[6] > 0.0 &&
         (values[3] != 0.0 || values[4] != 0.0 || values[5] != 0.0);
@@ -1939,6 +1943,7 @@ static TriangleAccelHolder build_v4_triangle_anyhit_accel(
 
 static TriangleAccelHolder build_v4_triangle_anyhit_accel_from_device_columns(
         OptixDeviceContext ctx,
+        const uint32_t* ids,
         const double* x0, const double* y0, const double* z0,
         const double* x1, const double* y1, const double* z1,
         const double* x2, const double* y2, const double* z2,
@@ -1956,6 +1961,7 @@ static TriangleAccelHolder build_v4_triangle_anyhit_accel_from_device_columns(
     CU_CHECK(cuMemAlloc(&result.index_buf, result.index_size_bytes));
     DevPtr error(sizeof(uint32_t));
     CU_CHECK(cuMemsetD32(error.ptr, 0u, 1u));
+    CUdeviceptr dids = reinterpret_cast<CUdeviceptr>(ids);
     CUdeviceptr dx0 = reinterpret_cast<CUdeviceptr>(x0);
     CUdeviceptr dy0 = reinterpret_cast<CUdeviceptr>(y0);
     CUdeviceptr dz0 = reinterpret_cast<CUdeviceptr>(z0);
@@ -1967,7 +1973,7 @@ static TriangleAccelHolder build_v4_triangle_anyhit_accel_from_device_columns(
     CUdeviceptr dz2 = reinterpret_cast<CUdeviceptr>(z2);
     uint32_t count = static_cast<uint32_t>(triangle_count);
     void* args[] = {
-        &dx0, &dy0, &dz0, &dx1, &dy1, &dz1, &dx2, &dy2, &dz2,
+        &dids, &dx0, &dy0, &dz0, &dx1, &dy1, &dz1, &dx2, &dy2, &dz2,
         &result.vertex_buf, &result.index_buf, &error.ptr, &count};
     const unsigned block = 256u;
     const unsigned grid = (count + block - 1u) / block;
@@ -1977,8 +1983,13 @@ static TriangleAccelHolder build_v4_triangle_anyhit_accel_from_device_columns(
     CU_CHECK(cuStreamSynchronize(nullptr));
     uint32_t invalid = 0;
     download(&invalid, error.ptr, 1);
-    if (invalid)
+    if (invalid == 1u)
         throw std::runtime_error("V4 triangle device columns contain nonfinite data");
+    if (invalid == 2u)
+        throw std::runtime_error(
+            "V4 triangle device-column IDs are not canonical launch order");
+    if (invalid)
+        throw std::runtime_error("V4 triangle device-column validation failed");
 
     OptixBuildInput input = {};
     input.type = OPTIX_BUILD_INPUT_TYPE_TRIANGLES;
@@ -2029,6 +2040,7 @@ struct V4PreparedBuiltinTriangle {
     std::array<std::unique_ptr<DevPtr>, 3> output_columns;
     std::array<std::unique_ptr<DevPtr>, 4> diagnostic_columns;
     std::unique_ptr<DevPtr> status;
+    std::unique_ptr<DevPtr> status_summary;
     std::unique_ptr<DevPtr> counters;
     std::unique_ptr<DevPtr> parameters;
     std::mutex execution_mutex;
@@ -2046,12 +2058,15 @@ struct V4PreparedBuiltinTriangle {
             column = std::make_unique<DevPtr>(sizeof(uint32_t) * query_count);
         auto next_status = std::make_unique<DevPtr>(
             sizeof(V4FormalLaunchStatus) * query_count);
+        auto next_status_summary = std::make_unique<DevPtr>(
+            sizeof(RtdlV4CallbackProductStatusSummary));
         auto next_counters = std::make_unique<DevPtr>(sizeof(uint64_t) * 7);
         auto next_parameters = std::make_unique<DevPtr>(sizeof(V4TriangleParams));
         query_columns = std::move(next_queries);
         output_columns = std::move(next_outputs);
         diagnostic_columns = std::move(next_diagnostics);
         status = std::move(next_status);
+        status_summary = std::move(next_status_summary);
         counters = std::move(next_counters);
         parameters = std::move(next_parameters);
         execution_capacity = query_count;
@@ -2177,12 +2192,19 @@ static void execute_v4_prepared_builtin_triangle_callback(
         uint32_t* output_2, uint32_t* observed_primitive_index,
         uint32_t* observed_hit_kind, float* observed_barycentric_x,
         float* observed_barycentric_y, V4FormalLaunchStatus* output_status,
-        uint64_t* output_counters) {
+        uint64_t* output_counters,
+        RtdlV4CallbackProductStatusSummary* output_summary = nullptr) {
+    const bool compact_column_mode = output_summary != nullptr;
     if (!query_origins_xyz || !query_directions_xyz || !query_tmax ||
             query_count == 0 || query_count > UINT32_MAX || !output_0 ||
-            !output_1 || !output_2 || !observed_primitive_index ||
-            !observed_hit_kind || !observed_barycentric_x ||
-            !observed_barycentric_y || !output_status || !output_counters)
+            !output_1 || !output_2 ||
+            (!compact_column_mode && (!observed_primitive_index ||
+                !observed_hit_kind || !observed_barycentric_x ||
+                !observed_barycentric_y || !output_status ||
+                !output_counters)) ||
+            (compact_column_mode && (observed_primitive_index ||
+                observed_hit_kind || observed_barycentric_x ||
+                observed_barycentric_y || output_status || output_counters)))
         throw std::runtime_error("V4 prepared built-in triangle execute inputs are invalid");
     const auto prepared = v4_builtin_triangle_from_token(token);
     std::lock_guard<std::mutex> execution_lock(prepared->execution_mutex);
@@ -2258,18 +2280,47 @@ static void execute_v4_prepared_builtin_triangle_callback(
     OPTIX_CHECK(optixLaunch(
         prepared->pipeline->pipeline, 0, parameter_device.ptr, sizeof(parameters),
         &prepared->pipeline->sbt, static_cast<unsigned int>(query_count), 1, 1));
-    CU_CHECK(cuStreamSynchronize(0));
-    download(output_0, out0.ptr, query_count); download(output_1, out1.ptr, query_count);
-    download(output_2, out2.ptr, query_count);
-    download(observed_primitive_index, observed_primitive.ptr, query_count);
-    download(observed_hit_kind, observed_kind.ptr, query_count);
-    download(observed_barycentric_x, observed_bx.ptr, query_count);
-    download(observed_barycentric_y, observed_by.ptr, query_count);
-    download(output_status, status.ptr, query_count);
-    download(output_counters, counters.ptr, 7);
-    for (size_t index = 0; index < query_count; ++index)
-        if (output_status[index].first_error_claimed || output_status[index].error_code)
-            throw std::runtime_error("V4 prepared built-in triangle callback failed closed");
+    if (compact_column_mode) {
+        rtdl_cuda_reduce_v4_callback_product_status_precompiled(
+            reinterpret_cast<const void*>(status.ptr), nullptr, nullptr,
+            nullptr, nullptr, reinterpret_cast<const uint64_t*>(counters.ptr),
+            query_count, 0u, 2u, (1u << 1u) | (1u << 6u),
+            (1u << 4u) | (1u << 5u),
+            reinterpret_cast<void*>(prepared->status_summary->ptr),
+            1u, 1u, output_summary, 0u);
+        if (output_summary->schema_version != 2u || output_summary->ok != 1u ||
+                output_summary->first_error_claimed != 0u ||
+                output_summary->error_code != 0u ||
+                output_summary->validated_row_count != query_count ||
+                output_summary->invalid_row_count != 0u ||
+                output_summary->role_counters[1] != query_count ||
+                output_summary->role_counters[6] != query_count ||
+                output_summary->role_counters[4] +
+                    output_summary->role_counters[5] != query_count)
+            throw std::runtime_error(
+                "V4 prepared built-in triangle compact lifecycle rejected execution");
+        // Public result bytes cross the host boundary only after the compact
+        // device-status summary has been accepted.
+        download(output_0, out0.ptr, query_count);
+        download(output_1, out1.ptr, query_count);
+        download(output_2, out2.ptr, query_count);
+    } else {
+        CU_CHECK(cuStreamSynchronize(0));
+        download(output_0, out0.ptr, query_count);
+        download(output_1, out1.ptr, query_count);
+        download(output_2, out2.ptr, query_count);
+        download(observed_primitive_index, observed_primitive.ptr, query_count);
+        download(observed_hit_kind, observed_kind.ptr, query_count);
+        download(observed_barycentric_x, observed_bx.ptr, query_count);
+        download(observed_barycentric_y, observed_by.ptr, query_count);
+        download(output_status, status.ptr, query_count);
+        download(output_counters, counters.ptr, 7);
+        for (size_t index = 0; index < query_count; ++index)
+            if (output_status[index].first_error_claimed ||
+                    output_status[index].error_code)
+                throw std::runtime_error(
+                    "V4 prepared built-in triangle callback failed closed");
+    }
 }
 
 static void destroy_v4_prepared_builtin_triangle_callback(uint64_t token) {
@@ -4488,7 +4539,7 @@ static void destroy_v4_prepared_particle_strict_interior(uint64_t token) {
 // GAS are immutable session state; queries remain live execute inputs.
 struct V4PreparedTriangleReduction {
     TriangleAccelHolder accel;
-    std::unique_ptr<PipelineHolder> pipeline;
+    std::shared_ptr<PipelineHolder> pipeline;
     // The immutable artifact carries both the lean product and full diagnostic
     // entry points.  Prepare compiles only the deterministic lean projection;
     // the full diagnostic module is compiled on first diagnostic use.
@@ -4575,6 +4626,13 @@ static void ensure_v4_triangle_reduction_query_capacity(
 static std::mutex g_v4_triangle_reduction_registry_mutex;
 static std::unordered_map<uint64_t, std::shared_ptr<V4PreparedTriangleReduction>>
     g_v4_triangle_reduction_registry;
+struct V4PreparedTriangleDeviceColumnProgram {
+    std::shared_ptr<PipelineHolder> pipeline;
+    std::mutex execution_mutex;
+};
+static std::unordered_map<
+    uint64_t, std::shared_ptr<V4PreparedTriangleDeviceColumnProgram>>
+    g_v4_triangle_device_column_program_registry;
 static uint64_t g_v4_triangle_reduction_next_token = 1;
 
 static uint64_t prepare_v4_triangle_reduction_callback(
@@ -4728,14 +4786,48 @@ static uint64_t prepare_v4_triangle_reduction_callback(
     return token;
 }
 
-static uint64_t prepare_v4_triangle_reduction_device_columns_count_callback(
-        const std::string& composed_ptx,
+static std::shared_ptr<V4PreparedTriangleDeviceColumnProgram>
+v4_triangle_device_column_program_from_token(uint64_t token) {
+    if (token == 0)
+        throw std::runtime_error(
+            "V4 triangle device-column program token is zero");
+    std::lock_guard<std::mutex> lock(g_v4_triangle_reduction_registry_mutex);
+    const auto found = g_v4_triangle_device_column_program_registry.find(token);
+    if (found == g_v4_triangle_device_column_program_registry.end())
+        throw std::runtime_error(
+            "V4 triangle device-column program handle is unknown or closed");
+    return found->second;
+}
+
+static uint64_t prepare_v4_triangle_reduction_device_columns_program(
+        const std::string& composed_ptx) {
+    if (composed_ptx.empty())
+        throw std::runtime_error(
+            "V4 triangle device-column program PTX is empty");
+    auto program = std::make_shared<V4PreparedTriangleDeviceColumnProgram>();
+    OptixDeviceContext ctx = get_optix_context();
+    auto pipeline = build_pipeline(
+        ctx, composed_ptx, v4_rtdlexe_triangle_diagnostic_producer_spec());
+    program->pipeline = std::shared_ptr<PipelineHolder>(std::move(pipeline));
+    std::lock_guard<std::mutex> lock(g_v4_triangle_reduction_registry_mutex);
+    uint64_t token = g_v4_triangle_reduction_next_token++;
+    if (token == 0) token = g_v4_triangle_reduction_next_token++;
+    if (!g_v4_triangle_device_column_program_registry.emplace(
+            token, program).second)
+        throw std::runtime_error(
+            "V4 triangle device-column program token collision");
+    return token;
+}
+
+static uint64_t prepare_v4_triangle_reduction_device_columns_count_with_pipeline(
+        std::shared_ptr<PipelineHolder> pipeline,
+        const uint32_t* triangle_ids,
         const double* triangle_x0, const double* triangle_y0,
         const double* triangle_z0, const double* triangle_x1,
         const double* triangle_y1, const double* triangle_z1,
         const double* triangle_x2, const double* triangle_y2,
         const double* triangle_z2, size_t triangle_count) {
-    if (composed_ptx.empty() || triangle_count == 0 ||
+    if (!pipeline || triangle_count == 0 ||
             triangle_count > UINT32_MAX / 3u)
         throw std::runtime_error(
             "V4 device-column triangle count preparation is invalid");
@@ -4744,15 +4836,10 @@ static uint64_t prepare_v4_triangle_reduction_device_columns_count_callback(
     prepared->event_capacity = 1u;
     OptixDeviceContext ctx = get_optix_context();
     prepared->accel = build_v4_triangle_anyhit_accel_from_device_columns(
-        ctx, triangle_x0, triangle_y0, triangle_z0,
+        ctx, triangle_ids, triangle_x0, triangle_y0, triangle_z0,
         triangle_x1, triangle_y1, triangle_z1,
         triangle_x2, triangle_y2, triangle_z2, triangle_count);
-    // This API returns per-ray device columns for a partner-owned reduction.
-    // The product entries require fast_control and fuse their own scalar
-    // reduction, so binding them here would silently turn a null control into
-    // an empty launch. Bind the compiler-emitted general callback entries.
-    prepared->pipeline = build_pipeline(
-        ctx, composed_ptx, v4_rtdlexe_triangle_diagnostic_producer_spec());
+    prepared->pipeline = std::move(pipeline);
     prepared->event_count = std::make_unique<DevPtr>(sizeof(uint64_t));
     prepared->event_query = std::make_unique<DevPtr>(sizeof(uint32_t));
     prepared->event_primitive = std::make_unique<DevPtr>(sizeof(uint32_t));
@@ -4760,6 +4847,8 @@ static uint64_t prepare_v4_triangle_reduction_device_columns_count_callback(
     prepared->event_signed = std::make_unique<DevPtr>(sizeof(int64_t));
     prepared->event_include = std::make_unique<DevPtr>(sizeof(uint32_t));
     prepared->counters = std::make_unique<DevPtr>(sizeof(uint64_t) * 7u);
+    prepared->status_summary = std::make_unique<DevPtr>(
+        sizeof(RtdlV4CallbackProductStatusSummary));
     prepared->parameters = std::make_unique<DevPtr>(
         sizeof(V4TriangleReductionParams));
     std::lock_guard<std::mutex> lock(g_v4_triangle_reduction_registry_mutex);
@@ -4768,6 +4857,63 @@ static uint64_t prepare_v4_triangle_reduction_device_columns_count_callback(
     if (!g_v4_triangle_reduction_registry.emplace(token, prepared).second)
         throw std::runtime_error("V4 prepared device-column triangle token collision");
     return token;
+}
+
+static uint64_t prepare_v4_triangle_reduction_device_columns_count_callback(
+        const std::string& composed_ptx,
+        const double* triangle_x0, const double* triangle_y0,
+        const double* triangle_z0, const double* triangle_x1,
+        const double* triangle_y1, const double* triangle_z1,
+        const double* triangle_x2, const double* triangle_y2,
+        const double* triangle_z2, size_t triangle_count) {
+    if (composed_ptx.empty())
+        throw std::runtime_error(
+            "V4 device-column triangle count PTX is empty");
+    OptixDeviceContext ctx = get_optix_context();
+    auto unique_pipeline = build_pipeline(
+        ctx, composed_ptx, v4_rtdlexe_triangle_diagnostic_producer_spec());
+    auto pipeline = std::shared_ptr<PipelineHolder>(
+        std::move(unique_pipeline));
+    return prepare_v4_triangle_reduction_device_columns_count_with_pipeline(
+        std::move(pipeline), nullptr, triangle_x0, triangle_y0, triangle_z0,
+        triangle_x1, triangle_y1, triangle_z1,
+        triangle_x2, triangle_y2, triangle_z2, triangle_count);
+}
+
+static uint64_t
+prepare_v4_triangle_reduction_device_columns_count_from_program(
+        uint64_t program_token,
+        const uint32_t* triangle_ids,
+        const double* triangle_x0, const double* triangle_y0,
+        const double* triangle_z0, const double* triangle_x1,
+        const double* triangle_y1, const double* triangle_z1,
+        const double* triangle_x2, const double* triangle_y2,
+        const double* triangle_z2, size_t triangle_count) {
+    const auto program =
+        v4_triangle_device_column_program_from_token(program_token);
+    std::lock_guard<std::mutex> lock(program->execution_mutex);
+    return prepare_v4_triangle_reduction_device_columns_count_with_pipeline(
+        program->pipeline, triangle_ids, triangle_x0, triangle_y0, triangle_z0,
+        triangle_x1, triangle_y1, triangle_z1,
+        triangle_x2, triangle_y2, triangle_z2, triangle_count);
+}
+
+static void destroy_v4_triangle_reduction_device_columns_program(
+        uint64_t token) {
+    ScopedRtdlCudaContext context_guard;
+    std::shared_ptr<V4PreparedTriangleDeviceColumnProgram> removed;
+    {
+        std::lock_guard<std::mutex> lock(
+            g_v4_triangle_reduction_registry_mutex);
+        const auto found =
+            g_v4_triangle_device_column_program_registry.find(token);
+        if (found == g_v4_triangle_device_column_program_registry.end())
+            throw std::runtime_error(
+                "V4 triangle device-column program handle is unknown or closed");
+        removed = found->second;
+        g_v4_triangle_device_column_program_registry.erase(found);
+    }
+    std::lock_guard<std::mutex> execution_lock(removed->execution_mutex);
 }
 
 static std::shared_ptr<V4PreparedTriangleReduction>
@@ -5672,16 +5818,20 @@ static bool v4_prepared_triangle_reduction_cache_digest(
 
 static void execute_v4_prepared_triangle_reduction_device_columns_count_callback(
         uint64_t token,
+        const uint32_t* query_ids,
         const double* query_ox, const double* query_oy,
         const double* query_oz, const double* query_dx,
         const double* query_dy, const double* query_dz,
         const double* query_tmax, size_t query_count,
         uint64_t* output_per_ray_u64_device,
-        uint64_t* output_counters) {
+        uint64_t* output_counters,
+        RtdlV4CallbackProductStatusSummary* output_summary) {
+    const bool compact_status = output_summary != nullptr;
     if (!query_ox || !query_oy || !query_oz || !query_dx || !query_dy ||
             !query_dz || !query_tmax || query_count == 0 ||
             query_count > UINT32_MAX || !output_per_ray_u64_device ||
-            !output_counters)
+            (!compact_status && !output_counters) ||
+            (compact_status && output_counters))
         throw std::runtime_error(
             "V4 prepared triangle device-column count execute inputs are invalid");
     const auto prepared = v4_triangle_reduction_from_token(token);
@@ -5701,6 +5851,7 @@ static void execute_v4_prepared_triangle_reduction_device_columns_count_callback
         status(sizeof(V4FormalLaunchStatus) * query_count),
         counters(sizeof(uint64_t) * 7u);
     CU_CHECK(cuMemsetD32(error.ptr, 0u, 1u));
+    CUdeviceptr dids = reinterpret_cast<CUdeviceptr>(query_ids);
     CUdeviceptr dox = reinterpret_cast<CUdeviceptr>(query_ox);
     CUdeviceptr doy = reinterpret_cast<CUdeviceptr>(query_oy);
     CUdeviceptr doz = reinterpret_cast<CUdeviceptr>(query_oz);
@@ -5710,7 +5861,7 @@ static void execute_v4_prepared_triangle_reduction_device_columns_count_callback
     CUdeviceptr dtmax = reinterpret_cast<CUdeviceptr>(query_tmax);
     uint32_t count = static_cast<uint32_t>(query_count);
     void* args[] = {
-        &dox, &doy, &doz, &ddx, &ddy, &ddz, &dtmax,
+        &dids, &dox, &doy, &doz, &ddx, &ddy, &ddz, &dtmax,
         &qox.ptr, &qoy.ptr, &qoz.ptr, &qdx.ptr, &qdy.ptr, &qdz.ptr,
         &qtmax.ptr, &error.ptr, &count};
     const unsigned block = 256u;
@@ -5721,8 +5872,13 @@ static void execute_v4_prepared_triangle_reduction_device_columns_count_callback
     CU_CHECK(cuStreamSynchronize(nullptr));
     uint32_t invalid = 0;
     download(&invalid, error.ptr, 1);
-    if (invalid)
+    if (invalid == 1u)
         throw std::runtime_error("V4 ray device columns contain invalid data");
+    if (invalid == 2u)
+        throw std::runtime_error(
+            "V4 ray device-column IDs are not canonical launch order");
+    if (invalid)
+        throw std::runtime_error("V4 ray device-column validation failed");
     const CUdeviceptr per_ray =
         reinterpret_cast<CUdeviceptr>(output_per_ray_u64_device);
     CU_CHECK(cuMemsetD8(per_ray, 0, sizeof(uint64_t) * query_count));
@@ -5758,20 +5914,45 @@ static void execute_v4_prepared_triangle_reduction_device_columns_count_callback
     OPTIX_CHECK(optixLaunch(
         prepared->pipeline->pipeline, 0, parameter_device.ptr,
         sizeof(parameters), &prepared->pipeline->sbt, count, 1, 1));
-    CU_CHECK(cuStreamSynchronize(0));
+    if (compact_status) {
+        const auto& producer = v4_rtdlexe_triangle_diagnostic_producer_spec();
+        rtdl_cuda_reduce_v4_callback_product_status_precompiled(
+            reinterpret_cast<const void*>(status.ptr), nullptr, nullptr,
+            reinterpret_cast<const uint64_t*>(per_ray), nullptr,
+            reinterpret_cast<const uint64_t*>(counters.ptr),
+            query_count, 0u, 2u, producer.required_invocation_mask,
+            producer.terminal_invocation_mask,
+            reinterpret_cast<void*>(prepared->status_summary->ptr),
+            1u, 1u, output_summary, 0u);
+        if (output_summary->schema_version != 2u ||
+                output_summary->ok != 1u ||
+                output_summary->first_error_claimed != 0u ||
+                output_summary->error_code != 0u ||
+                output_summary->validated_row_count != query_count ||
+                output_summary->invalid_row_count != 0u ||
+                output_summary->role_counters[1] != query_count ||
+                output_summary->role_counters[6] != query_count ||
+                output_summary->role_counters[5] != query_count)
+            throw std::runtime_error(
+                "V4 triangle device-column compact lifecycle rejected execution");
+    } else {
+        CU_CHECK(cuStreamSynchronize(0));
+    }
     uint64_t observed_event_count = 0;
     download(&observed_event_count, event_count.ptr, 1);
     if (observed_event_count != 0)
         throw std::runtime_error(
             "V4 device-column count route unexpectedly emitted event rows");
-    std::vector<V4FormalLaunchStatus> statuses(query_count);
-    download(statuses.data(), status.ptr, query_count);
-    for (size_t index = 0; index < query_count; ++index)
-        if (statuses[index].first_error_claimed || statuses[index].error_code)
-            throw std::runtime_error(
-                "V4 device-column count callback failed closed at query " +
-                std::to_string(index));
-    download(output_counters, counters.ptr, 7u);
+    if (!compact_status) {
+        std::vector<V4FormalLaunchStatus> statuses(query_count);
+        download(statuses.data(), status.ptr, query_count);
+        for (size_t index = 0; index < query_count; ++index)
+            if (statuses[index].first_error_claimed || statuses[index].error_code)
+                throw std::runtime_error(
+                    "V4 device-column count callback failed closed at query " +
+                    std::to_string(index));
+        download(output_counters, counters.ptr, 7u);
+    }
 }
 
 static void destroy_v4_prepared_triangle_reduction_callback(uint64_t token) {

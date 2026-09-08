@@ -219,7 +219,7 @@ void rtdl_cuda_reduce_v4_callback_product_status_precompiled(
         RtdlV4CallbackProductStatusSummary* summary_host,
         uint64_t cuda_stream) {
     if (status_device == nullptr || summary_device == nullptr || row_count == 0u ||
-            mode > 1u || reset_summary > 1u || copy_summary_to_host > 1u ||
+            mode > 2u || reset_summary > 1u || copy_summary_to_host > 1u ||
             required_invocation_mask == 0u ||
             (terminal_invocation_mask != (1u << 5u) &&
              terminal_invocation_mask != ((1u << 4u) | (1u << 5u))) ||

@@ -54,6 +54,48 @@ _TRIANGLE_KEYS = (
 _RAY_KEYS = ("ids", "ox", "oy", "oz", "dx", "dy", "dz", "tmax")
 
 
+class _CompactDeviceColumnStatusSummary(ctypes.Structure):
+    _fields_ = [
+        ("schema_version", ctypes.c_uint32),
+        ("ok", ctypes.c_uint32),
+        ("first_error_claimed", ctypes.c_uint32),
+        ("error_code", ctypes.c_uint32),
+        ("validated_row_count", ctypes.c_uint64),
+        ("required_invocation_mask", ctypes.c_uint32),
+        ("terminal_invocation_mask", ctypes.c_uint32),
+        ("invalid_row_count", ctypes.c_uint32),
+        ("first_invalid_row", ctypes.c_uint64),
+        ("role_counters", ctypes.c_uint64 * 7),
+        ("success_status_d2h_bytes", ctypes.c_uint64),
+    ]
+
+
+def _validate_compact_device_column_status(
+    summary: _CompactDeviceColumnStatusSummary,
+    query_count: int,
+) -> tuple[int, ...]:
+    counters = tuple(int(value) for value in summary.role_counters)
+    if (
+        ctypes.sizeof(summary) != 112
+        or summary.schema_version != 2
+        or summary.ok != 1
+        or summary.first_error_claimed != 0
+        or summary.error_code != 0
+        or summary.validated_row_count != query_count
+        or summary.required_invocation_mask != ((1 << 1) | (1 << 6))
+        or summary.terminal_invocation_mask != (1 << 5)
+        or summary.invalid_row_count != 0
+        or summary.first_invalid_row != _U64_MAX
+        or counters[1] != query_count
+        or counters[5] != query_count
+        or counters[6] != query_count
+        or summary.success_status_d2h_bytes != ctypes.sizeof(summary)
+    ):
+        raise RuntimeError(
+            "V4 triangle device-column compact lifecycle summary is invalid")
+    return counters
+
+
 class FusionExecutionTokenError(RuntimeError):
     """Stable fail-closed diagnostic for process-local execution tokens."""
 
@@ -344,8 +386,47 @@ def _configure(library):
         library, "rtdl_optix_v4_destroy_prepared_triangle_reduction_callback_v1",
         None,
     )
+    prepare_program = getattr(
+        library,
+        "rtdl_optix_v4_prepare_triangle_reduction_device_columns_program_v2",
+        None,
+    )
+    prepare_from_program = getattr(
+        library,
+        "rtdl_optix_v4_prepare_triangle_reduction_device_columns_count_from_program_v2",
+        None,
+    )
+    prepare_from_program_fused = getattr(
+        library,
+        "rtdl_optix_v4_prepare_triangle_reduction_device_columns_count_from_program_v3",
+        None,
+    )
+    execute_compact = getattr(
+        library,
+        "rtdl_optix_v4_execute_prepared_triangle_reduction_device_columns_count_v2",
+        None,
+    )
+    destroy_program = getattr(
+        library,
+        "rtdl_optix_v4_destroy_triangle_reduction_device_columns_program_v2",
+        None,
+    )
     if prepare is None or execute is None or destroy is None:
         raise RuntimeError("native library lacks V4 device-column triangle count ABI")
+    program_symbols = (prepare_program, prepare_from_program, destroy_program)
+    if any(symbol is not None for symbol in program_symbols) \
+            and not all(symbol is not None for symbol in program_symbols):
+        raise RuntimeError(
+            "native library has an incomplete V4 triangle program-owner ABI")
+    fused_symbols = (prepare_from_program_fused, execute_compact)
+    if any(symbol is not None for symbol in fused_symbols) \
+            and not all(symbol is not None for symbol in fused_symbols):
+        raise RuntimeError(
+            "native library has an incomplete V4 fused column-validation ABI")
+    if all(symbol is not None for symbol in fused_symbols) \
+            and not all(symbol is not None for symbol in program_symbols):
+        raise RuntimeError(
+            "V4 fused column validation requires the program-owner ABI")
     prepare.argtypes = [
         ctypes.c_char_p,
         *([ctypes.c_void_p] * 9), ctypes.c_size_t,
@@ -360,9 +441,45 @@ def _configure(library):
     ]
     destroy.argtypes = [
         ctypes.c_uint64, ctypes.POINTER(ctypes.c_char), ctypes.c_size_t]
-    for symbol in (prepare, execute, destroy):
+    if prepare_program is not None:
+        prepare_program.argtypes = [
+            ctypes.c_char_p, ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_char), ctypes.c_size_t,
+        ]
+        prepare_from_program.argtypes = [
+            ctypes.c_uint64, *([ctypes.c_void_p] * 9), ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_uint64), ctypes.POINTER(ctypes.c_char),
+            ctypes.c_size_t,
+        ]
+        if prepare_from_program_fused is not None:
+            prepare_from_program_fused.argtypes = [
+                ctypes.c_uint64, *([ctypes.c_void_p] * 10), ctypes.c_size_t,
+                ctypes.POINTER(ctypes.c_uint64), ctypes.POINTER(ctypes.c_char),
+                ctypes.c_size_t,
+            ]
+            execute_compact.argtypes = [
+                ctypes.c_uint64, *([ctypes.c_void_p] * 8), ctypes.c_size_t,
+                ctypes.c_void_p,
+                ctypes.POINTER(_CompactDeviceColumnStatusSummary),
+                ctypes.POINTER(ctypes.c_char), ctypes.c_size_t,
+            ]
+        destroy_program.argtypes = [
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_char), ctypes.c_size_t,
+        ]
+    for symbol in (
+        prepare, execute, destroy,
+        prepare_program, prepare_from_program, destroy_program,
+        prepare_from_program_fused, execute_compact,
+    ):
+        if symbol is None:
+            continue
         symbol.restype = ctypes.c_int
-    return prepare, execute, destroy
+    return (
+        prepare, execute, destroy,
+        prepare_program, prepare_from_program, destroy_program,
+        prepare_from_program_fused, execute_compact,
+    )
 
 
 def _raise(status: int, error, label: str) -> None:
@@ -372,7 +489,9 @@ def _raise(status: int, error, label: str) -> None:
             f"{label} failed with status {status}")
 
 
-def _device_columns(cp, columns, keys, *, floating: frozenset[str]):
+def _device_columns(
+    cp, columns, keys, *, floating: frozenset[str], validate_ids: bool = True,
+):
     if set(columns) != set(keys):
         raise ValueError(f"device columns must contain exactly {keys!r}")
     result = {}
@@ -393,9 +512,10 @@ def _device_columns(cp, columns, keys, *, floating: frozenset[str]):
         result[key] = value
     if not count:
         raise ValueError("device columns must be nonempty")
-    ids = result["ids"]
-    if not bool(cp.all(ids == cp.arange(count, dtype=cp.uint32)).item()):
-        raise ValueError("device column IDs must be canonical launch order")
+    if validate_ids:
+        ids = result["ids"]
+        if not bool(cp.all(ids == cp.arange(count, dtype=cp.uint32)).item()):
+            raise ValueError("device column IDs must be canonical launch order")
     return result, count, device_id
 
 
@@ -448,10 +568,31 @@ class VerifiedTriangleDeviceColumnCountExecutor:
         self._contract = contract
         self._abi = abi
         self._library = library
-        self._prepare, self._execute, self._destroy = _configure(library)
+        (
+            self._prepare,
+            self._execute,
+            self._destroy,
+            self._prepare_program,
+            self._prepare_from_program,
+            self._destroy_program,
+            self._prepare_from_program_fused,
+            self._execute_compact,
+        ) = _configure(library)
         self._composed_ptx = composed_ptx
         self._composed_ptx_sha = hashlib.sha256(composed_ptx.encode()).hexdigest()
         self._native_sha = native_sha
+        self._program_token = 0
+        if self._prepare_program is not None:
+            program_token = ctypes.c_uint64()
+            error = ctypes.create_string_buffer(16384)
+            _raise(int(self._prepare_program(
+                composed_ptx.encode(), ctypes.byref(program_token),
+                error, len(error))), error,
+                "V4 device-column triangle program prepare")
+            if not program_token.value:
+                raise RuntimeError(
+                    "V4 device-column triangle program returned zero token")
+            self._program_token = int(program_token.value)
         self._closed = False
         self._fusion_execution_owner_key = object()
 
@@ -497,8 +638,12 @@ class VerifiedTriangleDeviceColumnCountExecutor:
             id(self),
             id(self._library),
             id(self._prepare),
+            id(self._prepare_from_program),
+            id(self._prepare_from_program_fused),
             id(self._execute),
+            id(self._execute_compact),
             id(self._destroy),
+            self._program_token,
             self._fresh.callback.ir_sha256,
             self._fresh.authority_nonce,
             self._contract.contract_sha256,
@@ -674,11 +819,17 @@ class VerifiedTriangleDeviceColumnCountExecutor:
 
         import cupy as cp
 
+        fused_column_validation = self._prepare_from_program_fused is not None
         triangles, triangle_count, triangle_device = _device_columns(
             cp, triangles, _TRIANGLE_KEYS,
-            floating=frozenset(_TRIANGLE_KEYS) - {"ids"})
+            floating=frozenset(_TRIANGLE_KEYS) - {"ids"},
+            validate_ids=not fused_column_validation,
+        )
         rays, query_count, ray_device = _device_columns(
-            cp, rays, _RAY_KEYS, floating=frozenset(_RAY_KEYS) - {"ids"})
+            cp, rays, _RAY_KEYS,
+            floating=frozenset(_RAY_KEYS) - {"ids"},
+            validate_ids=not fused_column_validation,
+        )
         if fusion_execution_token is not None:
             fusion_execution_token._check_live_cupy_and_counts(
                 cupy_version=cp.__version__,
@@ -725,12 +876,28 @@ class VerifiedTriangleDeviceColumnCountExecutor:
             raise ValueError("operation nonce requires a fusion ablation plan")
         token = ctypes.c_uint64()
         error = ctypes.create_string_buffer(16384)
-        _raise(int(self._prepare(
-            self._composed_ptx.encode(),
-            *[ctypes.c_void_p(int(triangles[key].data.ptr))
-              for key in _TRIANGLE_KEYS[1:]],
-            triangle_count, ctypes.byref(token), error, len(error))),
-            error, "V4 device-column triangle prepare")
+        triangle_pointers = [
+            ctypes.c_void_p(int(triangles[key].data.ptr))
+            for key in _TRIANGLE_KEYS[1:]
+        ]
+        if self._prepare_from_program is None:
+            status = self._prepare(
+                self._composed_ptx.encode(), *triangle_pointers,
+                triangle_count, ctypes.byref(token), error, len(error))
+        elif self._prepare_from_program_fused is not None:
+            status = self._prepare_from_program_fused(
+                self._program_token,
+                ctypes.c_void_p(int(triangles["ids"].data.ptr)),
+                *triangle_pointers, triangle_count,
+                ctypes.byref(token), error, len(error))
+        else:
+            if self._program_token == 0:
+                raise RuntimeError(
+                    "V4 device-column triangle program owner is closed")
+            status = self._prepare_from_program(
+                self._program_token, *triangle_pointers,
+                triangle_count, ctypes.byref(token), error, len(error))
+        _raise(int(status), error, "V4 device-column triangle prepare")
         if not token.value:
             raise RuntimeError("V4 device-column triangle prepare returned zero token")
         pending = None
@@ -740,14 +907,30 @@ class VerifiedTriangleDeviceColumnCountExecutor:
             error = ctypes.create_string_buffer(16384)
             audit = OptixTraversalAuditSession.open(library=self._library)
             try:
-                _raise(int(self._execute(
-                    token.value,
-                    *[ctypes.c_void_p(int(rays[key].data.ptr))
-                      for key in _RAY_KEYS[1:]],
-                    query_count, ctypes.c_void_p(int(per_ray.data.ptr)),
-                    counters, error, len(error))),
-                    error, "V4 device-column triangle execute")
-                counter_rows = tuple(int(item) for item in counters)
+                ray_pointers = [
+                    ctypes.c_void_p(int(rays[key].data.ptr))
+                    for key in _RAY_KEYS[1:]
+                ]
+                if self._execute_compact is None:
+                    status = self._execute(
+                        token.value, *ray_pointers, query_count,
+                        ctypes.c_void_p(int(per_ray.data.ptr)),
+                        counters, error, len(error))
+                    _raise(int(status), error,
+                           "V4 device-column triangle execute")
+                    counter_rows = tuple(int(item) for item in counters)
+                else:
+                    summary = _CompactDeviceColumnStatusSummary()
+                    status = self._execute_compact(
+                        token.value,
+                        ctypes.c_void_p(int(rays["ids"].data.ptr)),
+                        *ray_pointers, query_count,
+                        ctypes.c_void_p(int(per_ray.data.ptr)),
+                        ctypes.byref(summary), error, len(error))
+                    _raise(int(status), error,
+                           "V4 device-column triangle compact execute")
+                    counter_rows = _validate_compact_device_column_status(
+                        summary, query_count)
                 if counter_rows[1] != query_count or \
                         counter_rows[5] != query_count or \
                         counter_rows[6] != query_count or counter_rows[3] <= 0:
@@ -850,13 +1033,21 @@ class VerifiedTriangleDeviceColumnCountExecutor:
         ).seal()
 
     def close(self) -> None:
-        """Close the reusable host-side executor authority.
+        """Close the reusable callback-program owner and executor authority."""
 
-        Segment-native tokens are destroyed by ``execute_segment`` itself, so
-        this method owns no additional native destruction.  It still makes the
-        prepared-owner lifecycle explicit and prevents use after owner close.
-        """
-
+        if self._closed:
+            return
+        if getattr(self, "_program_token", 0):
+            token = ctypes.c_uint64(self._program_token)
+            error = ctypes.create_string_buffer(16384)
+            status = self._destroy_program(
+                ctypes.byref(token), error, len(error))
+            self._program_token = int(token.value)
+            _raise(int(status), error,
+                   "V4 device-column triangle program destroy")
+            if self._program_token != 0:
+                raise RuntimeError(
+                    "V4 device-column triangle program destroy did not clear token")
         self._closed = True
 
     def __enter__(self):

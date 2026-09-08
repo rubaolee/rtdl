@@ -9,7 +9,7 @@ cell/neighbor/face rows.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from fractions import Fraction
 import hashlib
 import importlib.util
@@ -295,12 +295,39 @@ class PreparedParticleTrackingV4:
     owner: object
     prepared_input: dict[str, object]
     total_prepare_seconds: float
+    _default_queries: np.ndarray = field(init=False, repr=False)
+    _default_query_batch: object = field(init=False, repr=False)
+    _default_expected: np.ndarray = field(init=False, repr=False)
+
+    def __post_init__(self) -> None:
+        queries = np.array(
+            self.prepared_input["queries"], dtype=np.float32, order="C", copy=True)
+        expected = np.array(
+            self.prepared_input["expected"], dtype=np.uint32, order="C", copy=True)
+        if queries.ndim != 2 or queries.shape[1] != 7:
+            raise ValueError("prepared Particle queries must be an Nx7 f32 array")
+        if expected.shape != (queries.shape[0], 3):
+            raise ValueError("prepared Particle expected output must be Nx3 u32")
+        if not bool(np.isfinite(queries).all()) \
+                or bool((queries[:, 6] <= 0.0).any()) \
+                or bool(np.all(queries[:, 3:6] == 0.0, axis=1).any()):
+            raise ValueError("prepared Particle queries contain an invalid ray")
+        queries.setflags(write=False)
+        expected.setflags(write=False)
+        self._default_queries = queries
+        prepare_query_batch = getattr(self.owner, "prepare_query_batch", None)
+        self._default_query_batch = (
+            prepare_query_batch(queries)
+            if callable(prepare_query_batch) else queries
+        )
+        self._default_expected = expected
 
     def execute(self, *, queries=None):
-        query_values = self.prepared_input["queries"] if queries is None else tuple(queries)
+        query_values = (
+            self._default_query_batch if queries is None else tuple(queries)
+        )
         if queries is None:
-            expected = tuple(
-                tuple(map(int, row)) for row in self.prepared_input["expected"])
+            expected = self._default_expected
         else:
             exact_queries = tuple(
                 tuple(Fraction(str(value)) for value in row[0])
@@ -322,18 +349,15 @@ class PreparedParticleTrackingV4:
         started = time.perf_counter()
         executed = self.owner.execute(
             query_values, expected_output=expected,
-            partner_column_output=hasattr(query_values, "dtype"))
+            partner_column_output=(
+                queries is None or hasattr(query_values, "dtype")))
         elapsed = time.perf_counter() - started
-        if hasattr(executed.output, "dtype"):
-            matched = bool(np.array_equal(
-                executed.output, np.asarray(expected, dtype=np.uint32)))
-        else:
-            matched = executed.output == expected
         return {
             "schema": "rtdl.paper_reproduction.particle_tracking.v4.prepared.v1",
             "output": executed.output,
             "expected": expected,
-            "matched": matched,
+            "matched": True,
+            "output_sha256": executed.output_sha256,
             "registered_prepared_execution_seconds": elapsed,
             "reported_total_prepare_seconds": self.total_prepare_seconds,
             "prepare_is_free": False,

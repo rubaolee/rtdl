@@ -1,13 +1,18 @@
 from pathlib import Path
+import os
 import runpy
+import threading
 from types import SimpleNamespace
 import unittest
 
 import numpy as np
 
 from rtdsl.v4_triangle_reduction_device_runtime import (
+    _CompactDeviceColumnStatusSummary,
+    _validate_compact_device_column_status,
     VerifiedTriangleDeviceColumnCountExecutor,
 )
+from rtdsl import v4_triangle_prepared_runtime as triangle_runtime
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -35,8 +40,8 @@ class Goal5776V4TriangleDeviceColumnsTest(unittest.TestCase):
         text = (ROOT / "Paper-reproduction-apps" /
                 "goal5753-held-out-particle-tracking" /
                 "v4_whole_app.py").read_text(encoding="utf-8")
-        self.assertIn("partner_column_output=hasattr(query_values, \"dtype\")", text)
-        self.assertIn("matched = bool(np.array_equal(", text)
+        self.assertIn("queries is None or hasattr(query_values, \"dtype\")", text)
+        self.assertNotIn("matched = bool(np.array_equal(", text)
 
     def test_particle_column_output_returns_scalar_exact_match(self):
         module = runpy.run_path(str(
@@ -51,7 +56,8 @@ class Goal5776V4TriangleDeviceColumnsTest(unittest.TestCase):
                 self.partner_column_output = kwargs["partner_column_output"]
                 return SimpleNamespace(
                     output=expected.copy(), traversal_receipt={"kind": "test"},
-                    native_library_sha256="a" * 64)
+                    native_library_sha256="a" * 64,
+                    output_sha256="b" * 64)
 
         owner = FakeOwner()
         prepared = module["PreparedParticleTrackingV4"](
@@ -66,10 +72,130 @@ class Goal5776V4TriangleDeviceColumnsTest(unittest.TestCase):
         self.assertIs(result["matched"], True)
         self.assertTrue(owner.partner_column_output)
 
+    def test_particle_prepared_defaults_are_owned_read_only_snapshots(self):
+        module = runpy.run_path(str(
+            ROOT / "Paper-reproduction-apps" /
+            "goal5753-held-out-particle-tracking" / "v4_whole_app.py"))
+        queries = np.ones((2, 7), dtype=np.float32)
+        expected = np.asarray(((1, 2, 3), (4, 5, 6)), dtype=np.uint32)
+
+        class FakeOwner:
+            lifecycle_receipt = {"kind": "test"}
+
+            def execute(self, observed_queries, **kwargs):
+                self.queries = observed_queries
+                self.expected = kwargs["expected_output"]
+                return SimpleNamespace(
+                    output=np.asarray(kwargs["expected_output"]).copy(),
+                    traversal_receipt={"kind": "test"},
+                    native_library_sha256="a" * 64,
+                    output_sha256="b" * 64,
+                )
+
+        owner = FakeOwner()
+        prepared = module["PreparedParticleTrackingV4"](
+            owner=owner,
+            prepared_input={"queries": queries, "expected": expected},
+            total_prepare_seconds=0.0,
+        )
+        queries[:] = 9.0
+        expected[:] = 99
+        result = prepared.execute()
+        self.assertTrue(result["matched"])
+        np.testing.assert_array_equal(owner.queries, np.ones((2, 7)))
+        np.testing.assert_array_equal(
+            owner.expected,
+            np.asarray(((1, 2, 3), (4, 5, 6)), dtype=np.uint32),
+        )
+        self.assertFalse(owner.queries.flags.writeable)
+        self.assertFalse(owner.expected.flags.writeable)
+
+    @staticmethod
+    def _query_batch_owner():
+        owner = triangle_runtime.PreparedBuiltinTriangleOwner.__new__(
+            triangle_runtime.PreparedBuiltinTriangleOwner)
+        owner._closed = False
+        owner._pid = os.getpid()
+        owner._thread = threading.get_ident()
+        owner._binding_identity = lambda count: ("a" * 64, "b" * 64)
+        return owner
+
+    def test_prepared_query_batch_copies_and_freezes_caller_input(self):
+        owner = self._query_batch_owner()
+        source = np.asarray((
+            (0.0, 0.0, 1.0, 0.0, 0.0, -1.0, 2.0),
+            (1.0, 1.0, 1.0, 0.0, 1.0, -1.0, 3.0),
+        ), dtype=np.float32)
+        batch = owner.prepare_query_batch(source)
+        source[:] = 9.0
+        origins, directions, tmax, count, binding, semantic = (
+            owner._prepared_query_batch_columns(batch))
+        np.testing.assert_array_equal(
+            origins, np.asarray(((0.0, 0.0, 1.0), (1.0, 1.0, 1.0))))
+        np.testing.assert_array_equal(
+            directions, np.asarray(((0.0, 0.0, -1.0), (0.0, 1.0, -1.0))))
+        np.testing.assert_array_equal(tmax, np.asarray((2.0, 3.0)))
+        self.assertEqual((count, binding, semantic), (2, "a" * 64, "b" * 64))
+        self.assertTrue(all(not value.flags.writeable for value in (
+            origins, directions, tmax)))
+        with self.assertRaises(ValueError):
+            origins.setflags(write=True)
+
+    def test_prepared_query_batch_rejects_foreign_owner(self):
+        left = self._query_batch_owner()
+        right = self._query_batch_owner()
+        batch = left.prepare_query_batch(np.asarray((
+            (0.0, 0.0, 1.0, 0.0, 0.0, -1.0, 2.0),
+        ), dtype=np.float32))
+        with self.assertRaisesRegex(RuntimeError, "identity drifted"):
+            right._prepared_query_batch_columns(batch)
+
+    def test_compact_triangle_summary_is_fail_closed(self):
+        summary = triangle_runtime._CompactLifecycleSummary()
+        summary.schema_version = 2
+        summary.ok = 1
+        summary.validated_row_count = 5
+        summary.required_invocation_mask = (1 << 1) | (1 << 6)
+        summary.terminal_invocation_mask = (1 << 4) | (1 << 5)
+        summary.first_invalid_row = (1 << 64) - 1
+        summary.role_counters[1] = 5
+        summary.role_counters[4] = 3
+        summary.role_counters[5] = 2
+        summary.role_counters[6] = 5
+        summary.success_status_d2h_bytes = triangle_runtime.ctypes.sizeof(
+            triangle_runtime._CompactLifecycleSummary)
+        self.assertEqual(
+            triangle_runtime._validate_compact_lifecycle_summary(summary, 5),
+            (0, 5, 0, 0, 3, 2, 5),
+        )
+        summary.error_code = 17
+        with self.assertRaisesRegex(RuntimeError, "summary is invalid"):
+            triangle_runtime._validate_compact_lifecycle_summary(summary, 5)
+
+    def test_compact_triangle_native_path_keeps_generic_callback(self):
+        native = NATIVE.read_text(encoding="utf-8")
+        api = API.read_text(encoding="utf-8")
+        helper = (ROOT / "src/native/optix/rtdl_optix_cuda_helpers.cu").read_text(
+            encoding="utf-8")
+        self.assertIn(
+            "rtdl_optix_v4_execute_prepared_builtin_triangle_callback_columns_v2",
+            api,
+        )
+        self.assertIn("query_count, 0u, 2u", native)
+        self.assertIn("mode > 2u", helper)
+        self.assertIn(
+            "Public result bytes cross the host boundary only after", native)
+        compact_begin = native.index("if (compact_column_mode) {")
+        compact_end = native.index("} else {", compact_begin)
+        compact = native[compact_begin:compact_end]
+        self.assertNotIn("observed_primitive_index", compact)
+        self.assertNotIn("triangle_counting", compact)
+        self.assertNotIn("particle", compact.lower())
+
     def test_native_route_is_generic_built_in_triangle_optix(self):
         native = NATIVE.read_text(encoding="utf-8")
         begin = native.index(
-            "static uint64_t prepare_v4_triangle_reduction_device_columns_count_callback")
+            "static uint64_t prepare_v4_triangle_reduction_device_columns_program")
         end = native.index(
             "static std::shared_ptr<V4PreparedTriangleReduction>", begin)
         prepare = native[begin:end]
@@ -103,6 +229,82 @@ class Goal5776V4TriangleDeviceColumnsTest(unittest.TestCase):
         )
         self.assertIn("rtdl_optix_v4_prepare_triangle_reduction_callback_v1", api)
         self.assertIn("rtdl_optix_v4_execute_prepared_triangle_reduction_callback_v1", api)
+
+    def test_segmented_triangle_program_owner_reuses_generic_pipeline(self):
+        api = API.read_text(encoding="utf-8")
+        native = NATIVE.read_text(encoding="utf-8")
+        runtime = (ROOT / "src/rtdsl/v4_triangle_reduction_device_runtime.py").read_text(
+            encoding="utf-8")
+        self.assertIn(
+            "rtdl_optix_v4_prepare_triangle_reduction_device_columns_program_v2",
+            api,
+        )
+        self.assertIn(
+            "rtdl_optix_v4_prepare_triangle_reduction_device_columns_count_from_program_v2",
+            api,
+        )
+        self.assertIn(
+            "g_v4_triangle_device_column_program_registry", native)
+        self.assertIn("prepared->pipeline = std::move(pipeline);", native)
+        self.assertIn("self._prepare_from_program(", runtime)
+        begin = native.index(
+            "prepare_v4_triangle_reduction_device_columns_count_with_pipeline")
+        end = native.index(
+            "static uint64_t prepare_v4_triangle_reduction_device_columns_count_callback",
+            begin,
+        )
+        generic_segment = native[begin:end]
+        self.assertNotIn("triangle_counting", generic_segment)
+        self.assertNotIn("RT-2A1", generic_segment)
+
+    def test_fused_column_validation_and_compact_status_are_generic(self):
+        api = API.read_text(encoding="utf-8")
+        native = NATIVE.read_text(encoding="utf-8")
+        runtime = RUNTIME.read_text(encoding="utf-8")
+        self.assertIn(
+            "rtdl_optix_v4_prepare_triangle_reduction_device_columns_count_from_program_v3",
+            api,
+        )
+        self.assertIn(
+            "rtdl_optix_v4_execute_prepared_triangle_reduction_device_columns_count_v2",
+            api,
+        )
+        self.assertIn("ids[i] != i", native)
+        self.assertIn(
+            "rtdl_cuda_reduce_v4_callback_product_status_precompiled(", native)
+        self.assertIn(
+            "reinterpret_cast<const uint64_t*>(per_ray), nullptr,\n"
+            "            reinterpret_cast<const uint64_t*>(counters.ptr)",
+            native,
+        )
+        self.assertIn("validate_ids=not fused_column_validation", runtime)
+        execute_begin = native.index(
+            "static void execute_v4_prepared_triangle_reduction_device_columns_count_callback")
+        execute_end = native.index(
+            "static void destroy_v4_prepared_triangle_reduction_callback", execute_begin)
+        fused = native[execute_begin:execute_end]
+        self.assertNotIn("triangle_counting", fused)
+        self.assertNotIn("RT-2A1", fused)
+
+    def test_compact_device_column_summary_is_fail_closed(self):
+        summary = _CompactDeviceColumnStatusSummary()
+        summary.schema_version = 2
+        summary.ok = 1
+        summary.validated_row_count = 5
+        summary.required_invocation_mask = (1 << 1) | (1 << 6)
+        summary.terminal_invocation_mask = 1 << 5
+        summary.first_invalid_row = (1 << 64) - 1
+        summary.role_counters[1] = 5
+        summary.role_counters[5] = 5
+        summary.role_counters[6] = 5
+        summary.success_status_d2h_bytes = 112
+        self.assertEqual(
+            _validate_compact_device_column_status(summary, 5),
+            (0, 5, 0, 0, 0, 5, 5),
+        )
+        summary.invalid_row_count = 1
+        with self.assertRaisesRegex(RuntimeError, "summary is invalid"):
+            _validate_compact_device_column_status(summary, 5)
 
     def test_runtime_preserves_device_rows_and_checked_u64_bounds(self):
         source = RUNTIME.read_text(encoding="utf-8")

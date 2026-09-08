@@ -155,10 +155,18 @@ def observe_v4_particle_result(
         raise RuntimeError(  # noqa: TRY004 - malformed runtime output, not caller input
             "Particle V4 public result lacks traversal receipt"
         )
+    output_sha256 = result.get("output_sha256")
+    if (
+        type(output_sha256) is not str
+        or len(output_sha256) != 64
+        or any(character not in "0123456789abcdef" for character in output_sha256)
+        or receipt.get("output_digest") != output_sha256
+    ):
+        raise RuntimeError("Particle V4 output identity is not receipt-bound")
     return {
         "schema": "rtdl.v4_paper_apps_pyoptix.particle_v4_observation.v1",
         "output": output,
-        "output_sha256": _output_digest(output),
+        "output_sha256": output_sha256,
         "matched": True,
         "traversal_receipt": dict(receipt),
         "lifecycle_receipt": dict(result.get("lifecycle_receipt", {})),

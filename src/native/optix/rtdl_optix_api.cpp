@@ -414,6 +414,29 @@ extern "C" int rtdl_optix_v4_execute_prepared_builtin_triangle_callback_v1(
     }, error_out, error_size);
 }
 
+// Column-result successor for the same canonical callback. The generated
+// callback, GAS and traversal are unchanged; only host materialization is
+// narrowed to the public U32x3 result after a constant-size device lifecycle
+// summary has passed.
+extern "C" int rtdl_optix_v4_execute_prepared_builtin_triangle_callback_columns_v2(
+        uint64_t prepared_token, const float* query_origins_xyz,
+        const float* query_directions_xyz, const float* query_tmax,
+        size_t query_count, uint32_t* output_0, uint32_t* output_1,
+        uint32_t* output_2,
+        RtdlV4CallbackProductStatusSummary* output_summary,
+        char* error_out, size_t error_size) {
+    return handle_native_call([&]() {
+        if (!output_summary)
+            throw std::runtime_error(
+                "V4 built-in-triangle compact summary must not be null");
+        execute_v4_prepared_builtin_triangle_callback(
+            prepared_token, query_origins_xyz, query_directions_xyz,
+            query_tmax, query_count, output_0, output_1, output_2,
+            nullptr, nullptr, nullptr, nullptr, nullptr, nullptr,
+            output_summary);
+    }, error_out, error_size);
+}
+
 extern "C" int rtdl_optix_v4_destroy_prepared_builtin_triangle_callback_v1(
         uint64_t prepared_token, char* error_out, size_t error_size) {
     return handle_native_call([&]() {
@@ -1270,6 +1293,81 @@ extern "C" int rtdl_optix_v4_prepare_triangle_reduction_device_columns_count_v1(
     }, error_out, error_size);
 }
 
+// Versioned program/geometry split for segmented workloads.  The program
+// owner contains only compiler-generated OptiX module, program groups,
+// pipeline and SBT state; each segment remains an independent GAS owner.
+extern "C" int rtdl_optix_v4_prepare_triangle_reduction_device_columns_program_v2(
+        const char* composed_ptx,
+        uint64_t* program_token_out, char* error_out, size_t error_size) {
+    return handle_native_call([&]() {
+        if (!composed_ptx || !program_token_out)
+            throw std::runtime_error(
+                "V4 triangle device-column program PTX/output is null");
+        *program_token_out =
+            prepare_v4_triangle_reduction_device_columns_program(
+                std::string(composed_ptx));
+    }, error_out, error_size);
+}
+
+extern "C" int
+rtdl_optix_v4_prepare_triangle_reduction_device_columns_count_from_program_v2(
+        uint64_t program_token,
+        const double* triangle_x0, const double* triangle_y0,
+        const double* triangle_z0, const double* triangle_x1,
+        const double* triangle_y1, const double* triangle_z1,
+        const double* triangle_x2, const double* triangle_y2,
+        const double* triangle_z2, size_t triangle_count,
+        uint64_t* prepared_token_out, char* error_out, size_t error_size) {
+    return handle_native_call([&]() {
+        if (!prepared_token_out)
+            throw std::runtime_error(
+                "V4 triangle device-column segment output is null");
+        *prepared_token_out =
+            prepare_v4_triangle_reduction_device_columns_count_from_program(
+                program_token, nullptr,
+                triangle_x0, triangle_y0, triangle_z0,
+                triangle_x1, triangle_y1, triangle_z1,
+                triangle_x2, triangle_y2, triangle_z2, triangle_count);
+    }, error_out, error_size);
+}
+
+// Fused canonical-ID validation.  IDs are checked by the same device kernel
+// that repacks coordinates for OptiX; no application semantics are present.
+extern "C" int
+rtdl_optix_v4_prepare_triangle_reduction_device_columns_count_from_program_v3(
+        uint64_t program_token, const uint32_t* triangle_ids,
+        const double* triangle_x0, const double* triangle_y0,
+        const double* triangle_z0, const double* triangle_x1,
+        const double* triangle_y1, const double* triangle_z1,
+        const double* triangle_x2, const double* triangle_y2,
+        const double* triangle_z2, size_t triangle_count,
+        uint64_t* prepared_token_out, char* error_out, size_t error_size) {
+    return handle_native_call([&]() {
+        if (!triangle_ids || !prepared_token_out)
+            throw std::runtime_error(
+                "V4 triangle device-column v3 IDs/output are null");
+        *prepared_token_out =
+            prepare_v4_triangle_reduction_device_columns_count_from_program(
+                program_token, triangle_ids,
+                triangle_x0, triangle_y0, triangle_z0,
+                triangle_x1, triangle_y1, triangle_z1,
+                triangle_x2, triangle_y2, triangle_z2, triangle_count);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_v4_destroy_triangle_reduction_device_columns_program_v2(
+        uint64_t* program_token_inout,
+        char* error_out, size_t error_size) {
+    return handle_native_call([&]() {
+        if (!program_token_inout || *program_token_inout == 0u)
+            throw std::runtime_error(
+                "V4 triangle device-column program token cell is null or zero");
+        destroy_v4_triangle_reduction_device_columns_program(
+            *program_token_inout);
+        *program_token_inout = 0u;
+    }, error_out, error_size);
+}
+
 extern "C" int rtdl_optix_v4_execute_prepared_triangle_reduction_device_columns_count_v1(
         uint64_t prepared_token,
         const double* query_ox, const double* query_oy,
@@ -1281,9 +1379,31 @@ extern "C" int rtdl_optix_v4_execute_prepared_triangle_reduction_device_columns_
         char* error_out, size_t error_size) {
     return handle_native_call([&]() {
         execute_v4_prepared_triangle_reduction_device_columns_count_callback(
-            prepared_token, query_ox, query_oy, query_oz,
+            prepared_token, nullptr, query_ox, query_oy, query_oz,
             query_dx, query_dy, query_dz, query_tmax, query_count,
-            output_per_ray_u64_device, output_counters);
+            output_per_ray_u64_device, output_counters, nullptr);
+    }, error_out, error_size);
+}
+
+// Compact fail-closed status and fused canonical-ID validation for the same
+// app-neutral per-ray count output.  The per-ray values remain device-resident.
+extern "C" int rtdl_optix_v4_execute_prepared_triangle_reduction_device_columns_count_v2(
+        uint64_t prepared_token, const uint32_t* query_ids,
+        const double* query_ox, const double* query_oy,
+        const double* query_oz, const double* query_dx,
+        const double* query_dy, const double* query_dz,
+        const double* query_tmax, size_t query_count,
+        uint64_t* output_per_ray_u64_device,
+        RtdlV4CallbackProductStatusSummary* output_summary,
+        char* error_out, size_t error_size) {
+    return handle_native_call([&]() {
+        if (!query_ids || !output_summary)
+            throw std::runtime_error(
+                "V4 triangle device-column v2 IDs/summary are null");
+        execute_v4_prepared_triangle_reduction_device_columns_count_callback(
+            prepared_token, query_ids, query_ox, query_oy, query_oz,
+            query_dx, query_dy, query_dz, query_tmax, query_count,
+            output_per_ray_u64_device, nullptr, output_summary);
     }, error_out, error_size);
 }
 

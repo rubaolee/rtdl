@@ -6,10 +6,15 @@ import ctypes
 import hashlib
 import math
 import os
+import secrets
 import threading
 import time
 
-from .physical_execution_provenance import OptixTraversalAuditSession
+from .physical_execution_provenance import (
+    OptixTraversalAuditSession,
+    ValidatedCompactTraversalReceipt,
+    validate_bound_compact_traversal_receipt,
+)
 from .v4_triangle_optix_compiler import consume_verified_triangle_executable
 from .v4_triangle_optix_runtime import (
     V4TriangleCallbackResult,
@@ -22,9 +27,38 @@ from .v4_triangle_optix_runtime import (
 from .v4_typed_physical_schema import verify_reference_triangle_contents
 
 
-_BULK_U32X3_DIGEST_DOMAIN = (
-    b"rtdl.v4.builtin_triangle.bulk_output.u32x3.v1\x00"
-)
+class _CompactLifecycleSummary(ctypes.Structure):
+    _fields_ = [
+        ("schema_version", ctypes.c_uint32), ("ok", ctypes.c_uint32),
+        ("first_error_claimed", ctypes.c_uint32),
+        ("error_code", ctypes.c_uint32),
+        ("validated_row_count", ctypes.c_uint64),
+        ("required_invocation_mask", ctypes.c_uint32),
+        ("terminal_invocation_mask", ctypes.c_uint32),
+        ("invalid_row_count", ctypes.c_uint32),
+        ("first_invalid_row", ctypes.c_uint64),
+        ("role_counters", ctypes.c_uint64 * 7),
+        ("success_status_d2h_bytes", ctypes.c_uint64),
+    ]
+
+
+def _validate_compact_lifecycle_summary(summary, count: int):
+    counters = tuple(int(value) for value in summary.role_counters)
+    if int(summary.schema_version) != 2 or int(summary.ok) != 1 \
+            or int(summary.first_error_claimed) != 0 \
+            or int(summary.error_code) != 0 \
+            or int(summary.validated_row_count) != count \
+            or int(summary.required_invocation_mask) != ((1 << 1) | (1 << 6)) \
+            or int(summary.terminal_invocation_mask) != ((1 << 4) | (1 << 5)) \
+            or int(summary.invalid_row_count) != 0 \
+            or int(summary.first_invalid_row) != (1 << 64) - 1 \
+            or int(summary.success_status_d2h_bytes) != ctypes.sizeof(
+                _CompactLifecycleSummary) \
+            or counters[1] != count or counters[6] != count \
+            or counters[4] + counters[5] != count:
+        raise RuntimeError(
+            "prepared built-in triangle compact lifecycle summary is invalid")
+    return counters
 
 
 def _bulk_u32x3_digest(value) -> str:
@@ -39,8 +73,8 @@ def _bulk_u32x3_digest(value) -> str:
             or value.dtype.str != "<u4" or not value.flags.c_contiguous:
         raise RuntimeError("bulk output must be a contiguous little-endian Nx3 u32 array")
     digest = hashlib.sha256()
-    digest.update(_BULK_U32X3_DIGEST_DOMAIN)
-    digest.update(int(value.shape[0]).to_bytes(8, "little", signed=False))
+    digest.update(value.dtype.str.encode("ascii"))
+    digest.update(str(tuple(value.shape)).encode("ascii"))
     digest.update(memoryview(value).cast("B"))
     return digest.hexdigest()
 
@@ -48,6 +82,11 @@ def _bulk_u32x3_digest(value) -> str:
 def _configure(library):
     prepare = getattr(library, "rtdl_optix_v4_prepare_builtin_triangle_callback_v1", None)
     execute = getattr(library, "rtdl_optix_v4_execute_prepared_builtin_triangle_callback_v1", None)
+    execute_columns = getattr(
+        library,
+        "rtdl_optix_v4_execute_prepared_builtin_triangle_callback_columns_v2",
+        None,
+    )
     destroy = getattr(library, "rtdl_optix_v4_destroy_prepared_builtin_triangle_callback_v1", None)
     if prepare is None or execute is None or destroy is None:
         raise RuntimeError("native library lacks Goal5773 prepared built-in triangle ABI")
@@ -67,11 +106,22 @@ def _configure(library):
         ctypes.POINTER(_Status), ctypes.POINTER(ctypes.c_uint64),
         ctypes.POINTER(ctypes.c_char), ctypes.c_size_t,
     ]
+    if execute_columns is not None:
+        execute_columns.argtypes = [
+            ctypes.c_uint64, ctypes.POINTER(ctypes.c_float),
+            ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+            ctypes.c_size_t, ctypes.POINTER(ctypes.c_uint32),
+            ctypes.POINTER(ctypes.c_uint32), ctypes.POINTER(ctypes.c_uint32),
+            ctypes.POINTER(_CompactLifecycleSummary),
+            ctypes.POINTER(ctypes.c_char), ctypes.c_size_t,
+        ]
     destroy.argtypes = [
         ctypes.c_uint64, ctypes.POINTER(ctypes.c_char), ctypes.c_size_t]
-    for symbol in (prepare, execute, destroy):
+    for symbol in (prepare, execute, execute_columns, destroy):
+        if symbol is None:
+            continue
         symbol.restype = ctypes.c_int
-    return prepare, execute, destroy
+    return prepare, execute, execute_columns, destroy
 
 
 def _raise(status, error, label):
@@ -79,6 +129,46 @@ def _raise(status, error, label):
         raise RuntimeError(
             error.value.decode("utf-8", errors="replace")
             or f"{label} failed with status {status}")
+
+
+_PREPARED_QUERY_BATCH_TOKEN = object()
+
+
+class PreparedBuiltinTriangleQueryBatch:
+    """Owner-bound immutable host query columns admitted before execution."""
+
+    __slots__ = (
+        "_binding_digest", "_count", "_directions", "_owner",
+        "_origins", "_pointers", "_semantic_digest", "_tmax", "_token",
+    )
+
+    def __init__(
+        self, *, owner, origins, directions, tmax, binding_digest,
+        semantic_digest, token,
+    ):
+        if token is not _PREPARED_QUERY_BATCH_TOKEN:
+            raise RuntimeError("prepared triangle query batch requires its owner")
+        object.__setattr__(self, "_owner", owner)
+        object.__setattr__(self, "_origins", origins)
+        object.__setattr__(self, "_directions", directions)
+        object.__setattr__(self, "_tmax", tmax)
+        object.__setattr__(self, "_count", int(tmax.shape[0]))
+        object.__setattr__(
+            self, "_pointers",
+            tuple(int(value.ctypes.data) for value in (origins, directions, tmax)),
+        )
+        object.__setattr__(self, "_binding_digest", binding_digest)
+        object.__setattr__(self, "_semantic_digest", semantic_digest)
+        object.__setattr__(self, "_token", token)
+
+    def __setattr__(self, name, value):
+        raise AttributeError("prepared triangle query batch is immutable")
+
+    def __getstate__(self):
+        raise RuntimeError("prepared triangle query batch cannot be serialized")
+
+    def __len__(self):
+        return self._count
 
 
 class PreparedBuiltinTriangleOwner:
@@ -141,7 +231,7 @@ class PreparedBuiltinTriangleOwner:
         native_sha = hashlib.sha256(native_path.read_bytes()).hexdigest()
         if native_sha != fresh.target.native_sha256:
             raise RuntimeError("executed native bytes do not match target authority")
-        prepare, execute, destroy = _configure(library)
+        prepare, execute, execute_columns, destroy = _configure(library)
         token = ctypes.c_uint64()
         error = ctypes.create_string_buffer(16384)
         _raise(int(prepare(
@@ -157,6 +247,7 @@ class PreparedBuiltinTriangleOwner:
         self._abi = abi
         self._library = library
         self._execute = execute
+        self._execute_columns = execute_columns
         self._destroy = destroy
         self._vertex_count = len(vertices)
         self._primitive_count = len(triangles)
@@ -169,6 +260,7 @@ class PreparedBuiltinTriangleOwner:
         self._active = threading.Lock()
         self._closed = False
         self._execution_count = 0
+        self._audit_sequence = 0
         self.prepare_seconds = time.perf_counter() - started
         self._session_identity = _digest({
             "schema": "rtdl.v4.prepared_builtin_triangle_owner.v1",
@@ -181,6 +273,87 @@ class PreparedBuiltinTriangleOwner:
             "thread": self._thread,
             "token": self._token,
         })
+
+    def _binding_identity(self, count: int):
+        bindings = _bindings(
+            self._fresh, vertex_count=self._vertex_count,
+            primitive_count=self._primitive_count, query_count=count,
+            maximum_index=self._maximum_index)
+        binding_digest = _digest([{
+            "semantic": item.semantic.value,
+            "element_count": item.element_count,
+            "device_id": item.device_id,
+            "stream_id": item.stream_id,
+            "owner_nonce": item.owner_nonce,
+            "mutation_epoch": item.mutation_epoch,
+            "alignment_bytes": item.alignment_bytes,
+            "contiguous": item.contiguous,
+            "writable": item.writable,
+            "maximum_index": item.maximum_index,
+        } for item in bindings])
+        semantic_digest = _digest({
+            "authority": self._fresh.authority_nonce,
+            "plan": self._plan.plan_sha256,
+            "abi": self._abi.abi_sha256,
+            "ptx": self._ptx_sha,
+            "native": self._native_sha,
+            "bindings": binding_digest,
+        })
+        return binding_digest, semantic_digest
+
+    def prepare_query_batch(self, queries):
+        """Copy and admit one reusable host query batch outside execution."""
+
+        self._check()
+        try:
+            import numpy as _np
+        except ImportError as error:  # pragma: no cover - NumPy batch API
+            raise RuntimeError(
+                "prepared triangle query batches require NumPy") from error
+        if not isinstance(queries, _np.ndarray) \
+                or queries.ndim != 2 or queries.shape[1] != 7:
+            raise ValueError("prepared triangle queries must be an Nx7 NumPy array")
+        query_array = _np.ascontiguousarray(queries, dtype=_np.float32)
+        if len(query_array) == 0 \
+                or not bool(_np.isfinite(query_array).all()) \
+                or bool((query_array[:, 6] <= 0.0).any()) \
+                or bool(_np.all(query_array[:, 3:6] == 0.0, axis=1).any()):
+            raise ValueError("prepared triangle queries contain an invalid ray")
+
+        def frozen(value, shape):
+            raw = _np.ascontiguousarray(value).tobytes(order="C")
+            return _np.frombuffer(raw, dtype=_np.float32).reshape(shape)
+
+        count = len(query_array)
+        origins = frozen(query_array[:, :3], (count, 3))
+        directions = frozen(query_array[:, 3:6], (count, 3))
+        tmax = frozen(query_array[:, 6], (count,))
+        binding_digest, semantic_digest = self._binding_identity(count)
+        return PreparedBuiltinTriangleQueryBatch(
+            owner=self, origins=origins, directions=directions, tmax=tmax,
+            binding_digest=binding_digest, semantic_digest=semantic_digest,
+            token=_PREPARED_QUERY_BATCH_TOKEN,
+        )
+
+    def _prepared_query_batch_columns(self, value):
+        columns = (value._origins, value._directions, value._tmax) \
+            if type(value) is PreparedBuiltinTriangleQueryBatch else ()
+        if type(value) is not PreparedBuiltinTriangleQueryBatch \
+                or value._token is not _PREPARED_QUERY_BATCH_TOKEN \
+                or value._owner is not self \
+                or value._count <= 0 \
+                or tuple(int(item.ctypes.data) for item in columns) \
+                    != value._pointers \
+                or value._origins.shape != (value._count, 3) \
+                or value._directions.shape != (value._count, 3) \
+                or value._tmax.shape != (value._count,) \
+                or any(item.dtype.str != "<f4" or not item.flags.c_contiguous
+                       or item.flags.writeable for item in columns):
+            raise RuntimeError("prepared triangle query batch identity drifted")
+        return (
+            value._origins, value._directions, value._tmax, value._count,
+            value._binding_digest, value._semantic_digest,
+        )
 
     def __getstate__(self):
         raise RuntimeError("prepared built-in triangle owner cannot be serialized")
@@ -219,14 +392,23 @@ class PreparedBuiltinTriangleOwner:
         if not self._active.acquire(blocking=False):
             raise RuntimeError("prepared built-in triangle owner is already executing")
         try:
-            if len(queries) == 0:
-                raise ValueError("queries are required")
+            prepared_query_batch = type(queries) is PreparedBuiltinTriangleQueryBatch
             numpy_queries = False
             try:
                 import numpy as _np
             except ImportError:  # pragma: no cover - optional partner
                 _np = None
-            if _np is not None and isinstance(queries, _np.ndarray):
+            if prepared_query_batch:
+                if _np is None:  # pragma: no cover - construction required NumPy
+                    raise RuntimeError("prepared triangle query batch lost NumPy")
+                (
+                    origins_array, directions_array, tmax_array, count,
+                    binding_digest, semantic_digest,
+                ) = self._prepared_query_batch_columns(queries)
+                numpy_queries = True
+            elif _np is not None and isinstance(queries, _np.ndarray):
+                if len(queries) == 0:
+                    raise ValueError("queries are required")
                 if queries.ndim != 2 or queries.shape[1] != 7:
                     raise ValueError("NumPy queries must be an Nx7 f32 array")
                 query_array = _np.ascontiguousarray(queries, dtype=_np.float32)
@@ -239,6 +421,8 @@ class PreparedBuiltinTriangleOwner:
                 tmax_array = _np.ascontiguousarray(query_array[:, 6])
                 numpy_queries = True
             else:
+                if len(queries) == 0:
+                    raise ValueError("queries are required")
                 origins, directions, tmax_values = [], [], []
                 for index, (origin, direction, tmax) in enumerate(queries):
                     if len(origin) != 3 or len(direction) != 3:
@@ -250,23 +434,9 @@ class PreparedBuiltinTriangleOwner:
                         raise ValueError(f"query {index} is invalid")
                     origins.extend(map(float, origin)); directions.extend(map(float, direction))
                     tmax_values.append(float(tmax))
-            count = len(queries)
-            bindings = _bindings(
-                self._fresh, vertex_count=self._vertex_count,
-                primitive_count=self._primitive_count, query_count=count,
-                maximum_index=self._maximum_index)
-            binding_digest = _digest([{
-                "semantic": item.semantic.value,
-                "element_count": item.element_count,
-                "device_id": item.device_id,
-                "stream_id": item.stream_id,
-                "owner_nonce": item.owner_nonce,
-                "mutation_epoch": item.mutation_epoch,
-                "alignment_bytes": item.alignment_bytes,
-                "contiguous": item.contiguous,
-                "writable": item.writable,
-                "maximum_index": item.maximum_index,
-            } for item in bindings])
+            if not prepared_query_batch:
+                count = len(queries)
+                binding_digest, semantic_digest = self._binding_identity(count)
             if numpy_queries:
                 origins_native = origins_array.ctypes.data_as(ctypes.POINTER(ctypes.c_float))
                 directions_native = directions_array.ctypes.data_as(ctypes.POINTER(ctypes.c_float))
@@ -276,17 +446,38 @@ class PreparedBuiltinTriangleOwner:
                 directions_native = (ctypes.c_float * len(directions))(*directions)
                 tmax_native = (ctypes.c_float * count)(*tmax_values)
             output_0 = (ctypes.c_uint32 * count)(); output_1 = (ctypes.c_uint32 * count)()
-            output_2 = (ctypes.c_uint32 * count)(); observed_primitive = (ctypes.c_uint32 * count)()
-            observed_kind = (ctypes.c_uint32 * count)(); observed_bx = (ctypes.c_float * count)()
-            observed_by = (ctypes.c_float * count)(); statuses = (_Status * count)()
-            counters = (ctypes.c_uint64 * 7)(); error = ctypes.create_string_buffer(16384)
-            audit = OptixTraversalAuditSession.open(library=self._library)
+            output_2 = (ctypes.c_uint32 * count)(); error = ctypes.create_string_buffer(16384)
+            compact_columns = partner_column_output and self._execute_columns is not None
+            if compact_columns:
+                summary = _CompactLifecycleSummary()
+            else:
+                observed_primitive = (ctypes.c_uint32 * count)()
+                observed_kind = (ctypes.c_uint32 * count)()
+                observed_bx = (ctypes.c_float * count)()
+                observed_by = (ctypes.c_float * count)()
+                statuses = (_Status * count)()
+                counters = (ctypes.c_uint64 * 7)()
+            self._audit_sequence += 1
+            audit = OptixTraversalAuditSession.open(
+                library=self._library,
+                nonce=(secrets.randbits(64) or 1, self._audit_sequence),
+            )
             try:
-                _raise(int(self._execute(
-                    self._token, origins_native, directions_native, tmax_native,
-                    count, output_0, output_1, output_2, observed_primitive,
-                    observed_kind, observed_bx, observed_by, statuses, counters,
-                    error, len(error))), error, "prepared built-in triangle execute")
+                if compact_columns:
+                    _raise(int(self._execute_columns(
+                        self._token, origins_native, directions_native,
+                        tmax_native, count, output_0, output_1, output_2,
+                        ctypes.byref(summary), error, len(error))), error,
+                        "prepared built-in triangle compact execute")
+                    counter_rows = _validate_compact_lifecycle_summary(
+                        summary, count)
+                else:
+                    _raise(int(self._execute(
+                        self._token, origins_native, directions_native, tmax_native,
+                        count, output_0, output_1, output_2, observed_primitive,
+                        observed_kind, observed_bx, observed_by, statuses, counters,
+                        error, len(error))), error,
+                        "prepared built-in triangle execute")
                 if partner_column_output:
                     if not numpy_queries:
                         raise ValueError(
@@ -296,7 +487,7 @@ class PreparedBuiltinTriangleOwner:
                         _np.ctypeslib.as_array(output_1),
                         _np.ctypeslib.as_array(output_2),
                     )).astype(_np.uint32, copy=False)
-                    if any(
+                    if not compact_columns and any(
                         int(item.first_error_claimed) or int(item.error_code)
                         for item in statuses
                     ):
@@ -314,7 +505,8 @@ class PreparedBuiltinTriangleOwner:
                     status_rows = tuple({
                         name: int(getattr(item, name)) for name, _ in _Status._fields_}
                         for item in statuses)
-                counter_rows = tuple(int(item) for item in counters)
+                if not compact_columns:
+                    counter_rows = tuple(int(item) for item in counters)
                 if not partner_column_output and any(
                     row["first_error_claimed"] or row["error_code"]
                     for row in status_rows
@@ -339,20 +531,40 @@ class PreparedBuiltinTriangleOwner:
                     _bulk_u32x3_digest(observed)
                     if partner_column_output else _digest(observed)
                 )
-                receipt = audit.finish(
-                    semantic_digest=_digest({
-                        "authority": self._fresh.authority_nonce,
-                        "plan": self._plan.plan_sha256, "abi": self._abi.abi_sha256,
-                        "ptx": self._ptx_sha, "native": self._native_sha,
-                        "bindings": binding_digest,
-                    }), output_digest=output_sha,
-                    route_identity="v4_builtin_triangle_callback_ir:four_role_composed_v1",
-                    expected_program_bundles=(
-                        "v4_builtin_triangle_callback_ir_four_role_composed",))
+                if compact_columns:
+                    receipt = audit.finish_validated_compact(
+                        semantic_digest=semantic_digest,
+                        output_digest=output_sha,
+                        route_identity=(
+                            "v4_builtin_triangle_callback_ir:four_role_composed_v1"),
+                        expected_program_bundle=(
+                            "v4_builtin_triangle_callback_ir_four_role_composed"),
+                        expected_raygen_invocation_count=count,
+                    )
+                else:
+                    receipt = audit.finish(
+                        semantic_digest=semantic_digest,
+                        output_digest=output_sha,
+                        route_identity=(
+                            "v4_builtin_triangle_callback_ir:four_role_composed_v1"),
+                        expected_program_bundles=(
+                            "v4_builtin_triangle_callback_ir_four_role_composed",))
             except Exception:
                 audit.abort()
                 raise
-            if receipt["physical_executor_classification"] != "optix_traversal_observed":
+            if type(receipt) is ValidatedCompactTraversalReceipt:
+                validate_bound_compact_traversal_receipt(
+                    receipt,
+                    provider_library_sha256=self._native_sha,
+                    route_identity=(
+                        "v4_builtin_triangle_callback_ir:four_role_composed_v1"),
+                    output_digest=output_sha,
+                    expected_program_bundle=(
+                        "v4_builtin_triangle_callback_ir_four_role_composed"),
+                    expected_raygen_invocation_count=count,
+                )
+            elif receipt["physical_executor_classification"] \
+                    != "optix_traversal_observed":
                 raise RuntimeError("prepared built-in triangle lacked bound traversal")
             hit_rows = (() if partner_column_output else tuple({
                 "primitive_index": None if int(observed_primitive[index]) == 0xFFFFFFFF else int(observed_primitive[index]),
@@ -392,4 +604,8 @@ def prepare_builtin_triangle_callback(**kwargs):
     return PreparedBuiltinTriangleOwner(**kwargs)
 
 
-__all__ = ["PreparedBuiltinTriangleOwner", "prepare_builtin_triangle_callback"]
+__all__ = [
+    "PreparedBuiltinTriangleOwner",
+    "PreparedBuiltinTriangleQueryBatch",
+    "prepare_builtin_triangle_callback",
+]

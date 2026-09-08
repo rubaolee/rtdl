@@ -390,18 +390,21 @@ def _classify_snapshot(
     return classification, expected_program_observed
 
 
-def captured_traversal_observation_from_snapshot(
+def _captured_traversal_observation_from_frozen_provider_identity(
     snapshot: _NativeTraversalAuditSnapshot,
     *,
-    provider_library_path: str | Path,
+    provider_library_path: Path,
     provider_library_sha256: str,
     nonce: tuple[int, int],
     expected_program_bundles: Iterable[str] = (),
 ) -> "CapturedTraversalObservation":
-    """Freeze an audit snapshot already returned by an integrated native call."""
+    """Freeze a snapshot using an internally registered provider identity."""
 
     if not isinstance(snapshot, _NativeTraversalAuditSnapshot):
         raise TypeError("native traversal audit snapshot required")
+    if not isinstance(provider_library_path, Path) \
+            or not provider_library_path.is_absolute():
+        raise RuntimeError("frozen native provider path must be absolute")
     nonce_hi, nonce_lo = nonce
     if (
         int(snapshot.nonce_hi) != nonce_hi
@@ -416,7 +419,7 @@ def captured_traversal_observation_from_snapshot(
         snapshot, expected_ids
     )
     return CapturedTraversalObservation(
-        provider_library_path=Path(provider_library_path).resolve(),
+        provider_library_path=provider_library_path,
         provider_library_sha256=_require_sha256(
             provider_library_sha256, label="loaded native provider"
         ),
@@ -427,6 +430,25 @@ def captured_traversal_observation_from_snapshot(
         expected_program_bundle_ids=expected_ids,
         expected_program_observed_at_receipt_edge=expected_program_observed,
         native_snapshot_items=_captured_snapshot_items(snapshot),
+    )
+
+
+def captured_traversal_observation_from_snapshot(
+    snapshot: _NativeTraversalAuditSnapshot,
+    *,
+    provider_library_path: str | Path,
+    provider_library_sha256: str,
+    nonce: tuple[int, int],
+    expected_program_bundles: Iterable[str] = (),
+) -> "CapturedTraversalObservation":
+    """Freeze a snapshot from an external path after resolving that path."""
+
+    return _captured_traversal_observation_from_frozen_provider_identity(
+        snapshot,
+        provider_library_path=Path(provider_library_path).resolve(),
+        provider_library_sha256=provider_library_sha256,
+        nonce=nonce,
+        expected_program_bundles=expected_program_bundles,
     )
 
 
@@ -1187,7 +1209,7 @@ class OptixTraversalAuditSession:
             )
         finally:
             self._active = False
-        return captured_traversal_observation_from_snapshot(
+        return _captured_traversal_observation_from_frozen_provider_identity(
             snapshot,
             provider_library_path=self.library_path,
             provider_library_sha256=self.provider_library_sha256,
@@ -1209,6 +1231,47 @@ class OptixTraversalAuditSession:
             semantic_digest=semantic_digest,
             output_digest=output_digest,
             route_identity=route_identity,
+        )
+
+    def finish_validated_compact(
+        self,
+        *,
+        semantic_digest: str,
+        output_digest: str,
+        route_identity: str,
+        expected_program_bundle: str,
+        expected_raygen_invocation_count: int,
+        expected_successful_launch_count: int = 1,
+    ) -> ValidatedCompactTraversalReceipt:
+        """Close, validate, and bind a compact one-bundle traversal proof."""
+
+        if not self._active:
+            raise RuntimeError("traversal audit session is not active")
+        snapshot = _NativeTraversalAuditSnapshot()
+        try:
+            _call_status(
+                self.library.rtdl_optix_traversal_audit_finish,
+                self.nonce_hi,
+                self.nonce_lo,
+                ctypes.byref(snapshot),
+            )
+        finally:
+            self._active = False
+        # The compact builder validates stamp shape and launch facts. The
+        # session additionally binds both nonce words to this exact attempt.
+        if int(snapshot.nonce_hi) != self.nonce_hi \
+                or int(snapshot.nonce_lo) != self.nonce_lo:
+            raise RuntimeError("native traversal audit returned the wrong nonce")
+        return build_validated_compact_traversal_receipt(
+            snapshot,
+            provider_library_sha256=self.provider_library_sha256,
+            route_identity=route_identity,
+            semantic_digest=semantic_digest,
+            output_digest=output_digest,
+            expected_program_bundle=expected_program_bundle,
+            expected_raygen_invocation_count=expected_raygen_invocation_count,
+            execution_sequence=self.nonce_lo,
+            expected_successful_launch_count=expected_successful_launch_count,
         )
 
     def __enter__(self) -> "OptixTraversalAuditSession":

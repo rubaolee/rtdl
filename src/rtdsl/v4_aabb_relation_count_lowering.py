@@ -184,8 +184,7 @@ class PreparedVerifiedAabbRelationCountV4:
             and len(point_queries) != 0
         ):
             raise ValueError("range-count authority rejects point queries")
-        audit = OptixTraversalAuditSession.open(
-            library=self._library, library_path=self._native_path)
+        audit = OptixTraversalAuditSession.open(library=self._library)
         try:
             if self._prepared_queries is not None:
                 result = self._prepared.count_prepared_queries(
