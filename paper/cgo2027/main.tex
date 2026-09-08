@@ -43,18 +43,16 @@ update followed by physical intersection rejection, and exact callback IR
 selects guarded standard-route specialization.
 
 The implementation exposes two stable constructors and a bounded corpus over
-triangle, custom-AABB, curve, and sphere leaves. A historical source audit
-covers nine project-authored V4 application mappings and thirteen selected
-paper lanes; it is mapping evidence, not a generalization or usability study.
-A sealed composition produced two OptiX launches and 12/12 oracle matches, and
-a compiler-independent finite checker exercised five target-property classes
-in 20 instances. Across two tasks and two NVIDIA GPU generations, prepared
-public latency is 1.077--1.175$\times$ a direct CUDA/OptiX implementation.
-First-result evidence is adverse: post-import medians are
-1.560--1.837$\times$ a strong PyOptiX device-continuation baseline, with a
-2.377$\times$ worst block. \rtdl does not infer a profitable RT mapping, accept
-arbitrary Python, synthesize arbitrary topologies, prove application semantics,
-or establish that authoring is easier.
+triangle, custom-AABB, curve, and sphere leaves. A historical audit covers nine
+project-authored V4 mappings. A frozen public-PyOptiX comparison covered selected
+stages from three mappings (four operation units); all twelve complete, first-execute,
+and prepared observations were slower (1.080--75.533$\times$). Separately, two
+exact standard routes were 1.077--1.175$\times$ Direct when prepared, while
+post-import medians were 1.560--1.837$\times$ a strong PyOptiX baseline, with a
+2.377$\times$ worst block. A sealed composition and a finite independent checker
+provide bounded compiler evidence. \rtdl does not infer profitable mappings,
+accept arbitrary Python, synthesize arbitrary topologies, prove application
+semantics, or establish easier authoring or broad practical performance.
 \end{abstract}
 
 \begin{CCSXML}
@@ -132,11 +130,11 @@ This paper makes four contributions:
   \item We implement a deterministic ABI, generated Numba leaves, trusted
   topology-specific wrappers and exact-IR specialization, plus a prepared
   identity-checked runtime. The lowerers and specializers remain in the TCB.
-  \item We reconstruct evidence for nine project-authored V4 application
-  mappings and evaluate
-  bounded mutation, composition, target checking, lifecycle, and performance.
-  Prepared latency is near Direct on two exact tasks, while adverse startup,
-  receipt, generality, and authoring evidence prices the design.
+  \item We reconstruct nine project-authored V4 mappings and evaluate bounded
+  mutation, composition, target checking, lifecycle, and performance. A
+  selected-stage 3/9 comparison is adverse at all twelve endpoints; two separate
+  exact-route experiments bound prepared overhead near Direct. Receipt,
+  startup, coverage, generality, and authoring limits remain explicit.
 \end{enumerate}
 
 \section{RTDL by Example and Programming Model}
@@ -612,94 +610,47 @@ paths retain bounded evidence.}
 \section{V4 Applications and Case Studies}
 
 RTDL was developed against repurposed-RT applications rather than rendering
-shaders alone. Table~\ref{tab:apps} reconstructs evidence for nine
-project-authored historical V4 mappings to algorithms from prior work. The application algorithm and RT
-mapping are credited to each original system. RTDL's contribution is its own
-restricted expression, checking, generation, and composition of selected
-parts. The portfolio contains thirteen selected paper lanes in aggregate; the
-table does not treat aliases as independent applications or protocols.
-
-We distinguish two evidence levels. E1 means an exact application-source hash
-and callback-consumer binding remain recoverable from the retained recount.
-E2 means a frozen source audit recorded the path and structural properties, but
-the individual application bytes are absent from the current tree and
-submission artifact. E2 rows are historical mappings, not current runnable
-examples.
+shaders alone. Table~\ref{tab:apps} reconstructs nine project-authored V4
+mappings to algorithms credited to prior systems. RTDL contributes restricted
+expression, checking, generation, and composition of selected parts, not the
+application algorithm or geometric mapping. E1 means an exact historical
+application-source hash and callback-consumer binding survive. E2 means a
+frozen audit recorded the path and structural properties, but an independently
+retained historical per-file identity and the original 10.8-MB archive do not;
+recovered current entry points do not repair that custody gap. E2 is mapping
+evidence, not current runnability.
 
 \begin{table*}[t]
-  \caption{Historical V4 application mappings. ``Author owns'' states the
-  semantic responsibility that RTDL neither infers nor proves.}
+  \caption{Historical V4 mappings. Authors select the RT formulation and own
+  the listed application semantics; E1/E2 are custody levels defined in text.}
   \label{tab:apps}
   \scriptsize
-  \begin{tabularx}{\textwidth}{@{}p{.12\textwidth}p{.27\textwidth}p{.29\textwidth}X@{}}
+  \begin{tabularx}{\textwidth}{@{}p{.12\textwidth}p{.35\textwidth}X@{}}
     \toprule
-    Application & Mapping and author-owned semantics & Reused RTDL/shared route & Evidence and boundary \\
+    Application & Mapping and author-owned semantics & RTDL route and exact boundary \\
     \midrule
-    Particle~\cite{wang2022particle} & Tetrahedral closest-face transition; author owns cell encoding, transition, and I/O semantics & Built-in triangles, restricted closest-hit update, callback lowering, prepared lifecycle & E1. RTDL did not invent the algorithm or traversal primitive. \\
-    Triangle count~\cite{xiao2025rtgraph} & Author selects RT-1A2 or RT-2A1 and owns graph orientation and count semantics & Built-in-triangle all-hit callback, capacity/status checks, segmented reduction & E1. The final weighted task is not the complete graph algorithm. \\
-    RayDB~\cite{shi2025raydb} & Partitioned grouped-I64 aggregate; author owns relation, keys, partitions, and SQL meaning & Bounded emission, trusted traversal, overflow fail-close, grouped exact reduction & E2. Sole private-loader exception; not behind the registered V4 loader interface. \\
-    LibRTS~\cite{geng2025librts} & AABB point/range containment; author owns predicate, schema binding, and count/collect meaning & Custom-AABB bounded relation, typed physical schema, capacity and receipt checks & E1. LibRTS is also a strong prior programming abstraction. \\
-    X-HD~\cite{geng2026xhd} & Directed max-of-nearest witness; author owns Hausdorff semantics and exact witness output & Cell-MBR traversal, checked state, deterministic tie-breaking and reduction & E2. No automatic choice among application algorithms. \\
-    RTNN~\cite{zhu2022rtnn} & Multiround distance-window top-k; author owns metric, K, bounds, and result order & Round/refit lifecycle, bounded selection state, lowering, and receipt & E2. Metric-specific traversal remains trusted. \\
-    RT-DBSCAN~\cite{nagarajan2023rtdbscan} & Radius graph and components; author owns radius/min-points and clustering semantics & Bounded edge emission, grouped continuation, partition partner, status contract & E2. Not every clustering stage executes on RT cores. \\
-    RayJoin~\cite{geng2024rayjoin} & Six-batch planar overlay; author owns schedule, predicates, and six result tables & Typed carrier/effects, producer/reducer lifecycle, signed-I64 and capacity checks & E2. Substantial trusted legacy physical partners remain. \\
-    RT-BarnesHut~\cite{nagarajan2025rtbarneshut} & Aggregate hierarchy; author owns tree construction, acceptance rule, and force law & Hierarchy/GAS ABI, frontier checks, callback lowering, prepared traversal & E2. Tree and aggregate traversal remain trusted partners. \\
+    Particle~\cite{wang2022particle} & Tetrahedral closest-face transition; cell encoding, transition, and I/O meaning & E1: built-in triangles, restricted closest-hit update, callback lowering, prepared lifecycle \\
+    Triangle~\cite{xiao2025rtgraph} & RT-1A2/RT-2A1 selection; graph orientation and count meaning & E1: all-hit callback, checked capacity/status, segmented reduction; measured scalar is one algorithm stage \\
+    RayDB~\cite{shi2025raydb} & Partitioned grouped-I64 aggregate; relation, keys, partitions, and SQL meaning & E2: bounded emission and grouped reduction; sole private-loader exception \\
+    LibRTS~\cite{geng2025librts} & AABB point/range containment; predicate, schema, and count/collect meaning & E1: typed custom-AABB relation and capacity/receipt checks; LibRTS is strong prior abstraction \\
+    X-HD~\cite{geng2026xhd} & Directed max-of-nearest witness; Hausdorff semantics and output & E2: cell-MBR traversal, checked state, tie-breaking, and reduction \\
+    RTNN~\cite{zhu2022rtnn} & Multiround distance-window top-k; metric, $K$, bounds, and ordering & E2: round/refit lifecycle and bounded selection; metric-specific traversal stays trusted \\
+    RT-DBSCAN~\cite{nagarajan2023rtdbscan} & Radius graph/components; radius, min-points, and clustering meaning & E2: bounded edges and grouped continuation; not every stage uses RT cores \\
+    RayJoin~\cite{geng2024rayjoin} & Six-batch planar overlay; schedule, predicates, and six full result tables & E2: typed producer/reducer route; recovered adapter returns summaries, not the registered full tables \\
+    RT-BarnesHut~\cite{nagarajan2025rtbarneshut} & Aggregate hierarchy; tree, acceptance rule, and force law & E2: hierarchy/GAS ABI and frontier checks; tree traversal remains a trusted partner \\
     \bottomrule
   \end{tabularx}
 \end{table*}
 
-\subsection{Two contrasting mappings}
-
-The triangle-counting mapping uses built-in geometry. The application chooses
-one of two published graph-to-ray algorithms and constructs the directed graph
-layout that prevents redundant counting. RTDL supplies the verified all-hit
-callback, physical triangle route, checked capacity/status behavior, and
-segmented reduction. This split is important: callback and reducer checks do
-not prove that the graph orientation implements triangle counting.
-
-The LibRTS mapping uses custom AABBs. LibRTS itself already provides reusable
-point/range queries and count/collect handlers; RTDL does not claim that API
-idea. In the V4 mapping, the author binds the spatial predicate and output
-meaning while RTDL's bounded relation route checks the custom AABB physical
-schema, accepted callback effects, output capacity, and traversal receipt.
-Together these two mappings exercise different geometry ownership and result
-routes, but they are not an unseen-app generalization experiment.
-
-\subsection{Structural responsibility and implementation scope}
-
 A frozen AST audit found no selected raw OptiX, CUDA, or PTX assembly tokens in
-the nine V4 application files. It supports a structural shift in physical owner
-preparation and receipt construction, not developer-time savings or a raw LOC
-productivity claim. Native runtime loading was behind registered V4 interfaces
-for eight of nine applications; RayDB was the disclosed exception. Trusted
-physical partners were not eliminated.
-
-The implementation uses Python for authoring. Trusted lowering and execution
-use C++, CUDA, and OptiX. Table~\ref{tab:scope} separates stable public
-constructors from the broader corpus.
-
-\begin{table}[t]
-  \caption{Implemented scope; presence is not complete coverage.}
-  \label{tab:scope}
-  \small
-  \begin{tabular}{@{}p{.34\columnwidth}p{.54\columnwidth}@{}}
-    \toprule
-    Surface & Current evidence \\
-    \midrule
-    Stable facade & Custom-AABB bounded canonical relation; built-in-triangle checked \texttt{u64} reduction \\
-    Stable kinds & 2 of 6 OptiX build-input values; 2 of 4 leaf kinds \\
-    Bounded corpus & 4 of 6 build-input values; triangle, custom, curve, and sphere leaves \\
-    Authorable template & One bounded built-in-triangle callback template \\
-    Historical apps & Nine source-audited mappings; E1 for three, E2 for six \\
-    Human usability & Zero independent-user sessions or authoring-time measurements \\
-    \bottomrule
-  \end{tabular}
-\end{table}
-
-The route corpus is broader than the stable facade but narrower than OptiX.
-Unsupported geometry options, motion modes, callback combinations, and payload
-shapes remain outside the contract. Extension requires a trusted lowerer; a
-matching schema alone is insufficient.
+the nine application files. This supports a structural shift in physical-owner
+preparation, not developer-time or LOC savings. Runtime loading passed through
+registered V4 interfaces for eight applications; RayDB is the exception, and
+trusted C++/CUDA/OptiX partners remain. The stable facade has two constructors,
+covers 2/6 OptiX build-input values and 2/4 leaf kinds, while the bounded corpus
+covers 4/6 values and four leaf kinds. Only one callback template is presently
+authorable, no independent user session was measured, and every new topology
+still requires a trusted lowerer.
 
 \section{Evaluation}
 
@@ -708,7 +659,7 @@ DSL and IR facts change admission, generation, or specialization. \textbf{RQ2}
 asks what historical mappings reuse and what remains application-owned.
 \textbf{RQ3} asks what a sealed extension reuses and what remains specific to a
 topology. \textbf{RQ4} asks what finite target properties an independent checker
-can validate. \textbf{RQ5} asks the runtime cost of the exact paths. Evidence
+can validate. \textbf{RQ5} asks the runtime cost of exact and application paths. Evidence
 types remain separate: source traces and component tests are not GPU
 equivalence tests, historical mappings are not current runnable examples,
 finite mutations are not a soundness proof, and measured routes are not
@@ -749,10 +700,12 @@ evidence about those systems' guarantees~\cite{nvidiaPyOptix,nvidiaOWL}. The
 For RQ2, the frozen source audit behind Table~\ref{tab:apps} classified all
 nine V4 mappings as a structural integration-responsibility shift and found
 registered-interface runtime loading in eight. It measured neither authoring
-time nor developer productivity. Three exact app/callback consumer identities
-remain independently recoverable; the other six retain archive-level audit
-records only. We therefore use the portfolio to show bounded mapping and
-composition diversity, not current installability or unseen-app success.
+time nor developer productivity. Three exact historical app/callback consumer
+identities remain independently recoverable. Current entry points have been
+recovered for all nine, but the other six retain only archive-level historical
+audit records. We therefore use the portfolio to show bounded mapping and
+composition diversity, not historical byte custody, current installability, or
+unseen-app success.
 
 A separate historical RTX 4000 Ada authority reported 464 exact,
 behaviorally true-OptiX workers and 34 V2-direct/V4 rows. Its row-local median
@@ -900,6 +853,67 @@ No wrong output was observed in the final GPU samples. This statement is not a
 correctness proof and does not repair the detailed-receipt shortfall described
 in Section~\ref{sec:lifecycle}.
 
+\subsection{Application-route cost against public PyOptiX}
+\label{sec:app-pyoptix}
+
+A separate frozen transaction at source \texttt{c5c8be48b} compared registered
+complete, first-execute, and prepared endpoints on one RTX A4500 (CC 8.6,
+driver 550.127.05, OptiX 8.0, PyOptiX 9.1). Three of nine mappings yielded four
+selected-stage units: one Particle
+Tracking transition, RT-2A1 triangle counting, and LibRTS point/range counts.
+Inputs contained 3,392,530 triangles and 5,000 Particle queries, com-dblp, and
+11,544,398 LibRTS boxes with 100,000 queries per operation. The other six lacked
+a frozen output-equivalent PyOptiX owner; RayJoin also lacked its registered six
+full output tables. They remain in the denominator.
+
+Both arms consumed identical derived-input identities and returned equal public
+outputs. Public PyOptiX owned the full host/device route; its handwritten CUDA
+was precompiled to hash-bound PTX. Each endpoint used eight paired fresh-process
+blocks, four per arm order. Ratios are medians of within-block ratios; arm times
+are separate medians and need not divide to that ratio. All 192 workers finished
+without retry or discard.
+
+\begin{table*}[t]
+  \caption{Frozen RTX A4500 application routes. Each endpoint cell is
+  V4/PyOptiX ms; ratio [block min--max]. Lower is better. ``Complete'' starts
+  after shared preprocessing and ``First'' after preparation. All outputs
+  matched; all twelve ratios are adverse to V4.}
+  \label{tab:app-pyoptix-results}
+  \scriptsize
+  \centering
+  \begin{tabularx}{\textwidth}{@{}p{.15\textwidth}XXX@{}}
+    \toprule
+    Unit & Complete & First execute & Prepared \\
+    \midrule
+    Particle & 24020.112/2405.894; 10.208 [9.559--10.676] & 54.817/0.728; 75.533 [57.803--82.877] & 18.035/0.476; 37.928 [35.338--41.236] \\
+    Triangle RT-2A1 & 11847.933/3508.170; 3.411 [3.292--3.591] & 3516.714/1312.973; 2.732 [2.449--2.806] & 602.856/437.096; 1.379 [1.300--1.415] \\
+    LibRTS point & 5502.395/4147.360; 1.312 [1.061--2.021] & 10.796/0.902; 12.059 [9.440--17.776] & 8.916/0.230; 38.467 [34.687--41.240] \\
+    LibRTS range & 4565.787/4173.109; 1.080 [1.009--1.196] & 12.352/0.890; 13.422 [12.182--23.731] & 9.140/0.233; 39.083 [34.129--42.385] \\
+    \bottomrule
+  \end{tabularx}
+\end{table*}
+
+Outputs were an ordered $5000\mathbin{\times}3$ \texttt{u32} Particle matrix
+and \texttt{u64} counts 2,224,385, 112,729, and 105,826. Complete is not
+raw-domain end to end: loaders first supply an encoded Particle mesh and
+queries, oriented/deduplicated graph CSR, or cached LibRTS index/query columns.
+First execute begins after preparation; prepared adds one untimed warmup. Timed
+calls include status/oracle checks, digest, and evidence projection. PyOptiX
+PTX compilation is excluded, while V4 Particle/graph compilation is included
+in complete.
+
+Physical work differs too. Particle V4 canonicalizes ignored any-hit candidates
+before one logical closest-hit; PyOptiX uses native closest-hit. Per graph
+segment, V4 rebuilds GAS and pipeline state, while PyOptiX retains pipeline
+objects but rebuilds GAS. LibRTS contrasts a general AoS multi-operation route
+with compact SoA kernels, fast-trace preference, and one stream. These are
+source-established differences, not causal allocations or unavoidable DSL
+costs. The closest result is triangle prepared at 1.379$\times$; LibRTS's
+near-one complete ratios hide seconds of preparation and coexist with
+38.467--39.083$\times$ prepared cost. The study establishes tested-stage
+functional feasibility, not speedup, end-to-end parity, broad coverage, or
+easier authoring.
+
 \section{Limitations and Broader Implications}
 
 Users provide bounded callback intent and data; shared \rtdl machinery validates
@@ -917,10 +931,11 @@ executable path: only topologies with audited lowerers can be materialized.
 
 The language trades expressiveness for analysis. It excludes dynamic
 allocation, recursion, reflection, unrestricted loops, raw pointers, and
-arbitrary foreign calls. Its stable facade has two constructors, its measured
-paths use exact IR specializations, and no independent developer has measured
-authoring effort. These are design costs, not temporary omissions that the
-evaluation silently treats as solved.
+arbitrary foreign calls. Its stable facade has two constructors. The
+two-generation synthetic paths use exact-IR specializations; the application
+study also measures disclosed callback-leaf and closed native routes. No
+independent developer has measured authoring effort. These are design costs,
+not temporary omissions that the evaluation silently treats as solved.
 
 The implementation suggests, but does not validate elsewhere, a pattern for
 managed-language/accelerator boundaries: use the application-visible result
@@ -1017,63 +1032,56 @@ GPUVerify~\cite{betts2012gpuverify}.
 
 \section{Artifact}
 
-The evidence-only nine-member archive contains an anonymous projection, summary,
-manifest, documentation, inventory, and standard-library Python verifier.
-Private provenance and export receipts remain outside it. The projection records
-160 formal cells, 20,480 steady samples, 1,024 A-only instrumentation endpoints,
-20 AOT samples, and eight competence records.
+The nine-member evidence-only archive contains an anonymous projection and
+standard-library verifier over 160 formal cells, 20,480 steady samples, 1,024
+A-only instrumentation endpoints, 20 AOT samples, and eight competence records.
+Two clean exports were byte-identical and replayed in normal and optimized
+Python from fresh directories. It bundles no third-party code, raw GPU archive,
+or CUDA/OptiX material and performs offline recount, not GPU rerun,
+installation, or private-history reconstruction.
 
-Two clean exports were byte-identical. Replays in two fresh directories, one
-with spaces, passed in isolated normal and optimized Python modes. The archive
-bundles no third-party code, data, CUDA/OptiX material, driver, key, or raw GPU
-archive. It verifies submitted evidence offline, not GPU rerun, installation, or
-private-history reconstruction. It excludes the historical nine-application
-source archive and cannot replay Table~\ref{tab:apps}. New execution needs
-external CUDA/OptiX and a GPU.
+The application transaction is retained separately from this nine-member
+archive. Its worker records support offline statistical recount, but it does
+not include all raw-domain inputs or rerun application oracles.
 
 \section{Threats to Validity}
 
 \paragraph{Construct validity.}
-Prepared A/D measures the public steady path after setup; it does not measure
-interactive authoring, cold compilation, or first use. Direct D is the named
-contract-equivalent reference implementation, not a proven minimum-latency
-implementation or an application framework. Strong C is contract-equivalent at
-the output boundary but is neither byte-identical nor operation-identical to A.
-These observations do not identify intrinsic language overhead. Paired
-instrumentation overhead was measured only for A, not for the other arms.
+Prepared A/D excludes authoring, cold compilation, and first use. Direct D is a
+named contract-equivalent implementation, not a proven latency lower bound;
+strong C is output-equivalent but not operation-identical. These observations
+do not isolate intrinsic language overhead, and paired instrumentation covers A
+only. Application complete starts after domain-encoding loaders and first
+execute after preparation; compilation, physical routes, and timed validation
+differ, with no causal ablation.
 The same-width semantic-ABI example is illustrative: mutation tests establish
 check liveness, but no retained run executes its defective route. A trusted
 semantic schema may also be wrong while internally coherent.
 
 \paragraph{Internal validity.}
-Both tasks were used during adaptation and are not unseen workloads. Entry was
-revised after an adverse result, and both first-result endpoints include import
-and lifecycle effects; neither is reinterpreted as a pass. Mocks reproduce the
-provider double fault, which can replace the primary exception and lose cleanup
-retry ownership. Native forks bypassing the at-fork hook can evade the cached-PID
-guard. The double-fault mock returned no public result; the native-fork probe
-accepted a public call through a mock native implementation but ran no GPU work.
-Neither defect appeared in retained successful GPU workers.
+Both synthetic tasks were adapted, not unseen. Entry was revised after an
+adverse result; both first-result endpoints remain lifecycle-confounded and are
+not reinterpreted as passes. Mocks show that a provider double fault can replace
+the primary exception and lose retry ownership, while a native fork can evade
+the cached-PID guard. Neither mock ran GPU work or appeared in retained workers.
 
 \paragraph{External validity.}
-Measurements cover two NVIDIA generations and two exact tasks; raw latency is
-not compared across machines. Authors defined the challenge domain from known
-ingredients and selected one composition. There is no independent-user authoring evidence,
-prevalence measure, or arbitrary-Python/IR evidence. Several related-work
-guarantee questions remain unknown; no first, only, or impossibility claim follows.
-The nine-application portfolio is historical mapping evidence: six individual
-source files are not recoverable from the current evidence set, and its older
-mixed V2/V4 timings are not pooled with final M or used as a speed claim.
+Synthetic measurements cover two NVIDIA generations and two exact tasks without
+cross-machine raw-time comparison. The application study covers selected stages
+from 3/9 apps, four units, and one RTX A4500; all twelve rows are adverse, six apps are unexecuted,
+and inputs are derived representations. Authors defined the challenge domain
+and selected one composition. There is no independent-user, prevalence, or
+arbitrary-Python/IR evidence and no first/only/impossibility claim. Although all
+nine entry points were recovered, six lack retained historical per-file
+identities and the original archive; older V2/V4 timings are not pooled with M.
 
 \paragraph{Implementation trust.}
-The selected sphere route required about 2,635 lines of topology-specific TCB
-code. The finite checker missed an out-of-authority early-return probe for
-selected helpers. The 4,096 timed A executions lack per-execution receipts.
+The sphere route required about 2,635 topology-specific TCB lines; the finite
+checker missed an early-return probe; 4,096 timed A calls lack per-call receipts.
 
 \paragraph{Artifact scope.}
-The anonymous projection is derived evidence. Its verifier checks identities,
-counts, formulas, and disclosed rows, but cannot recreate GPU runs or custody;
-private provenance remains available for confidential audit.
+The derived anonymous projection checks identities, counts, formulas, and rows,
+but cannot recreate GPU runs or private custody.
 
 \section{Conclusion}
 
@@ -1082,8 +1090,9 @@ tracing. Authors express typed data and role behavior while retaining ownership
 of the application mapping and semantic oracle. Typed Callback IR and
 whole-protocol admission connect selected result obligations to role effects,
 semantic and physical contracts, continuation, and executable identity.
-Generated Numba leaves and trusted topology wrappers implement those decisions,
-with exact-IR specialization for the measured standard routes.
+Generated Numba leaves and trusted topology wrappers implement supported
+authored templates; closed routes can select dedicated native implementations,
+including exact-IR specializations for the measured standard routes.
 
 The design produces concrete compiler behavior: it rejects a role-legal effect
 that conflicts with one complete-relation route, generates physical
@@ -1093,9 +1102,11 @@ where these components compose and where application responsibility remains;
 they do not prove arbitrary generalization or usability. Across two exact tasks
 and two GPU generations, prepared median latency is
 1.077--1.175$\times$ Direct, while post-import comparison reaches
-1.837$\times$ median and a 2.377$\times$ worst block. The resulting contribution
-is a concrete but bounded language/compiler design with visible trusted-code,
-receipt, startup, source-recovery, and expressiveness costs.
+1.837$\times$ median and a 2.377$\times$ worst block. Selected-stage application V4/PyOptiX is
+adverse at all twelve endpoints, including 1.379$\times$ graph prepared and
+37.928--39.083$\times$ Particle/LibRTS prepared. This establishes bounded
+functional feasibility while exposing route/lifecycle debt, not broad practical
+performance or an authoring-productivity advantage.
 
 \bibliographystyle{ACM-Reference-Format}
 \bibliography{references}
