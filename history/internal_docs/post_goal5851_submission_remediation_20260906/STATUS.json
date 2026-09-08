@@ -1,8 +1,8 @@
 {
   "schema": "rtdl.cgo2027.post_goal5851_submission_remediation.status.v1",
-  "updated_at_utc": "2026-09-07T12:31:19Z",
-  "updated_at_et": "2026-09-07T08:31:19-0400",
-  "overall_status": "PSEXTUPLEPRIME_DSL_FIRST_COMPLETE__R7_ZERO_OF_TWO__CLAIMS_UNAUTHORIZED__NOT_SUBMITTED",
+  "updated_at_utc": "2026-09-08T04:53:41Z",
+  "updated_at_et": "2026-09-08T00:53:41-0400",
+  "overall_status": "PSEPTUPLEPRIME_APPLICATION_EVIDENCE_INTEGRATED__R7_ZERO_OF_TWO__CLAIMS_UNAUTHORIZED__NOT_SUBMITTED",
   "controlling_directive": {
     "path": "history/internal_docs/lead_dsl_first_submission_directive_20260907.md",
     "sha256": "ddbf047144a1e8641428f84a3588cf50f0171b0babfb0691399994e7efd68edf",
@@ -310,6 +310,56 @@
     "upload_executed": false,
     "submission_receipt_present": false
   },
+  "p_septuple_prime_application_evidence": {
+    "status": "SELECTED_STAGE_APPLICATION_COST_INTEGRATED__AUTHOR_PREFLIGHT_AND_FROZEN_REPLAY_PASSED__PENDING_TWO_INDEPENDENT_R7_ACCEPTANCES",
+    "candidate_commit": "72d60cb392031134dd3064a8da5cb603bde18e47",
+    "candidate_tree": "759cc1246830b785a8d30e98704b51266033194a",
+    "candidate_parent": "700b3165ba2a0bca15981aa273c9f02ed9a63992",
+    "application_source_commit": "c5c8be48b743aa001e9c16c3344cc97c200600d1",
+    "application_source_tree": "e3bb0001f4c2d1e3171ab0431c0479500dfc7136",
+    "application_evidence": {
+      "selected_mappings": 3,
+      "portfolio_mappings": 9,
+      "operation_units": 4,
+      "registered_endpoints": 12,
+      "workers": 192,
+      "paired_blocks": 96,
+      "retry_count": 0,
+      "discard_count": 0,
+      "adverse_block_ratios": 96,
+      "formal_summary_sha256": "67a353cd796080b06442dcef64624bd176f65c513d185e0198aca0b7640df4bf",
+      "independent_recount_sha256": "667cafd0f3599b62b77aab96f92e18eaac4cb925832c077004b1ced2b09d7b64",
+      "archive_sha256": "2d7dc4413639e46994ca74251d230b74d5e9d775a23b457336cb00f9df80f4ff",
+      "broad_performance_claim": false,
+      "raw_domain_end_to_end_claim": false,
+      "causal_overhead_allocation_claim": false
+    },
+    "review_request": {
+      "path": "history/internal_docs/post_goal5851_submission_remediation_20260906/R7_PSEPTUPLEPRIME_FINAL_BYTES_REVIEW_REQUEST.md",
+      "sha256": "f96d7404d1dd3f3f9209a458d43e594720640c2ff2196ed4513b1fce30b9ae97"
+    },
+    "local_preflight": {
+      "path": "history/internal_docs/post_goal5851_submission_remediation_20260906/R8_PSEPTUPLEPRIME_LOCAL_PREFLIGHT_REPORT.md",
+      "sha256": "f2782047ba6c85440e87780ecf8629b6a6659b07ba689609d9bee6a6671d35de"
+    },
+    "claim_ledger": {
+      "path": "history/internal_docs/post_goal5851_submission_remediation_20260906/CLAIM_LEDGER.json",
+      "sha256": "61e44631967c5a16242e786bce5bfcf3401db8c14e316bbbe6a0ec6b4c4c4358"
+    },
+    "claim_count": 29,
+    "claim_authorized_true_count": 0,
+    "tests_rerun": 0,
+    "gpu_experiment_executed_after_freeze": false,
+    "frozen_f2_pod_replay_passed": true,
+    "frozen_application_recount_pod_replay_passed": true,
+    "independent_acceptances_received": 0,
+    "independent_acceptances_required": 2,
+    "earlier_candidate_reviews_transfer": false,
+    "claim_authorization_changed": false,
+    "executable_or_raw_evidence_bytes_changed": false,
+    "upload_executed": false,
+    "submission_receipt_present": false
+  },
   "source_identities": {
     "measured_successor_commit_M": "d653fe4ad170c5b51fee309d653c9565944dcf2e",
     "measured_successor_tree": "d53af23a2599f9d6adb4ac0bfff39cd0ab31860b",
@@ -393,6 +443,20 @@
       "artifact_sha256": "916cedbb7001c7aa43e66df3f992b543b7b3ca5a013f0f997790113a2e3738b8",
       "source_bundle_sha256": "a49ea4aedc2b96084eefddf2ee987e20e968b59416c678caa30c5ab0c4606afa",
       "source_bundle_bytes": 29176,
+      "independent_acceptances_received": 0
+    },
+    "paper_snapshot_P_septuple_prime": {
+      "commit": "72d60cb392031134dd3064a8da5cb603bde18e47",
+      "tree": "759cc1246830b785a8d30e98704b51266033194a",
+      "parent": "700b3165ba2a0bca15981aa273c9f02ed9a63992",
+      "main_tex_sha256": "0dd724df5b1d64051e28ce7ee31f09f4e3e5adccf389a0775fa9be7ef36c6076",
+      "references_bib_sha256": "d27ce8c5db0a6855e9879b90a38e98fb07f56ecf993ee4fe2eaddea5b57619f5",
+      "pdf_sha256": "32189aec5d5ebda4956c83dfe948128bef8dd50e3dbbeb308290988a2acaea07",
+      "pdf_bytes": 183938,
+      "pdf_pages": 12,
+      "artifact_sha256": "916cedbb7001c7aa43e66df3f992b543b7b3ca5a013f0f997790113a2e3738b8",
+      "source_bundle_sha256": "e4a291f9e86b125438f2b1c9a5334110a035a36b4a88955267ea319a4e596f6f",
+      "source_bundle_bytes": 29743,
       "independent_acceptances_received": 0
     }
   },
@@ -525,7 +589,7 @@
     "production_native_experiment_diff_from_M": []
   },
   "r4_manuscript": {
-    "status": "PSEXTUPLEPRIME_DSL_FIRST_REPURPOSED_RT_REWRITE_COMPLETE__PENDING_INDEPENDENT_REREVIEW",
+    "status": "PSEPTUPLEPRIME_SELECTED_STAGE_APPLICATION_COST_INTEGRATED__PENDING_INDEPENDENT_REREVIEW",
     "report": {
       "path": "novelty/DSL_FIRST_REPURPOSED_RT_EXECUTION_REPORT_20260907.md",
       "sha256": "11ca44801b228d163c64d884c433ccd3c780f554ae09bea9b37fedd033881b7d"
@@ -536,18 +600,18 @@
     },
     "source": {
       "path": "paper/cgo2027/main.tex",
-      "sha256": "a339ace8ec2f071cd85c2416e9f67b5d76ae533d43a41a96dbfa2f6647be7de0"
+      "sha256": "0dd724df5b1d64051e28ce7ee31f09f4e3e5adccf389a0775fa9be7ef36c6076"
     },
     "bibliography": {
       "path": "paper/cgo2027/references.bib",
-      "sha256": "bb0b71ae0fec49492888fbc9252ed412897cb2d4d7f1e33008f902cdb3b74e61",
+      "sha256": "d27ce8c5db0a6855e9879b90a38e98fb07f56ecf993ee4fe2eaddea5b57619f5",
       "nonfatal_bibtex_completeness_warnings_present": true,
       "unresolved_citations_or_references": 0
     },
     "pdf": {
       "path": "paper/cgo2027/main.pdf",
-      "sha256": "a1772fc41809deb91f64466fc0cccb9557023c143d99d361b4f3b9aa38ad36f0",
-      "bytes": 182617,
+      "sha256": "32189aec5d5ebda4956c83dfe948128bef8dd50e3dbbeb308290988a2acaea07",
+      "bytes": 183938,
       "pages": 12,
       "page_size": "US Letter",
       "all_pages_rendered_and_inspected": true,
@@ -561,7 +625,7 @@
     "inherited_submission_evidence_tests": {
       "passed": 14,
       "failed": 0,
-      "rerun_for_p_sextuple_prime": false
+      "rerun_for_p_septuple_prime": false
     },
     "legacy_public_doc_tests": {
       "candidate_errors": 13,
@@ -572,7 +636,7 @@
     "public_or_manuscript_claim_authorized": false
   },
   "r6_final_delivery": {
-    "status": "PSEXTUPLEPRIME_PDF_SOURCE_BOUND__UNCHANGED_F2_INHERITED__PENDING_R7_R8",
+    "status": "PSEPTUPLEPRIME_PDF_SOURCE_BOUND__UNCHANGED_F2_REPLAYED__PENDING_R7_R8",
     "report": {
       "path": "novelty/DSL_FIRST_REPURPOSED_RT_EXECUTION_REPORT_20260907.md",
       "sha256": "11ca44801b228d163c64d884c433ccd3c780f554ae09bea9b37fedd033881b7d"
@@ -583,12 +647,12 @@
     },
     "author_side_validation_log": {
       "path": "VALIDATION_LOG.md",
-      "sha256": "a80624797b7908bef42dc6127b5535e45616327cf3812839569e4a5fe43a284b"
+      "sha256": "bc8da6b6da89b80e06d20e39f7924c4629eac36e7fedec1e9c69f7b7f59ea9fb"
     },
     "delivery_pdf": {
       "path": "output/pdf/rtdl_cgo2027_submission_candidate.pdf",
-      "sha256": "a1772fc41809deb91f64466fc0cccb9557023c143d99d361b4f3b9aa38ad36f0",
-      "bytes": 182617,
+      "sha256": "32189aec5d5ebda4956c83dfe948128bef8dd50e3dbbeb308290988a2acaea07",
+      "bytes": 183938,
       "byte_identical_to_paper_pdf": true
     },
     "delivery_artifact": {
@@ -600,23 +664,25 @@
     },
     "source_bundle": {
       "path": "output/source/rtdl-cgo2027-source.tar.gz",
-      "sha256": "a49ea4aedc2b96084eefddf2ee987e20e968b59416c678caa30c5ab0c4606afa",
-      "bytes": 29176,
+      "sha256": "e4a291f9e86b125438f2b1c9a5334110a035a36b4a88955267ea319a4e596f6f",
+      "bytes": 29743,
       "regular_files": 2,
       "twin_normalized_builds_byte_identical": true,
       "foreign_path_compile_exit_zero": true
     },
     "f2_replay_inherited_from_frozen_tooling": true,
+    "f2_clean_pod_normal_optimized_replay_passed": true,
+    "application_clean_pod_normal_optimized_recount_passed": true,
     "gpu_execution_performed": false,
     "anonymous_payload_forbidden_identity_matches": 0,
     "verifier_contains_generic_split_deny_list_tokens": true,
     "public_or_manuscript_claim_authorized": false
   },
   "r7_final_bytes_review": {
-    "status": "OLD_P_REJECTED__PPRIME_REQUEST_READY__TWO_INDEPENDENT_PPRIME_REVIEWS_PENDING",
+    "status": "PSEPTUPLEPRIME_REQUEST_READY__ZERO_OF_TWO_INDEPENDENT_ACCEPTANCES",
     "request": {
-      "path": "R7_PPRIME_FINAL_BYTES_REVIEW_REQUEST.md",
-      "sha256": "43bd200394674b8439146e758e1c5529ba449e31e57bf1dd7229f58d84115f84"
+      "path": "R7_PSEPTUPLEPRIME_FINAL_BYTES_REVIEW_REQUEST.md",
+      "sha256": "f96d7404d1dd3f3f9209a458d43e594720640c2ff2196ed4513b1fce30b9ae97"
     },
     "old_p_lead_review": {
       "path": "R7_LEAD_INDEPENDENT_FINAL_BYTES_REVIEW.md",
@@ -631,30 +697,32 @@
       "counts_as_independent_review": false
     },
     "independent_reviews_required": 2,
-    "independent_old_p_reviews_received": 1,
-    "independent_pprime_acceptances_received": 0,
+    "independent_pseptupleprime_acceptances_received": 0,
+    "earlier_candidate_reviews_transfer": false,
     "author_side_findings_remediated": true,
     "material_findings_closed_or_descoped": false,
     "public_or_manuscript_claim_authorized": false
   },
   "r8_submission_gate": {
-    "status": "PPRIME_LOCAL_PREFLIGHT_PASSED__R7_AND_EXTERNAL_ACTIONS_PENDING",
+    "status": "PSEPTUPLEPRIME_AUTHOR_LOCAL_PREFLIGHT_AND_FROZEN_POD_REPLAY_PASSED__R7_AND_EXTERNAL_ACTIONS_PENDING",
     "report": {
-      "path": "R8_PPRIME_LOCAL_PREFLIGHT_REPORT.md",
-      "sha256": "6c7ba959ebf582d3b890b61d5779848845bca1807668931053acbb9778dd256a"
+      "path": "R8_PSEPTUPLEPRIME_LOCAL_PREFLIGHT_REPORT.md",
+      "sha256": "f2782047ba6c85440e87780ecf8629b6a6659b07ba689609d9bee6a6671d35de"
     },
-    "official_rule_page_checked": "https://2027.cgo.org/track/cgo-2027-papers",
+    "official_rule_page_checked": "https://conf.researchr.org/track/cgo-2027/cgo-2027-papers",
     "public_hotcrp_landing_checked": "https://cgo27.hotcrp.com/",
     "category": "standard_research_paper",
     "local_pdf_rule_checks_passed": true,
     "source_bundle": {
       "path": "output/source/rtdl-cgo2027-source.tar.gz",
-      "sha256": "1d76d60b1f72487a414ef2fe649415938bc12a3ea6baedd65396b9378b4d90ed",
-      "bytes": 20699,
+      "sha256": "e4a291f9e86b125438f2b1c9a5334110a035a36b4a88955267ea319a4e596f6f",
+      "bytes": 29743,
       "regular_files": 2,
       "twin_normalized_builds_byte_identical": true,
       "foreign_path_compile_exit_zero": true
     },
+    "clean_pod_f2_replay_normal_and_optimized_passed": true,
+    "clean_pod_application_recount_normal_and_optimized_passed": true,
     "independent_anonymity_scans_received": 0,
     "authenticated_submission_form_checked": false,
     "upload_executed": false,
@@ -804,7 +872,7 @@
     "public_or_manuscript_claim_authorized": false
   },
   "r7_p_sextuple_prime_final_bytes_review": {
-    "status": "REQUEST_READY__ZERO_OF_TWO_INDEPENDENT_ACCEPTANCES",
+    "status": "SUPERSEDED_BY_PSEPTUPLEPRIME__ZERO_TRANSFERABLE_ACCEPTANCES",
     "request": {
       "path": "R7_PSEXTUPLEPRIME_FINAL_BYTES_REVIEW_REQUEST.md",
       "sha256": "c0d5fe4f37525e8a98f70eef28d04bd77f89e45e7c26a14b6ca43f5882d5adbc"
@@ -821,7 +889,7 @@
     "public_or_manuscript_claim_authorized": false
   },
   "r8_p_sextuple_prime_submission_gate": {
-    "status": "AUTHOR_LOCAL_PREFLIGHT_PASSED__R7_AND_EXTERNAL_ACTIONS_PENDING",
+    "status": "SUPERSEDED__AUTHOR_LOCAL_PREFLIGHT_PASSED__NO_SUBMISSION_ACTION",
     "report": {
       "path": "R8_PSEXTUPLEPRIME_LOCAL_PREFLIGHT_REPORT.md",
       "sha256": "e65a4533418adc2ba15bedddd160139bf20a3c98fca19cc7f1008f730dfbb701"
@@ -831,6 +899,46 @@
     "page_size": "US Letter",
     "all_pages_rendered_and_inspected": true,
     "source_bundle_foreign_path_compile_exit_zero": true,
+    "independent_anonymity_scans_received": 0,
+    "authenticated_submission_form_checked": false,
+    "upload_executed": false,
+    "downloaded_upload_hash_checked": false,
+    "submission_receipt_present": false,
+    "public_or_manuscript_claim_authorized": false
+  },
+  "r7_p_septuple_prime_final_bytes_review": {
+    "status": "REQUEST_READY__ZERO_OF_TWO_INDEPENDENT_ACCEPTANCES",
+    "request": {
+      "path": "R7_PSEPTUPLEPRIME_FINAL_BYTES_REVIEW_REQUEST.md",
+      "sha256": "f96d7404d1dd3f3f9209a458d43e594720640c2ff2196ed4513b1fce30b9ae97"
+    },
+    "candidate_commit": "72d60cb392031134dd3064a8da5cb603bde18e47",
+    "candidate_tree": "759cc1246830b785a8d30e98704b51266033194a",
+    "pdf_sha256": "32189aec5d5ebda4956c83dfe948128bef8dd50e3dbbeb308290988a2acaea07",
+    "artifact_sha256": "916cedbb7001c7aa43e66df3f992b543b7b3ca5a013f0f997790113a2e3738b8",
+    "independent_reviews_required": 2,
+    "independent_acceptances_received": 0,
+    "earlier_candidate_reviews_count_as_acceptance": false,
+    "author_integration_counts_as_acceptance": false,
+    "local_preflight_counts_as_acceptance": false,
+    "pod_replay_counts_as_acceptance": false,
+    "public_or_manuscript_claim_authorized": false
+  },
+  "r8_p_septuple_prime_submission_gate": {
+    "status": "AUTHOR_LOCAL_PREFLIGHT_AND_FROZEN_POD_REPLAY_PASSED__R7_AND_EXTERNAL_ACTIONS_PENDING",
+    "report": {
+      "path": "R8_PSEPTUPLEPRIME_LOCAL_PREFLIGHT_REPORT.md",
+      "sha256": "f2782047ba6c85440e87780ecf8629b6a6659b07ba689609d9bee6a6671d35de"
+    },
+    "local_pdf_rule_checks_passed": true,
+    "pdf_pages": 12,
+    "page_size": "US Letter",
+    "main_text_ends_on_page": 11,
+    "all_pages_rendered_and_inspected": true,
+    "source_bundle_foreign_path_compile_exit_zero": true,
+    "clean_pod_candidate_identity_checked": true,
+    "clean_pod_f2_replay_normal_and_optimized_passed": true,
+    "clean_pod_application_recount_normal_and_optimized_passed": true,
     "independent_anonymity_scans_received": 0,
     "authenticated_submission_form_checked": false,
     "upload_executed": false,
@@ -881,11 +989,11 @@
     "R1": "CLOSED_WITH_EVIDENCE",
     "R2": "CLOSED_WITH_EVIDENCE__FINAL_F2_REHEARSAL_PASSED",
     "R3": "CLOSED_WITH_EVIDENCE",
-    "R4": "PSEXTUPLEPRIME_DSL_FIRST_REPURPOSED_RT_REWRITE_COMPLETE__PENDING_INDEPENDENT_REREVIEW",
+    "R4": "PSEPTUPLEPRIME_SELECTED_STAGE_APPLICATION_COST_INTEGRATED__PENDING_INDEPENDENT_REREVIEW",
     "R5": "CLOSED_WITH_EVIDENCE__FINAL_F2_FROZEN",
-    "R6": "PSEXTUPLEPRIME_PDF_SOURCE_AND_UNCHANGED_F2_BOUND__PENDING_R7_R8",
-    "R7": "PSEXTUPLEPRIME_REQUEST_READY__ZERO_OF_TWO_INDEPENDENT_ACCEPTANCES",
-    "R8": "PSEXTUPLEPRIME_AUTHOR_LOCAL_PREFLIGHT_PASSED__R7_AND_EXTERNAL_ACTIONS_PENDING"
+    "R6": "PSEPTUPLEPRIME_PDF_SOURCE_AND_UNCHANGED_F2_BOUND__FROZEN_REPLAYS_PASSED__PENDING_R7_R8",
+    "R7": "PSEPTUPLEPRIME_REQUEST_READY__ZERO_OF_TWO_INDEPENDENT_ACCEPTANCES",
+    "R8": "PSEPTUPLEPRIME_AUTHOR_LOCAL_PREFLIGHT_AND_FROZEN_POD_REPLAY_PASSED__EXTERNAL_ACTIONS_PENDING"
   },
   "hard_freeze": "2026-09-08T00:00:00-04:00",
   "submission_deadline": "2026-09-10T23:59:59-12:00",

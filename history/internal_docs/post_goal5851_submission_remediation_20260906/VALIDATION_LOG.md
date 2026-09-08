@@ -1023,3 +1023,75 @@ The author-local R8 preflight is
 `e65a4533418adc2ba15bedddd160139bf20a3c98fca19cc7f1008f730dfbb701`.
 R7 remains 0/2; no earlier review transfers. No claim is authorized, no upload
 was attempted, and no submission receipt exists.
+
+## P-septuple-prime application-cost integration and frozen replay (2026-09-08)
+
+The final frozen selected-stage application transaction was integrated into
+the manuscript without modifying source, native code, experiments, tests,
+workloads, timers, estimators, thresholds, raw evidence, or F2. The immutable
+paper candidate is commit
+`72d60cb392031134dd3064a8da5cb603bde18e47`, tree
+`759cc1246830b785a8d30e98704b51266033194a`, parent
+`700b3165ba2a0bca15981aa273c9f02ed9a63992`.
+
+Exact candidate identities are:
+
+```text
+main.tex bytes/SHA-256: 61234 / 0dd724df5b1d64051e28ce7ee31f09f4e3e5adccf389a0775fa9be7ef36c6076
+references.bib bytes/SHA-256: 21640 / d27ce8c5db0a6855e9879b90a38e98fb07f56ecf993ee4fe2eaddea5b57619f5
+paper and delivery PDF bytes/SHA-256: 183938 / 32189aec5d5ebda4956c83dfe948128bef8dd50e3dbbeb308290988a2acaea07
+source bundle bytes/SHA-256: 29743 / e4a291f9e86b125438f2b1c9a5334110a035a36b4a88955267ea319a4e596f6f
+unchanged F2 bytes/SHA-256: 180308 / 916cedbb7001c7aa43e66df3f992b543b7b3ca5a013f0f997790113a2e3738b8
+```
+
+Author-side validation passed the cached Tectonic build, 12-page US-Letter
+format, main-text boundary on page 11, byte-identical paper/delivery PDFs,
+zero horizontal and vertical overfull boxes, zero unresolved citations or
+references, 12/12 embedded/subset/Unicode fonts, all-page visual inspection,
+tested private-identity scanning, twin normalized source construction, and a
+foreign-path source compile. Three nonstandard bibliography commentary notes
+were removed; no cited author, title, venue, year, DOI, or URL was removed.
+Disclosed nonfatal bibliography completeness warnings remain.
+
+The final application source is pre-freeze commit
+`c5c8be48b743aa001e9c16c3344cc97c200600d1`, tree
+`e3bb0001f4c2d1e3171ab0431c0479500dfc7136`. On one RTX A4500 it retained 192
+workers, 96 paired blocks, 12 evaluations, and zero retry/discard. Exact output
+contracts passed, but all 96 individual block ratios and all 12 endpoint
+medians were adverse to V4. The median range was `1.080--75.533x`. This is
+selected-stage evidence from three of nine mappings and four operation units,
+not raw-domain application end to end, broad performance, productivity,
+causal-overhead allocation, or proof of unavoidable language cost. Endpoint
+and physical-route asymmetries are disclosed in the exact paper and R7 request.
+
+The application authority identities are:
+
+```text
+FORMAL_SUMMARY.json: 67a353cd796080b06442dcef64624bd176f65c513d185e0198aca0b7640df4bf
+INDEPENDENT_RECOUNT_c5c8be48b.json: 667cafd0f3599b62b77aab96f92e18eaac4cb925832c077004b1ced2b09d7b64
+complete archive: 2d7dc4413639e46994ca74251d230b74d5e9d775a23b457336cb00f9df80f4ff
+```
+
+A fresh pod clone on the same retained A4500 host independently matched the
+candidate commit/tree and all delivery hashes. Normal and optimized Python F2
+replay outputs were byte-identical at SHA-256
+`c47aaee24bea18be6b30eaae45a856e30c7a2a74bd5b50fe7daf0f741bdf0ee8`
+and returned `PASS__OFFLINE_PROJECTION_RECOUNT` with 20,480 formal steady
+samples, 160 formal workers, 1,024 instrumentation workers, 20 AOT
+observations, and eight competence workers. No GPU experiment ran.
+
+Normal and optimized application recount outputs were byte-identical at
+SHA-256
+`63388474457a4e234f6915186aa364176ef80dd418936cf4c3e2c09cdc614fc8`.
+After removal of only environment-dependent absolute summary and worker paths,
+the new recount equaled the retained recount exactly. An initial diagnostic
+correctly failed after removing only the summary path because worker paths also
+differed, and a later print expression used the wrong ratio nesting after its
+equality assertions had passed. Neither invocation changed code or evidence;
+only the corrected fail-closed result is counted above.
+
+The P-septuple-prime claim ledger has 29 unique claims and zero authorized
+claims. R7 starts at 0/2 independent exact-byte acceptances; no earlier review,
+author-side analysis, local preflight, or pod replay transfers as an
+acceptance. No authenticated submission-form check, upload, downloaded-byte
+verification, or submission receipt exists.

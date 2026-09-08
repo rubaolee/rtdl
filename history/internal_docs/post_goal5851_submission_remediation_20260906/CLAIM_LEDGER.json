@@ -2,7 +2,7 @@
   "schema": "rtdl.cgo2027.post_goal5851.claim_ledger.v1",
   "version": 1,
   "created_at_utc": "2026-09-06T20:35:00Z",
-  "updated_at_utc": "2026-09-07T12:31:19Z",
+  "updated_at_utc": "2026-09-08T04:53:41Z",
   "measured_implementation": {
     "commit": "d653fe4ad170c5b51fee309d653c9565944dcf2e",
     "tree": "d53af23a2599f9d6adb4ac0bfff39cd0ab31860b",
@@ -17,9 +17,9 @@
     "public_or_manuscript_claim_authorized": false
   },
   "review": {
-    "current_reviewer": "Pending two independent reviews of exact P-sextuple-prime DSL-first bytes; author-side directive execution and hostile preflight complete",
-    "current_review_version": "post_goal5851_psextupleprime_dsl_first_author_remediated_pending_independent_review",
-    "external_final_bytes_review": "PQUINTUPLEPRIME_ZERO_TRANSFERABLE_ACCEPT__PSEXTUPLEPRIME_PENDING_TWO_INDEPENDENT_ACCEPTANCES",
+    "current_reviewer": "Pending two independent reviews of exact P-septuple-prime bytes; author-side application-evidence integration, local preflight, and frozen pod replay complete",
+    "current_review_version": "post_goal5851_pseptupleprime_application_evidence_integrated_pending_independent_review",
+    "external_final_bytes_review": "PSEXTUPLEPRIME_ZERO_TRANSFERABLE_ACCEPT__PSEPTUPLEPRIME_PENDING_TWO_INDEPENDENT_ACCEPTANCES",
     "old_p_lead_review": {
       "path": "history/internal_docs/post_goal5851_submission_remediation_20260906/R7_LEAD_INDEPENDENT_FINAL_BYTES_REVIEW.md",
       "sha256": "c449a6c6eed4f177496a762b38f13434a09b1447aa3b3521db56c66b818d5ddd",
@@ -138,6 +138,35 @@
     "p_sextuple_prime_review_request": {
       "path": "history/internal_docs/post_goal5851_submission_remediation_20260906/R7_PSEXTUPLEPRIME_FINAL_BYTES_REVIEW_REQUEST.md",
       "sha256": "c0d5fe4f37525e8a98f70eef28d04bd77f89e45e7c26a14b6ca43f5882d5adbc",
+      "independent_reviews_required": 2,
+      "independent_acceptances_received": 0,
+      "earlier_candidate_reviews_transfer": false,
+      "author_local_preflight_counts_as_acceptance": false
+    },
+    "paper_snapshot_p_septuple_prime": {
+      "commit": "72d60cb392031134dd3064a8da5cb603bde18e47",
+      "tree": "759cc1246830b785a8d30e98704b51266033194a",
+      "parent": "700b3165ba2a0bca15981aa273c9f02ed9a63992",
+      "main_tex_sha256": "0dd724df5b1d64051e28ce7ee31f09f4e3e5adccf389a0775fa9be7ef36c6076",
+      "references_bib_sha256": "d27ce8c5db0a6855e9879b90a38e98fb07f56ecf993ee4fe2eaddea5b57619f5",
+      "pdf_sha256": "32189aec5d5ebda4956c83dfe948128bef8dd50e3dbbeb308290988a2acaea07",
+      "pdf_bytes": 183938,
+      "pdf_pages": 12,
+      "source_bundle_sha256": "e4a291f9e86b125438f2b1c9a5334110a035a36b4a88955267ea319a4e596f6f",
+      "source_bundle_bytes": 29743,
+      "artifact_sha256": "916cedbb7001c7aa43e66df3f992b543b7b3ca5a013f0f997790113a2e3738b8",
+      "application_source_commit": "c5c8be48b743aa001e9c16c3344cc97c200600d1",
+      "application_source_tree": "e3bb0001f4c2d1e3171ab0431c0479500dfc7136",
+      "application_formal_summary_sha256": "67a353cd796080b06442dcef64624bd176f65c513d185e0198aca0b7640df4bf",
+      "application_recount_sha256": "667cafd0f3599b62b77aab96f92e18eaac4cb925832c077004b1ced2b09d7b64",
+      "application_archive_sha256": "2d7dc4413639e46994ca74251d230b74d5e9d775a23b457336cb00f9df80f4ff",
+      "author_remediation_status": "SELECTED_STAGE_APPLICATION_COST_INTEGRATED_PENDING_TWO_INDEPENDENT_R7_ACCEPTANCES",
+      "independent_acceptances_received": 0,
+      "commit_identity_record_location": "R7_PSEPTUPLEPRIME_FINAL_BYTES_REVIEW_REQUEST.md"
+    },
+    "p_septuple_prime_review_request": {
+      "path": "history/internal_docs/post_goal5851_submission_remediation_20260906/R7_PSEPTUPLEPRIME_FINAL_BYTES_REVIEW_REQUEST.md",
+      "sha256": "f96d7404d1dd3f3f9209a458d43e594720640c2ff2196ed4513b1fce30b9ae97",
       "independent_reviews_required": 2,
       "independent_acceptances_received": 0,
       "earlier_candidate_reviews_transfer": false,
@@ -587,7 +616,7 @@
     },
     {
       "claim_id": "APP-HISTORICAL-V4-MAPPINGS-026",
-      "candidate_sentence": "A frozen source audit covered nine project-authored V4 application mappings and thirteen selected paper lanes; the current evidence set retains exact application-source hashes for three mappings and archive-level audit records for six.",
+      "candidate_sentence": "A frozen source audit covered nine project-authored V4 application mappings and thirteen selected paper lanes; current entry points were recovered for all nine, while exact historical per-file custody survives for three mappings and archive-level audit records for six.",
       "scope": "Historical Particle, triangle counting, RayDB, LibRTS, X-HD, RTNN, RT-DBSCAN, Spatial RayJoin, and RT-BarnesHut mappings only.",
       "source_evidence": [
         {"path": "scripts/goal5773_build_evidence.py", "sha256": "273cf68bb8cdce27193e77218404af3ca7b0d98a5ab9355b7667e58d3329e70c"},
@@ -596,12 +625,12 @@
         {"path": "scripts/goal5792_source_backed_responsibility_audit.py", "sha256": "2a50d597fd25370dcfb8d2b0acda7535c73884899bbfcb81f1e9927ecca0a376"},
         {"path": "history/internal_docs/post_goal5851_submission_remediation_20260906/novelty/DSL_FIRST_APPLICATION_EVIDENCE_MATRIX_20260907.md", "sha256": "9ffba6ef1dd5a076febabe742380f1554749bf9a13ebd5d1f25e875a811d9cd3"}
       ],
-      "validation_phase": "Author-side recovery from surviving source-index, responsibility, and independent-recount scripts; no application rerun.",
-      "limitations": "Six individual application files and the frozen 10.8 MB source archive are absent. The portfolio is historical mapping/responsibility evidence, not current installability, unseen-user generalization, usability, elimination of trusted native partners, or proof that every stage ran on RT cores. RayDB was the sole private-loader exception.",
+      "validation_phase": "Author-side recovery from surviving source-index, responsibility, and independent-recount scripts plus current-tree entry-point discovery; only selected stages from three mappings were rerun in the separate final application transaction.",
+      "limitations": "Historical per-file custody and the frozen 10.8 MB archive remain absent for six mappings even though current entry points were recovered. The portfolio is mapping/responsibility evidence, not proof that all nine current entry points install or run, unseen-user generalization, usability, elimination of trusted native partners, or proof that every stage ran on RT cores. RayDB was the sole private-loader exception in the historical audit.",
       "paper_destination": "Abstract; Contributions; V4 Applications and Case Studies; Historical application evidence; Threats",
-      "disposition": "RETAIN_E1_E2_EVIDENCE_CLASSES__PENDING_PSEXTUPLEPRIME_R7",
+      "disposition": "RETAIN_CURRENT_ENTRY_POINTS_AND_HISTORICAL_E1_E2_CUSTODY_CLASSES__PENDING_PSEPTUPLEPRIME_R7",
       "claim_authorized": false,
-      "reviewer": "Codex author-side evidence recovery; two independent exact-byte reviews pending"
+      "reviewer": "Codex author-side evidence recovery and current-entry-point audit; two independent exact-byte reviews pending"
     },
     {
       "claim_id": "PERF-HISTORICAL-MIXED-V2-V4-027",
@@ -631,6 +660,24 @@
       "disposition": "RETAIN_AS_BOUNDED_COMPILER_PROBLEM__PENDING_PSEXTUPLEPRIME_R7",
       "claim_authorized": false,
       "reviewer": "Codex author-side P-sextuple-prime literature and manuscript audit; two independent exact-byte reviews pending"
+    },
+    {
+      "claim_id": "PERF-APPLICATION-PYOPTIX-SELECTED-STAGES-029",
+      "candidate_sentence": "On one RTX A4500, the frozen public-PyOptiX comparison covered selected stages from three of nine mappings and four operation units; all twelve registered endpoint medians were adverse to V4, ranging from 1.080x to 75.533x.",
+      "scope": "Final application source c5c8be48b743aa001e9c16c3344cc97c200600d1 on one RTX A4500: one Particle Tracking transition, Triangle RT-2A1 on com-dblp, and LibRTS point/range count at complete, first-execute, and prepared endpoints.",
+      "source_evidence": [
+        {"path": "history/internal_docs/v4_paper_apps_pyoptix_20260907/RESULTS.md", "sha256": "929b353bb2b1bae2d07629c0858bbc6cf479e0dd7a159d8895df23fcf5238a17"},
+        {"path": "history/internal_docs/v4_paper_apps_pyoptix_20260907/APP_MATRIX.md", "sha256": "74ca30bdc024a2034dedb7b0a45712e6076d7424e426fff38aa7f8da03ad2feb"},
+        {"path": "history/internal_docs/v4_paper_apps_pyoptix_20260907/evidence_c5c8be48b/FORMAL_SUMMARY.json", "sha256": "67a353cd796080b06442dcef64624bd176f65c513d185e0198aca0b7640df4bf"},
+        {"path": "history/internal_docs/v4_paper_apps_pyoptix_20260907/evidence_c5c8be48b/INDEPENDENT_RECOUNT_c5c8be48b.json", "sha256": "667cafd0f3599b62b77aab96f92e18eaac4cb925832c077004b1ced2b09d7b64"},
+        {"path": "history/internal_docs/v4_paper_apps_pyoptix_20260907/evidence_c5c8be48b/rtdl-v4-paper-apps-evidence-c5c8be48b.tar.gz", "sha256": "2d7dc4413639e46994ca74251d230b74d5e9d775a23b457336cb00f9df80f4ff"}
+      ],
+      "validation_phase": "Frozen 192-worker transaction with 96 paired blocks, 12 registered evaluations, exact-output checks, zero retry/discard, independent recount, and clean-pod normal/optimized recount replay. Complete archive SHA-256: 2d7dc4413639e46994ca74251d230b74d5e9d775a23b457336cb00f9df80f4ff.",
+      "limitations": "Selected stages only, not all nine mappings or complete raw-domain application end to end. Complete starts after shared preprocessing; first execute starts after preparation; timed execute includes validation, digesting, and compact evidence projection. Physical routes differ across Particle, triangle, and LibRTS. This evidence does not allocate causality, establish a speedup, broad performance, productivity, or an unavoidable language cost.",
+      "paper_destination": "Abstract; Evaluation application cost subsection; Threats; Artifact Scope; Conclusion",
+      "disposition": "RETAIN_ADVERSE_SELECTED_STAGE_COST__PENDING_PSEPTUPLEPRIME_R7",
+      "claim_authorized": false,
+      "reviewer": "Codex author-side frozen-evidence integration and replay; two independent exact-byte reviews pending"
     }
   ]
 }
