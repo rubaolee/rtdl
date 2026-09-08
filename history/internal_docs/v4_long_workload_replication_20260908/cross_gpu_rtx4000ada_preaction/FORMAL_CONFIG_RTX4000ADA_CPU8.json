@@ -1,0 +1,124 @@
+{
+  "common": {
+    "compute_capability": [
+      8,
+      9
+    ],
+    "cpu_affinity": {
+      "cpu_ids": [
+        8
+      ]
+    },
+    "cuda_include": "/usr/local/cuda-12.8/targets/x86_64-linux/include",
+    "data_manifest_path": "/tmp/rtdl-crossgpu/data/DATA_MANIFEST.json",
+    "data_manifest_sha256": "db3affa051b24642a386f7f16c3590126d2e895d966e386fbecbaa0587185cae",
+    "data_root": "/tmp/rtdl-crossgpu/data/DATA",
+    "discard_allowed": false,
+    "optix_include": "/tmp/rtdl-crossgpu/optix-dev/include",
+    "optix_sdk": "8.0.0",
+    "package_versions": {
+      "cuda-bindings": "12.9.7",
+      "cuda-python": "12.9.7",
+      "cupy-cuda12x": "14.0.1",
+      "numba": "0.65.1",
+      "numpy": "2.4.4",
+      "pyoptix": "9.1.0"
+    },
+    "prepared_warmups": 1,
+    "pyoptix_build_receipt_path": "/tmp/rtdl-crossgpu/pyoptix-build/build_receipt.json",
+    "pyoptix_build_receipt_sha256": "b6db0ed5c830e101d0641c5e16f69ae74d1b9298c135e8ff00eb42de9bb9679f",
+    "pyoptix_loaded_extension_sha256": "0a05db8ccb565ec513a391809bd8b539ccefdd25bd7b75a573ffc7bc5ad55933",
+    "pyoptix_prebuilt_ptx": {
+      "librts": {
+        "path": "/tmp/rtdl-crossgpu/prebuilt-ptx/librts.ptx",
+        "sha256": "c14abf9dd73d477f790c0f29b8321e42a07d9bb6ecc32d0846599c5ec887c3e6",
+        "source_sha256": "4d71a0d3d0b052cb68305e5b6b138a8df83c90c3a33184e66088e7296d218598"
+      },
+      "particle_tracking": {
+        "path": "/tmp/rtdl-crossgpu/prebuilt-ptx/particle_tracking.ptx",
+        "sha256": "133cc9d63032d3f9d544d3b66a43abb725d3289f06b614a695d89d87b1a5257b",
+        "source_sha256": "955c4124df87eeb53c8558f5210f7ff5d45b2608f9b58639738f39d764ee590b"
+      },
+      "triangle_counting": {
+        "path": "/tmp/rtdl-crossgpu/prebuilt-ptx/triangle_counting.ptx",
+        "sha256": "754112ee98002772ffa246b93b168d569d028f56c47182eb23588741c6b3a5a6",
+        "source_sha256": "857b5e6dc5254894130d36deae3f4439d964bb0ec74211f2c199f2fb513b581f"
+      }
+    },
+    "pyoptix_ptx_manifest_path": "/tmp/rtdl-crossgpu/prebuilt-ptx/PREBUILT_PTX_MANIFEST.json",
+    "pyoptix_ptx_manifest_sha256": "85887fd35c644258353543baedf9b423030e3d627b96e7d2bf183590222eed7f",
+    "python_executable": "/tmp/rtdl-crossgpu/venv/bin/python",
+    "python_executable_sha256": "1d3cf64f97cadc79fdc6fe2496a21b7b456cb94211978cfef5a65f616af74fd5",
+    "python_version": "3.12.3",
+    "registered_before_performance_observation": true,
+    "registered_machine": {
+      "cuda_visible_devices": "0",
+      "gpu": {
+        "compute_capability": "8.9",
+        "driver": "550.127.05",
+        "name": "NVIDIA RTX 4000 Ada Generation",
+        "uuid": "GPU-2a00572b-6cef-b9e6-db0a-c127783a5d46"
+      }
+    },
+    "replication_config_builder": {
+      "path": "/tmp/rtdl-tools/scripts/v4_long_workload_replication_make_config.py",
+      "sha256": "d0e567b3f707caf8c1d4427037d34372eb00dc36aaef880d384deca135aca284"
+    },
+    "replication_config_inputs": {
+      "base_config_path": "/tmp/rtdl-crossgpu/BASE_CONFIG.json",
+      "base_config_sha256": "c800c40b1d6c5583d55c2a44651db6df7293901d82cbef7c259681b71a1a63f4",
+      "triangle_rtdlexe_manifest_path": "/tmp/rtdl-crossgpu/TRIANGLE_RTDLEXE_BUILD_MANIFEST.json",
+      "triangle_rtdlexe_manifest_sha256": "30aa28e0b73d207cca8d28d5f630b8eeb4944d76eb40b61d0fd145942fc5ec81"
+    },
+    "retry_allowed": false,
+    "worker_timeout_seconds": 900
+  },
+  "implementations": {
+    "new_v4": {
+      "native_build_manifest_path": "/tmp/rtdl-crossgpu/native/BUILD_MANIFEST.json",
+      "native_build_manifest_sha256": "fb5be39eb016bfe0d55b5d6956da7dad05d72354e3cfdcbb08ce03f58a0ea154",
+      "native_library_path": "/tmp/rtdl-crossgpu/native/librtdl_optix.so",
+      "native_library_sha256": "94d9e42be75c86c3186dac1d2a280873206698ea620f5666b83e4d49ce00686d",
+      "source_commit": "02e84374fc092d2bb916cca633eda9592b4ecf07",
+      "source_root": "/tmp/rtdl-successor",
+      "source_tree": "8aad15d686bbc9e1c3b11df998898a0a063a01f1",
+      "triangle_rtdlexe": {
+        "artifact_path": "/tmp/rtdl-crossgpu/triangle-rtdlexe/artifacts/596642ec516415197677685ae660362e86d9ba6001a888ac8fab4afa1700d1ed.rtdlexe",
+        "authority_path": "/tmp/rtdl-crossgpu/triangle-rtdlexe/triangle.authority.json",
+        "deployment_id": "replication-20260908-rtx4000ada/triangle-weighted",
+        "expected_any_hit_proof_sha256": "0487d9c7ba513d360897ba31544a01ec11adbfb666f3fbd5be6a7115843a5f18",
+        "expected_artifact_sha256": "596642ec516415197677685ae660362e86d9ba6001a888ac8fab4afa1700d1ed",
+        "expected_authority_sha256": "2f493f70c5874c5897365c900aed4fa6d560f60cb59e2d7a6769cedce6b78bef",
+        "expected_family_executable_identity_sha256": "bf85b24f01f31dcead5c987d5f728bc73d8603c1bd3bb5109b5271ab24576fa4",
+        "expected_native_sha256": "94d9e42be75c86c3186dac1d2a280873206698ea620f5666b83e4d49ce00686d",
+        "expected_trust_head_sha256": "9e8e6fb670045d3b4a2e9becd43fd0c44292e5a58f1c29639304005a2667d569",
+        "expected_trust_package_sha256": "bf82ee4e395cbfacbfd9ee679c9c68e627fffea61ce216df89042582e1b5acde",
+        "expected_trust_root_sha256": "591763a4d1269ed1a57a5c212326c90eb24b7edac9bd846f4b4add11ebbb8cfb",
+        "trust_head_path": "/tmp/rtdl-crossgpu/triangle-rtdlexe/head.json",
+        "trust_package_path": "/tmp/rtdl-crossgpu/triangle-rtdlexe/package.json",
+        "trust_root_path": "/tmp/rtdl-crossgpu/triangle-rtdlexe/TEST_ONLY_public.json"
+      }
+    },
+    "pyoptix": {
+      "native_build_manifest_path": "/tmp/rtdl-crossgpu/native/BUILD_MANIFEST.json",
+      "native_build_manifest_sha256": "fb5be39eb016bfe0d55b5d6956da7dad05d72354e3cfdcbb08ce03f58a0ea154",
+      "native_library_path": "/tmp/rtdl-crossgpu/native/librtdl_optix.so",
+      "native_library_sha256": "94d9e42be75c86c3186dac1d2a280873206698ea620f5666b83e4d49ce00686d",
+      "source_commit": "02e84374fc092d2bb916cca633eda9592b4ecf07",
+      "source_root": "/tmp/rtdl-successor",
+      "source_tree": "8aad15d686bbc9e1c3b11df998898a0a063a01f1"
+    }
+  },
+  "schema": "rtdl.v4_long_workload.formal_config.v1",
+  "units": {
+    "triangle_counting__cit_patents__rt_2a1__4m": {
+      "app": "triangle_counting",
+      "dataset": "cit-Patents",
+      "expected_triangle_count": 7515023,
+      "max_relation_rows": 4000000,
+      "operation": null,
+      "prepared_repetitions": 3,
+      "unit_id": "triangle_counting__cit_patents__rt_2a1__4m"
+    }
+  }
+}

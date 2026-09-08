@@ -1,0 +1,73 @@
+{
+  "compute_capability": [
+    8,
+    9
+  ],
+  "cuda_include": "/usr/local/cuda-12.8/targets/x86_64-linux/include",
+  "data_manifest_path": "/tmp/rtdl-crossgpu/data/DATA_MANIFEST.json",
+  "data_manifest_sha256": "db3affa051b24642a386f7f16c3590126d2e895d966e386fbecbaa0587185cae",
+  "data_root": "/tmp/rtdl-crossgpu/data/DATA",
+  "discard_allowed": false,
+  "native_build_manifest_path": "/tmp/rtdl-crossgpu/native/BUILD_MANIFEST.json",
+  "native_build_manifest_sha256": "fb5be39eb016bfe0d55b5d6956da7dad05d72354e3cfdcbb08ce03f58a0ea154",
+  "native_library_path": "/tmp/rtdl-crossgpu/native/librtdl_optix.so",
+  "native_library_sha256": "94d9e42be75c86c3186dac1d2a280873206698ea620f5666b83e4d49ce00686d",
+  "optix_include": "/tmp/rtdl-crossgpu/optix-dev/include",
+  "optix_sdk": "8.0.0",
+  "package_versions": {
+    "cuda-bindings": "12.9.7",
+    "cuda-python": "12.9.7",
+    "cupy-cuda12x": "14.0.1",
+    "numba": "0.65.1",
+    "numpy": "2.4.4",
+    "pyoptix": "9.1.0"
+  },
+  "performance_threshold_present": false,
+  "prepared_repetitions": {
+    "librts__parks__point_contains": 4,
+    "librts__parks__range_contains": 4,
+    "particle_tracking": 32,
+    "triangle_counting__com_dblp__rt_2a1": 4
+  },
+  "prepared_warmups": 1,
+  "pyoptix_build_receipt_path": "/tmp/rtdl-crossgpu/pyoptix-build/build_receipt.json",
+  "pyoptix_build_receipt_sha256": "b6db0ed5c830e101d0641c5e16f69ae74d1b9298c135e8ff00eb42de9bb9679f",
+  "pyoptix_loaded_extension_sha256": "0a05db8ccb565ec513a391809bd8b539ccefdd25bd7b75a573ffc7bc5ad55933",
+  "pyoptix_prebuilt_ptx": {
+    "librts": {
+      "path": "/tmp/rtdl-crossgpu/prebuilt-ptx/librts.ptx",
+      "sha256": "c14abf9dd73d477f790c0f29b8321e42a07d9bb6ecc32d0846599c5ec887c3e6",
+      "source_sha256": "4d71a0d3d0b052cb68305e5b6b138a8df83c90c3a33184e66088e7296d218598"
+    },
+    "particle_tracking": {
+      "path": "/tmp/rtdl-crossgpu/prebuilt-ptx/particle_tracking.ptx",
+      "sha256": "133cc9d63032d3f9d544d3b66a43abb725d3289f06b614a695d89d87b1a5257b",
+      "source_sha256": "955c4124df87eeb53c8558f5210f7ff5d45b2608f9b58639738f39d764ee590b"
+    },
+    "triangle_counting": {
+      "path": "/tmp/rtdl-crossgpu/prebuilt-ptx/triangle_counting.ptx",
+      "sha256": "754112ee98002772ffa246b93b168d569d028f56c47182eb23588741c6b3a5a6",
+      "source_sha256": "857b5e6dc5254894130d36deae3f4439d964bb0ec74211f2c199f2fb513b581f"
+    }
+  },
+  "pyoptix_ptx_manifest_path": "/tmp/rtdl-crossgpu/prebuilt-ptx/PREBUILT_PTX_MANIFEST.json",
+  "pyoptix_ptx_manifest_sha256": "85887fd35c644258353543baedf9b423030e3d627b96e7d2bf183590222eed7f",
+  "python_executable": "/tmp/rtdl-crossgpu/venv/bin/python",
+  "python_executable_sha256": "1d3cf64f97cadc79fdc6fe2496a21b7b456cb94211978cfef5a65f616af74fd5",
+  "python_version": "3.12.3",
+  "registered_before_performance_observation": true,
+  "registered_machine": {
+    "cuda_visible_devices": "0",
+    "gpu": {
+      "compute_capability": "8.9",
+      "driver": "550.127.05",
+      "name": "NVIDIA RTX 4000 Ada Generation",
+      "uuid": "GPU-2a00572b-6cef-b9e6-db0a-c127783a5d46"
+    }
+  },
+  "retry_allowed": false,
+  "schema": "rtdl.v4_paper_apps_pyoptix.config.v1",
+  "source_commit": "02e84374fc092d2bb916cca633eda9592b4ecf07",
+  "source_root": "/tmp/rtdl-successor",
+  "source_tree": "8aad15d686bbc9e1c3b11df998898a0a063a01f1"
+}

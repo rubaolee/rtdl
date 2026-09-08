@@ -1,7 +1,7 @@
 {
   "schema": "rtdl.v4_long_workload.replication_status.v1",
-  "updated_at": "2026-09-08T19:05:06-04:00",
-    "status": "REPLACEMENT_STACK_BUILT__CONFIG_DERIVATION_READY__WORKER_ZERO_NOT_STARTED",
+    "updated_at": "2026-09-08T19:29:52-04:00",
+    "status": "CROSS_GPU_PREACTION_FROZEN__FORMAL_WORKER_ZERO_NOT_STARTED",
   "question": "Does the exact cit-Patents/4M prepared RTDL/PyOptiX contract reproduce on a separately registered RTX 4000 Ada GPU?",
   "immutable_prior": {
     "archive_sha256": "ef2ca7890c9d415dc1edbe71966aabc512209c9d8608d4eaf460c7c1fddf8bdc",
@@ -67,9 +67,21 @@
         "triangle_rtdlexe_sha256": "596642ec516415197677685ae660362e86d9ba6001a888ac8fab4afa1700d1ed",
         "device_prepare_verified": true
     },
-  "gates": {
-    "dry_run_started": false,
-    "preregistration_frozen": false,
+    "frozen_preaction": {
+        "control_commit": "beb4b1e735b4b081ede394a9fb42eb2c8b264bea",
+        "formal_config_sha256": "d9df1b75cb39139f0b580f91319447b9eca24bd27031bd02d125f1ddcc199643",
+        "dry_run_summary_sha256": "26802297b75f119db412f8794892e2cb1506446269f4a3fbfdf09ef96c8ce223",
+        "preregistration_sha256": "feb8a8eeb6df43ac679a49b119428d78f7d00cea681e0ac0ba17646eaeff6509",
+        "formal_schedule_sha256": "236cabd90969d16af3d933f2adeba9788ca8e3c823240f8957d266e61ad0020d",
+        "transaction_id": "citpatents4m-crossgpu-rtx4000ada-2a00572b-20260908",
+        "dry_run_ratio_new_v4_over_pyoptix": 1.111677407470143,
+        "dry_run_output_parity": true,
+        "local_authority_revalidation": "PASS"
+    },
+    "gates": {
+        "dry_run_started": true,
+        "dry_run_complete": true,
+        "preregistration_frozen": true,
     "formal_worker_zero_started": false,
     "formal_measurement_complete": false,
     "independent_recount_complete": false,
