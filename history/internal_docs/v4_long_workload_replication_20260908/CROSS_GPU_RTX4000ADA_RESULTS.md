@@ -70,10 +70,13 @@ block ratios above.
 
 The prior RTX A4500 transaction reported a paired median of `1.057361x` and a
 largest block of `1.083735x`. The new RTX 4000 Ada transaction reports
-`1.016641x` and `1.024264x`. The two transactions use the same measured source,
-input, algorithm, segment cap, endpoint, population, order pattern, affinity,
-and thresholds, but different physical GPU models and UUIDs. They are reported
-separately and are never pooled.
+`1.016641x` and `1.024264x`. The replicated A/C prepared cell uses the same
+measured source, input, algorithm, segment cap, eight-block A/C pairing, three
+retained samples per worker, order pattern, affinity and thresholds, but a
+different physical GPU model and UUID. The complete transaction populations
+are not the same: the prior portfolio transaction had 240 workers across ten
+rows and three arms, whereas this focused transaction has 16 workers for one
+row and two arms. They are reported separately and are never pooled.
 
 The result supports a narrow cross-GPU reproducibility statement: the measured
 long prepared Graph path remained within about 2.5% of competent public
