@@ -238,6 +238,17 @@ diagnostic receipt, oracle, endpoint, block order, repetition count, warmup
 count, estimator, or performance threshold. It adds no Particle identity or
 application dispatch to native/runtime code.
 
+Before any GPU worker used the buffer-residency source commit
+`3b8c2ebcae62f3557b0253a93293f090cfcf3ee8`, the still-running prior
+transaction exposed a second generic preparation debt: the native AABB count
+pipeline is first materialized inside `execute`, while the public PyOptiX
+owner materializes its pipeline inside `prepare`. The executable successor
+therefore supersedes `3b8c2ebcae62f3557b0253a93293f090cfcf3ee8`
+pre-worker-zero and must call the existing app-neutral AABB pipeline
+initializer while constructing the prepared index. This moves work between
+the already registered prepare and execute phases; it does not remove work
+from the complete endpoint or alter traversal semantics.
+
 The expected mechanism is removal of repeated `cuMemAlloc`/`cuMemFree` work,
 not a guaranteed speedup. The complete endpoint still includes owner
 preparation; first-result still includes first capacity allocation; prepared

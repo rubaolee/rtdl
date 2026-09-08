@@ -17529,6 +17529,7 @@ struct PreparedAabbIndex2DOptix {
             throw std::runtime_error("boxes pointer must not be null when box_count is nonzero");
         if (count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
             throw std::runtime_error("AABB index box_count exceeds uint32 launch limit");
+        ensure_aabb_index_count_2d_pipeline();
         if (count == 0) return;
 
         host_gpu_boxes.resize(count);

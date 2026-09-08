@@ -46,6 +46,20 @@ class OptixAabbIndexNativeSymbolTest(unittest.TestCase):
         self.assertIn("count_prepared_aabb_index_2d_range_intersects_optix", workloads)
         self.assertIn("OPTIX_AABB_INDEX_RANGE_INTERSECTS = 3", wrapper)
 
+    def test_prepared_index_materializes_pipeline_before_return(self) -> None:
+        workloads = (ROOT / "src/native/optix/rtdl_optix_workloads.cpp").read_text(
+            encoding="utf-8"
+        )
+        constructor = workloads[
+            workloads.index("struct PreparedAabbIndex2DOptix"):
+            workloads.index("static void require_prepared_aabb_index_2d_valid")
+        ]
+        self.assertIn("ensure_aabb_index_count_2d_pipeline();", constructor)
+        self.assertLess(
+            constructor.index("ensure_aabb_index_count_2d_pipeline();"),
+            constructor.index("if (count == 0) return;"),
+        )
+
     def test_contract_documents_optix_row_output_boundary(self) -> None:
         wrapper = (ROOT / "src/rtdsl/optix_runtime.py").read_text(encoding="utf-8")
         self.assertEqual(
