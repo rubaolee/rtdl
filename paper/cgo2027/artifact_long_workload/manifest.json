@@ -1,0 +1,38 @@
+{
+  "file_count": 6,
+  "files": [
+    {
+      "bytes": 1234,
+      "path": "CLAIM_SCOPE.md",
+      "sha256": "31203c9b7f2dd28619f521d713895a9695de29db7d31b2f793c61ecb586ccc15"
+    },
+    {
+      "bytes": 377,
+      "path": "DEPENDENCIES.md",
+      "sha256": "33605018fad4736b267cfad769faf12382ea3a244f743daeee6c157eb63a6ed5"
+    },
+    {
+      "bytes": 643,
+      "path": "EXPECTED_RESULTS.md",
+      "sha256": "a634c76e117a41a0944e88068442f7a176080efd5d77e19e16926fdbb8ca6b45"
+    },
+    {
+      "bytes": 576,
+      "path": "README.md",
+      "sha256": "407f9e4d081c0b268e8d4240a0e85ec6a6913eabace048dc764a75f0c2b7a673"
+    },
+    {
+      "bytes": 545481,
+      "path": "data/application_projection.json",
+      "sha256": "ae2cb7011f407c37b3850aa2a854d177baa4a6494d704eb2ddf68e89f574578c"
+    },
+    {
+      "bytes": 15284,
+      "path": "verify.py",
+      "sha256": "787e2240496a53fe20e8834859af20de1cd1c3ec753f98bf827e49270c62a45b"
+    }
+  ],
+  "manifest_sha256": "68065afb56f15678f822be760e5c7a3c93f4f2d6664c220b8f11fc01970c3396",
+  "payload_bytes": 563595,
+  "schema": "rtdl.cgo2027.application_projection_manifest.v1"
+}

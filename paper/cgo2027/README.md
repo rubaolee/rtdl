@@ -37,6 +37,7 @@ older candidate and all adverse application transactions remain immutable.
 | `references.bib` | unchanged from P-septuple-prime; local unrelated edit excluded |
 | Exact PDF | 183,937 bytes; SHA-256 `3887bf1abb21068be057d13b012eddd7b9977e06ce53daf75b0eca84af4874c0` |
 | New performance archive | 730,851 bytes; SHA-256 `ef2ca7890c9d415dc1edbe71966aabc512209c9d8608d4eaf460c7c1fddf8bdc` |
+| Anonymous application projection | 83,877 bytes; SHA-256 `e713529fb3f3370aeef57b30793a85c5e894ee34da8bcc177fa12272816fee77` |
 | Source bundle | 29,456 bytes; SHA-256 `da9c2085d7269f92a1863952765784b6c640b026ca28144721485981aac87c82` |
 | Unchanged F2 artifact | 180,308 bytes; SHA-256 `916cedbb7001c7aa43e66df3f992b543b7b3ca5a013f0f997790113a2e3738b8` |
 
@@ -98,6 +99,11 @@ The nine-member F2 archive performs offline recount of retained evidence. It
 does not rerun GPU work, install RTDL, verify novelty, or reconstruct missing
 private history.
 
+The separate anonymous application-performance projection retains all 240
+formal rows and 1,248 samples and reconstructs the ten successor evaluations
+with a standard-library verifier. It omits raw custody and cannot rerun GPU
+work; the private 1,049-file archive remains the raw authority.
+
 ## Local validation
 
 | Check | Result |
@@ -114,6 +120,7 @@ private history.
 | Source custody | Twin normalized bundles byte-identical; foreign-path build passed |
 | Clean-pod F2 replay | Normal/optimized outputs byte-identical; offline recount PASS |
 | Clean-pod application recount | Normal/optimized outputs byte-identical; exact after removing only environment-dependent paths |
+| Anonymous application projection | Normal/optimized outputs byte-identical; 240 workers, 80 cells, 1,248 samples, ten evaluations |
 
 BibTeX emits nonfatal completeness warnings for inherited conference records
 and the in-press survey. That is not a zero-warning build claim. Independent
@@ -131,8 +138,8 @@ in the same control directory.
 P-octuple-prime has zero independent exact-byte acceptances. No P-septuple-prime
 review transfers to the new manuscript or performance archive. Local build,
 all-page rendering, anonymity scan, and numeric projection checks pass, but all
-public/submission authorization flags remain false. New source packaging,
-artifact-scope reconciliation, independent final-byte review, authenticated
+public/submission authorization flags remain false. Independent final-byte
+review, authenticated
 submission-form checks, upload, downloaded-byte verification, and a receipt
 remain open. No upload or submission has occurred.
 
