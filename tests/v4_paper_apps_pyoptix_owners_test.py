@@ -77,6 +77,7 @@ class V4PaperAppsPyOptixOwnersTest(unittest.TestCase):
             self.assertEqual(librts.count(entry), 1)
         for source in (particle, triangle, librts):
             self.assertNotIn("rtdl_optix", source)
+            self.assertNotIn("#include <math.h>", source)
         self.assertIn("float tmax;", triangle)
         self.assertIn("params.tmin, ray.tmax", triangle)
 

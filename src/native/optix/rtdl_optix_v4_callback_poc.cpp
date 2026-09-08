@@ -4709,12 +4709,12 @@ static uint64_t prepare_v4_triangle_reduction_device_columns_count_callback(
         ctx, triangle_x0, triangle_y0, triangle_z0,
         triangle_x1, triangle_y1, triangle_z1,
         triangle_x2, triangle_y2, triangle_z2, triangle_count);
+    // This API returns per-ray device columns for a partner-owned reduction.
+    // The product entries require fast_control and fuse their own scalar
+    // reduction, so binding them here would silently turn a null control into
+    // an empty launch. Bind the compiler-emitted general callback entries.
     prepared->pipeline = build_pipeline(
-        ctx, composed_ptx,
-        "__raygen__rtdl_v4_triangle_reduction",
-        "__miss__rtdl_v4_triangle_reduction", nullptr,
-        "__anyhit__rtdl_v4_triangle_reduction", nullptr, 2,
-        OPTIX_PRIMITIVE_TYPE_FLAGS_TRIANGLE, 2);
+        ctx, composed_ptx, v4_rtdlexe_triangle_diagnostic_producer_spec());
     prepared->event_count = std::make_unique<DevPtr>(sizeof(uint64_t));
     prepared->event_query = std::make_unique<DevPtr>(sizeof(uint32_t));
     prepared->event_primitive = std::make_unique<DevPtr>(sizeof(uint32_t));

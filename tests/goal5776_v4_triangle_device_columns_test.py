@@ -79,7 +79,12 @@ class Goal5776V4TriangleDeviceColumnsTest(unittest.TestCase):
             "static void destroy_v4_prepared_triangle_reduction_callback", execute_begin)
         execute = native[execute_begin:execute_end]
         self.assertIn("build_v4_triangle_anyhit_accel_from_device_columns", prepare)
-        self.assertIn("OPTIX_PRIMITIVE_TYPE_FLAGS_TRIANGLE", prepare)
+        self.assertIn(
+            "v4_rtdlexe_triangle_diagnostic_producer_spec()", prepare)
+        self.assertNotIn(
+            '"__raygen__rtdl_v4_triangle_reduction",', prepare)
+        self.assertIn("V4TriangleReductionParams parameters = {};", execute)
+        self.assertNotIn("parameters.fast_control =", execute)
         self.assertIn("optixLaunch", execute)
         self.assertIn("rtdl_optix_bind_traversal_audit_context", execute)
         self.assertNotIn("triangle_counting", prepare + execute)

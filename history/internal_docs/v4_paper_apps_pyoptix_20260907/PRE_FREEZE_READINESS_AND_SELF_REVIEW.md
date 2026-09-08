@@ -61,7 +61,7 @@ missing PyOptiX owners; none is silently removed from the denominator.
 
 ## Custody and fail-closed controls
 
-The pre-freeze self-review found and repaired five evidence weaknesses before
+The pre-freeze self-review found and repaired eight evidence weaknesses before
 worker zero:
 
 1. Dry-run output parity alone did not freeze the actual input bytes. The dry
@@ -88,6 +88,15 @@ worker zero:
    worker metadata had called a general-leaf device-column execution a fast
    specialization. Before any GPU worker, both descriptions were corrected;
    no algorithm, workload, timer, repetition, or native path changed.
+7. The same trace then exposed a deeper native binding mismatch: the Triangle
+   device-column prepare API selected the product entry while its execute ABI
+   intentionally supplied no `fast_control`. That could make the launch return
+   empty columns. The superseding source binds the already emitted general
+   callback producer spec; the app still owns checked-U64 device reduction.
+8. The public Particle CUDA source included host `math.h` even though its only
+   use, `isfinite`, is an NVRTC device intrinsic already used by the Triangle
+   source without that header. The include was removed after NVRTC rejected
+   the unbound host dependency; device semantics did not change.
 
 The explicit source-hash projection now includes `contracts.py` and the PTX
 builder in addition to all owners, device programs, input/geometry producers,

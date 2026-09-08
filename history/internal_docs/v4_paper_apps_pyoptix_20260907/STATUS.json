@@ -5,8 +5,14 @@
   "valid_formal_application_results": 0,
   "formal_worker_zero_reached": false,
   "experiment_source_frozen": true,
-  "superseded_pre_worker_zero_source_commit": "9207ed9937a61d3e2b9a1a3ba91a32ef2fd56ed1",
-  "supersession_reason": "correct_route_class_metadata_before_any_gpu_worker",
+  "superseded_pre_worker_zero_source_commits": [
+    "9207ed9937a61d3e2b9a1a3ba91a32ef2fd56ed1",
+    "fec140b28ab1c22c203ebe2efbdc7e437dbffb20"
+  ],
+  "supersession_reasons": [
+    "correct_route_class_metadata_before_any_gpu_worker",
+    "bind_triangle_device_columns_to_general_callback_entries_and_remove_nonportable_baseline_header_before_any_gpu_worker"
+  ],
   "first_batch_registered_unit_count": 4,
   "first_batch_formal_worker_process_count": 192,
   "first_batch_local_contract_test_count": 25,

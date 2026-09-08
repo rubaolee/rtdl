@@ -1,5 +1,4 @@
 #include <optix_device.h>
-#include <math.h>
 
 struct RtdlParticleControl {
     unsigned int validated_row_count;
