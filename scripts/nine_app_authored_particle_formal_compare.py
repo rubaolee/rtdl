@@ -33,6 +33,7 @@ ORDERS = (
 )
 SOURCE_PATHS = (
     "scripts/nine_app_authored_particle_formal_compare.py",
+    "scripts/build_authored_particle_pyoptix_ptx.py",
     "scripts/v4_authored_particle_worker.py",
     "experiments/v4_authored_particle/program.py",
     "experiments/v4_authored_particle/pyoptix_device.cu",
@@ -191,7 +192,7 @@ def validate_prereg(path: str | Path) -> dict[str, object]:
             raise ValueError(f"formal Particle source closure differs: {relative}")
     for key in (
         "data_manifest", "native_library", "native_build", "pyoptix_ptx",
-        "calibration",
+        "pyoptix_build", "calibration",
     ):
         checked_binding(prereg[key])
     native_build = read_json(prereg["native_build"]["path"])
@@ -203,6 +204,20 @@ def validate_prereg(path: str | Path) -> dict[str, object]:
             or native_build.get("native_sha256") \
                 != prereg["native_library"]["sha256"]:
         raise ValueError("formal Particle native build binding differs")
+    pyoptix_build = read_json(prereg["pyoptix_build"]["path"])
+    if pyoptix_build.get("schema") != \
+            "rtdl.v4.authored_particle.public_pyoptix_ptx_build.v1" \
+            or pyoptix_build.get("status") != \
+                "PASS__AUTHORED_PARTICLE_PUBLIC_PYOPTIX_PTX_BUILT" \
+            or pyoptix_build.get("source_commit") != prereg["source_commit"] \
+            or pyoptix_build.get("source_tree") != prereg["source_tree"] \
+            or pyoptix_build.get("source") != prereg["source_files"][4] \
+            or pyoptix_build.get("ptx") != prereg["pyoptix_ptx"] \
+            or pyoptix_build.get("compute_capability") != [
+                int(value) for value in prereg["gpu"][
+                    "compute_capability"].split(".")
+            ]:
+        raise ValueError("formal Particle public-PyOptiX PTX build differs")
     if tuple(tuple(row) for row in prereg["orders"]) != ORDERS \
             or prereg["primary_warmups"] != PRIMARY_WARMUPS \
             or prereg["primary_calls"] != PRIMARY_CALLS:
@@ -386,6 +401,7 @@ def command_freeze(args: argparse.Namespace) -> int:
         "native_library": binding(args.native),
         "native_build": binding(args.native_build),
         "pyoptix_ptx": binding(args.pyoptix_ptx),
+        "pyoptix_build": binding(args.pyoptix_build),
         "python": str(Path(sys.executable).absolute()),
         "python_resolved": str(Path(sys.executable).resolve(strict=True)),
         "optix_sdk": args.optix_sdk,
@@ -571,6 +587,7 @@ def parser() -> argparse.ArgumentParser:
     freeze.add_argument("--native", type=Path, required=True)
     freeze.add_argument("--native-build", type=Path, required=True)
     freeze.add_argument("--pyoptix-ptx", type=Path, required=True)
+    freeze.add_argument("--pyoptix-build", type=Path, required=True)
     freeze.add_argument("--gpu-uuid", required=True)
     freeze.add_argument("--optix-sdk", default="8.0.0")
     freeze.add_argument("--optix-include", type=Path, required=True)
