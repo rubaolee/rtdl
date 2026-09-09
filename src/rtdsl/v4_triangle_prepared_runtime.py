@@ -579,7 +579,11 @@ class PreparedBuiltinTriangleOwner:
             host_output_pointer=host_output_pointer,
             token=_PREPARED_QUERY_BATCH_TOKEN,
         )
-        self._prepared_query_batch_authorities[id(value)] = (
+        authorities = getattr(self, "_prepared_query_batch_authorities", None)
+        if authorities is None:
+            authorities = {}
+            self._prepared_query_batch_authorities = authorities
+        authorities[id(value)] = (
             value, origins, directions, tmax, count,
             binding_digest, semantic_digest, native_token,
             host_output, host_output_pointer, value._output_digest_cache,

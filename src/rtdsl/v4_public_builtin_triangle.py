@@ -68,7 +68,7 @@ from .v4_typed_physical_schema import (
 
 _CONSTRUCTION_TOKEN = object()
 _EXPECTED_PREPARED_RUNTIME_SHA256 = (
-    "14202c8b2e16922c728f9bc48bfc8cce085193ac4edc017422a9ad1a4807f957"
+    "a3d86675f62e3e93e9f530f7605f574c9d37bd6b99692c00a67f9ccc8b801f0d"
 )
 _EXPECTED_PREPARED_RUNTIME_SYMBOLS = (
     "rtdl_optix_v4_prepare_builtin_triangle_callback_v1",
