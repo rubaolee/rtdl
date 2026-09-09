@@ -688,7 +688,7 @@ def command_controller(args: argparse.Namespace) -> int:
         "mode": args.mode,
         "config": binding(args.config),
         "preregistration": binding(args.preregistration)
-            if args.preregistration else None,
+            if getattr(args, "preregistration", None) else None,
         "schedule": schedule,
         "launches": [],
         "retry_count": 0,

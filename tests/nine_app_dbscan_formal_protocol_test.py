@@ -68,6 +68,7 @@ class NineAppDbscanFormalProtocolTest(unittest.TestCase):
         ):
             self.assertIn(command, help_text)
         source = SCRIPT.read_text(encoding="utf-8")
+        self.assertIn('getattr(args, "preregistration", None)', source)
         self.assertIn("targets_are_not_sample_filters", source)
         self.assertIn("independent recount rejects retained full output", source)
         self.assertIn("prepared timed calls must use the same two-traversal", source)
