@@ -15,6 +15,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 import hashlib
 import json
+import struct
 from typing import Mapping
 
 from .v4_callback_ir import (
@@ -182,9 +183,11 @@ def _literal(value_type: CallbackType, value: object) -> CudaInlineValue:
     if kind is ScalarKind.BOOL:
         code = "true" if bool(value) else "false"
     elif kind is ScalarKind.F32:
-        code = f"{float(value).hex()}f"
+        bits = struct.unpack("<I", struct.pack("<f", float(value)))[0]
+        code = f"__int_as_float(0x{bits:08x}u)"
     elif kind is ScalarKind.F64:
-        code = float(value).hex()
+        bits = struct.unpack("<Q", struct.pack("<d", float(value)))[0]
+        code = f"__longlong_as_double(0x{bits:016x}ull)"
     elif kind is ScalarKind.U32:
         code = f"{int(value)}u"
     elif kind is ScalarKind.U64:

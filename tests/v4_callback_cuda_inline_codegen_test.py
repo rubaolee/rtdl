@@ -11,9 +11,34 @@ from rtdsl.v4_callback_cuda_inline_codegen import (
 from rtdsl.v4_callback_ir import CallbackRole
 from rtdsl.v4_triangle_standard_library import compile_keyed_callback
 from tests.goal5755_v4_typed_physical_schema_test import verified_callback
+from experiments.v4_authored_particle.program import (
+    FACE_FIRST_SOURCE,
+    face_first_manifest,
+)
+from rtdsl import v4
 
 
 class V4CallbackCudaInlineCodegenTest(unittest.TestCase):
+    def test_f32_literal_is_emitted_as_exact_nvrtc_compatible_bits(self):
+        verified = v4.verify_builtin_triangle_callback_source(
+            FACE_FIRST_SOURCE, face_first_manifest())._callback
+        function = verified.program.function_for_role(CallbackRole.MAKE_RAY)
+        projection = lower_straight_line_effect_to_cuda(
+            verified,
+            function,
+            {
+                function.arguments[0].name: cuda_inline_value(
+                    function.arguments[0].value_type, "query"),
+                function.arguments[1].name: cuda_inline_view(
+                    function.arguments[1].value_type,
+                    tuple(f"column_{index}" for index in range(7)), "count"),
+            },
+            prefix="literal",
+            failure_statement="fail(); return;",
+        )
+        self.assertEqual(
+            projection.field("tmin"), ("__int_as_float(0x00000000u)",))
+
     def test_projection_uses_verified_structure_not_application_field_order(self):
         verified = verified_callback()
         function = verified.program.function_for_role(CallbackRole.CLOSEST_HIT)
