@@ -209,6 +209,14 @@ def validate_config(path: str | Path, *, require_runtime: bool) -> dict[str, obj
     return config
 
 
+def activate_source(config: dict[str, object]) -> None:
+    root = Path(config["source_root"]).resolve(strict=True)
+    for path in (root / "src", root):
+        value = str(path)
+        if value not in sys.path:
+            sys.path.insert(0, value)
+
+
 def command_config(args: argparse.Namespace) -> int:
     root = args.source_root.resolve(strict=True)
     if git(root, "status", "--porcelain", "--untracked-files=no"):
@@ -766,6 +774,7 @@ def samples_from_run(
 
 def command_freeze(args: argparse.Namespace) -> int:
     config = validate_config(args.config, require_runtime=False)
+    activate_source(config)
     from experiments.v4_paper_apps_pyoptix.dbscan_adapter import load_input
     expected = load_input(read_json(args.config)["data_root"])["expected"]
     check_samples = samples_from_run(
@@ -833,6 +842,7 @@ def bootstrap_median_interval(values: list[float]) -> list[float]:
 
 def command_recount(args: argparse.Namespace) -> int:
     config = validate_config(args.config, require_runtime=False)
+    activate_source(config)
     prereg = read_json(args.preregistration)
     run = read_json(args.measurement_run)
     if prereg.get("schema") != PREREG_SCHEMA \
