@@ -30,6 +30,17 @@ result was:
 PASS durable Particle handoff: 47 files; output=6c4ec71524be3d7b241c3d66c4cd06a5aa7089b3948bf1d8dd8aab550f0dec89
 ```
 
+The rerun's retained `VERIFY_DURABLE.stdout` has SHA-256
+`2992c3a65cb15cf5b0641e76074e0ca3b68ee6b1570db45457b06f5f3bda99ef`.
+`DURABLE_METADATA_HANDOFF.tar.gz` is a deterministic 16,742-byte, 15-member
+review packet with SHA-256
+`7aef8c3a2aa3fc615030aea7dc6c18f6e8369a9a128f57509b7af54ded3f5772`.
+It contains the manifests, environment, verifier and stdout, replay tool and
+both replay commands, replay manifest/receipt, and memory diagnostic/tool. It
+contains no array, native DSO, PTX or paper byte. It permits independent review
+of verification logic and reported identities without transferring the 8.7
+GiB payload; it does not independently reverify absent array bytes.
+
 ## Large data identities
 
 | Member | Bytes | File SHA-256 |

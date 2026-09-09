@@ -146,6 +146,9 @@ The standalone verifier rehashed all members and compared the observed output
 to the independent oracle in bounded chunks. This is a durable handoff while
 the owner retains the network volume, not repository custody or original
 timed-worker output custody. See `DURABLE_DATA_HANDOFF.md`.
+The repository retains a separate 16,742-byte metadata-only packet for
+independent inspection of the handoff manifests, tools, commands, receipts,
+environment and verifier stdout; it does not contain or replace the arrays.
 
 ## Paired result
 
