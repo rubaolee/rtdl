@@ -459,6 +459,7 @@ class PreparedBuiltinTriangleOwner:
         self._audit_error_buffer = ctypes.create_string_buffer(16384)
         self._execution_error_buffer = ctypes.create_string_buffer(16384)
         self._native_query_batch_tokens = set()
+        self._prepared_query_batch_authorities = {}
         self.prepare_seconds = time.perf_counter() - started
         self._session_identity = _digest({
             "schema": "rtdl.v4.prepared_builtin_triangle_owner.v1",
@@ -571,15 +572,28 @@ class PreparedBuiltinTriangleOwner:
                 raise RuntimeError(
                     "prepared built-in triangle query batch returned zero token")
             self._native_query_batch_tokens.add(native_token)
-        return PreparedBuiltinTriangleQueryBatch(
+        value = PreparedBuiltinTriangleQueryBatch(
             owner=self, origins=origins, directions=directions, tmax=tmax,
             binding_digest=binding_digest, semantic_digest=semantic_digest,
             native_token=native_token, host_output=host_output,
             host_output_pointer=host_output_pointer,
             token=_PREPARED_QUERY_BATCH_TOKEN,
         )
+        self._prepared_query_batch_authorities[id(value)] = (
+            value, origins, directions, tmax, count,
+            binding_digest, semantic_digest, native_token,
+            host_output, host_output_pointer, value._output_digest_cache,
+        )
+        return value
 
     def _prepared_query_batch_columns(self, value):
+        registered = getattr(
+            self, "_prepared_query_batch_authorities", {}).get(id(value))
+        if registered is not None:
+            if registered[0] is not value:
+                raise RuntimeError(
+                    "prepared triangle query batch registry identity drifted")
+            return registered[1:]
         columns = (value._origins, value._directions, value._tmax) \
             if type(value) is PreparedBuiltinTriangleQueryBatch else ()
         if type(value) is not PreparedBuiltinTriangleQueryBatch \
@@ -613,6 +627,8 @@ class PreparedBuiltinTriangleOwner:
         return (
             value._origins, value._directions, value._tmax, value._count,
             value._binding_digest, value._semantic_digest,
+            value._native_token, value._host_output,
+            value._host_output_pointer, value._output_digest_cache,
         )
 
     def __getstate__(self):
@@ -664,6 +680,8 @@ class PreparedBuiltinTriangleOwner:
                 (
                     origins_array, directions_array, tmax_array, count,
                     binding_digest, semantic_digest,
+                    native_token, host_output, host_output_pointer,
+                    output_digest_cache,
                 ) = self._prepared_query_batch_columns(queries)
                 numpy_queries = True
             elif _np is not None and isinstance(queries, _np.ndarray):
@@ -708,7 +726,8 @@ class PreparedBuiltinTriangleOwner:
             packed_row_mode = bool(
                 partner_column_output
                 and prepared_query_batch
-                and queries._host_output is not None
+                and host_output is not None
+                and host_output_pointer is not None
                 and getattr(self, "_execute_query_batch_rows", None) is not None)
             if not packed_row_mode:
                 output_0 = (ctypes.c_uint32 * count)()
@@ -744,12 +763,12 @@ class PreparedBuiltinTriangleOwner:
                 if compact_columns:
                     if packed_row_mode:
                         _raise(int(self._execute_query_batch_rows(
-                            self._token, queries._native_token,
+                            self._token, native_token,
                             ctypes.byref(summary), error, len(error))), error,
                             "prepared built-in triangle packed-row execute")
-                    elif prepared_query_batch and queries._native_token:
+                    elif prepared_query_batch and native_token:
                         _raise(int(self._execute_query_batch(
-                            self._token, queries._native_token,
+                            self._token, native_token,
                             output_0, output_1, output_2,
                             ctypes.byref(summary), error, len(error))), error,
                             "prepared built-in triangle device-batch execute")
@@ -777,7 +796,7 @@ class PreparedBuiltinTriangleOwner:
                         # batch.  Public results must remain valid after its
                         # next execution and after owner teardown.
                         observed = _np.array(
-                            queries._host_output,
+                            host_output,
                             dtype=_np.uint32,
                             order="C",
                             copy=True,
@@ -830,7 +849,7 @@ class PreparedBuiltinTriangleOwner:
                         raise RuntimeError(
                             "prepared built-in triangle output mismatch")
                 if packed_row_mode:
-                    output_sha = queries._output_digest_cache.resolve(observed)
+                    output_sha = output_digest_cache.resolve(observed)
                 elif partner_column_output:
                     output_sha = _bulk_u32x3_digest(observed)
                 else:
@@ -917,6 +936,7 @@ class PreparedBuiltinTriangleOwner:
                         batch_token, error, len(error))), error,
                         "prepared built-in triangle query batch destroy")
                     native_batch_tokens.remove(batch_token)
+            getattr(self, "_prepared_query_batch_authorities", {}).clear()
             error = ctypes.create_string_buffer(16384)
             _raise(int(self._destroy(self._token, error, len(error))), error,
                    "prepared built-in triangle destroy")

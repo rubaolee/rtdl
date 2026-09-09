@@ -215,8 +215,16 @@ class Goal5776V4TriangleDeviceColumnsTest(unittest.TestCase):
         owner._native_sha = "c" * 64
         owner._ptx_sha = "d" * 64
         owner._native_query_batch_tokens = {19}
+        owner._prepared_query_batch_authorities = {}
         host_output = np.zeros((1, 3), dtype=np.uint32)
         batch = self._packed_query_batch(owner, host_output)
+        owner._prepared_query_batch_authorities[id(batch)] = (
+            batch, batch._origins, batch._directions, batch._tmax,
+            batch._count, batch._binding_digest, batch._semantic_digest,
+            batch._native_token, batch._host_output,
+            batch._host_output_pointer, batch._output_digest_cache,
+        )
+        object.__setattr__(batch, "_native_token", 99)
         calls = []
 
         def execute_rows(
