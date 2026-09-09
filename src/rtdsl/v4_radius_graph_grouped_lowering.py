@@ -21,7 +21,6 @@ import time
 
 import numpy as np
 
-from .component_partition import canonical_partition_labels
 from .optix_runtime import _load_optix_library
 from .partner_adapters import (
     prepare_optix_numba_radius_graph_grouped_stream_continuation_3d,
@@ -49,6 +48,28 @@ def _file_sha256(path: Path) -> str:
         for chunk in iter(lambda: stream.read(8 * 1024 * 1024), b""):
             digest.update(chunk)
     return digest.hexdigest()
+
+
+def _canonicalize_dense_partition_labels(labels: np.ndarray) -> np.ndarray:
+    """Canonicalize nonnegative labels by first occurrence without Python rows."""
+
+    raw = np.asarray(labels, dtype=np.int64)
+    if raw.ndim != 1:
+        raise ValueError("component labels must be one-dimensional")
+    canonical = np.full(raw.shape, -1, dtype=np.int64)
+    retained = raw >= 0
+    if not retained.any():
+        return canonical
+    _, first_indices, inverse = np.unique(
+        raw[retained], return_index=True, return_inverse=True
+    )
+    first_occurrence_order = np.argsort(first_indices, kind="stable")
+    remap = np.empty(len(first_occurrence_order), dtype=np.int64)
+    remap[first_occurrence_order] = np.arange(
+        len(first_occurrence_order), dtype=np.int64
+    )
+    canonical[retained] = remap[inverse]
+    return canonical
 
 
 @dataclass(frozen=True)
@@ -190,8 +211,6 @@ class PreparedVerifiedRadiusGraphGroupedV4:
                     self._prepared, min_neighbors=min_points,
                     return_metadata=True))
             columns = physical["columns"]
-            point_ids = np.asarray(
-                columns["point_ids"].copy_to_host(), dtype=np.int64)
             labels_in = np.asarray(
                 columns["component_labels"].copy_to_host(), dtype=np.int64)
             core_in = np.asarray(
@@ -199,22 +218,20 @@ class PreparedVerifiedRadiusGraphGroupedV4:
             counts_in = np.asarray(
                 columns["neighbor_counts"].copy_to_host(), dtype=np.uint64)
             point_count = len(self._points)
-            labels = [-1] * point_count
-            core = [False] * point_count
-            neighbor_counts = [0] * point_count
-            for index, point_id in enumerate(point_ids.tolist()):
-                point_id = int(point_id)
-                if not 0 <= point_id < point_count:
-                    raise RuntimeError("grouped V4 lowering returned an out-of-domain point ID")
-                labels[point_id] = int(labels_in[index])
-                core[point_id] = bool(core_in[index])
-                neighbor_counts[point_id] = int(counts_in[index])
+            if any(
+                values.ndim != 1 or len(values) != point_count
+                for values in (labels_in, core_in, counts_in)
+            ):
+                raise RuntimeError(
+                    "grouped V4 lowering returned a malformed dense output column"
+                )
+            canonical_labels = _canonicalize_dense_partition_labels(labels_in)
             value = {
-                "canonical_component_labels": canonical_partition_labels(labels),
-                "core_flags": tuple(core),
-                "neighbor_counts": tuple(neighbor_counts),
+                "canonical_component_labels": tuple(canonical_labels.tolist()),
+                "core_flags": tuple(core_in.astype(np.bool_, copy=False).tolist()),
+                "neighbor_counts": tuple(counts_in.tolist()),
             }
-            exact_edge_count = sum(neighbor_counts)
+            exact_edge_count = int(counts_in.sum(dtype=np.uint64))
             output_sha = _digest(value)
             receipt = audit.finish(
                 semantic_digest=_digest({

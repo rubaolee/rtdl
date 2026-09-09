@@ -7322,6 +7322,25 @@ _RADIUS_GRAPH_BOUNDARY_ASSIGNMENT_CANONICAL_POLICY = {
 }
 
 
+def _contiguous_predicate_false_source_ranges(
+    predicate_flags,
+) -> tuple[tuple[int, int], ...]:
+    """Return maximal contiguous ``false`` runs as ``(start, count)`` pairs."""
+
+    ranges: list[tuple[int, int]] = []
+    run_start: int | None = None
+    for index, raw_flag in enumerate(predicate_flags):
+        if not bool(raw_flag):
+            if run_start is None:
+                run_start = index
+        elif run_start is not None:
+            ranges.append((run_start, index - run_start))
+            run_start = None
+    if run_start is not None:
+        ranges.append((run_start, len(predicate_flags) - run_start))
+    return tuple(ranges)
+
+
 def _radius_graph_boundary_assignment_canonical_policy(policy: str) -> str:
     return _RADIUS_GRAPH_BOUNDARY_ASSIGNMENT_CANONICAL_POLICY[str(policy)]
 
@@ -7408,6 +7427,9 @@ class PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D:
         self._cached_neighbor_counts = None
         self._cached_count_metadata: dict[str, object] | None = None
         self._cached_all_core_flags_true: bool | None = None
+        self._cached_predicate_false_source_ranges: tuple[
+            tuple[int, int], ...
+        ] | None = None
         self.parent_workspace = cuda.device_array((self.point_count,), dtype=np.int32)
         self.border_core_candidate_workspace = cuda.device_array((self.point_count,), dtype=np.int32)
         self.labels_workspace = cuda.device_array((self.point_count,), dtype=np.int64)
@@ -7510,6 +7532,9 @@ class PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D:
         }
         flags_host = self.np.asarray(self._cached_core_flags.copy_to_host(), dtype=self.np.uint32)
         self._cached_all_core_flags_true = bool(flags_host.all())
+        self._cached_predicate_false_source_ranges = (
+            _contiguous_predicate_false_source_ranges(flags_host)
+        )
         return False
 
     def _reset_border_candidate_workspace(self) -> None:
@@ -7528,6 +7553,24 @@ class PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D:
     ) -> tuple[dict[str, object], str, str, int]:
         query_block_size = self.grouped_union_query_block_size
         use_query_blocks = query_block_size is not None and query_block_size < self.point_count
+        predicate_false_ranges = self._cached_predicate_false_source_ranges
+        if predicate_false_ranges is None:
+            raise RuntimeError("predicate-false source ranges were not initialized")
+
+        def iter_false_source_ranges(
+            maximum_count: int | None,
+        ) -> tuple[tuple[int, int], ...]:
+            if maximum_count is None:
+                return predicate_false_ranges
+            chunks: list[tuple[int, int]] = []
+            for range_start, range_count in predicate_false_ranges:
+                range_stop = range_start + range_count
+                for chunk_start in range(range_start, range_stop, maximum_count):
+                    chunks.append((
+                        chunk_start,
+                        min(maximum_count, range_stop - chunk_start),
+                    ))
+            return tuple(chunks)
 
         def apply_predicated_range(query_start: int, query_count: int) -> dict[str, object]:
             return self.prepared_native.apply_device_grouped_union_self_range(
@@ -7553,6 +7596,7 @@ class PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D:
 
         if use_query_blocks:
             native_range_metadata = []
+            second_pass_metadata = []
             assert query_block_size is not None
             if all_core_flags_true:
                 for query_start in range(0, self.point_count, query_block_size):
@@ -7563,13 +7607,13 @@ class PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D:
                 boundary_assignment_pass_count = 1
             elif self.boundary_assignment_policy == "lowest_component_root_two_pass":
                 first_pass_metadata = []
-                second_pass_metadata = []
                 for query_start in range(0, self.point_count, query_block_size):
                     query_count = min(query_block_size, self.point_count - query_start)
                     first_pass_metadata.append(dict(apply_predicated_range(query_start, query_count)["metadata"]))
                 self._reset_border_candidate_workspace()
-                for query_start in range(0, self.point_count, query_block_size):
-                    query_count = min(query_block_size, self.point_count - query_start)
+                for query_start, query_count in iter_false_source_ranges(
+                    query_block_size
+                ):
                     second_pass_metadata.append(dict(apply_predicated_range(query_start, query_count)["metadata"]))
                 native_range_metadata = first_pass_metadata + second_pass_metadata
                 grouped_stream_policy = "optix_applies_query_blocked_predicated_union_then_lowest_root_boundary_assignment"
@@ -7599,6 +7643,15 @@ class PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D:
                     "boundary_assignment_policy": self.boundary_assignment_policy,
                     "boundary_assignment_canonical_policy": self.boundary_assignment_canonical_policy,
                     "boundary_assignment_pass_count": boundary_assignment_pass_count,
+                    "boundary_assignment_second_pass_source_policy": (
+                        "contiguous_predicate_false_source_ranges"
+                    ),
+                    "boundary_assignment_second_pass_source_count": sum(
+                        count for _, count in predicate_false_ranges
+                    ),
+                    "boundary_assignment_second_pass_launch_count": len(
+                        second_pass_metadata
+                    ) if self.boundary_assignment_policy == "lowest_component_root_two_pass" else 0,
                     "performance_claim_authorized": False,
                 }
             )
@@ -7638,24 +7691,36 @@ class PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D:
                 direct_side_effect=self.grouped_union_direct_side_effect,
             )
             self._reset_border_candidate_workspace()
-            second_pass = self.prepared_native.apply_device_grouped_union_self(
-                radius=self.radius,
-                predicate_flags=core_flags,
-                parent_out=self.parent_workspace,
-                fallback_candidate_out=self.border_core_candidate_workspace,
-                same_root_culling=self.grouped_union_same_root_culling,
-                direct_side_effect=self.grouped_union_direct_side_effect,
-            )
-            native_metadata = dict(second_pass["metadata"])
+            second_pass_metadata = [
+                dict(apply_predicated_range(query_start, query_count)["metadata"])
+                for query_start, query_count in iter_false_source_ranges(None)
+            ]
+            if not second_pass_metadata:
+                raise RuntimeError(
+                    "two-pass boundary assignment requires a predicate-false source"
+                )
+            native_metadata = dict(second_pass_metadata[-1])
             native_metadata.update(
                 {
                     "native_elapsed_sec": float(first_pass["metadata"].get("native_elapsed_sec", 0.0))
-                    + float(second_pass["metadata"].get("native_elapsed_sec", 0.0)),
+                    + sum(
+                        float(row.get("native_elapsed_sec", 0.0))
+                        for row in second_pass_metadata
+                    ),
                     "boundary_assignment_policy": self.boundary_assignment_policy,
                     "boundary_assignment_canonical_policy": self.boundary_assignment_canonical_policy,
                     "boundary_assignment_pass_count": 2,
                     "boundary_assignment_first_pass_metadata": dict(first_pass["metadata"]),
-                    "boundary_assignment_second_pass_metadata": dict(second_pass["metadata"]),
+                    "boundary_assignment_second_pass_metadata": second_pass_metadata,
+                    "boundary_assignment_second_pass_source_policy": (
+                        "contiguous_predicate_false_source_ranges"
+                    ),
+                    "boundary_assignment_second_pass_source_count": sum(
+                        count for _, count in predicate_false_ranges
+                    ),
+                    "boundary_assignment_second_pass_launch_count": len(
+                        second_pass_metadata
+                    ),
                     "performance_claim_authorized": False,
                 }
             )
@@ -7663,7 +7728,7 @@ class PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D:
                 {"metadata": native_metadata},
                 "optix_applies_predicated_union_then_lowest_root_boundary_assignment",
                 "lowest_component_root_after_two_prepared_rt_passes",
-                2,
+                1 + len(second_pass_metadata),
             )
 
         native_result = self.prepared_native.apply_device_grouped_union_self(

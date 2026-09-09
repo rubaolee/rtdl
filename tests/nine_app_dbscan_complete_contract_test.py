@@ -3,6 +3,8 @@ from __future__ import annotations
 from pathlib import Path
 import unittest
 
+import numpy as np
+
 
 ROOT = Path(__file__).resolve().parents[1]
 CORE = ROOT / "src/native/optix/rtdl_optix_core.cpp"
@@ -13,6 +15,46 @@ PYOPTIX = ROOT / "experiments/v4_paper_apps_pyoptix"
 
 
 class NineAppDbscanCompleteContractTest(unittest.TestCase):
+    def test_predicate_false_source_ranges_are_maximal_and_complete(self):
+        from rtdsl.partner_adapters import (
+            _contiguous_predicate_false_source_ranges,
+        )
+
+        self.assertEqual(
+            _contiguous_predicate_false_source_ranges(
+                np.asarray([0, 0, 1, 0, 1, 0, 0, 0], dtype=np.uint32)
+            ),
+            ((0, 2), (3, 1), (5, 3)),
+        )
+        self.assertEqual(
+            _contiguous_predicate_false_source_ranges(
+                np.asarray([1, 1, 1], dtype=np.uint32)
+            ),
+            (),
+        )
+
+    def test_vectorized_partition_labels_match_first_occurrence_contract(self):
+        from rtdsl.component_partition import canonical_partition_labels
+        from rtdsl.v4_radius_graph_grouped_lowering import (
+            _canonicalize_dense_partition_labels,
+        )
+
+        cases = (
+            [-1, -1, -1],
+            [7, 7, 3, -1, 9, 3, 7],
+            [10, 2, 10, 4, 2, 4],
+            [-4, 8, -1, 8, 6],
+        )
+        for labels in cases:
+            with self.subTest(labels=labels):
+                actual = _canonicalize_dense_partition_labels(
+                    np.asarray(labels, dtype=np.int64)
+                )
+                self.assertEqual(
+                    tuple(actual.tolist()),
+                    canonical_partition_labels(labels),
+                )
+
     def test_native_grouped_union_preserves_competing_parent_edges(self):
         source = CORE.read_text(encoding="utf-8")
         start = source.index("void union_grouped_min_root(")
@@ -41,6 +83,8 @@ class NineAppDbscanCompleteContractTest(unittest.TestCase):
             '"neighbor_count_policy": "threshold_capped_at_min_neighbors_not_exact_full_degree"',
             grouped,
         )
+        self.assertIn("contiguous_predicate_false_source_ranges", grouped)
+        self.assertIn("apply_device_grouped_union_self_range", grouped)
 
     def test_application_contract_requires_all_three_full_outputs(self):
         source = APP.read_text(encoding="utf-8")
