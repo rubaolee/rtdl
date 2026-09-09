@@ -9,6 +9,7 @@ CORE = ROOT / "src/native/optix/rtdl_optix_core.cpp"
 ADAPTERS = ROOT / "src/rtdsl/partner_adapters.py"
 APP = ROOT / "Paper-reproduction-apps/rt-dbscan-paper/v4_whole_app.py"
 HOME_SMOKE = ROOT / "scripts/goal5776_home_rtdbscan_real_scale_smoke.py"
+PYOPTIX = ROOT / "experiments/v4_paper_apps_pyoptix"
 
 
 class NineAppDbscanCompleteContractTest(unittest.TestCase):
@@ -55,6 +56,26 @@ class NineAppDbscanCompleteContractTest(unittest.TestCase):
         source = HOME_SMOKE.read_text(encoding="utf-8")
         self.assertIn('columns["neighbor_counts"].copy_to_host()', source)
         self.assertIn('"neighbor_counts": tuple(counts)', source)
+
+    def test_strong_public_pyoptix_arm_owns_full_application_path(self):
+        owner = (PYOPTIX / "dbscan_owner.py").read_text(encoding="utf-8")
+        device = (PYOPTIX / "dbscan_device.cu").read_text(encoding="utf-8")
+        continuation = (PYOPTIX / "dbscan_continuation.cu").read_text(
+            encoding="utf-8")
+        self.assertNotIn("rtdsl", owner)
+        self.assertIn("successful_optix_launches\": 3", owner)
+        self.assertIn('"neighbor_counts": tuple(map(int, counts))', owner)
+        self.assertIn("atomicCAS(params.parent + high, high, low)", device)
+        self.assertNotIn("atomicMin(params.parent + high", device)
+        self.assertIn("optixIgnoreIntersection()", device)
+        self.assertIn('extern "C" __global__ void write_labels', continuation)
+        self.assertNotIn("#include <limits.h>", device + continuation)
+
+    def test_public_pyoptix_comparator_requires_every_output_column(self):
+        adapter = (PYOPTIX / "dbscan_adapter.py").read_text(encoding="utf-8")
+        self.assertIn('set(actual) != set(expected)', adapter)
+        self.assertIn('"neighbor_counts_u32.npy"', adapter)
+        self.assertIn('"canonical_component_labels"', adapter)
 
 
 if __name__ == "__main__":
