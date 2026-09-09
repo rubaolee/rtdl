@@ -590,7 +590,7 @@ class PreparedBuiltinTriangleOwner:
         )
         return value
 
-    def _prepared_query_batch_columns(self, value):
+    def _prepared_query_batch_execution_state(self, value):
         registered = getattr(
             self, "_prepared_query_batch_authorities", {}).get(id(value))
         if registered is not None:
@@ -634,6 +634,9 @@ class PreparedBuiltinTriangleOwner:
             value._native_token, value._host_output,
             value._host_output_pointer, value._output_digest_cache,
         )
+
+    def _prepared_query_batch_columns(self, value):
+        return self._prepared_query_batch_execution_state(value)[:6]
 
     def __getstate__(self):
         raise RuntimeError("prepared built-in triangle owner cannot be serialized")
@@ -686,7 +689,7 @@ class PreparedBuiltinTriangleOwner:
                     binding_digest, semantic_digest,
                     native_token, host_output, host_output_pointer,
                     output_digest_cache,
-                ) = self._prepared_query_batch_columns(queries)
+                ) = self._prepared_query_batch_execution_state(queries)
                 numpy_queries = True
             elif _np is not None and isinstance(queries, _np.ndarray):
                 if len(queries) == 0:
