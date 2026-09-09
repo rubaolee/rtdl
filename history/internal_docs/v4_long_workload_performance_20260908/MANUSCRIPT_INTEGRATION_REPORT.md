@@ -3,6 +3,14 @@
 Date: 2026-09-08, America/New_York. Status: local preflight PASS; independent
 final-byte review and submission authorization remain open.
 
+Post-report note, 2026-09-09: the separately measured `123f76ec9...` LibRTS
+long-query successor passed all four complete/prepared engineering rows and a
+clean independent recount. Its results are documented in
+`LIBRTS_LONG_QUERY_SUCCESSOR_20260909.md` but are **not yet integrated into the
+manuscript bytes identified below**. This report therefore remains an exact
+description of the earlier draft rather than silently treating later evidence
+as already published.
+
 ## Integrated evidence
 
 The manuscript now preserves the initial adverse public-PyOptiX transaction and

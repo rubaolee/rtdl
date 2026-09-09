@@ -1,11 +1,15 @@
 {
   "schema": "rtdl.v4_long_workload_performance.evidence_index.v1",
   "created_at": "2026-09-08T09:28:10-04:00",
-  "status": "PASS__METHOD_AND_TARGET__POST_FORMAL_SENSITIVITY_DISCLOSED__MANUSCRIPT_LOCAL_PREFLIGHT_PASS__FINAL_REVIEW_PENDING",
+  "updated_at": "2026-09-09T15:20:58-04:00",
+  "status": "PASS__METHOD_AND_TARGET__POST_FORMAL_SENSITIVITY_DISCLOSED__LIBRTS_LONG_TECHNICAL_PASS__COMBINED_MANUSCRIPT_UPDATE_PENDING",
   "claim_authorization": {
     "internal_technical_result_complete": true,
-    "manuscript_integration_complete": true,
-    "manuscript_local_build_and_render_review_complete": true,
+    "manuscript_integration_complete": false,
+    "manuscript_local_build_and_render_review_complete": false,
+    "base_02e84374f_manuscript_integration_complete": true,
+    "base_02e84374f_manuscript_local_build_and_render_review_complete": true,
+    "librts_long_successor_manuscript_integration_complete": false,
     "independent_final_bytes_review_complete": false,
     "public_or_manuscript_claim_authorized": false,
     "submission_authorized": false
@@ -165,6 +169,45 @@
       "No confidence interval, CPU-causality result, hardware-thread advantage, or formal gate is inferred."
     ]
   },
+  "librts_distinct_query_long_scale_successor": {
+    "status": "PASS__INDEPENDENT_RECOUNT__INTERNAL_ENGINEERING_TARGETS_MET__CLAIM_REVIEW_PENDING",
+    "pooled_into_02e84374f_transaction": false,
+    "measured_source_commit": "123f76ec99b2539eb819831a840b8b79e0fd5414",
+    "measured_source_tree": "fef996da5762be4e863a7c82b4104c64218e2ebc",
+    "verifier_commit": "8e5679efa872a3778bf4136ff83e9ffc4847a6d6",
+    "verifier_tree": "f99026dba9a0357926d754576df6618f87ffa594",
+    "gpu_name": "NVIDIA RTX 4000 Ada Generation",
+    "gpu_uuid": "GPU-2a00572b-6cef-b9e6-db0a-c127783a5d46",
+    "query_count_per_operation": 1225000000,
+    "indexed_box_count": 11544398,
+    "point_query_manifest_sha256": "4a0a064a2609bfe53253db59a47644cc00f47e9b9cfc83c1f2d5406b61b24bc9",
+    "range_query_manifest_sha256": "a5327c1482122cedd027a7c23e956d693a5725abdf5783b3512fbc450fb8f670",
+    "calibration_sha256": "e81d178a20b12fe34d528dc1b935309a9bc6ee9e9d32a63c4f4fc41ebffc2652",
+    "preregistration_sha256": "2a74b12fcf39f9c3b9940ff199ba082ad1cd23d7d22f3812f669dba6465c7a0e",
+    "formal_journal_sha256": "8f18ce88aab58c50d27ab908663dededf645f6909d5a12dffc5c497e112b9132",
+    "formal_result_sha256": "f35ab60dc8ffa588a1da8cd4db8c1f51c313c9db0cbf9d4bdaef911953c61800",
+    "independent_recount_sha256": "a733b464ac5b20307762463ce1695d360a3c990ba2364a5112d657b64a943611",
+    "native_sha256": "bb12235ab171cf7bd17bb662b7f0c3a4794b361852e9be3c38a95f6ed607e421",
+    "pyoptix_librts_ptx_sha256": "737aac24f259cf63ba54a6569582ae06cc37fcb098ad0b0d53e1eed8c6dbf1f5",
+    "formal_worker_count": 64,
+    "paired_cell_count": 32,
+    "timed_action_count": 128,
+    "warmup_count": 32,
+    "retry_count": 0,
+    "discard_count": 0,
+    "timeout_count": 0,
+    "output_mismatch_count": 0,
+    "all_four_rows_pass_engineering_targets": true,
+    "archive": {
+      "path": "history/internal_docs/v4_long_workload_performance_20260908/raw/rtdl-librts-long-123f76ec9-evidence-v1.tar.gz",
+      "sha256": "b93e8a9f21faa2b7c68aceb7560beacd3007abe4569135fc9850d107970eb4ea",
+      "bytes": 159954,
+      "member_count": 504,
+      "large_query_columns_in_git": false,
+      "large_query_columns_bound_by_manifest": true
+    },
+    "claim_boundary": "Synthetic distinct sparse point/range queries on the real Parks AABB index and one RTX 4000 Ada only; no dense-hit, original-query, cross-generation, peak-memory, general speedup, authoring, public, or submission claim."
+  },
   "input_and_output_identities": {
     "particle_tracking": {
       "input_sha256": "7f21844610c4c9ad8ccdf6ec6961de28d6f1099af8b1bf0e37e41bf53fb55743",
@@ -233,7 +276,8 @@
     "unresolved_citations_or_references": 0,
     "rendered_pages_reviewed": 12,
     "anonymous_private_identity_scan_passed": true,
+    "includes_librts_long_successor": false,
     "independent_final_bytes_review_complete": false
   },
-  "claim_boundary": "Evidence supports only the five registered units and exact controlled RTX A4500 formal population. The separate post-formal sensitivity scan is not pooled and shows that sub-millisecond prepared rows are not stable performance guarantees. The evidence does not establish arbitrary Python or Callback IR, arbitrary topology synthesis, all nine applications, CPU or clock invariance, peak memory, easier authoring, intrinsic language overhead, or broad practical performance."
+  "claim_boundary": "The 02e84374f evidence supports only its five registered units and exact controlled RTX A4500 formal population. The separate post-formal sensitivity scan is not pooled and shows that sub-millisecond prepared rows are not stable performance guarantees. The separate 123f76ec9 LibRTS evidence supports only sparse synthetic distinct point/range queries over the real Parks index on one RTX 4000 Ada and is not yet integrated into manuscript bytes. The evidence does not establish arbitrary Python or Callback IR, arbitrary topology synthesis, all nine applications, CPU or clock invariance, peak memory, easier authoring, intrinsic language overhead, or broad practical performance."
 }

@@ -1,7 +1,7 @@
 # V4 long-workload performance matrix
 
-Date: 2026-09-08, America/New_York. Status: formal successor transaction and
-independent recount complete; manuscript and public claim review remain open.
+Date: 2026-09-09, America/New_York. Status: formal successor transactions and
+independent recounts complete; manuscript and public claim review remain open.
 
 ## Registered matrix and disposition
 
@@ -43,6 +43,18 @@ internal. A bounded lead review accepted only its exact numerical observation
 and narrow source-route interpretation; matrix-wide independent review and
 public/manuscript authorization remain pending.
 
+## Separate LibRTS distinct-query long-scale transaction
+
+The measured `123f76ec9...` transaction is also separate and is not pooled into
+the ten-row matrix. Both operations use the same real 11,544,398-box Parks
+index and one logical batch of 1,225,000,000 distinct synthetic queries,
+streamed through seven fixed contiguous chunks. Point complete/prepared paired
+medians are `0.77595x`/`0.78434x`; range complete/prepared medians are
+`0.82060x`/`0.82539x`. The worst of all 32 blocks is `0.83666x`. All four rows
+therefore pass the same `1.20x` median and `1.35x` every-block engineering
+targets, with multi-second strong-C natural actions. The exact scope and sparse
+hit-density limitation are in `LIBRTS_LONG_QUERY_SUCCESSOR_20260909.md`.
+
 ## What the matrix closes
 
 - The original Particle and LibRTS prepared gaps of roughly 38--39x are not
@@ -60,9 +72,9 @@ public/manuscript authorization remain pending.
 ## What remains open
 
 - Particle now has a 160M distinct-query natural-scale prepared transaction,
-  but it remains subsecond; LibRTS still lacks a distinct-query multi-second
-  prepared scale. Preparation exceeding one second does not satisfy the
-  strong-C natural-compute criterion.
+  but it remains subsecond. The later LibRTS successor closes its distinct-query
+  multi-second prepared-scale gap for sparse point/range containment on one RTX
+  4000 Ada; dense-hit and cross-generation behavior remain unmeasured.
 - Six of the nine historical application mappings have no frozen,
   output-equivalent public-PyOptiX owner in this transaction. They are not
   silently counted as measured.
@@ -91,3 +103,6 @@ The formal archive is
 The earlier unlocked successor remains adverse evidence and is never pooled:
 `raw/rtdl-v4-long-perf-successor-0c3420f42-unlocked-adverse.tar.gz`, SHA-256
 `924f970e4d29778b8c53d81c57bbb725e2641bd66be54c6a6584c343760bdf09`.
+The separate LibRTS long-query archive is
+`raw/rtdl-librts-long-123f76ec9-evidence-v1.tar.gz`, SHA-256
+`b93e8a9f21faa2b7c68aceb7560beacd3007abe4569135fc9850d107970eb4ea`.

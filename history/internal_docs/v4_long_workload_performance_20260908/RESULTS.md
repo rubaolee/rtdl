@@ -15,11 +15,28 @@ is at most `1.35x`. The largest median is `1.099512x` and the largest individual
 block is `1.243333x`.
 
 This result addresses the measured implementation debt; it is not a universal
-language-overhead claim. Only cit-Patents/4M supplies a multi-second prepared
-natural computation. Particle and LibRTS prepared actions remain
-sub-millisecond fixed-cost tests. The transaction covers selected stages from
-three of nine historical application mappings, four original operation units,
-and one additional graph scale.
+language-overhead claim. Within this `02e84374f...` transaction only,
+cit-Patents/4M supplies a multi-second prepared natural computation. Particle
+and LibRTS prepared actions are sub-millisecond fixed-cost tests. The
+transaction covers selected stages from three of nine historical application
+mappings, four original operation units, and one additional graph scale.
+
+## Later LibRTS long-query successor
+
+A separately preregistered LibRTS successor at measured source `123f76ec9...`
+now closes the earlier missing long-query row without pooling it into this
+transaction. It processes 1,225,000,000 distinct point or range queries over
+the real 11,544,398-box Parks index through seven bounded columnar chunks.
+
+Across 64 fresh workers and 32 paired cells, point complete/prepared ratios are
+`0.77595x`/`0.78434x`; range complete/prepared ratios are
+`0.82060x`/`0.82539x`. The largest of all 32 block ratios is `0.83666x`.
+All exact U64 outputs match an independent non-RT oracle, and a clean
+post-measurement verifier independently reconstructed the commands, raw
+outputs, cells, and summaries. The detailed report is
+`LIBRTS_LONG_QUERY_SUCCESSOR_20260909.md`. These are synthetic distinct queries
+on a real index with sparse hit density, not the authors' original query set or
+a dense-overlap result. Public and manuscript claims remain unauthorized.
 
 ## Separate natural-scale Particle successor
 
