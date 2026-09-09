@@ -29858,13 +29858,54 @@ static PreparedFixedRadiusCountThreshold3DRt* prepare_fixed_radius_count_thresho
     return new PreparedFixedRadiusCountThreshold3DRt(search_points, search_count, max_radius);
 }
 
+static RayAnyHitPipeline g_action_bounded_selection_3d_rt;
+
+static std::string action_bounded_selection_3d_stepwise_f32_kernel_source()
+{
+    static constexpr const char* kDoubleDistance = R"RTDL(
+    const double dx = static_cast<double>(t.x) - static_cast<double>(q.x);
+    const double dy = static_cast<double>(t.y) - static_cast<double>(q.y);
+    const double dz = static_cast<double>(t.z) - static_cast<double>(q.z);
+    const float distance = static_cast<float>(sqrt(dx * dx + dy * dy + dz * dz));
+)RTDL";
+    static constexpr const char* kStepwiseFloat32Distance = R"RTDL(
+    const float dx = __fsub_rn(q.x, t.x);
+    const float dy = __fsub_rn(q.y, t.y);
+    const float dz = __fsub_rn(q.z, t.z);
+    const float dx2 = __fmul_rn(dx, dx);
+    const float dy2 = __fmul_rn(dy, dy);
+    const float dz2 = __fmul_rn(dz, dz);
+    const float distance = __fsqrt_rn(__fadd_rn(__fadd_rn(dx2, dy2), dz2));
+)RTDL";
+
+    std::string source(kFixedRadiusNeighbors3DRtKernelSrc);
+    size_t replacement_count = 0;
+    size_t position = 0;
+    while ((position = source.find(kDoubleDistance, position))
+            != std::string::npos) {
+        source.replace(
+            position,
+            std::strlen(kDoubleDistance),
+            kStepwiseFloat32Distance);
+        position += std::strlen(kStepwiseFloat32Distance);
+        ++replacement_count;
+    }
+    if (replacement_count != 2) {
+        throw std::runtime_error(
+            "Action bounded-selection numeric-source specialization drifted");
+    }
+    return source;
+}
+
 static void ensure_action_bounded_selection_3d_rt_pipeline()
 {
-    std::call_once(g_frn3d_rt.init, [&]() {
+    std::call_once(g_action_bounded_selection_3d_rt.init, [&]() {
+        const std::string source =
+            action_bounded_selection_3d_stepwise_f32_kernel_source();
         std::string ptx = compile_to_ptx(
-            kFixedRadiusNeighbors3DRtKernelSrc,
+            source.c_str(),
             "action_bounded_selection_3d_rt_kernel.cu");
-        g_frn3d_rt.pipe = build_pipeline(
+        g_action_bounded_selection_3d_rt.pipe = build_pipeline(
             get_optix_context(), ptx,
             "__raygen__frn3d_probe",
             "__miss__frn3d_miss",
@@ -29958,9 +29999,9 @@ static void run_prepared_action_bounded_selection_3d_optix(
         "action_bounded_selection_3d",
         prepared->accel.handle);
     OPTIX_CHECK(optixLaunch(
-        g_frn3d_rt.pipe->pipeline, stream,
+        g_action_bounded_selection_3d_rt.pipe->pipeline, stream,
         d_params.ptr, sizeof(FixedRadiusNeighbors3DRtLaunchParams),
-        &g_frn3d_rt.pipe->sbt,
+        &g_action_bounded_selection_3d_rt.pipe->sbt,
         static_cast<unsigned>(query_count), 1, 1));
     CU_CHECK(cuStreamSynchronize(stream));
     auto t_end_traversal = std::chrono::steady_clock::now();

@@ -670,6 +670,7 @@ class PreparedOptixActionBoundedSelection3D:
                 "bounded_output_downloaded": True,
                 "user_callback_executed": False,
                 "direct_physical_owner_contract": direct_metadata["contract"],
+                "native_numeric_contract": direct_metadata["numeric_contract"],
                 "search_validation_capability": dict(
                     direct_metadata["search_validation_capability"]
                 ),

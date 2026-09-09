@@ -36,6 +36,9 @@ from .verified_packed_points import (
 
 _DIRECT_POINT_NATIVE_OBJECT_SECRET = secrets.token_bytes(32)
 _MAX_BOUNDED_SELECTION_K = 64
+_BOUNDED_SELECTION_NUMERIC_CONTRACT = (
+    "stepwise_f32_sub_mul_add_sqrt_v1"
+)
 
 
 def _pack_points_3d(
@@ -243,6 +246,7 @@ class PreparedDirectOptixBoundedSelection3D:
                 "metadata": {
                     "contract": "rtdl.direct_optix_bounded_selection_3d.v1",
                     "physical_family": self.physical_family,
+                    "numeric_contract": _BOUNDED_SELECTION_NUMERIC_CONTRACT,
                     "native_symbol": None,
                     "native_elapsed_sec": 0.0,
                     "search_count": self._search_count,
@@ -304,6 +308,7 @@ class PreparedDirectOptixBoundedSelection3D:
             "metadata": {
                 "contract": "rtdl.direct_optix_bounded_selection_3d.v1",
                 "physical_family": self.physical_family,
+                "numeric_contract": _BOUNDED_SELECTION_NUMERIC_CONTRACT,
                 "native_symbol": (
                     "rtdl_optix_run_prepared_action_bounded_selection_3d"
                 ),
