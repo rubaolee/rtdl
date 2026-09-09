@@ -39,6 +39,10 @@ Verdict:
   artifacts. Its program and executable identities match all eight original
   RTDL worker records, and its 160M replay reproduced the formal output digest
   with a full traversal/lifecycle receipt.
+- A later untimed replay saved the complete 1.92 GB observed output together
+  with query/oracle/base data, deployed artifacts, commands and a standalone
+  verifier on the RunPod network volume. The verifier rehashed all 45 payload
+  files and compared every output row to the transformed independent oracle.
 
 ## Reviewer-style attacks checked
 
@@ -105,6 +109,9 @@ then wrote an immutable preregistration before formal worker zero.
   compact execution evidence and executable/program identities. The separate
   post-formal reconstruction is identity-matched but is not original timed
   evidence and is not pooled with the formal transaction.
+- The complete post-formal output and multi-gigabyte data handoff are not in
+  Git. Their RunPod network-volume availability depends on the owner retaining
+  that volume and does not become original timed-worker custody.
 - Lead independent review and external review have not occurred. The pod and
   Mac recounts are tool-level reconstructions performed under the same
   engineering effort, not independent reviewer votes.

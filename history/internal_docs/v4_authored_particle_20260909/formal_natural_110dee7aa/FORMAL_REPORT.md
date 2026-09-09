@@ -133,6 +133,18 @@ receipts. Its only role is to make the generated executable bytes available,
 show that their recorded identities rederive, and preserve a complete
 post-formal execution receipt under an explicit boundary.
 
+Before Pod shutdown, the available 160M query, query-cell and oracle arrays,
+the complete post-formal observed output, base mesh, deployed artifacts,
+original formal package, exact source archive, reconstruction tools and
+environment records were copied to the RunPod network volume at
+`/workspace/rtdl-particle-110dee7aa-durable`. Its 45 payload files are bound by
+`SHA256SUMS` SHA-256
+`d2859cdea49c239aed34381a989b757232e8cb06237c61d83b5e347ce815ea48`.
+The standalone verifier rehashed all members and compared the observed output
+to the independent oracle in bounded chunks. This is a durable handoff while
+the owner retains the network volume, not repository custody or original
+timed-worker output custody. See `DURABLE_DATA_HANDOFF.md`.
+
 ## Paired result
 
 Each row is a fresh-process worker median of three complete prepared actions
@@ -213,7 +225,8 @@ public-path smoke and rejected an injected zero-direction row with
   generated compiler bytes, full timed-worker receipts, or the multi-gigabyte
   query/output arrays. The separately identified post-formal supplement
   reconstructs the compiler bytes and one full receipt with matching recorded
-  identities; it is not original timed evidence.
+  identities; it is not original timed evidence. Complete post-formal replay
+  output exists in the separately verified network-volume handoff, not Git.
 - The input is an authored distinct strict-interior ensemble over the real
   Particle mesh. It does not cover boundary ties, dense multi-hit rays or a
   full temporal simulation.
