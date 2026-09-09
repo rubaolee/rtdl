@@ -35,6 +35,10 @@ Verdict:
   source closure, commands, streams, worker results, ledger and statistics.
 - A second invocation from a new detached clean Mac worktree reproduced every
   recount field except the expected machine-local absolute archive path.
+- A post-formal same-source/toolchain reconstruction exported 13 RTDL compiler
+  artifacts. Its program and executable identities match all eight original
+  RTDL worker records, and its 160M replay reproduced the formal output digest
+  with a full traversal/lifecycle receipt.
 
 ## Reviewer-style attacks checked
 
@@ -96,6 +100,11 @@ then wrote an immutable preregistration before formal worker zero.
   cross-generation or CPU-invariant authority.
 - The archive omits the multi-gigabyte input/output arrays and depends on their
   exact external manifests and hashes for data custody.
+- The original archive also omits RTDL generated leaf/wrapper/composed bytes
+  and every timed worker's full traversal receipt. Timed workers retained
+  compact execution evidence and executable/program identities. The separate
+  post-formal reconstruction is identity-matched but is not original timed
+  evidence and is not pooled with the formal transaction.
 - Lead independent review and external review have not occurred. The pod and
   Mac recounts are tool-level reconstructions performed under the same
   engineering effort, not independent reviewer votes.
@@ -113,7 +122,9 @@ then wrote an immutable preregistration before formal worker zero.
 
 ## Next gate
 
-Lead review must verify the new source and evidence bytes, rerun the independent
-recount from a foreign clean checkout, and decide how narrowly the paper may
-use this result. Cross-generation replay and peak-memory evidence are desirable
-but remain separate work, not silently satisfied by this transaction.
+Lead review must verify the new source, original archive and separately labeled
+post-formal supplement, rerun the independent recount from a foreign clean
+checkout, and decide how narrowly the paper may use this result. The reviewer
+must not treat the reconstructed receipt as a retained timed-worker receipt.
+Cross-generation replay and peak-memory evidence are desirable but remain
+separate work, not silently satisfied by this transaction.

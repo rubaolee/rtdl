@@ -4,7 +4,30 @@
     "natural_at_least_one_second_task": false,
     "natural_160m_prepared_internal_engineering_result": true,
     "paper_claim_authorized": false,
+    "postformal_compiler_artifact_reconstruction_retained": true,
     "prepared_5000_query_internal_engineering_result": true
+  },
+  "particle_setup_remediation_successor": {
+    "custody_boundary": {
+      "original_formal_full_receipt_retained": false,
+      "original_formal_generated_bytes_retained": false,
+      "postformal_reconstruction_identity_matched": true,
+      "postformal_replay_pooled_with_formal_timings": false
+    },
+    "files": [
+      {"bytes": 11667, "path": "formal_natural_110dee7aa/FORMAL_REPORT.md", "sha256": "d04b15d9354be14a4e08ad982a9a42324a321d13c3ec449df809ddd70d88da00"},
+      {"bytes": 4693, "path": "formal_natural_110dee7aa/INDEPENDENT_RECOUNT.json", "sha256": "d3ce86641c9d6cee4bd9e4c092207808ab6ff94515dd73112761793564ca2212"},
+      {"bytes": 4788, "path": "formal_natural_110dee7aa/INDEPENDENT_RECOUNT_MAC.json", "sha256": "a5597b2a6f3f2fb113ec64b59d1c87ccac7226446e2769147c3cc90b2fd66eeb"},
+      {"bytes": 33286, "path": "formal_natural_110dee7aa/POSTFORMAL_RECONSTRUCTION.tar.gz", "sha256": "9de850a354bd85366eb354ef796d45e0b9d1ccc71428b117961fd67c684d933a"},
+      {"bytes": 3143, "path": "formal_natural_110dee7aa/POSTFORMAL_RECONSTRUCTION_REPORT.md", "sha256": "3ec3d192bc1ef6350c4f6e74899078cd59944f392fa629b990c77fa1c7089e94"},
+      {"bytes": 2526713, "path": "formal_natural_110dee7aa/RAW_FORMAL_EVIDENCE.tar.gz", "sha256": "42ebdf176e9625c8c95d7b2e2504ddccc70b42ed4b692fe3360f3c2c5b08bccf"},
+      {"bytes": 6960, "path": "formal_natural_110dee7aa/SELF_REVIEW.md", "sha256": "ca866976f3c3a856ba1e9aaa30f65f650bea5f73ca79f3d1a67297fd74bc1309"}
+    ],
+    "paired_median_rtdl_over_pyoptix": 0.9941092578237594,
+    "source_commit": "110dee7aa11e57e984cc2509163e021d787c692a",
+    "source_tree": "1e549d791fedd23659bb0e0636747016938cd1c4",
+    "status": "PASS__INTERNAL_ENGINEERING_TARGETS__LEAD_CUSTODY_REVIEW_PENDING",
+    "worst_block_rtdl_over_pyoptix": 1.0623042952807356
   },
   "natural_scale_successor": {
     "files": [

@@ -86,6 +86,9 @@ duration. The scale was not changed after observing the successor.
   `d3ce86641c9d6cee4bd9e4c092207808ab6ff94515dd73112761793564ca2212`.
 - Mac clean-worktree recount SHA-256:
   `a5597b2a6f3f2fb113ec64b59d1c87ccac7226446e2769147c3cc90b2fd66eeb`.
+- Post-formal compiler-artifact and replay-receipt supplement: 33,286 bytes,
+  17 archive members, SHA-256
+  `9de850a354bd85366eb354ef796d45e0b9d1ccc71428b117961fd67c684d933a`.
 
 The preregistration binds the venv CUDA component prefix, NVRTC library path,
 `NUMBA_CUDA_USE_NVIDIA_BINDING=1`, native build manifest, public PyOptiX PTX
@@ -98,6 +101,37 @@ After downloading the archive, a new detached clean worktree on the Mac reran
 the independent recount. Every field matched the pod recount except the
 expected absolute archive path; the statistics, hashes, ledger, source closure
 and status were identical.
+
+## Post-formal custody correction
+
+The original 117-member formal archive preserves the measured native DSO,
+public PyOptiX PTX, source closure, manifests, commands, process streams,
+compact per-worker execution evidence, append-only ledger and all timing
+samples. It does **not** preserve the RTDL generated leaf source/PTX bytes,
+wrapper source/PTX, composed PTX, any timed worker's full traversal receipt, or
+the multi-gigabyte input/output arrays. The earlier phrase "all
+executable/evidence bytes" was therefore too broad and is corrected here.
+
+While the same pod state was still available, a separately identified
+post-formal replay at the exact `110dee7aa` source exported 13 compiler
+artifacts and one full traversal/lifecycle receipt. Its reconstructed program
+identity
+`da62ce40ed6e51db638eb916c842161e6025d764abedb4932dfe84f3db710530`
+and executable identity
+`0663bfeefefac2b389c31edbe6d331adbc7fa54f4c7632db666cc6a87a4fa19c`
+match all eight original RTDL worker records. The replay observed OptiX
+traversal, produced role counters
+`[0,160000000,0,0,160000000,0,160000000]`, and reproduced output SHA-256
+`6c4ec71524be3d7b241c3d66c4cd06a5aa7089b3948bf1d8dd8aab550f0dec89`.
+Its full traversal receipt SHA-256 is
+`3c27d744eeb7c660442506d1cc3a2a72aa65ea63cd7d87f5fc9594d2aba29773`.
+
+This supplement is a same-source/toolchain reconstruction and correctness
+replay, not an original timed-worker artifact. It is not pooled with the
+formal timing transaction and does not repair the absence of original full
+receipts. Its only role is to make the generated executable bytes available,
+show that their recorded identities rederive, and preserve a complete
+post-formal execution receipt under an explicit boundary.
 
 ## Paired result
 
@@ -174,8 +208,12 @@ public-path smoke and rejected an injected zero-direction row with
   temporarily holds the packed 4.48 GB AoS buffer alongside the 4.48 GB SoA
   columns before releasing the packed buffer. No lower peak-memory claim is
   allowed.
-- The archive contains exact data manifests and all executable/evidence bytes,
-  but not the multi-gigabyte query and output arrays themselves.
+- The original archive contains exact data manifests, both deployed arm
+  binaries, compact worker evidence and all timing records, but not RTDL's
+  generated compiler bytes, full timed-worker receipts, or the multi-gigabyte
+  query/output arrays. The separately identified post-formal supplement
+  reconstructs the compiler bytes and one full receipt with matching recorded
+  identities; it is not original timed evidence.
 - The input is an authored distinct strict-interior ensemble over the real
   Particle mesh. It does not cover boundary ties, dense multi-hit rays or a
   full temporal simulation.
