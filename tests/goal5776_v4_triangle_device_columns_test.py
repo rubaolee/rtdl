@@ -546,6 +546,11 @@ class Goal5776V4TriangleDeviceColumnsTest(unittest.TestCase):
         )
         self.assertIn(
             "atomicAdd(&params.compact_control->validated_row_count", codegen)
+        self.assertIn(
+            "expected_role == 5u || expected_role == 6u", codegen)
+        self.assertIn("initial.validated_row_count = query_count", native)
+        self.assertIn("initial.role_counters[1] = query_count", native)
+        self.assertIn("initial.role_counters[6] = query_count", native)
 
     def test_compact_triangle_summary_is_fail_closed(self):
         summary = triangle_runtime._CompactLifecycleSummary()

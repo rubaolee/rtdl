@@ -2458,6 +2458,9 @@ static void execute_v4_prepared_builtin_triangle_callback(
         initial.required_invocation_mask = (1u << 1u) | (1u << 6u);
         initial.terminal_invocation_mask = (1u << 4u) | (1u << 5u);
         initial.first_invalid_row = UINT64_MAX;
+        initial.validated_row_count = query_count;
+        initial.role_counters[1] = query_count;
+        initial.role_counters[6] = query_count;
         initial.success_status_d2h_bytes =
             sizeof(RtdlV4CallbackProductStatusSummary);
         upload(prepared->status_summary->ptr, &initial, 1u);

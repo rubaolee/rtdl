@@ -264,7 +264,6 @@ static __forceinline__ __device__ bool v4_complete_query(
         unsigned int query) {
     if (params.status == nullptr) {
         if (params.compact_control == nullptr) return false;
-        atomicAdd(&params.compact_control->validated_row_count, 1ull);
         return true;
     }
     V4TriangleLaunchStatus* record = params.status + query;
@@ -305,9 +304,15 @@ static __forceinline__ __device__ bool v4_commit_leaf_status(
                        stage, role, launch_index, error_site, effect_tag, nonce);
         return false;
     }
-    if (params.status != nullptr)
+    if (params.status != nullptr) {
         atomicOr(&params.status[query].invocation_mask, invocation_mask);
-    atomicAdd(params.role_counters + expected_role - 1u, 1ull);
+        atomicAdd(params.role_counters + expected_role - 1u, 1ull);
+    } else if (expected_role == 5u || expected_role == 6u) {
+        // Structured native-closest raygen invokes make-ray and finalize once
+        // per successful query.  Only the closest/miss terminal choice needs
+        // a contended runtime count in compact mode.
+        atomicAdd(params.role_counters + expected_role - 1u, 1ull);
+    }
     return true;
 }
 '''
