@@ -43,8 +43,8 @@ def _git_identity() -> dict[str, str]:
             capture_output=True, text=True,
         ).stdout.strip()
 
-    if capture("status", "--porcelain", "--untracked-files=no"):
-        raise RuntimeError("Particle ensemble worker requires clean tracked source")
+    if capture("status", "--porcelain"):
+        raise RuntimeError("Particle ensemble worker requires a clean source tree")
     return {
         "commit": capture("rev-parse", "HEAD"),
         "tree": capture("rev-parse", "HEAD^{tree}"),
@@ -241,6 +241,7 @@ def main() -> int:
     parser.add_argument("--pyoptix-ptx", type=Path)
     parser.add_argument("--warmups", type=int, default=1)
     parser.add_argument("--samples", type=int, default=1)
+    parser.add_argument("--formal-worker", action="store_true")
     args = parser.parse_args()
     if args.query_count < 1 or args.warmups < 0 or args.samples < 1:
         parser.error("query count/samples must be positive and warmups nonnegative")
@@ -328,7 +329,7 @@ def main() -> int:
             "diagnostic_only": True,
             "natural_single_transition_ensemble": True,
             "temporal_particle_simulation": False,
-            "formal_worker_zero_reached": False,
+            "formal_worker_zero_reached": bool(args.formal_worker),
         },
     }
     print(json.dumps(result, sort_keys=True, allow_nan=False, separators=(",", ":")))

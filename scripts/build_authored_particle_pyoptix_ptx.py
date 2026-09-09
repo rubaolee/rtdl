@@ -79,8 +79,8 @@ def main() -> int:
     parser.add_argument("--manifest", type=Path, required=True)
     args = parser.parse_args()
 
-    if git("status", "--porcelain", "--untracked-files=no"):
-        raise RuntimeError("authored Particle PTX build requires clean tracked source")
+    if git("status", "--porcelain"):
+        raise RuntimeError("authored Particle PTX build requires a clean source tree")
     output = args.output.absolute()
     manifest = args.manifest.absolute()
     if output.exists() or output.is_symlink() \
@@ -116,8 +116,7 @@ def main() -> int:
         "status": "PASS__AUTHORED_PARTICLE_PUBLIC_PYOPTIX_PTX_BUILT",
         "source_commit": git("rev-parse", "HEAD"),
         "source_tree": git("rev-parse", "HEAD^{tree}"),
-        "source_clean_after_build": not bool(git(
-            "status", "--porcelain", "--untracked-files=no")),
+        "source_clean_after_build": not bool(git("status", "--porcelain")),
         "source": binding(SOURCE),
         "ptx": binding(output),
         "compute_capability": list(capability),
