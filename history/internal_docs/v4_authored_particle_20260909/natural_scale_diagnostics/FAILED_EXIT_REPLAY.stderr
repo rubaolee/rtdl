@@ -1,0 +1,16 @@
+Traceback (most recent call last):
+  File "/tmp/rtdl-dbscan-6d36dec08/scripts/authored_particle_transition_ensemble_worker.py", line 328, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/tmp/rtdl-dbscan-6d36dec08/scripts/authored_particle_transition_ensemble_worker.py", line 267, in main
+    finish(invoke())
+           ^^^^^^^^
+  File "/tmp/rtdl-dbscan-6d36dec08/scripts/authored_particle_transition_ensemble_worker.py", line 199, in invoke
+    return owner.execute_prepared_exact_core(resident)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/rtdl-dbscan-6d36dec08/experiments/goal5814_particle/public_pyoptix_owner.py", line 1124, in execute_prepared_exact_core
+    return self._execute_exact_core_locked(None, expected)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/rtdl-dbscan-6d36dec08/experiments/goal5814_particle/public_pyoptix_owner.py", line 1030, in _execute_exact_core_locked
+    raise ParticleDeviceStatusError(control, counts)
+experiments.goal5814_particle.public_pyoptix_owner.ParticleDeviceStatusError: Goal5814 Particle device status failure: (999955, 10028, 2, 1)

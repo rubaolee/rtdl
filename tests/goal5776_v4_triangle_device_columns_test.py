@@ -524,6 +524,15 @@ class Goal5776V4TriangleDeviceColumnsTest(unittest.TestCase):
             self.assertNotIn(forbidden, section)
         self.assertIn("prepared_query_batch->query_columns", section)
         self.assertIn("prepared_query_batch->program.get()", section)
+        self.assertIn(
+            "const bool need_program_queries = !device_query_mode", section)
+        self.assertIn(
+            "const bool need_output_columns = !packed_row_mode", section)
+        self.assertIn("const bool need_output_rows = packed_row_mode", section)
+        self.assertIn(
+            "const bool need_full_diagnostics = !compact_native_closest",
+            section,
+        )
 
     def test_compact_triangle_summary_is_fail_closed(self):
         summary = triangle_runtime._CompactLifecycleSummary()

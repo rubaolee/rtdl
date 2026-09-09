@@ -2078,34 +2078,48 @@ struct V4PreparedBuiltinTriangle {
     std::unique_ptr<DevPtr> parameters;
     std::mutex execution_mutex;
 
-    void ensure_execution_capacity(size_t query_count) {
-        if (query_count <= execution_capacity) return;
-        std::array<std::unique_ptr<DevPtr>, 7> next_queries;
-        std::array<std::unique_ptr<DevPtr>, 3> next_outputs;
-        std::array<std::unique_ptr<DevPtr>, 4> next_diagnostics;
-        for (auto& column : next_queries)
-            column = std::make_unique<DevPtr>(sizeof(float) * query_count);
-        for (auto& column : next_outputs)
-            column = std::make_unique<DevPtr>(sizeof(uint32_t) * query_count);
-        auto next_output_rows = std::make_unique<DevPtr>(
-            sizeof(uint32_t) * query_count * 3u);
-        for (auto& column : next_diagnostics)
-            column = std::make_unique<DevPtr>(sizeof(uint32_t) * query_count);
-        auto next_status = std::make_unique<DevPtr>(
-            sizeof(V4FormalLaunchStatus) * query_count);
-        auto next_status_summary = std::make_unique<DevPtr>(
-            sizeof(RtdlV4CallbackProductStatusSummary));
-        auto next_counters = std::make_unique<DevPtr>(sizeof(uint64_t) * 7);
-        auto next_parameters = std::make_unique<DevPtr>(sizeof(V4TriangleParams));
-        query_columns = std::move(next_queries);
-        output_columns = std::move(next_outputs);
-        output_rows = std::move(next_output_rows);
-        diagnostic_columns = std::move(next_diagnostics);
-        status = std::move(next_status);
-        status_summary = std::move(next_status_summary);
-        counters = std::move(next_counters);
-        parameters = std::move(next_parameters);
-        execution_capacity = query_count;
+    void ensure_execution_capacity(
+            size_t query_count, bool device_query_mode,
+            bool packed_row_mode, bool inline_compact_control) {
+        if (query_count > execution_capacity) {
+            // Release the old layout before allocating the larger one.  This
+            // avoids a transient double-capacity peak and also lets the new
+            // behavioral mode choose only the buffers it can actually use.
+            for (auto& column : query_columns) column.reset();
+            for (auto& column : output_columns) column.reset();
+            output_rows.reset();
+            for (auto& column : diagnostic_columns) column.reset();
+            status.reset();
+            status_summary.reset();
+            counters.reset();
+            parameters.reset();
+            execution_capacity = query_count;
+        }
+        const size_t capacity = execution_capacity;
+        const bool compact_native_closest = inline_compact_control;
+        const bool need_program_queries = !device_query_mode;
+        const bool need_output_columns = !packed_row_mode;
+        const bool need_output_rows = packed_row_mode;
+        const bool need_full_diagnostics = !compact_native_closest;
+        const auto ensure = [](auto& pointer, size_t bytes) {
+            if (!pointer) pointer = std::make_unique<DevPtr>(bytes);
+        };
+        if (need_program_queries)
+            for (auto& column : query_columns)
+                ensure(column, sizeof(float) * capacity);
+        if (need_output_columns)
+            for (auto& column : output_columns)
+                ensure(column, sizeof(uint32_t) * capacity);
+        if (need_output_rows)
+            ensure(output_rows, sizeof(uint32_t) * capacity * 3u);
+        if (need_full_diagnostics) {
+            for (auto& column : diagnostic_columns)
+                ensure(column, sizeof(uint32_t) * capacity);
+            ensure(status, sizeof(V4FormalLaunchStatus) * capacity);
+            ensure(counters, sizeof(uint64_t) * 7);
+        }
+        ensure(status_summary, sizeof(RtdlV4CallbackProductStatusSummary));
+        ensure(parameters, sizeof(V4TriangleParams));
     }
 
     ~V4PreparedBuiltinTriangle() {
@@ -2308,7 +2322,10 @@ static uint64_t prepare_v4_builtin_triangle_query_batch(
     }
     {
         std::lock_guard<std::mutex> execution_lock(program->execution_mutex);
-        program->ensure_execution_capacity(query_count);
+        program->ensure_execution_capacity(
+            query_count, true, host_output_rows != nullptr,
+            program->hit_selection_policy ==
+                V4BuiltinTriangleHitSelectionPolicy::provider_native_closest);
     }
     std::lock_guard<std::mutex> lock(
         g_v4_builtin_triangle_query_batch_registry_mutex);
@@ -2373,7 +2390,12 @@ static void execute_v4_prepared_builtin_triangle_callback(
         throw std::runtime_error(
             "V4 prepared built-in triangle query batch owner differs");
     std::lock_guard<std::mutex> execution_lock(prepared->execution_mutex);
-    prepared->ensure_execution_capacity(query_count);
+    const bool inline_compact_control = compact_column_mode &&
+        prepared->hit_selection_policy ==
+            V4BuiltinTriangleHitSelectionPolicy::provider_native_closest;
+    prepared->ensure_execution_capacity(
+        query_count, device_query_mode, packed_row_mode,
+        inline_compact_control);
     std::array<CUdeviceptr, 7> query_device = {};
     if (device_query_mode) {
         for (size_t column = 0; column < query_device.size(); ++column)
@@ -2410,20 +2432,25 @@ static void execute_v4_prepared_builtin_triangle_callback(
                 query_device[column], host_columns[column].data(), query_count);
         }
     }
-    DevPtr& out0 = *prepared->output_columns[0];
-    DevPtr& out1 = *prepared->output_columns[1];
-    DevPtr& out2 = *prepared->output_columns[2];
-    DevPtr& packed_rows = *prepared->output_rows;
-    DevPtr& observed_primitive = *prepared->diagnostic_columns[0];
-    DevPtr& observed_kind = *prepared->diagnostic_columns[1];
-    DevPtr& observed_bx = *prepared->diagnostic_columns[2];
-    DevPtr& observed_by = *prepared->diagnostic_columns[3];
-    DevPtr& status = *prepared->status;
-    DevPtr& counters = *prepared->counters;
+    const CUdeviceptr out0 = prepared->output_columns[0]
+        ? prepared->output_columns[0]->ptr : 0;
+    const CUdeviceptr out1 = prepared->output_columns[1]
+        ? prepared->output_columns[1]->ptr : 0;
+    const CUdeviceptr out2 = prepared->output_columns[2]
+        ? prepared->output_columns[2]->ptr : 0;
+    const CUdeviceptr packed_rows = prepared->output_rows
+        ? prepared->output_rows->ptr : 0;
+    const CUdeviceptr observed_primitive = prepared->diagnostic_columns[0]
+        ? prepared->diagnostic_columns[0]->ptr : 0;
+    const CUdeviceptr observed_kind = prepared->diagnostic_columns[1]
+        ? prepared->diagnostic_columns[1]->ptr : 0;
+    const CUdeviceptr observed_bx = prepared->diagnostic_columns[2]
+        ? prepared->diagnostic_columns[2]->ptr : 0;
+    const CUdeviceptr observed_by = prepared->diagnostic_columns[3]
+        ? prepared->diagnostic_columns[3]->ptr : 0;
+    const CUdeviceptr status = prepared->status ? prepared->status->ptr : 0;
+    const CUdeviceptr counters = prepared->counters ? prepared->counters->ptr : 0;
     DevPtr& parameter_device = *prepared->parameters;
-    const bool inline_compact_control = compact_column_mode &&
-        prepared->hit_selection_policy ==
-            V4BuiltinTriangleHitSelectionPolicy::provider_native_closest;
     if (inline_compact_control) {
         RtdlV4CallbackProductStatusSummary initial = {};
         initial.schema_version = 2u;
@@ -2435,7 +2462,7 @@ static void execute_v4_prepared_builtin_triangle_callback(
             sizeof(RtdlV4CallbackProductStatusSummary);
         upload(prepared->status_summary->ptr, &initial, 1u);
     } else {
-        CU_CHECK(cuMemsetD8(counters.ptr, 0, sizeof(uint64_t) * 7));
+        CU_CHECK(cuMemsetD8(counters, 0, sizeof(uint64_t) * 7));
     }
     V4TriangleParams parameters = {};
     parameters.traversable = prepared->accel.handle;
@@ -2453,21 +2480,22 @@ static void execute_v4_prepared_builtin_triangle_callback(
     parameters.boundary_owner = reinterpret_cast<const uint32_t*>(prepared->boundary_owner);
     parameters.primitive_count = prepared->primitive_count;
     parameters.query_count = static_cast<uint32_t>(query_count);
-    parameters.output_0 = reinterpret_cast<uint32_t*>(out0.ptr);
-    parameters.output_1 = reinterpret_cast<uint32_t*>(out1.ptr);
-    parameters.output_2 = reinterpret_cast<uint32_t*>(out2.ptr);
+    parameters.output_0 = reinterpret_cast<uint32_t*>(out0);
+    parameters.output_1 = reinterpret_cast<uint32_t*>(out1);
+    parameters.output_2 = reinterpret_cast<uint32_t*>(out2);
     parameters.output_rows = packed_row_mode
-        ? reinterpret_cast<uint32_t*>(packed_rows.ptr) : nullptr;
-    parameters.observed_primitive_index = reinterpret_cast<uint32_t*>(observed_primitive.ptr);
-    parameters.observed_hit_kind = reinterpret_cast<uint32_t*>(observed_kind.ptr);
-    parameters.observed_barycentric_x = reinterpret_cast<float*>(observed_bx.ptr);
-    parameters.observed_barycentric_y = reinterpret_cast<float*>(observed_by.ptr);
-    parameters.status = reinterpret_cast<V4FormalLaunchStatus*>(status.ptr);
+        ? reinterpret_cast<uint32_t*>(packed_rows) : nullptr;
+    parameters.observed_primitive_index =
+        reinterpret_cast<uint32_t*>(observed_primitive);
+    parameters.observed_hit_kind = reinterpret_cast<uint32_t*>(observed_kind);
+    parameters.observed_barycentric_x = reinterpret_cast<float*>(observed_bx);
+    parameters.observed_barycentric_y = reinterpret_cast<float*>(observed_by);
+    parameters.status = reinterpret_cast<V4FormalLaunchStatus*>(status);
     parameters.role_counters = inline_compact_control
         ? reinterpret_cast<unsigned long long*>(
             prepared->status_summary->ptr + offsetof(
                 RtdlV4CallbackProductStatusSummary, role_counters))
-        : reinterpret_cast<unsigned long long*>(counters.ptr);
+        : reinterpret_cast<unsigned long long*>(counters);
     parameters.compact_control = inline_compact_control
         ? reinterpret_cast<RtdlV4CallbackProductStatusSummary*>(
             prepared->status_summary->ptr)
@@ -2484,9 +2512,9 @@ static void execute_v4_prepared_builtin_triangle_callback(
                 output_summary, prepared->status_summary->ptr, 1u);
         } else {
             rtdl_cuda_reduce_v4_callback_product_status_precompiled(
-                reinterpret_cast<const void*>(status.ptr), nullptr, nullptr,
+                reinterpret_cast<const void*>(status), nullptr, nullptr,
                 nullptr, nullptr,
-                reinterpret_cast<const uint64_t*>(counters.ptr),
+                reinterpret_cast<const uint64_t*>(counters),
                 query_count, 0u, 2u, (1u << 1u) | (1u << 6u),
                 (1u << 4u) | (1u << 5u),
                 reinterpret_cast<void*>(prepared->status_summary->ptr),
@@ -2507,25 +2535,25 @@ static void execute_v4_prepared_builtin_triangle_callback(
         // device-status summary has been accepted.
         if (packed_row_mode) {
             CU_CHECK(cuMemcpyDtoHAsync(
-                output_rows, packed_rows.ptr,
+                output_rows, packed_rows,
                 sizeof(uint32_t) * query_count * 3u, 0));
             CU_CHECK(cuStreamSynchronize(0));
         } else {
-            download(output_0, out0.ptr, query_count);
-            download(output_1, out1.ptr, query_count);
-            download(output_2, out2.ptr, query_count);
+            download(output_0, out0, query_count);
+            download(output_1, out1, query_count);
+            download(output_2, out2, query_count);
         }
     } else {
         CU_CHECK(cuStreamSynchronize(0));
-        download(output_0, out0.ptr, query_count);
-        download(output_1, out1.ptr, query_count);
-        download(output_2, out2.ptr, query_count);
-        download(observed_primitive_index, observed_primitive.ptr, query_count);
-        download(observed_hit_kind, observed_kind.ptr, query_count);
-        download(observed_barycentric_x, observed_bx.ptr, query_count);
-        download(observed_barycentric_y, observed_by.ptr, query_count);
-        download(output_status, status.ptr, query_count);
-        download(output_counters, counters.ptr, 7);
+        download(output_0, out0, query_count);
+        download(output_1, out1, query_count);
+        download(output_2, out2, query_count);
+        download(observed_primitive_index, observed_primitive, query_count);
+        download(observed_hit_kind, observed_kind, query_count);
+        download(observed_barycentric_x, observed_bx, query_count);
+        download(observed_barycentric_y, observed_by, query_count);
+        download(output_status, status, query_count);
+        download(output_counters, counters, 7);
         for (size_t index = 0; index < query_count; ++index)
             if (output_status[index].first_error_claimed ||
                     output_status[index].error_code)

@@ -1,0 +1,27 @@
+{
+  "device_control": {
+    "error_code": 2,
+    "first_error": 10028,
+    "status": 1,
+    "validated_row_count": 999955
+  },
+  "failure_class": "input_constructor_did_not_prove_strict_exit_triangle_interior",
+  "first_observed_source": {
+    "commit": "a8468a981948f7da40d38d0b97f34816280b3a26",
+    "tree": "479c1aa7c21dc7ec9819153d677b113efb4400bb"
+  },
+  "performance_result_created": false,
+  "pyoptix_ptx_sha256": "d563ac854f1c823a6f4471f3644b23d96f9e3500865718083fd8f5fec12011bc",
+  "query_count": 1000000,
+  "rejected_row_count": 45,
+  "replay_exit_code": 1,
+  "replay_source": {
+    "commit": "63c35f7204d5ba44d9f221398b1765f780893340",
+    "tree": "6d01f3f99d17f8cb82a8f863027e888914d2f172"
+  },
+  "schema": "rtdl.v4.authored_particle.retained_exit_boundary_failure.v1",
+  "status": "RETAINED_PRE_TIMING_INPUT_CONSTRUCTION_FAILURE",
+  "timed_sample_count": 0,
+  "v1_dataset_manifest_sha256": "4044231adc2d544c11bd534e2245a8a77cb0724c9a2495431a723bb9bccd22ba",
+  "worker_blob": "1f7877b7788fa86c9d1e824c047d90561bbdf900"
+}

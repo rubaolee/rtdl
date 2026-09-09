@@ -1,0 +1,67 @@
+{
+  "base_particle": {
+    "manifest_sha256": "c6678099ecff9581726781a765213d5b0890f20ada70561b09dd6dd94a4009af",
+    "maximum_edge_length": 0.29829341173171997,
+    "source_sha256": "b6be6c692256e73ea9f93d71dc81ad99478b49ec3866a9ab0109da35f72c57b8"
+  },
+  "claim_boundary": {
+    "author_random_particle_bytes_reproduced": false,
+    "distinct_strict_interior_queries": true,
+    "performance_result_created": false,
+    "real_mesh": true,
+    "single_cell_transition_stage": true,
+    "temporal_particle_simulation": false
+  },
+  "members": {
+    "expected_u32.npy": {
+      "bytes": 240000128,
+      "dtype": "uint32",
+      "sha256": "54f9eb9f6f742f737e8561c906539e3a4b7412e85775c2a1c6d49b321ad5922e",
+      "shape": [
+        20000000,
+        3
+      ]
+    },
+    "queries_f32.npy": {
+      "bytes": 560000128,
+      "dtype": "float32",
+      "sha256": "acf41e9e42f6acd52dee9ebe2b5c100c8d04905f5bd109c95777d5471d7277c4",
+      "shape": [
+        20000000,
+        7
+      ]
+    },
+    "query_cells_u32.npy": {
+      "bytes": 80000128,
+      "dtype": "uint32",
+      "sha256": "21c3f9a458ebad944cced1d484bebdbe3566b4ff5808976e3345a64004663c51",
+      "shape": [
+        20000000
+      ]
+    }
+  },
+  "mesh": {
+    "eligible_cell_count": 3636,
+    "tetrahedron_count": 1659240,
+    "triangle_count": 3392530,
+    "vertex_count": 314587
+  },
+  "queries": {
+    "chunk_size": 250000,
+    "construction": "splitmix64_strict_barycentric_v1",
+    "count": 20000000,
+    "direction": [
+      1.0,
+      1e-10,
+      1e-10
+    ],
+    "distinct_origin_count": 20000000,
+    "maximum_distance": 0.29829341173171997,
+    "minimum_reconstructed_barycentric_weight": 0.0998013393852503
+  },
+  "schema": "rtdl.v4.authored_particle.transition_ensemble.v1",
+  "source_vtu": {
+    "path": "/tmp/rtdl-authored-particle/solution_4_crlf.vtu",
+    "sha256": "b6be6c692256e73ea9f93d71dc81ad99478b49ec3866a9ab0109da35f72c57b8"
+  }
+}

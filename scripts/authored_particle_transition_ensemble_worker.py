@@ -141,7 +141,15 @@ def _prepare_rtdl(args, base, queries, expected, oracle_sha256):
         second_primitive_values=base["back_values"],
     )
     owner = materialized.prepare(static)
-    prepared = owner.prepare_batch(v4.BuiltinTriangleCallbackBatch(queries=queries))
+    try:
+        prepared = owner.prepare_batch(
+            v4.BuiltinTriangleCallbackBatch(queries=queries))
+    except BaseException:
+        # A failed batch admission still owns native program state.  Close it
+        # deterministically instead of leaving registry teardown to process
+        # finalization, where the CUDA context may already be disappearing.
+        owner.close()
+        raise
 
     def invoke():
         result = owner.execute(prepared)
