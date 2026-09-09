@@ -4,6 +4,7 @@ import runpy
 import threading
 from types import SimpleNamespace
 import unittest
+from unittest import mock
 
 import numpy as np
 
@@ -232,6 +233,54 @@ class Goal5776V4TriangleDeviceColumnsTest(unittest.TestCase):
                 native_library_sha256="c" * 64,
                 binding_digest="d" * 64,
             )
+
+    def test_legacy_tuple_execute_returns_without_column_proof(self):
+        owner = self._query_batch_owner()
+        owner._active = threading.Lock()
+        owner._execute_columns = None
+        owner._execute_query_batch = None
+        owner._token = 17
+        owner._library = object()
+        owner._audit_sequence = 0
+        owner._execution_count = 0
+        owner._native_sha = "c" * 64
+        owner._ptx_sha = "b" * 64
+
+        def execute(
+            _token, _origins, _directions, _tmax, count,
+            output_0, output_1, output_2, observed_primitive,
+            observed_kind, observed_bx, observed_by, statuses, counters,
+            _error, _error_size,
+        ):
+            self.assertEqual(count, 1)
+            output_0[0], output_1[0], output_2[0] = 7, 8, 9
+            observed_primitive[0] = 3
+            observed_kind[0] = 0xFE
+            observed_bx[0] = 0.25
+            observed_by[0] = 0.5
+            counters[1] = counters[4] = counters[6] = 1
+            return 0
+
+        owner._execute = execute
+
+        class Audit:
+            def finish(self, **_kwargs):
+                return {"physical_executor_classification": "optix_traversal_observed"}
+
+            def abort(self):
+                raise AssertionError("successful tuple execution aborted its audit")
+
+        with mock.patch.object(
+            triangle_runtime.OptixTraversalAuditSession,
+            "open",
+            return_value=Audit(),
+        ):
+            result = owner.execute((
+                ((0.0, 0.0, 0.0), (1.0, 0.0, 0.0), 1.0),
+            ))
+        self.assertEqual(result.output, ((7, 8, 9),))
+        self.assertFalse(hasattr(result, "_validated_prepared_execution"))
+        self.assertEqual(result.hit_observations[0]["primitive_index"], 3)
 
     def test_device_resident_query_batch_native_section_is_app_neutral(self):
         native = NATIVE.read_text(encoding="utf-8")

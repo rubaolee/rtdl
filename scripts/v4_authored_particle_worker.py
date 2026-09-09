@@ -83,7 +83,7 @@ def _prepare_rtdl(args: argparse.Namespace, data: dict[str, object]):
     )
     target = v4.V4Target.from_native(
         native,
-        optix_sdk="9.0.0",
+        optix_sdk=args.optix_sdk,
         compute_capability=capability,
         supports_custom_aabb=True,
         supports_builtin_triangle=True,
@@ -134,6 +134,8 @@ def _prepare_rtdl(args: argparse.Namespace, data: dict[str, object]):
         "protocol_contract_verdict": materialized.protocol_contract_decision.verdict,
         "path_class": "public_source_verify_compile_materialize_prepare_execute",
         "prepared_query_batch_used": True,
+        "prepared_query_batch_device_resident": prepared_batch.device_resident,
+        "declared_optix_sdk": args.optix_sdk,
     }
 
 
@@ -190,6 +192,7 @@ def main() -> int:
     parser.add_argument("--optix-include", type=Path)
     parser.add_argument("--cuda-include", type=Path)
     parser.add_argument("--compute-capability", default="8.9")
+    parser.add_argument("--optix-sdk", required=True)
     parser.add_argument("--pyoptix-ptx", type=Path)
     parser.add_argument("--warmups", type=int, default=2)
     parser.add_argument("--samples", type=int, default=12)

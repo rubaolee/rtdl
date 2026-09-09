@@ -730,21 +730,22 @@ class PreparedBuiltinTriangleOwner:
             result = V4TriangleCallbackResult(
                 observed, hit_rows, counter_rows, status_rows, receipt,
                 output_sha, self._ptx_sha, self._native_sha, binding_digest)
-            object.__setattr__(
-                result,
-                "_validated_prepared_execution",
-                _ValidatedPreparedTriangleExecution(
-                    owner=self,
-                    output=observed,
-                    output_sha256=output_sha,
-                    receipt=receipt,
-                    query_count=count,
-                    composed_ptx_sha256=self._ptx_sha,
-                    native_library_sha256=self._native_sha,
-                    binding_digest=binding_digest,
-                    token=_VALIDATED_PREPARED_EXECUTION_TOKEN,
-                ),
-            )
+            if partner_column_output and compact_columns:
+                object.__setattr__(
+                    result,
+                    "_validated_prepared_execution",
+                    _ValidatedPreparedTriangleExecution(
+                        owner=self,
+                        output=observed,
+                        output_sha256=output_sha,
+                        receipt=receipt,
+                        query_count=count,
+                        composed_ptx_sha256=self._ptx_sha,
+                        native_library_sha256=self._native_sha,
+                        binding_digest=binding_digest,
+                        token=_VALIDATED_PREPARED_EXECUTION_TOKEN,
+                    ),
+                )
             return result
         finally:
             self._active.release()
