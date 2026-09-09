@@ -16649,12 +16649,14 @@ class PreparedOptixAabbQueries2D:
             self.count = packed.count
             symbol_name = "rtdl_optix_prepare_aabb_point_queries_2d"
             args = (packed.records, packed.count)
+            self.range_intersects_ready = False
         else:
             packed = pack_aabbs_2d(box_queries)
             self.operation = "range_contains"
             self.count = packed.count
             symbol_name = "rtdl_optix_prepare_aabb_box_queries_2d"
             args = (packed.records, packed.count)
+            self.range_intersects_ready = True
 
         lib = _load_optix_library()
         prepare_symbol = _find_optional_backend_symbol(lib, symbol_name)
@@ -16666,6 +16668,73 @@ class PreparedOptixAabbQueries2D:
         error = ctypes.create_string_buffer(4096)
         status = prepare_symbol(*args, ctypes.byref(self._handle), error, len(error))
         _check_status(status, error)
+
+    @classmethod
+    def _from_f32_columns(
+        cls, *, operation: str, columns, build_query_accel: bool = False,
+    ) -> "PreparedOptixAabbQueries2D":
+        import numpy as np
+
+        names = (
+            ("x", "y")
+            if operation == "point_contains"
+            else ("min_x", "min_y", "max_x", "max_y")
+        )
+        if operation not in {"point_contains", "range_contains"}:
+            raise ValueError("unsupported prepared AABB query-column operation")
+        arrays = tuple(
+            np.ascontiguousarray(np.asarray(value, dtype=np.float32))
+            for value in columns
+        )
+        if len(arrays) != len(names):
+            raise ValueError(f"{operation} requires columns: {', '.join(names)}")
+        if any(array.ndim != 1 for array in arrays):
+            raise ValueError("prepared AABB query columns must be one-dimensional")
+        count = int(arrays[0].size) if arrays else 0
+        if any(int(array.size) != count for array in arrays):
+            raise ValueError("prepared AABB query columns must have equal lengths")
+        if count > 0xFFFFFFFF:
+            raise ValueError("prepared AABB query count exceeds the U32 launch limit")
+        if any(not bool(np.isfinite(array).all()) for array in arrays):
+            raise ValueError("prepared AABB query columns contain nonfinite values")
+        if operation == "range_contains" and (
+            bool((arrays[2] < arrays[0]).any())
+            or bool((arrays[3] < arrays[1]).any())
+        ):
+            raise ValueError("prepared AABB box query columns contain inverted bounds")
+
+        self = cls.__new__(cls)
+        self._handle = ctypes.c_void_p()
+        self._closed = False
+        self.operation = operation
+        self.count = count
+        self.range_intersects_ready = (
+            operation == "range_contains" and bool(build_query_accel)
+        )
+        symbol_name = (
+            "rtdl_optix_prepare_aabb_point_query_columns_f32_2d"
+            if operation == "point_contains"
+            else "rtdl_optix_prepare_aabb_box_query_columns_f32_2d"
+        )
+        lib = _load_optix_library()
+        prepare_symbol = _find_optional_backend_symbol(lib, symbol_name)
+        if prepare_symbol is None:
+            raise RuntimeError(
+                f"Loaded OptiX backend library does not export {symbol_name}. "
+                "Rebuild it with 'make build-optix' from current main."
+            )
+        pointers = tuple(
+            array.ctypes.data_as(ctypes.POINTER(ctypes.c_float))
+            for array in arrays
+        )
+        args = (*pointers, count)
+        if operation == "range_contains":
+            args = (*args, int(bool(build_query_accel)))
+        error = ctypes.create_string_buffer(4096)
+        status = prepare_symbol(
+            *args, ctypes.byref(self._handle), error, len(error))
+        _check_status(status, error)
+        return self
 
     def close(self) -> None:
         if self._closed:
@@ -16698,6 +16767,29 @@ def prepare_optix_aabb_point_queries_2d(point_queries) -> PreparedOptixAabbQueri
 
 def prepare_optix_aabb_box_queries_2d(box_queries) -> PreparedOptixAabbQueries2D:
     return PreparedOptixAabbQueries2D(box_queries=box_queries)
+
+
+def prepare_optix_aabb_point_query_columns_f32_2d(
+    *, x, y,
+) -> PreparedOptixAabbQueries2D:
+    """Prepare contiguous float32 point columns without Python row expansion."""
+
+    return PreparedOptixAabbQueries2D._from_f32_columns(
+        operation="point_contains", columns=(x, y))
+
+
+def prepare_optix_aabb_box_query_columns_f32_2d(
+    *, min_x, min_y, max_x, max_y, enable_range_intersects: bool = False,
+) -> PreparedOptixAabbQueries2D:
+    """Prepare float32 box columns, optionally building the intersection GAS."""
+
+    if not isinstance(enable_range_intersects, bool):
+        raise TypeError("enable_range_intersects must be bool")
+    return PreparedOptixAabbQueries2D._from_f32_columns(
+        operation="range_contains",
+        columns=(min_x, min_y, max_x, max_y),
+        build_query_accel=enable_range_intersects,
+    )
 
 
 class PreparedOptixAabbIndex2D:
@@ -16967,6 +17059,11 @@ class PreparedOptixAabbIndex2D:
                 raise RuntimeError("prepared OptiX AABB box query handle is closed")
             if box_queries.operation != "range_contains":
                 raise ValueError("box_queries handle must contain box queries")
+            if not box_queries.range_intersects_ready:
+                raise ValueError(
+                    "box_queries omitted the query acceleration structure required "
+                    "by the multi-operation range_intersects path"
+                )
         lib = _load_optix_library()
         count_symbol = _find_optional_backend_symbol(
             lib,
@@ -29279,6 +29376,37 @@ def _register_argtypes(lib) -> None:
             ctypes.c_size_t,
         ]
         optional_prepare_aabb_box_queries2d.restype = ctypes.c_int
+    optional_prepare_aabb_point_query_columns2d = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_prepare_aabb_point_query_columns_f32_2d",
+    )
+    if optional_prepare_aabb_point_query_columns2d is not None:
+        optional_prepare_aabb_point_query_columns2d.argtypes = [
+            ctypes.POINTER(ctypes.c_float),
+            ctypes.POINTER(ctypes.c_float),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_void_p),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_prepare_aabb_point_query_columns2d.restype = ctypes.c_int
+    optional_prepare_aabb_box_query_columns2d = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_prepare_aabb_box_query_columns_f32_2d",
+    )
+    if optional_prepare_aabb_box_query_columns2d is not None:
+        optional_prepare_aabb_box_query_columns2d.argtypes = [
+            ctypes.POINTER(ctypes.c_float),
+            ctypes.POINTER(ctypes.c_float),
+            ctypes.POINTER(ctypes.c_float),
+            ctypes.POINTER(ctypes.c_float),
+            ctypes.c_size_t,
+            ctypes.c_uint32,
+            ctypes.POINTER(ctypes.c_void_p),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_prepare_aabb_box_query_columns2d.restype = ctypes.c_int
     optional_count_aabb_index2d_packed_queries = _find_optional_backend_symbol(
         lib,
         "rtdl_optix_count_prepared_aabb_index_2d_packed_queries",

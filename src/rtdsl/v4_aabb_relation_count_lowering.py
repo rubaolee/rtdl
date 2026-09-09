@@ -20,7 +20,9 @@ import threading
 from .aabb_index import prepare_aabb_index_2d_columns
 from .optix_runtime import (
     _load_optix_library,
+    prepare_optix_aabb_box_query_columns_f32_2d,
     prepare_optix_aabb_box_queries_2d,
+    prepare_optix_aabb_point_query_columns_f32_2d,
     prepare_optix_aabb_point_queries_2d,
 )
 from .physical_execution_provenance import (
@@ -106,6 +108,7 @@ class PreparedVerifiedAabbRelationCountV4:
         self._prepared = prepare_aabb_index_2d_columns(
             indexed_columns, backend="optix")
         self._prepared_queries = None
+        self._prepared_query_layout = None
         self._closed = False
         self._pid = os.getpid()
         self._thread = threading.get_ident()
@@ -135,6 +138,42 @@ class PreparedVerifiedAabbRelationCountV4:
                 raise ValueError("box queries require the range-contains algebra")
             prepared = prepare_optix_aabb_box_queries_2d(box_queries)
         self._prepared_queries = prepared
+        self._prepared_query_layout = "legacy_python_rows"
+
+    def bind_query_columns(
+        self, *, point_columns=None, box_columns=None,
+        enable_range_intersects: bool = False,
+    ) -> None:
+        """Bind typed float32 columns without materializing Python query rows."""
+
+        self._guard()
+        if self._prepared_queries is not None:
+            raise RuntimeError("prepared AABB relation-count queries are already bound")
+        if (point_columns is None) == (box_columns is None):
+            raise ValueError("bind exactly one point-column or box-column query batch")
+        if point_columns is not None:
+            if self._authority.algebra is not AabbCountAlgebra.POINT_CONTAINS:
+                raise ValueError("point query columns require the point-contains algebra")
+            if enable_range_intersects:
+                raise ValueError("point query columns cannot enable range intersects")
+            if set(point_columns) != {"x", "y"}:
+                raise ValueError("point query columns must be exactly x and y")
+            prepared = prepare_optix_aabb_point_query_columns_f32_2d(
+                x=point_columns["x"], y=point_columns["y"])
+        else:
+            if self._authority.algebra is not AabbCountAlgebra.RANGE_CONTAINS:
+                raise ValueError("box query columns require the range-contains algebra")
+            if set(box_columns) != {"min_x", "min_y", "max_x", "max_y"}:
+                raise ValueError(
+                    "box query columns must be exactly min_x, min_y, max_x, and max_y"
+                )
+            prepared = prepare_optix_aabb_box_query_columns_f32_2d(
+                min_x=box_columns["min_x"], min_y=box_columns["min_y"],
+                max_x=box_columns["max_x"], max_y=box_columns["max_y"],
+                enable_range_intersects=enable_range_intersects,
+            )
+        self._prepared_queries = prepared
+        self._prepared_query_layout = "typed_f32_columns"
 
     def _guard(self) -> None:
         if self._closed:
@@ -156,6 +195,7 @@ class PreparedVerifiedAabbRelationCountV4:
             "prepared_query_count": (
                 0 if self._prepared_queries is None else self._prepared_queries.count
             ),
+            "prepared_query_layout": self._prepared_query_layout,
             "process_bound": True,
             "thread_bound": True,
             "nonserializable": True,
@@ -250,6 +290,7 @@ class PreparedVerifiedAabbRelationCountV4:
                 self._prepared_queries.close()
         finally:
             self._prepared.close()
+            self._prepared_query_layout = None
             self._closed = True
 
     def __enter__(self):

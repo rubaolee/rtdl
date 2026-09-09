@@ -178,6 +178,7 @@ class PublicPyOptixLibRTSCountOwner:
         self.query_count = 0
         self.query_counts = None
         self.query_status = None
+        self.query_layout: str | None = None
         self._closed = False
 
     @classmethod
@@ -302,6 +303,50 @@ class PublicPyOptixLibRTSCountOwner:
         self.stream.synchronize()
         self.query_operation = operation
         self.query_count = query_count
+        self.query_layout = "legacy_python_rows"
+
+    def bind_query_columns(
+        self, *, operation: str, columns: Mapping[str, Any],
+    ) -> None:
+        """Retain one typed float32 query-column batch for prepared replay."""
+
+        self._guard()
+        if self.query_operation is not None:
+            raise RuntimeError("LibRTS PyOptiX queries are already bound")
+        if operation not in OPERATION_CODES:
+            raise ValueError("LibRTS operation must be point_contains or range_contains")
+        names = (
+            ("x", "y")
+            if operation == "point_contains"
+            else ("min_x", "min_y", "max_x", "max_y")
+        )
+        if set(columns) != set(names):
+            raise ValueError(f"{operation} query columns must be exactly {names!r}")
+        query_host = tuple(_as_f32_column(name, columns[name]) for name in names)
+        query_count = int(query_host[0].size)
+        if query_count <= 0 or query_count > 0xFFFFFFFF:
+            raise ValueError("LibRTS query cardinality is outside nonzero U32")
+        if any(int(column.size) != query_count for column in query_host):
+            raise ValueError("LibRTS query columns have unequal lengths")
+        if operation != "point_contains":
+            if bool((query_host[2] < query_host[0]).any()) or bool(
+                (query_host[3] < query_host[1]).any()
+            ):
+                raise ValueError("range_contains query column bounds are inverted")
+        cp = self.runtime.cp
+        with self.stream:
+            uploaded = tuple(cp.asarray(column) for column in query_host)
+            self.query_device = (
+                (uploaded[0], uploaded[1], uploaded[0], uploaded[1])
+                if operation == "point_contains"
+                else uploaded
+            )
+            self.query_counts = cp.zeros(query_count, dtype=cp.uint32)
+            self.query_status = cp.zeros(1, dtype=cp.uint32)
+        self.stream.synchronize()
+        self.query_operation = operation
+        self.query_count = query_count
+        self.query_layout = "typed_f32_columns"
 
     def execute_count(
         self,
@@ -400,6 +445,7 @@ class PublicPyOptixLibRTSCountOwner:
         self.query_operation = None
         self.query_device = ()
         self.query_count = 0
+        self.query_layout = None
         self.query_counts = None
         self.query_status = None
         self.host_params_keepalive = None

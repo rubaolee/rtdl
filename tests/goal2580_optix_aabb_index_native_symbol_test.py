@@ -25,6 +25,8 @@ class OptixAabbIndexNativeSymbolTest(unittest.TestCase):
             "rtdl_optix_collect_prepared_aabb_index_2d_point_contains_rows",
             "rtdl_optix_prepare_aabb_point_queries_2d",
             "rtdl_optix_prepare_aabb_box_queries_2d",
+            "rtdl_optix_prepare_aabb_point_query_columns_f32_2d",
+            "rtdl_optix_prepare_aabb_box_query_columns_f32_2d",
             "rtdl_optix_count_prepared_aabb_index_2d_packed_queries",
             "rtdl_optix_destroy_prepared_aabb_index_2d",
         ):
@@ -41,6 +43,9 @@ class OptixAabbIndexNativeSymbolTest(unittest.TestCase):
         self.assertIn("collect_aabb_intersection_pair_rows_2d_optix", wrapper)
         self.assertIn("prepare_optix_aabb_point_queries_2d", wrapper)
         self.assertIn("prepare_optix_aabb_box_queries_2d", wrapper)
+        self.assertIn("prepare_optix_aabb_point_query_columns_f32_2d", wrapper)
+        self.assertIn("prepare_optix_aabb_box_query_columns_f32_2d", wrapper)
+        self.assertIn("range_intersects_ready", workloads)
         self.assertNotIn("librts", (prelude + api + workloads).lower())
 
     def test_optix_range_intersects_is_supported_by_contract_and_wrapper(self) -> None:
@@ -94,6 +99,8 @@ class OptixAabbIndexNativeSymbolTest(unittest.TestCase):
         self.assertIn("prepare_optix_aabb_index_2d", rt.__all__)
         self.assertIn("prepare_optix_aabb_point_queries_2d", rt.__all__)
         self.assertIn("prepare_optix_aabb_box_queries_2d", rt.__all__)
+        self.assertIn("prepare_optix_aabb_point_query_columns_f32_2d", rt.__all__)
+        self.assertIn("prepare_optix_aabb_box_query_columns_f32_2d", rt.__all__)
         self.assertIn(
             "prepared OptiX AABB query layout does not match the operation",
             wrapper,

@@ -5059,6 +5059,51 @@ extern "C" int rtdl_optix_prepare_aabb_box_queries_2d(
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_optix_prepare_aabb_point_query_columns_f32_2d(
+        const float* point_x,
+        const float* point_y,
+        size_t point_query_count,
+        void** queries_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!queries_out)
+            throw std::runtime_error("queries_out must not be null");
+        if ((!point_x || !point_y) && point_query_count != 0)
+            throw std::runtime_error(
+                "point query columns must not be null when point_query_count is nonzero");
+        *queries_out = nullptr;
+        *queries_out = prepare_aabb_index_point_query_columns_f32_2d_optix(
+            point_x, point_y, point_query_count);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_prepare_aabb_box_query_columns_f32_2d(
+        const float* minimum_x,
+        const float* minimum_y,
+        const float* maximum_x,
+        const float* maximum_y,
+        size_t box_query_count,
+        uint32_t build_query_accel,
+        void** queries_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!queries_out)
+            throw std::runtime_error("queries_out must not be null");
+        if (build_query_accel > 1u)
+            throw std::runtime_error("build_query_accel must be zero or one");
+        if ((!minimum_x || !minimum_y || !maximum_x || !maximum_y)
+                && box_query_count != 0)
+            throw std::runtime_error(
+                "box query columns must not be null when box_query_count is nonzero");
+        *queries_out = nullptr;
+        *queries_out = prepare_aabb_index_box_query_columns_f32_2d_optix(
+            minimum_x, minimum_y, maximum_x, maximum_y,
+            box_query_count, build_query_accel != 0u);
+    }, error_out, error_size);
+}
+
 extern "C" int rtdl_optix_count_prepared_aabb_index_2d_packed_queries(
         void* prepared,
         void* prepared_queries,

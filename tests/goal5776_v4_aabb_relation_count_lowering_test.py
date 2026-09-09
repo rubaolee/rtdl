@@ -30,6 +30,7 @@ class Goal5776AabbRelationCountLoweringTest(unittest.TestCase):
         self.assertIn("AabbCountAlgebra", source)
         self.assertIn("prepare_aabb_index_2d_columns", source)
         self.assertIn("def bind_queries", source)
+        self.assertIn("def bind_query_columns", source)
         self.assertIn("count_prepared_queries", source)
         self.assertIn("OptixTraversalAuditSession", source)
         self.assertIn("arbitrary_user_reducer_allowed\": False", source)
@@ -87,6 +88,65 @@ class Goal5776AabbRelationCountLoweringTest(unittest.TestCase):
         self.assertIs(owner._prepared_queries, prepared)
         with self.assertRaisesRegex(RuntimeError, "already bound"):
             owner.bind_queries(point_queries=((2.0, 2.0),))
+
+    def test_verified_owner_binds_typed_columns_without_python_rows(self):
+        owner = object.__new__(PreparedVerifiedAabbRelationCountV4)
+        owner._closed = False
+        owner._pid = os.getpid()
+        owner._thread = threading.get_ident()
+        owner._prepared_queries = None
+        owner._prepared_query_layout = None
+        owner._authority = SimpleNamespace(
+            algebra=AabbCountAlgebra.RANGE_CONTAINS
+        )
+        prepared = SimpleNamespace(count=3, operation="range_contains")
+        columns = {
+            "min_x": np.asarray([0.0, 1.0, 2.0], dtype=np.float32),
+            "min_y": np.asarray([0.0, 1.0, 2.0], dtype=np.float32),
+            "max_x": np.asarray([0.5, 1.5, 2.5], dtype=np.float32),
+            "max_y": np.asarray([0.5, 1.5, 2.5], dtype=np.float32),
+        }
+        with mock.patch(
+            "rtdsl.v4_aabb_relation_count_lowering."
+            "prepare_optix_aabb_box_query_columns_f32_2d",
+            return_value=prepared,
+        ) as prepare:
+            owner.bind_query_columns(box_columns=columns)
+        prepare.assert_called_once_with(
+            min_x=columns["min_x"], min_y=columns["min_y"],
+            max_x=columns["max_x"], max_y=columns["max_y"],
+            enable_range_intersects=False,
+        )
+        self.assertIs(owner._prepared_queries, prepared)
+        self.assertEqual(owner._prepared_query_layout, "typed_f32_columns")
+
+    def test_typed_column_binding_rejects_algebra_mismatch(self):
+        owner = object.__new__(PreparedVerifiedAabbRelationCountV4)
+        owner._closed = False
+        owner._pid = os.getpid()
+        owner._thread = threading.get_ident()
+        owner._prepared_queries = None
+        owner._prepared_query_layout = None
+        owner._authority = SimpleNamespace(
+            algebra=AabbCountAlgebra.POINT_CONTAINS
+        )
+        with self.assertRaisesRegex(ValueError, "box query columns require"):
+            owner.bind_query_columns(box_columns={})
+
+    def test_typed_column_binding_rejects_extra_columns(self):
+        owner = object.__new__(PreparedVerifiedAabbRelationCountV4)
+        owner._closed = False
+        owner._pid = os.getpid()
+        owner._thread = threading.get_ident()
+        owner._prepared_queries = None
+        owner._prepared_query_layout = None
+        owner._authority = SimpleNamespace(
+            algebra=AabbCountAlgebra.POINT_CONTAINS
+        )
+        with self.assertRaisesRegex(ValueError, "exactly x and y"):
+            owner.bind_query_columns(
+                point_columns={"x": [0.0], "y": [0.0], "app_id": [1]}
+            )
 
     def test_dynamic_query_validation_accepts_array_containers(self):
         owner = object.__new__(PreparedVerifiedAabbRelationCountV4)
