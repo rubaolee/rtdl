@@ -193,6 +193,14 @@ class AuthoredParticleTransitionEnsembleFormalCompareTest(unittest.TestCase):
         ):
             self.assertIn(token, source)
 
+    def test_freeze_runs_rtdl_target_probe_before_formal_worker_zero(self):
+        source = Path(formal.__file__).read_text(encoding="utf-8")
+        self.assertIn('"rtdl_target_compatibility_probe"', source)
+        self.assertLess(
+            source.index('directory=calibration_root / "rtdl_target_compatibility_probe"'),
+            source.index('"status": "FROZEN_BEFORE_FORMAL_WORKER_ZERO"'),
+        )
+
     def test_source_identity_rejects_untracked_files(self):
         formal_source = Path(formal.__file__).read_text(encoding="utf-8")
         worker_source = (formal.ROOT / "scripts" /

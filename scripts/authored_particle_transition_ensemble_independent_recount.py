@@ -418,6 +418,11 @@ def recount(*, archive: Path, source_repo: Path) -> dict[str, object]:
                     } \
                     or len(calibration.get("workers", [])) != 3:
                 raise ValueError("C-only calibration contract differs")
+            target_probe = validate_record(
+                root, prereg,
+                calibration.get("rtdl_target_compatibility_probe"),
+                root / "C_ONLY_CALIBRATION/rtdl_target_compatibility_probe",
+                "rtdl", samples=1, formal=False)
             calibration_medians = []
             for ordinal, record in enumerate(calibration["workers"]):
                 worker = validate_record(
@@ -554,6 +559,8 @@ def recount(*, archive: Path, source_repo: Path) -> dict[str, object]:
                     "independent_oracle_sha256"],
                 "output_sha256": prereg["output_sha256"],
                 "calibration_worker_count": 3,
+                "rtdl_target_compatibility_probe_median_ns": target_probe[
+                    "median_ns"],
                 "calibration_medians_ns": calibration_medians,
                 "formal_worker_count": 16,
                 "timed_sample_count": 48,

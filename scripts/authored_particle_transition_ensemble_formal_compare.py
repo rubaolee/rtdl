@@ -457,9 +457,9 @@ def command_freeze(args: argparse.Namespace) -> int:
         "cuda_include": str(args.cuda_include.resolve(strict=True)),
         "cuda_home": str(args.cuda_home.resolve(strict=True)),
         "ld_library_path": os.environ.get("LD_LIBRARY_PATH", ""),
-        # Numba's NVIDIA binding selects the same CUDA component family used
-        # by the pinned NVRTC wrapper compiler. Without this explicit choice,
-        # leaf PTX 8.7 cannot be composed with wrapper PTX 8.4.
+        # Keep the binding choice explicit alongside the registered CUDA_HOME
+        # and NVRTC library path. The pre-worker-zero RTDL probe below rejects
+        # any combination that emits incompatible leaf and wrapper PTX.
         "numba_cuda_use_nvidia_binding": "1",
         "gpu": gpu,
         "hostname": platform.node(),
@@ -468,6 +468,10 @@ def command_freeze(args: argparse.Namespace) -> int:
     }
     calibration_root = args.calibration_output.resolve()
     calibration_root.mkdir(parents=True, exist_ok=False)
+    target_probe = run_worker(
+        provisional, "rtdl", samples=1,
+        directory=calibration_root / "rtdl_target_compatibility_probe",
+        formal_worker=False, validate=False)
     calibration_workers = []
     for ordinal in range(CALIBRATION_WORKERS):
         record = run_worker(
@@ -475,12 +479,13 @@ def command_freeze(args: argparse.Namespace) -> int:
             directory=calibration_root / f"worker_{ordinal:02d}",
             formal_worker=False, validate=False)
         calibration_workers.append(record)
+    all_probe_workers = [target_probe, *calibration_workers]
     outputs = {row["worker_result"]["output_sha256"]
-               for row in calibration_workers}
+               for row in all_probe_workers}
     inputs = {row["worker_result"]["input_sha256"]
-              for row in calibration_workers}
+              for row in all_probe_workers}
     oracles = {row["worker_result"]["independent_oracle_sha256"]
-               for row in calibration_workers}
+               for row in all_probe_workers}
     if len(outputs) != 1 or len(inputs) != 1 or len(oracles) != 1:
         raise RuntimeError("C-only calibration identities differ")
     provisional.update({
@@ -493,11 +498,15 @@ def command_freeze(args: argparse.Namespace) -> int:
         validate_worker(
             provisional, row["worker_result"], "pyoptix", samples=1,
             formal_worker=False)
+    validate_worker(
+        provisional, target_probe["worker_result"], "rtdl", samples=1,
+        formal_worker=False)
     calibration = {
         "schema": f"{SCHEMA}.c_only_calibration",
         "status": "PASS__THREE_FRESH_C_WORKERS_RETAINED",
         "purpose": (
             "confirm_previously_selected_160m_natural_scale_without_reselection"),
+        "rtdl_target_compatibility_probe": target_probe,
         "workers": calibration_workers,
         "medians_ns": [row["worker_result"]["median_ns"]
                        for row in calibration_workers],
