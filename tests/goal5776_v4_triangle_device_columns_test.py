@@ -197,11 +197,18 @@ class Goal5776V4TriangleDeviceColumnsTest(unittest.TestCase):
         with mock.patch.object(
                 triangle_runtime, "_bulk_u32x3_digest",
                 wraps=triangle_runtime._bulk_u32x3_digest) as digest:
-            first_sha = cache.resolve(first)
-            self.assertEqual(cache.resolve(equal), first_sha)
+            first_output, first_sha = cache.resolve(first)
+            equal_output, equal_sha = cache.resolve(equal)
+            self.assertIs(equal_output, first_output)
+            self.assertEqual(equal_sha, first_sha)
             self.assertEqual(digest.call_count, 1)
-            self.assertNotEqual(cache.resolve(changed), first_sha)
+            changed_output, changed_sha = cache.resolve(changed)
+            self.assertIsNot(changed_output, first_output)
+            self.assertNotEqual(changed_sha, first_sha)
             self.assertEqual(digest.call_count, 2)
+            self.assertFalse(first_output.flags.writeable)
+            with self.assertRaises(ValueError):
+                first_output.setflags(write=True)
 
     def test_packed_row_results_are_owned_across_reuse_and_close(self):
         owner = self._query_batch_owner()
@@ -262,13 +269,14 @@ class Goal5776V4TriangleDeviceColumnsTest(unittest.TestCase):
         np.testing.assert_array_equal(first.output, ((10, 11, 12),))
         np.testing.assert_array_equal(second.output, ((20, 21, 22),))
         self.assertNotEqual(first.output_sha256, second.output_sha256)
-        self.assertTrue(first.output.flags.owndata)
+        self.assertFalse(first.output.flags.owndata)
         self.assertFalse(first.output.flags.writeable)
         self.assertIsNot(first.output, host_output)
-        self.assertEqual(
-            batch._output_digest_cache.resolve(first.output),
-            first.output_sha256,
-        )
+        cached, cached_sha = batch._output_digest_cache.resolve(first.output)
+        self.assertEqual(cached_sha, first.output_sha256)
+        np.testing.assert_array_equal(cached, first.output)
+        with self.assertRaises(ValueError):
+            first.output.setflags(write=True)
         owner.close()
         self.assertEqual(destroyed, [19])
         host_output.setflags(write=True)

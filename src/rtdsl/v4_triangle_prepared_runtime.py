@@ -211,14 +211,15 @@ _PREPARED_OUTPUT_DIGEST_CACHE_TOKEN = object()
 
 
 class _PreparedOutputDigestCache:
-    """Reuse a digest only after an exact comparison with immutable bytes."""
+    """Materialize immutable output once, then validate reuse exactly."""
 
-    __slots__ = ("_digest", "_payload", "_token")
+    __slots__ = ("_digest", "_output", "_payload", "_token")
 
     def __init__(self, *, token):
         if token is not _PREPARED_OUTPUT_DIGEST_CACHE_TOKEN:
             raise RuntimeError("prepared output digest cache requires its owner")
         object.__setattr__(self, "_digest", None)
+        object.__setattr__(self, "_output", None)
         object.__setattr__(self, "_payload", None)
         object.__setattr__(self, "_token", token)
 
@@ -226,13 +227,30 @@ class _PreparedOutputDigestCache:
         raise AttributeError("prepared output digest cache is immutable")
 
     def resolve(self, output):
-        payload = memoryview(output).cast("B").tobytes()
+        try:
+            import numpy as _np
+        except ImportError as error:  # pragma: no cover - bulk mode requires NumPy
+            raise RuntimeError("bulk output identity requires NumPy") from error
+        if not isinstance(output, _np.ndarray) \
+                or output.ndim != 2 or output.shape[1] != 3 \
+                or output.dtype.str != "<u4" or not output.flags.c_contiguous:
+            raise RuntimeError(
+                "prepared output must be a contiguous little-endian Nx3 u32 array")
+        stable = self._output
         digest = self._digest
-        if self._payload != payload or digest is None:
-            digest = _bulk_u32x3_digest(output)
-            object.__setattr__(self, "_payload", payload)
-            object.__setattr__(self, "_digest", digest)
-        return digest
+        if stable is not None and digest is not None \
+                and stable.shape == output.shape \
+                and _np.array_equal(stable, output):
+            return stable, digest
+
+        payload = memoryview(output).cast("B").tobytes()
+        stable = _np.frombuffer(payload, dtype=_np.dtype("<u4")).reshape(
+            output.shape)
+        digest = _bulk_u32x3_digest(stable)
+        object.__setattr__(self, "_payload", payload)
+        object.__setattr__(self, "_output", stable)
+        object.__setattr__(self, "_digest", digest)
+        return stable, digest
 
 
 class PreparedBuiltinTriangleQueryBatch:
@@ -799,16 +817,13 @@ class PreparedBuiltinTriangleOwner:
                         raise ValueError(
                             "partner column output requires NumPy query columns")
                     if packed_row_mode:
-                        # The reusable pinned rows belong to the native query
-                        # batch.  Public results must remain valid after its
-                        # next execution and after owner teardown.
-                        observed = _np.array(
-                            host_output,
-                            dtype=_np.uint32,
-                            order="C",
-                            copy=True,
-                        )
-                        observed.setflags(write=False)
+                        # The native query batch owns this reusable pinned
+                        # staging area.  The digest cache returns an immutable
+                        # bytes-backed result that remains valid after reuse or
+                        # teardown; equal executions reuse it after an exact
+                        # comparison instead of copying and hashing it again.
+                        observed, output_sha = output_digest_cache.resolve(
+                            host_output)
                     else:
                         observed = _np.column_stack((
                             _np.ctypeslib.as_array(output_0),
@@ -856,7 +871,7 @@ class PreparedBuiltinTriangleOwner:
                         raise RuntimeError(
                             "prepared built-in triangle output mismatch")
                 if packed_row_mode:
-                    output_sha = output_digest_cache.resolve(observed)
+                    pass
                 elif partner_column_output:
                     output_sha = _bulk_u32x3_digest(observed)
                 else:

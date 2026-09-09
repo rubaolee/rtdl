@@ -141,6 +141,7 @@ def _prepare_rtdl(args, base, queries, expected, oracle_sha256):
         second_primitive_values=base["back_values"],
     )
     owner = materialized.prepare(static)
+    expected_output_sha256 = _output_digest(expected)
     try:
         prepared = owner.prepare_batch(
             v4.BuiltinTriangleCallbackBatch(queries=queries))
@@ -154,7 +155,8 @@ def _prepare_rtdl(args, base, queries, expected, oracle_sha256):
     def invoke():
         result = owner.execute(prepared)
         output = np.asarray(result.output, dtype=np.uint32)
-        if not np.array_equal(output, expected):
+        if output.shape != expected.shape \
+                or result.output_sha256 != expected_output_sha256:
             raise RuntimeError("RTDL Particle ensemble output mismatch")
         return output, result
 
@@ -167,6 +169,7 @@ def _prepare_rtdl(args, base, queries, expected, oracle_sha256):
         "prepared_query_batch_device_resident": prepared.device_resident,
         "program_identity_sha256": program.identity.identity_sha256,
         "executable_identity_sha256": materialized.identity.identity_sha256,
+        "oracle_validation": "canonical_u32x3_sha256",
     }
 
 
