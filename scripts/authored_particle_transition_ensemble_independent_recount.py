@@ -17,7 +17,7 @@ import tempfile
 
 
 SCHEMA = "rtdl.v4.authored_particle.transition_ensemble_recount.v1"
-TRANSACTION_SCHEMA = "rtdl.v4.authored_particle.transition_ensemble_formal.v1"
+TRANSACTION_SCHEMA = "rtdl.v4.authored_particle.transition_ensemble_formal.v2"
 QUERY_COUNT = 160_000_000
 WARMUPS = 1
 SAMPLES = 3
@@ -46,6 +46,7 @@ SOURCE_PATHS = (
     "experiments/goal5814_particle/public_pyoptix_owner.py",
     "src/rtdsl/v4.py",
     "src/rtdsl/v4_public_builtin_triangle.py",
+    "src/rtdsl/v4_callback_cuda_inline_codegen.py",
     "src/rtdsl/v4_triangle_optix_compiler.py",
     "src/rtdsl/v4_triangle_optix_wrapper_codegen.py",
     "src/rtdsl/v4_triangle_prepared_runtime.py",

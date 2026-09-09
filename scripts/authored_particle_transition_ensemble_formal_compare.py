@@ -49,6 +49,7 @@ SOURCE_PATHS = (
     "experiments/goal5814_particle/public_pyoptix_owner.py",
     "src/rtdsl/v4.py",
     "src/rtdsl/v4_public_builtin_triangle.py",
+    "src/rtdsl/v4_callback_cuda_inline_codegen.py",
     "src/rtdsl/v4_triangle_optix_compiler.py",
     "src/rtdsl/v4_triangle_optix_wrapper_codegen.py",
     "src/rtdsl/v4_triangle_prepared_runtime.py",

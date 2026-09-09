@@ -5,6 +5,7 @@ from pathlib import Path
 import unittest
 
 from scripts import authored_particle_transition_ensemble_formal_compare as formal
+from scripts import authored_particle_transition_ensemble_independent_recount as recount
 
 
 class AuthoredParticleTransitionEnsembleFormalCompareTest(unittest.TestCase):
@@ -122,6 +123,12 @@ class AuthoredParticleTransitionEnsembleFormalCompareTest(unittest.TestCase):
         self.assertEqual(
             formal.SCHEMA,
             "rtdl.v4.authored_particle.transition_ensemble_formal.v2")
+        self.assertEqual(recount.TRANSACTION_SCHEMA, formal.SCHEMA)
+        self.assertIn(
+            "src/rtdsl/v4_callback_cuda_inline_codegen.py",
+            formal.SOURCE_PATHS,
+        )
+        self.assertEqual(recount.SOURCE_PATHS, formal.SOURCE_PATHS)
         self.assertEqual(formal.QUERY_COUNT, 160_000_000)
         self.assertEqual(len(formal.ORDERS), 8)
         self.assertEqual(sum(row[0] == "rtdl" for row in formal.ORDERS), 4)
