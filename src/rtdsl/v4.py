@@ -113,6 +113,7 @@ from .v4_typed_physical_schema import (
     BUILTIN_TRIANGLE_CONTRACT,
     AdjacencySide,
     PhysicalSchemaError,
+    TriangleHitSelectionPolicy,
     TriangleWindingPolicy,
 )
 
@@ -190,6 +191,7 @@ __all__ = sorted([
     "TriangleReductionMode",
     "TriangleReductionProtocol",
     "TriangleReductionStaticInput",
+    "TriangleHitSelectionPolicy",
     "TriangleWindingPolicy",
     "V4_API_VERSION",
     "V4Target",

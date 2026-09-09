@@ -15,6 +15,7 @@ from rtdsl.v4_triangle_optix_wrapper_codegen import (
     generate_trusted_optix_triangle_wrapper_v1,
 )
 from rtdsl.v4_typed_physical_schema import (
+    TriangleHitSelectionPolicy,
     default_reference_templates,
     lower_canonical_reference_plan,
     verify_typed_physical_schema,
@@ -143,6 +144,40 @@ class Goal5756BuiltinTriangleRuntimeTest(unittest.TestCase):
         # The any-hit collector is trusted wrapper code, never a user role.
         self.assertNotIn("CallbackRole.ANY_HIT", wrapper.source)
 
+    def test_provider_native_closest_policy_is_explicit_and_distinct(self):
+        authority = admitted()
+        plan = lower_canonical_reference_plan(
+            authority, default_reference_templates())
+        abi = compile_callback_abi(
+            authority.callback, physical_schema_authority=authority)
+        canonical = generate_trusted_optix_triangle_wrapper_v1(
+            authority, plan, abi)
+        native = generate_trusted_optix_triangle_wrapper_v1(
+            authority,
+            plan,
+            abi,
+            hit_selection_policy=(
+                TriangleHitSelectionPolicy.PROVIDER_NATIVE_CLOSEST),
+        )
+        self.assertEqual(
+            canonical.physical_template,
+            "builtin_triangle_adjacency_u32x3_v1",
+        )
+        self.assertEqual(
+            native.physical_template,
+            "builtin_triangle_u32x3_provider_native_closest_v1",
+        )
+        self.assertNotEqual(canonical.source_sha256, native.source_sha256)
+        self.assertIn(
+            "__closesthit__rtdl_v4_triangle_native", native.source)
+        self.assertIn("OPTIX_RAY_FLAG_DISABLE_ANYHIT", native.source)
+        self.assertNotIn(
+            "__anyhit__rtdl_v4_triangle_canonical", native.source)
+        self.assertNotIn("optixIgnoreIntersection()", native.source)
+        with self.assertRaisesRegex(Exception, "hit_selection_policy"):
+            generate_trusted_optix_triangle_wrapper_v1(
+                authority, plan, abi, hit_selection_policy="native")
+
     def test_serialized_or_forged_authority_cannot_enter_abi_or_wrapper(self):
         authority = admitted()
         plan, abi, _wrapper = compiled(authority)
@@ -223,9 +258,12 @@ class Goal5756BuiltinTriangleRuntimeTest(unittest.TestCase):
         native = (ROOT / "src/native/optix/rtdl_optix_v4_callback_poc.cpp").read_text()
         api = (ROOT / "src/native/optix/rtdl_optix_api.cpp").read_text()
         self.assertIn(
-            "TriangleAccelHolder accel = build_v4_triangle_anyhit_accel", native)
+            "TriangleAccelHolder accel = build_v4_triangle_accel", native)
         self.assertIn("OPTIX_PRIMITIVE_TYPE_FLAGS_TRIANGLE", native)
         self.assertIn('"__anyhit__rtdl_v4_triangle_canonical"', native)
+        self.assertIn('"__closesthit__rtdl_v4_triangle_native"', native)
+        self.assertIn("OPTIX_GEOMETRY_FLAG_DISABLE_ANYHIT", native)
+        self.assertIn("v4_ptx_declares_entry_point", native)
         self.assertIn("std::vector<uint32_t> boundary_owner", native)
         self.assertIn("parameters.boundary_owner", native)
         section = api.split("rtdl_optix_v4_run_builtin_triangle_callback_v1", 1)[1]

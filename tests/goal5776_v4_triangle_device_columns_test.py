@@ -151,6 +151,154 @@ class Goal5776V4TriangleDeviceColumnsTest(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, "identity drifted"):
             right._prepared_query_batch_columns(batch)
 
+    @staticmethod
+    def _packed_query_batch(owner, host_output, native_token=19):
+        origins = np.asarray(((0.0, 0.0, 1.0),), dtype=np.float32)
+        directions = np.asarray(((0.0, 0.0, -1.0),), dtype=np.float32)
+        tmax = np.asarray((2.0,), dtype=np.float32)
+        for value in (origins, directions, tmax, host_output):
+            value.setflags(write=False)
+        pointer = host_output.ctypes.data_as(
+            triangle_runtime.ctypes.POINTER(triangle_runtime.ctypes.c_uint32))
+        return triangle_runtime.PreparedBuiltinTriangleQueryBatch(
+            owner=owner,
+            origins=origins,
+            directions=directions,
+            tmax=tmax,
+            binding_digest="a" * 64,
+            semantic_digest="b" * 64,
+            native_token=native_token,
+            host_output=host_output,
+            host_output_pointer=pointer,
+            token=triangle_runtime._PREPARED_QUERY_BATCH_TOKEN,
+        )
+
+    @staticmethod
+    def _fill_compact_summary(summary_pointer, count):
+        summary = summary_pointer._obj
+        summary.schema_version = 2
+        summary.ok = 1
+        summary.validated_row_count = count
+        summary.required_invocation_mask = (1 << 1) | (1 << 6)
+        summary.terminal_invocation_mask = (1 << 4) | (1 << 5)
+        summary.first_invalid_row = (1 << 64) - 1
+        summary.role_counters[1] = count
+        summary.role_counters[4] = count
+        summary.role_counters[6] = count
+        summary.success_status_d2h_bytes = triangle_runtime.ctypes.sizeof(
+            triangle_runtime._CompactLifecycleSummary)
+
+    def test_packed_row_results_are_owned_across_reuse_and_close(self):
+        owner = self._query_batch_owner()
+        owner._active = threading.Lock()
+        owner._execute_columns = None
+        owner._execute_query_batch = object()
+        owner._token = 17
+        owner._library = object()
+        owner._audit_sequence = 0
+        owner._execution_count = 0
+        owner._native_sha = "c" * 64
+        owner._ptx_sha = "d" * 64
+        owner._native_query_batch_tokens = {19}
+        host_output = np.zeros((1, 3), dtype=np.uint32)
+        batch = self._packed_query_batch(owner, host_output)
+        calls = []
+
+        def execute_rows(
+            _owner_token, _batch_token, summary_pointer, _error, _error_size,
+        ):
+            host_output.setflags(write=True)
+            host_output[0] = (10 + 10 * len(calls), 11 + 10 * len(calls),
+                              12 + 10 * len(calls))
+            host_output.setflags(write=False)
+            calls.append(tuple(map(int, host_output[0])))
+            self._fill_compact_summary(summary_pointer, 1)
+            return 0
+
+        owner._execute_query_batch_rows = execute_rows
+        destroyed = []
+        owner._destroy_query_batch = lambda token, _error, _size: (
+            destroyed.append(int(token)) or 0)
+        owner._destroy = lambda _token, _error, _size: 0
+
+        class Audit:
+            def finish_validated_compact(self, **_kwargs):
+                return {"physical_executor_classification": "optix_traversal_observed"}
+
+            def abort(self):
+                raise AssertionError("successful packed-row execution aborted its audit")
+
+        with mock.patch.object(
+            triangle_runtime.OptixTraversalAuditSession,
+            "open",
+            return_value=Audit(),
+        ):
+            first = owner.execute(batch, partner_column_output=True)
+            second = owner.execute(batch, partner_column_output=True)
+
+        np.testing.assert_array_equal(first.output, ((10, 11, 12),))
+        np.testing.assert_array_equal(second.output, ((20, 21, 22),))
+        self.assertNotEqual(first.output_sha256, second.output_sha256)
+        self.assertTrue(first.output.flags.owndata)
+        self.assertFalse(first.output.flags.writeable)
+        self.assertIsNot(first.output, host_output)
+        owner.close()
+        self.assertEqual(destroyed, [19])
+        host_output.setflags(write=True)
+        host_output[:] = 99
+        np.testing.assert_array_equal(first.output, ((10, 11, 12),))
+        np.testing.assert_array_equal(second.output, ((20, 21, 22),))
+
+    def test_packed_query_batch_default_output_uses_full_result_route(self):
+        owner = self._query_batch_owner()
+        owner._active = threading.Lock()
+        owner._execute_columns = None
+        owner._execute_query_batch = object()
+        owner._execute_query_batch_rows = lambda *_args: self.fail(
+            "packed rows require partner_column_output")
+        owner._token = 17
+        owner._library = object()
+        owner._audit_sequence = 0
+        owner._execution_count = 0
+        owner._native_sha = "c" * 64
+        owner._ptx_sha = "d" * 64
+        owner._native_query_batch_tokens = {19}
+        batch = self._packed_query_batch(
+            owner, np.zeros((1, 3), dtype=np.uint32))
+
+        def execute(
+            _token, _origins, _directions, _tmax, count,
+            output_0, output_1, output_2, observed_primitive,
+            observed_kind, observed_bx, observed_by, _statuses, counters,
+            _error, _error_size,
+        ):
+            self.assertEqual(count, 1)
+            output_0[0], output_1[0], output_2[0] = 7, 8, 9
+            observed_primitive[0] = 3
+            observed_kind[0] = 0xFE
+            observed_bx[0] = 0.25
+            observed_by[0] = 0.5
+            counters[1] = counters[4] = counters[6] = 1
+            return 0
+
+        owner._execute = execute
+
+        class Audit:
+            def finish(self, **_kwargs):
+                return {"physical_executor_classification": "optix_traversal_observed"}
+
+            def abort(self):
+                raise AssertionError("successful full execution aborted its audit")
+
+        with mock.patch.object(
+            triangle_runtime.OptixTraversalAuditSession,
+            "open",
+            return_value=Audit(),
+        ):
+            result = owner.execute(batch)
+        self.assertEqual(result.output, ((7, 8, 9),))
+        self.assertFalse(hasattr(result, "_validated_prepared_execution"))
+
     def test_device_resident_query_batch_abi_is_additive_and_complete(self):
         class Symbol:
             argtypes = None
@@ -159,7 +307,7 @@ class Goal5776V4TriangleDeviceColumnsTest(unittest.TestCase):
         self.assertEqual(
             triangle_runtime._configure_device_resident_query_batches(
                 SimpleNamespace()),
-            (None, None, None),
+            (None, None, None, None, None),
         )
         with self.assertRaisesRegex(RuntimeError, "partial"):
             triangle_runtime._configure_device_resident_query_batches(
@@ -183,13 +331,61 @@ class Goal5776V4TriangleDeviceColumnsTest(unittest.TestCase):
                 ),
             )
         )
-        self.assertEqual(configured, (prepare, execute, destroy))
+        self.assertEqual(
+            configured, (prepare, execute, destroy, None, None))
         self.assertEqual(len(prepare.argtypes), 8)
         self.assertEqual(len(execute.argtypes), 8)
         self.assertEqual(len(destroy.argtypes), 3)
         self.assertIs(prepare.restype, triangle_runtime.ctypes.c_int)
         self.assertIs(execute.restype, triangle_runtime.ctypes.c_int)
         self.assertIs(destroy.restype, triangle_runtime.ctypes.c_int)
+
+        prepare_rows, execute_rows = Symbol(), Symbol()
+        configured = triangle_runtime._configure_device_resident_query_batches(
+            SimpleNamespace(
+                rtdl_optix_v4_prepare_builtin_triangle_query_batch_columns_v1=(
+                    prepare
+                ),
+                rtdl_optix_v4_execute_prepared_builtin_triangle_callback_batch_columns_v3=(
+                    execute
+                ),
+                rtdl_optix_v4_destroy_prepared_builtin_triangle_query_batch_v1=(
+                    destroy
+                ),
+                rtdl_optix_v4_prepare_builtin_triangle_query_batch_rows_v2=(
+                    prepare_rows
+                ),
+                rtdl_optix_v4_execute_prepared_builtin_triangle_callback_batch_rows_v4=(
+                    execute_rows
+                ),
+            )
+        )
+        self.assertEqual(
+            configured,
+            (prepare, execute, destroy, prepare_rows, execute_rows),
+        )
+        self.assertEqual(len(prepare_rows.argtypes), 9)
+        self.assertEqual(len(execute_rows.argtypes), 5)
+        self.assertIs(prepare_rows.restype, triangle_runtime.ctypes.c_int)
+        self.assertIs(execute_rows.restype, triangle_runtime.ctypes.c_int)
+
+        with self.assertRaisesRegex(RuntimeError, "partial.*packed-row"):
+            triangle_runtime._configure_device_resident_query_batches(
+                SimpleNamespace(
+                    rtdl_optix_v4_prepare_builtin_triangle_query_batch_columns_v1=(
+                        Symbol()
+                    ),
+                    rtdl_optix_v4_execute_prepared_builtin_triangle_callback_batch_columns_v3=(
+                        Symbol()
+                    ),
+                    rtdl_optix_v4_destroy_prepared_builtin_triangle_query_batch_v1=(
+                        Symbol()
+                    ),
+                    rtdl_optix_v4_prepare_builtin_triangle_query_batch_rows_v2=(
+                        Symbol()
+                    ),
+                )
+            )
 
     def test_runtime_validated_execution_is_owner_and_output_bound(self):
         owner = object()

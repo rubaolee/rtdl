@@ -99,12 +99,14 @@ struct V4TriangleParams {
     uint32_t* output_0;
     uint32_t* output_1;
     uint32_t* output_2;
+    uint32_t* output_rows;
     uint32_t* observed_primitive_index;
     uint32_t* observed_hit_kind;
     float* observed_barycentric_x;
     float* observed_barycentric_y;
     V4FormalLaunchStatus* status;
     unsigned long long* role_counters;
+    RtdlV4CallbackProductStatusSummary* compact_control;
 };
 
 // Goal5833 static built-in-sphere successor.  Unlike the older custom-AABB
@@ -1557,10 +1559,66 @@ static void run_v4_formal_callback(
                 " was not behaviorally exercised");
 }
 
-static TriangleAccelHolder build_v4_triangle_anyhit_accel(
+enum class V4BuiltinTriangleHitSelectionPolicy {
+    canonical_distance_primitive,
+    provider_native_closest,
+};
+
+static bool v4_ptx_declares_entry_point(
+        const std::string& ptx, const char* symbol) {
+    if (!symbol || *symbol == '\0') return false;
+    const std::string marker = ".entry";
+    const size_t symbol_size = std::strlen(symbol);
+    size_t position = 0;
+    while ((position = ptx.find(marker, position)) != std::string::npos) {
+        size_t cursor = position + marker.size();
+        while (cursor < ptx.size() &&
+                (ptx[cursor] == ' ' || ptx[cursor] == '\t' ||
+                 ptx[cursor] == '\r' || ptx[cursor] == '\n'))
+            ++cursor;
+        if (ptx.compare(cursor, symbol_size, symbol) == 0) {
+            size_t suffix = cursor + symbol_size;
+            while (suffix < ptx.size() &&
+                    (ptx[suffix] == ' ' || ptx[suffix] == '\t' ||
+                     ptx[suffix] == '\r' || ptx[suffix] == '\n'))
+                ++suffix;
+            if (suffix < ptx.size() && ptx[suffix] == '(') return true;
+        }
+        position = cursor + 1u;
+    }
+    return false;
+}
+
+static V4BuiltinTriangleHitSelectionPolicy
+v4_builtin_triangle_hit_selection_policy(const std::string& composed_ptx) {
+    const bool canonical = v4_ptx_declares_entry_point(
+        composed_ptx, "__anyhit__rtdl_v4_triangle_canonical");
+    const bool provider_native = v4_ptx_declares_entry_point(
+        composed_ptx, "__closesthit__rtdl_v4_triangle_native");
+    if (canonical == provider_native)
+        throw std::runtime_error(
+            "V4 built-in triangle PTX must declare exactly one reviewed "
+            "hit-selection entry point");
+    if (!v4_ptx_declares_entry_point(
+            composed_ptx, "__raygen__rtdl_v4_triangle") ||
+            !v4_ptx_declares_entry_point(
+                composed_ptx, "__miss__rtdl_v4_triangle"))
+        throw std::runtime_error(
+            "V4 built-in triangle PTX lacks a required reviewed entry point");
+    return provider_native
+        ? V4BuiltinTriangleHitSelectionPolicy::provider_native_closest
+        : V4BuiltinTriangleHitSelectionPolicy::canonical_distance_primitive;
+}
+
+static TriangleAccelHolder build_v4_triangle_accel(
         OptixDeviceContext ctx,
         const std::vector<float3>& vertices,
-        const std::vector<uint3>& indices);
+        const std::vector<uint3>& indices,
+        V4BuiltinTriangleHitSelectionPolicy hit_selection_policy =
+            V4BuiltinTriangleHitSelectionPolicy::canonical_distance_primitive);
+
+static std::vector<uint32_t> v4_triangle_boundary_owners(
+        const std::vector<uint3>& indices, size_t vertex_count);
 
 // Goal5776: bounded partner-resident columns for the existing V4 built-in
 // triangle callback family.  The kernels only repack already-resident CuPy
@@ -1714,47 +1772,12 @@ static void run_v4_builtin_triangle_callback(
                 "V4 built-in-triangle index is outside vertex domain");
         indices.push_back(make_uint3(a, b, c));
     }
-    // A built-in triangle traversal may report only one incident primitive
-    // when a ray lies exactly on a shared edge or vertex.  OptiX does not make
-    // that ownership a canonical RTDL output.  Build an application-neutral
-    // topology table that maps each local barycentric boundary mask to the
-    // minimum incident primitive ID.  The trusted device wrapper consumes it;
-    // no host output rewrite is performed.
-    const auto edge_key = [](uint32_t left, uint32_t right) -> uint64_t {
-        const uint32_t lo = std::min(left, right);
-        const uint32_t hi = std::max(left, right);
-        return (static_cast<uint64_t>(lo) << 32) | hi;
-    };
-    std::unordered_map<uint64_t, uint32_t> edge_owner;
-    std::vector<uint32_t> vertex_owner(vertex_count, UINT32_MAX);
-    const auto update_owner = [](auto& table, const auto& key, uint32_t face) {
-        auto observed = table.find(key);
-        if (observed == table.end()) table.emplace(key, face);
-        else observed->second = std::min(observed->second, face);
-    };
-    for (uint32_t face = 0; face < static_cast<uint32_t>(indices.size()); ++face) {
-        const uint3 triangle = indices[face];
-        vertex_owner[triangle.x] = std::min(vertex_owner[triangle.x], face);
-        vertex_owner[triangle.y] = std::min(vertex_owner[triangle.y], face);
-        vertex_owner[triangle.z] = std::min(vertex_owner[triangle.z], face);
-        update_owner(edge_owner, edge_key(triangle.y, triangle.z), face);
-        update_owner(edge_owner, edge_key(triangle.x, triangle.z), face);
-        update_owner(edge_owner, edge_key(triangle.x, triangle.y), face);
-    }
-    std::vector<uint32_t> boundary_owner(triangle_count * 7u, UINT32_MAX);
-    for (uint32_t face = 0; face < static_cast<uint32_t>(indices.size()); ++face) {
-        const uint3 triangle = indices[face];
-        boundary_owner[face * 7u + 0u] =
-            edge_owner.at(edge_key(triangle.y, triangle.z));  // a == 0
-        boundary_owner[face * 7u + 1u] =
-            edge_owner.at(edge_key(triangle.x, triangle.z));  // b == 0
-        boundary_owner[face * 7u + 2u] = vertex_owner[triangle.z];
-        boundary_owner[face * 7u + 3u] =
-            edge_owner.at(edge_key(triangle.x, triangle.y));  // c == 0
-        boundary_owner[face * 7u + 4u] = vertex_owner[triangle.y];
-        boundary_owner[face * 7u + 5u] = vertex_owner[triangle.x];
-        boundary_owner[face * 7u + 6u] = face;  // impossible for nondegenerate hit
-    }
+    const auto hit_selection_policy =
+        v4_builtin_triangle_hit_selection_policy(composed_ptx);
+    const std::vector<uint32_t> boundary_owner = hit_selection_policy ==
+            V4BuiltinTriangleHitSelectionPolicy::canonical_distance_primitive
+        ? v4_triangle_boundary_owners(indices, vertex_count)
+        : std::vector<uint32_t>{};
     std::vector<float> query_ox(query_count), query_oy(query_count),
         query_oz(query_count), query_dx(query_count), query_dy(query_count),
         query_dz(query_count);
@@ -1780,21 +1803,20 @@ static void run_v4_builtin_triangle_callback(
     }
 
     OptixDeviceContext ctx = get_optix_context();
-    // Equal-distance built-in triangle hits do not have a portable primitive
-    // ordering.  This GAS keeps any-hit enabled so the trusted wrapper can
-    // enumerate every candidate and select canonical (t, primitive_index).
-    TriangleAccelHolder accel = build_v4_triangle_anyhit_accel(
-        ctx, vertices, indices);
-    auto pipeline = build_pipeline(
-        ctx, composed_ptx,
-        "__raygen__rtdl_v4_triangle",
-        "__miss__rtdl_v4_triangle",
-        nullptr,
-        "__anyhit__rtdl_v4_triangle_canonical",
-        nullptr,
-        11,
-        OPTIX_PRIMITIVE_TYPE_FLAGS_TRIANGLE,
-        2);
+    TriangleAccelHolder accel = build_v4_triangle_accel(
+        ctx, vertices, indices, hit_selection_policy);
+    auto pipeline = hit_selection_policy ==
+            V4BuiltinTriangleHitSelectionPolicy::provider_native_closest
+        ? build_pipeline(
+            ctx, composed_ptx, "__raygen__rtdl_v4_triangle",
+            "__miss__rtdl_v4_triangle", nullptr, nullptr,
+            "__closesthit__rtdl_v4_triangle_native", 3,
+            OPTIX_PRIMITIVE_TYPE_FLAGS_TRIANGLE, 2)
+        : build_pipeline(
+            ctx, composed_ptx, "__raygen__rtdl_v4_triangle",
+            "__miss__rtdl_v4_triangle", nullptr,
+            "__anyhit__rtdl_v4_triangle_canonical", nullptr, 11,
+            OPTIX_PRIMITIVE_TYPE_FLAGS_TRIANGLE, 2);
 
     DevPtr query_ox_device(sizeof(float) * query_count);
     DevPtr query_oy_device(sizeof(float) * query_count);
@@ -1805,7 +1827,10 @@ static void run_v4_builtin_triangle_callback(
     DevPtr query_tmax_device(sizeof(float) * query_count);
     DevPtr front_device(sizeof(uint32_t) * triangle_count);
     DevPtr back_device(sizeof(uint32_t) * triangle_count);
-    DevPtr boundary_owner_device(sizeof(uint32_t) * boundary_owner.size());
+    std::unique_ptr<DevPtr> boundary_owner_device;
+    if (!boundary_owner.empty())
+        boundary_owner_device = std::make_unique<DevPtr>(
+            sizeof(uint32_t) * boundary_owner.size());
     DevPtr output_0_device(sizeof(uint32_t) * query_count);
     DevPtr output_1_device(sizeof(uint32_t) * query_count);
     DevPtr output_2_device(sizeof(uint32_t) * query_count);
@@ -1824,7 +1849,10 @@ static void run_v4_builtin_triangle_callback(
     upload(query_tmax_device.ptr, query_tmax, query_count);
     upload(front_device.ptr, front_values, triangle_count);
     upload(back_device.ptr, back_values, triangle_count);
-    upload(boundary_owner_device.ptr, boundary_owner.data(), boundary_owner.size());
+    if (boundary_owner_device)
+        upload(
+            boundary_owner_device->ptr, boundary_owner.data(),
+            boundary_owner.size());
     CU_CHECK(cuMemsetD8(
         status_device.ptr, 0, sizeof(V4FormalLaunchStatus) * query_count));
     CU_CHECK(cuMemsetD8(
@@ -1843,8 +1871,9 @@ static void run_v4_builtin_triangle_callback(
     parameters.back_values = reinterpret_cast<const uint32_t*>(back_device.ptr);
     parameters.vertices = reinterpret_cast<const float3*>(accel.vertex_buf);
     parameters.triangle_indices = reinterpret_cast<const uint3*>(accel.index_buf);
-    parameters.boundary_owner =
-        reinterpret_cast<const uint32_t*>(boundary_owner_device.ptr);
+    parameters.boundary_owner = boundary_owner_device
+        ? reinterpret_cast<const uint32_t*>(boundary_owner_device->ptr)
+        : nullptr;
     parameters.primitive_count = static_cast<uint32_t>(triangle_count);
     parameters.query_count = static_cast<uint32_t>(query_count);
     parameters.output_0 = reinterpret_cast<uint32_t*>(output_0_device.ptr);
@@ -1887,10 +1916,11 @@ static void run_v4_builtin_triangle_callback(
     }
 }
 
-static TriangleAccelHolder build_v4_triangle_anyhit_accel(
+static TriangleAccelHolder build_v4_triangle_accel(
         OptixDeviceContext ctx,
         const std::vector<float3>& vertices,
-        const std::vector<uint3>& indices) {
+        const std::vector<uint3>& indices,
+        V4BuiltinTriangleHitSelectionPolicy hit_selection_policy) {
     if (vertices.empty() || indices.empty() ||
             vertices.size() > static_cast<size_t>(UINT32_MAX) ||
             indices.size() > static_cast<size_t>(UINT32_MAX))
@@ -1916,13 +1946,13 @@ static TriangleAccelHolder build_v4_triangle_anyhit_accel(
     triangles.numIndexTriplets = static_cast<unsigned int>(indices.size());
     triangles.indexFormat = OPTIX_INDICES_FORMAT_UNSIGNED_INT3;
     triangles.indexStrideInBytes = sizeof(uint3);
-    // A built-in triangle may otherwise invoke any-hit more than once for the
-    // same ray/primitive pair when the callback ignores the physical
-    // intersection to continue all-hit traversal.  V4 callback effects are
-    // defined once per logical primitive candidate, so make that delivery
-    // contract an explicit GAS property rather than repairing duplicate
-    // effects in an application or host-side reducer.
-    uint32_t flags = OPTIX_GEOMETRY_FLAG_REQUIRE_SINGLE_ANYHIT_CALL;
+    // The portable policy enumerates candidates once per primitive.  The
+    // explicit provider-native policy delegates closest-hit selection to
+    // OptiX and disables any-hit in both the GAS and trace instruction.
+    uint32_t flags = hit_selection_policy ==
+            V4BuiltinTriangleHitSelectionPolicy::provider_native_closest
+        ? OPTIX_GEOMETRY_FLAG_DISABLE_ANYHIT
+        : OPTIX_GEOMETRY_FLAG_REQUIRE_SINGLE_ANYHIT_CALL;
     triangles.flags = &flags;
     triangles.numSbtRecords = 1;
     OptixAccelBuildOptions options = {};
@@ -2035,9 +2065,12 @@ struct V4PreparedBuiltinTriangle {
     CUdeviceptr back_values = 0;
     CUdeviceptr boundary_owner = 0;
     uint32_t primitive_count = 0;
+    V4BuiltinTriangleHitSelectionPolicy hit_selection_policy =
+        V4BuiltinTriangleHitSelectionPolicy::canonical_distance_primitive;
     size_t execution_capacity = 0;
     std::array<std::unique_ptr<DevPtr>, 7> query_columns;
     std::array<std::unique_ptr<DevPtr>, 3> output_columns;
+    std::unique_ptr<DevPtr> output_rows;
     std::array<std::unique_ptr<DevPtr>, 4> diagnostic_columns;
     std::unique_ptr<DevPtr> status;
     std::unique_ptr<DevPtr> status_summary;
@@ -2054,6 +2087,8 @@ struct V4PreparedBuiltinTriangle {
             column = std::make_unique<DevPtr>(sizeof(float) * query_count);
         for (auto& column : next_outputs)
             column = std::make_unique<DevPtr>(sizeof(uint32_t) * query_count);
+        auto next_output_rows = std::make_unique<DevPtr>(
+            sizeof(uint32_t) * query_count * 3u);
         for (auto& column : next_diagnostics)
             column = std::make_unique<DevPtr>(sizeof(uint32_t) * query_count);
         auto next_status = std::make_unique<DevPtr>(
@@ -2064,6 +2099,7 @@ struct V4PreparedBuiltinTriangle {
         auto next_parameters = std::make_unique<DevPtr>(sizeof(V4TriangleParams));
         query_columns = std::move(next_queries);
         output_columns = std::move(next_outputs);
+        output_rows = std::move(next_output_rows);
         diagnostic_columns = std::move(next_diagnostics);
         status = std::move(next_status);
         status_summary = std::move(next_status_summary);
@@ -2089,6 +2125,11 @@ struct V4PreparedBuiltinTriangleQueryBatch {
     std::shared_ptr<V4PreparedBuiltinTriangle> program;
     size_t query_count = 0;
     std::array<std::unique_ptr<DevPtr>, 7> query_columns;
+    uint32_t* host_output_rows = nullptr;
+
+    ~V4PreparedBuiltinTriangleQueryBatch() {
+        if (host_output_rows) cuMemFreeHost(host_output_rows);
+    }
 };
 
 static std::mutex g_v4_builtin_triangle_query_batch_registry_mutex;
@@ -2164,22 +2205,39 @@ static uint64_t prepare_v4_builtin_triangle_callback(
             throw std::runtime_error("V4 prepared triangle index is outside vertex domain");
         indices.push_back(make_uint3(a, b, c));
     }
-    const auto owners = v4_triangle_boundary_owners(indices, vertex_count);
+    const auto hit_selection_policy =
+        v4_builtin_triangle_hit_selection_policy(composed_ptx);
+    const std::vector<uint32_t> owners = hit_selection_policy ==
+            V4BuiltinTriangleHitSelectionPolicy::canonical_distance_primitive
+        ? v4_triangle_boundary_owners(indices, vertex_count)
+        : std::vector<uint32_t>{};
     auto prepared = std::make_shared<V4PreparedBuiltinTriangle>();
     prepared->primitive_count = static_cast<uint32_t>(triangle_count);
+    prepared->hit_selection_policy = hit_selection_policy;
     OptixDeviceContext ctx = get_optix_context();
-    prepared->accel = build_v4_triangle_anyhit_accel(ctx, vertices, indices);
-    prepared->pipeline = build_pipeline(
-        ctx, composed_ptx, "__raygen__rtdl_v4_triangle",
-        "__miss__rtdl_v4_triangle", nullptr,
-        "__anyhit__rtdl_v4_triangle_canonical", nullptr, 11,
-        OPTIX_PRIMITIVE_TYPE_FLAGS_TRIANGLE, 2);
+    prepared->accel = build_v4_triangle_accel(
+        ctx, vertices, indices, hit_selection_policy);
+    prepared->pipeline = hit_selection_policy ==
+            V4BuiltinTriangleHitSelectionPolicy::provider_native_closest
+        ? build_pipeline(
+            ctx, composed_ptx, "__raygen__rtdl_v4_triangle",
+            "__miss__rtdl_v4_triangle", nullptr, nullptr,
+            "__closesthit__rtdl_v4_triangle_native", 3,
+            OPTIX_PRIMITIVE_TYPE_FLAGS_TRIANGLE, 2)
+        : build_pipeline(
+            ctx, composed_ptx, "__raygen__rtdl_v4_triangle",
+            "__miss__rtdl_v4_triangle", nullptr,
+            "__anyhit__rtdl_v4_triangle_canonical", nullptr, 11,
+            OPTIX_PRIMITIVE_TYPE_FLAGS_TRIANGLE, 2);
     CU_CHECK(cuMemAlloc(&prepared->front_values, sizeof(uint32_t) * triangle_count));
     CU_CHECK(cuMemAlloc(&prepared->back_values, sizeof(uint32_t) * triangle_count));
-    CU_CHECK(cuMemAlloc(&prepared->boundary_owner, sizeof(uint32_t) * owners.size()));
+    if (!owners.empty())
+        CU_CHECK(cuMemAlloc(
+            &prepared->boundary_owner, sizeof(uint32_t) * owners.size()));
     upload(prepared->front_values, front_values, triangle_count);
     upload(prepared->back_values, back_values, triangle_count);
-    upload(prepared->boundary_owner, owners.data(), owners.size());
+    if (prepared->boundary_owner)
+        upload(prepared->boundary_owner, owners.data(), owners.size());
     std::lock_guard<std::mutex> lock(g_v4_builtin_triangle_registry_mutex);
     uint64_t token = g_v4_builtin_triangle_next_token++;
     if (token == 0) token = g_v4_builtin_triangle_next_token++;
@@ -2201,7 +2259,7 @@ v4_builtin_triangle_from_token(uint64_t token) {
 static uint64_t prepare_v4_builtin_triangle_query_batch(
         uint64_t program_token, const float* query_origins_xyz,
         const float* query_directions_xyz, const float* query_tmax,
-        size_t query_count) {
+        size_t query_count, uint32_t** host_output_rows = nullptr) {
     if (!query_origins_xyz || !query_directions_xyz || !query_tmax ||
             query_count == 0 || query_count > UINT32_MAX)
         throw std::runtime_error(
@@ -2242,6 +2300,12 @@ static uint64_t prepare_v4_builtin_triangle_query_batch(
             batch->query_columns[column]->ptr,
             host_columns[column].data(), query_count);
     }
+    if (host_output_rows) {
+        CU_CHECK(cuMemAllocHost(
+            reinterpret_cast<void**>(&batch->host_output_rows),
+            sizeof(uint32_t) * query_count * 3u));
+        *host_output_rows = batch->host_output_rows;
+    }
     {
         std::lock_guard<std::mutex> execution_lock(program->execution_mutex);
         program->ensure_execution_capacity(query_count);
@@ -2280,15 +2344,19 @@ static void execute_v4_prepared_builtin_triangle_callback(
         uint64_t* output_counters,
         RtdlV4CallbackProductStatusSummary* output_summary = nullptr,
         const std::shared_ptr<V4PreparedBuiltinTriangleQueryBatch>&
-            prepared_query_batch = nullptr) {
+            prepared_query_batch = nullptr,
+        uint32_t* output_rows = nullptr) {
     const bool compact_column_mode = output_summary != nullptr;
     const bool device_query_mode = prepared_query_batch != nullptr;
+    const bool packed_row_mode = output_rows != nullptr;
     if ((!device_query_mode && (!query_origins_xyz ||
                 !query_directions_xyz || !query_tmax)) ||
             (device_query_mode && (query_origins_xyz ||
                 query_directions_xyz || query_tmax)) ||
-            query_count == 0 || query_count > UINT32_MAX || !output_0 ||
-            !output_1 || !output_2 ||
+            query_count == 0 || query_count > UINT32_MAX ||
+            (!packed_row_mode && (!output_0 || !output_1 || !output_2)) ||
+            (packed_row_mode && (output_0 || output_1 || output_2 ||
+                !compact_column_mode || !device_query_mode)) ||
             (!compact_column_mode && (!observed_primitive_index ||
                 !observed_hit_kind || !observed_barycentric_x ||
                 !observed_barycentric_y || !output_status ||
@@ -2345,6 +2413,7 @@ static void execute_v4_prepared_builtin_triangle_callback(
     DevPtr& out0 = *prepared->output_columns[0];
     DevPtr& out1 = *prepared->output_columns[1];
     DevPtr& out2 = *prepared->output_columns[2];
+    DevPtr& packed_rows = *prepared->output_rows;
     DevPtr& observed_primitive = *prepared->diagnostic_columns[0];
     DevPtr& observed_kind = *prepared->diagnostic_columns[1];
     DevPtr& observed_bx = *prepared->diagnostic_columns[2];
@@ -2352,8 +2421,22 @@ static void execute_v4_prepared_builtin_triangle_callback(
     DevPtr& status = *prepared->status;
     DevPtr& counters = *prepared->counters;
     DevPtr& parameter_device = *prepared->parameters;
-    CU_CHECK(cuMemsetD8(status.ptr, 0, sizeof(V4FormalLaunchStatus) * query_count));
-    CU_CHECK(cuMemsetD8(counters.ptr, 0, sizeof(uint64_t) * 7));
+    const bool inline_compact_control = compact_column_mode &&
+        prepared->hit_selection_policy ==
+            V4BuiltinTriangleHitSelectionPolicy::provider_native_closest;
+    if (inline_compact_control) {
+        RtdlV4CallbackProductStatusSummary initial = {};
+        initial.schema_version = 2u;
+        initial.ok = 1u;
+        initial.required_invocation_mask = (1u << 1u) | (1u << 6u);
+        initial.terminal_invocation_mask = (1u << 4u) | (1u << 5u);
+        initial.first_invalid_row = UINT64_MAX;
+        initial.success_status_d2h_bytes =
+            sizeof(RtdlV4CallbackProductStatusSummary);
+        upload(prepared->status_summary->ptr, &initial, 1u);
+    } else {
+        CU_CHECK(cuMemsetD8(counters.ptr, 0, sizeof(uint64_t) * 7));
+    }
     V4TriangleParams parameters = {};
     parameters.traversable = prepared->accel.handle;
     parameters.query_ox = reinterpret_cast<const float*>(query_device[0]);
@@ -2373,12 +2456,22 @@ static void execute_v4_prepared_builtin_triangle_callback(
     parameters.output_0 = reinterpret_cast<uint32_t*>(out0.ptr);
     parameters.output_1 = reinterpret_cast<uint32_t*>(out1.ptr);
     parameters.output_2 = reinterpret_cast<uint32_t*>(out2.ptr);
+    parameters.output_rows = packed_row_mode
+        ? reinterpret_cast<uint32_t*>(packed_rows.ptr) : nullptr;
     parameters.observed_primitive_index = reinterpret_cast<uint32_t*>(observed_primitive.ptr);
     parameters.observed_hit_kind = reinterpret_cast<uint32_t*>(observed_kind.ptr);
     parameters.observed_barycentric_x = reinterpret_cast<float*>(observed_bx.ptr);
     parameters.observed_barycentric_y = reinterpret_cast<float*>(observed_by.ptr);
     parameters.status = reinterpret_cast<V4FormalLaunchStatus*>(status.ptr);
-    parameters.role_counters = reinterpret_cast<unsigned long long*>(counters.ptr);
+    parameters.role_counters = inline_compact_control
+        ? reinterpret_cast<unsigned long long*>(
+            prepared->status_summary->ptr + offsetof(
+                RtdlV4CallbackProductStatusSummary, role_counters))
+        : reinterpret_cast<unsigned long long*>(counters.ptr);
+    parameters.compact_control = inline_compact_control
+        ? reinterpret_cast<RtdlV4CallbackProductStatusSummary*>(
+            prepared->status_summary->ptr)
+        : nullptr;
     upload(parameter_device.ptr, &parameters, 1);
     rtdl_optix_bind_traversal_audit_context(
         "v4_builtin_triangle_callback_ir_four_role_composed", prepared->accel.handle);
@@ -2386,13 +2479,19 @@ static void execute_v4_prepared_builtin_triangle_callback(
         prepared->pipeline->pipeline, 0, parameter_device.ptr, sizeof(parameters),
         &prepared->pipeline->sbt, static_cast<unsigned int>(query_count), 1, 1));
     if (compact_column_mode) {
-        rtdl_cuda_reduce_v4_callback_product_status_precompiled(
-            reinterpret_cast<const void*>(status.ptr), nullptr, nullptr,
-            nullptr, nullptr, reinterpret_cast<const uint64_t*>(counters.ptr),
-            query_count, 0u, 2u, (1u << 1u) | (1u << 6u),
-            (1u << 4u) | (1u << 5u),
-            reinterpret_cast<void*>(prepared->status_summary->ptr),
-            1u, 1u, output_summary, 0u);
+        if (inline_compact_control) {
+            download(
+                output_summary, prepared->status_summary->ptr, 1u);
+        } else {
+            rtdl_cuda_reduce_v4_callback_product_status_precompiled(
+                reinterpret_cast<const void*>(status.ptr), nullptr, nullptr,
+                nullptr, nullptr,
+                reinterpret_cast<const uint64_t*>(counters.ptr),
+                query_count, 0u, 2u, (1u << 1u) | (1u << 6u),
+                (1u << 4u) | (1u << 5u),
+                reinterpret_cast<void*>(prepared->status_summary->ptr),
+                1u, 1u, output_summary, 0u);
+        }
         if (output_summary->schema_version != 2u || output_summary->ok != 1u ||
                 output_summary->first_error_claimed != 0u ||
                 output_summary->error_code != 0u ||
@@ -2406,9 +2505,16 @@ static void execute_v4_prepared_builtin_triangle_callback(
                 "V4 prepared built-in triangle compact lifecycle rejected execution");
         // Public result bytes cross the host boundary only after the compact
         // device-status summary has been accepted.
-        download(output_0, out0.ptr, query_count);
-        download(output_1, out1.ptr, query_count);
-        download(output_2, out2.ptr, query_count);
+        if (packed_row_mode) {
+            CU_CHECK(cuMemcpyDtoHAsync(
+                output_rows, packed_rows.ptr,
+                sizeof(uint32_t) * query_count * 3u, 0));
+            CU_CHECK(cuStreamSynchronize(0));
+        } else {
+            download(output_0, out0.ptr, query_count);
+            download(output_1, out1.ptr, query_count);
+            download(output_2, out2.ptr, query_count);
+        }
     } else {
         CU_CHECK(cuStreamSynchronize(0));
         download(output_0, out0.ptr, query_count);
@@ -2438,6 +2544,20 @@ static void execute_v4_prepared_builtin_triangle_callback_query_batch(
         program_token, nullptr, nullptr, nullptr, batch->query_count,
         output_0, output_1, output_2, nullptr, nullptr, nullptr, nullptr,
         nullptr, nullptr, output_summary, batch);
+}
+
+static void execute_v4_prepared_builtin_triangle_callback_query_batch_rows(
+        uint64_t program_token, uint64_t query_batch_token,
+        RtdlV4CallbackProductStatusSummary* output_summary) {
+    const auto batch =
+        v4_builtin_triangle_query_batch_from_token(query_batch_token);
+    if (!batch->host_output_rows)
+        throw std::runtime_error(
+            "V4 prepared built-in triangle query batch lacks pinned row output");
+    execute_v4_prepared_builtin_triangle_callback(
+        program_token, nullptr, nullptr, nullptr, batch->query_count,
+        nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr,
+        nullptr, nullptr, output_summary, batch, batch->host_output_rows);
 }
 
 static void destroy_v4_prepared_builtin_triangle_query_batch(uint64_t token) {
@@ -4832,7 +4952,7 @@ static uint64_t prepare_v4_triangle_reduction_callback(
         "builtin_triangle", "prepare.get_context",
         profile_phase_start, profile_phase_end);
     profile_phase_start = goal5807_profile_now();
-    prepared->accel = build_v4_triangle_anyhit_accel(ctx, vertices, indices);
+    prepared->accel = build_v4_triangle_accel(ctx, vertices, indices);
     profile_phase_end = goal5807_profile_now();
     goal5807_emit_native_phase(
         "builtin_triangle", "prepare.gas",
@@ -6190,7 +6310,7 @@ static void run_v4_builtin_triangle_reduction_callback(
     }
 
     OptixDeviceContext ctx = get_optix_context();
-    TriangleAccelHolder accel = build_v4_triangle_anyhit_accel(
+    TriangleAccelHolder accel = build_v4_triangle_accel(
         ctx, vertices, indices);
     auto pipeline = build_pipeline(
         ctx, composed_ptx,

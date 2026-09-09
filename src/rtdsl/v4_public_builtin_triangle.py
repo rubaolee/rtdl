@@ -55,6 +55,7 @@ from .v4_typed_physical_schema import (
     ReferenceTemplateId,
     TriangleOrientationAuthority,
     TriangleWindingPolicy,
+    TriangleHitSelectionPolicy,
     TypedPhysicalSchemaV1,
     VerifiedPhysicalSchemaAuthority,
     default_reference_templates,
@@ -67,7 +68,7 @@ from .v4_typed_physical_schema import (
 
 _CONSTRUCTION_TOKEN = object()
 _EXPECTED_PREPARED_RUNTIME_SHA256 = (
-    "03a07f61045e5be519fde6c8e578e43461d7a51b5c9bba0921c653a7ee971fc3"
+    "8a07a4d6a04400886bb1b7ff8be95fa919fac29bde55005ef342c31d2c3421ab"
 )
 _EXPECTED_PREPARED_RUNTIME_SYMBOLS = (
     "rtdl_optix_v4_prepare_builtin_triangle_callback_v1",
@@ -232,6 +233,8 @@ class BuiltinTriangleCallbackPhysicalPlan:
 
     schema: TypedPhysicalSchemaV1
     orientation_authority: TriangleOrientationAuthority
+    hit_selection_policy: TriangleHitSelectionPolicy = (
+        TriangleHitSelectionPolicy.CANONICAL_DISTANCE_PRIMITIVE)
 
     def __post_init__(self) -> None:
         if not isinstance(self.schema, TypedPhysicalSchemaV1):
@@ -240,6 +243,12 @@ class BuiltinTriangleCallbackPhysicalPlan:
             _fail(
                 "GC001_PLAN_REQUIRED", "physical_plan.orientation_authority",
                 type(self.orientation_authority).__name__,
+            )
+        if not isinstance(self.hit_selection_policy, TriangleHitSelectionPolicy):
+            _fail(
+                "GC034_HIT_SELECTION_POLICY_INVALID",
+                "physical_plan.hit_selection_policy",
+                type(self.hit_selection_policy).__name__,
             )
         if self.schema.geometry_family is not GeometryFamily.BUILTIN_TRIANGLE:
             _fail(
@@ -258,6 +267,7 @@ class BuiltinTriangleCallbackPhysicalPlan:
         return _digest({
             "schema_sha256": self.schema.schema_sha256,
             "orientation_authority_sha256": self.orientation_authority.authority_sha256,
+            "hit_selection_policy": self.hit_selection_policy.value,
         })
 
 
@@ -268,6 +278,8 @@ def build_builtin_triangle_u32x3_physical_plan(
     orientation: BuiltinTriangleOrientationDeclaration,
     first_metadata_argument_index: int,
     second_metadata_argument_index: int,
+    hit_selection_policy: TriangleHitSelectionPolicy = (
+        TriangleHitSelectionPolicy.CANONICAL_DISTANCE_PRIMITIVE),
 ) -> BuiltinTriangleCallbackPhysicalPlan:
     """Build the reviewed physical template without caller-computed hashes.
 
@@ -285,6 +297,11 @@ def build_builtin_triangle_u32x3_physical_plan(
         _fail("GC001_PLAN_REQUIRED", "field_ids", type(field_ids).__name__)
     if not isinstance(orientation, BuiltinTriangleOrientationDeclaration):
         _fail("GC001_PLAN_REQUIRED", "orientation", type(orientation).__name__)
+    if not isinstance(hit_selection_policy, TriangleHitSelectionPolicy):
+        _fail(
+            "GC034_HIT_SELECTION_POLICY_INVALID", "hit_selection_policy",
+            type(hit_selection_policy).__name__,
+        )
     for name, index in (
         ("first_metadata_argument_index", first_metadata_argument_index),
         ("second_metadata_argument_index", second_metadata_argument_index),
@@ -356,7 +373,8 @@ def build_builtin_triangle_u32x3_physical_plan(
         triangle_winding=orientation.winding_policy,
         triangle_orientation_authority_sha256=authority.authority_sha256,
     )
-    return BuiltinTriangleCallbackPhysicalPlan(schema, authority)
+    return BuiltinTriangleCallbackPhysicalPlan(
+        schema, authority, hit_selection_policy)
 
 
 def _exact_contiguous_column(
@@ -678,6 +696,7 @@ class VerifiedBuiltinTriangleCallbackProgram:
             canonical_plan,
             expected_wrapper,
             abi,
+            physical_plan.hit_selection_policy,
         )
         self._identity = BuiltinTriangleCallbackProgramIdentity(
             source_sha256=verified_source.source_sha256,
@@ -751,7 +770,8 @@ def compile_builtin_triangle_callback_program(
         generate_trusted_optix_triangle_wrapper_v1,
     )
     expected_wrapper = generate_trusted_optix_triangle_wrapper_v1(
-        authority, canonical_plan, abi)
+        authority, canonical_plan, abi,
+        hit_selection_policy=physical_plan.hit_selection_policy)
     return VerifiedBuiltinTriangleCallbackProgram(
         verified_source=fresh,
         physical_plan=physical_plan,
@@ -957,6 +977,7 @@ def _declared_physical_facts(
     plan: CanonicalPhysicalPlan,
     expected_wrapper: object,
     abi: CompiledCallbackAbi,
+    hit_selection_policy: TriangleHitSelectionPolicy,
 ) -> dict[str, str]:
     schema = authority.schema
     result = {
@@ -966,6 +987,7 @@ def _declared_physical_facts(
         "canonical_plan_sha256": plan.plan_sha256,
         "payload_output_shape": "u32x3_to_u32x3_per_query",
         "callback_abi_sha256": abi.abi_sha256,
+        "hit_selection_policy": hit_selection_policy.value,
     }
     result.update(_wrapper_binding_facts(expected_wrapper))
     result.update(_declared_runtime_binding_facts())
@@ -987,17 +1009,21 @@ def _projected_physical_facts(
     producer bindings.
     """
 
+    wrapper_template = getattr(executable.wrapper, "physical_template", None)
+    accepted_templates = {
+        "builtin_triangle_adjacency_u32x3_v1",
+        "builtin_triangle_u32x3_provider_native_closest_v1",
+    }
+    executable_policy = getattr(executable, "hit_selection_policy", None)
     result = {
         "geometry_family": (
             GeometryFamily.BUILTIN_TRIANGLE.value
-            if getattr(executable.wrapper, "physical_template", None)
-                == "builtin_triangle_adjacency_u32x3_v1"
+            if wrapper_template in accepted_templates
             else "INVALID_WRAPPER_GEOMETRY_FAMILY"
         ),
         "template_id": (
             ReferenceTemplateId.BUILTIN_TRIANGLE_V1.value
-            if getattr(executable.wrapper, "physical_template", None)
-                == "builtin_triangle_adjacency_u32x3_v1"
+            if wrapper_template in accepted_templates
             else "INVALID_WRAPPER_TEMPLATE"
         ),
         "physical_authority_sha256": str(
@@ -1014,6 +1040,11 @@ def _projected_physical_facts(
             else "INVALID_PAYLOAD_OUTPUT_SHAPE"
         ),
         "callback_abi_sha256": str(getattr(executable, "abi_sha256", "")),
+        "hit_selection_policy": (
+            executable_policy.value
+            if isinstance(executable_policy, TriangleHitSelectionPolicy)
+            else "INVALID_HIT_SELECTION_POLICY"
+        ),
     }
     result.update(_wrapper_binding_facts(executable.wrapper))
     result.update(_projected_runtime_binding_facts())
@@ -1286,6 +1317,7 @@ def materialize_builtin_triangle_callback_program(
         expected_python_version=toolchain.expected_python_version,
         expected_numba_version=toolchain.expected_numba_version,
         expected_numpy_version=toolchain.expected_numpy_version,
+        hit_selection_policy=program._physical_plan.hit_selection_policy,
     )
     try:
         if executable.wrapper != program._expected_wrapper:
@@ -1569,6 +1601,7 @@ __all__ = [
     "BuiltinTriangleCallbackStaticInput",
     "BuiltinTriangleOrientationDeclaration",
     "BuiltinTriangleU32x3FieldIds",
+    "TriangleHitSelectionPolicy",
     "MaterializedBuiltinTriangleCallbackProgram",
     "PreparedBuiltinTriangleCallbackBatch",
     "PreparedBuiltinTriangleCallbackProgram",

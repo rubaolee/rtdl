@@ -25,6 +25,7 @@ from .v4_triangle_optix_wrapper_codegen import (
 )
 from .v4_typed_physical_schema import (
     CanonicalPhysicalPlan,
+    TriangleHitSelectionPolicy,
     VerifiedPhysicalSchemaAuthority,
     default_reference_templates,
     lower_canonical_reference_plan,
@@ -49,6 +50,7 @@ class VerifiedTriangleExecutable:
     compiler_options: tuple[str, ...]
     nvrtc_log_sha256: str
     executable_sha256: str
+    hit_selection_policy: TriangleHitSelectionPolicy
 
 
 _LIVE_EXECUTABLES: dict[int, str] = {}
@@ -159,6 +161,8 @@ def compile_verified_triangle_executable(
     expected_numpy_version: str,
     accepted_ptx_isa: tuple[str, str] = ("8.0", "9.0"),
     python_executable: str = sys.executable,
+    hit_selection_policy: TriangleHitSelectionPolicy = (
+        TriangleHitSelectionPolicy.CANONICAL_DISTANCE_PRIMITIVE),
 ) -> tuple[VerifiedTriangleExecutable, str]:
     """Compile only trusted generated source and issue a live authority."""
 
@@ -192,7 +196,10 @@ def compile_verified_triangle_executable(
         generated.append(leaf)
         compiled.append(artifact)
         symbols[role.value] = artifact.abi_name
-    wrapper = generate_trusted_optix_triangle_wrapper_v1(fresh, plan, abi)
+    if not isinstance(hit_selection_policy, TriangleHitSelectionPolicy):
+        raise TypeError("triangle hit-selection policy is invalid")
+    wrapper = generate_trusted_optix_triangle_wrapper_v1(
+        fresh, plan, abi, hit_selection_policy=hit_selection_policy)
     options = (
         f"-I{Path(optix_include).resolve()}",
         f"-I{Path(cuda_include).resolve()}",
@@ -218,6 +225,7 @@ def compile_verified_triangle_executable(
         "compiled_leaf_sha256": [item.ptx_sha256 for item in compiled],
         "composed_ptx_sha256": composed.ptx_sha256,
         "compiler_options": options,
+        "hit_selection_policy": hit_selection_policy.value,
         "nvrtc_log_sha256": hashlib.sha256(log.encode("utf-8")).hexdigest(),
     }
     executable = VerifiedTriangleExecutable(
@@ -234,6 +242,7 @@ def compile_verified_triangle_executable(
         compiler_options=options,
         nvrtc_log_sha256=record["nvrtc_log_sha256"],
         executable_sha256=_digest(record),
+        hit_selection_policy=hit_selection_policy,
     )
     _LIVE_EXECUTABLES[id(executable)] = executable.executable_sha256
     return executable, log
@@ -253,7 +262,8 @@ def consume_verified_triangle_executable(
         raise RuntimeError("triangle executable is forged, serialized, or consumed")
     fresh = _fresh(authority, plan, abi)
     expected_wrapper = generate_trusted_optix_triangle_wrapper_v1(
-        fresh, plan, abi)
+        fresh, plan, abi,
+        hit_selection_policy=executable.hit_selection_policy)
     if executable.wrapper != expected_wrapper:
         raise RuntimeError("trusted wrapper identity drift")
     if executable.authority_sha256 != _authority_sha256(fresh) \
@@ -304,7 +314,8 @@ def rederive_verified_triangle_executable_sha256(
         raise TypeError("live VerifiedTriangleExecutable is required")
     fresh = _fresh(authority, plan, abi)
     expected_wrapper = generate_trusted_optix_triangle_wrapper_v1(
-        fresh, plan, abi)
+        fresh, plan, abi,
+        hit_selection_policy=executable.hit_selection_policy)
     if executable.wrapper != expected_wrapper:
         raise RuntimeError("trusted wrapper identity drift")
     expected_generated = tuple(
@@ -343,6 +354,7 @@ def rederive_verified_triangle_executable_sha256(
             item.ptx_sha256 for item in executable.compiled_leaves],
         "composed_ptx_sha256": recomposed.ptx_sha256,
         "compiler_options": executable.compiler_options,
+        "hit_selection_policy": executable.hit_selection_policy.value,
         "nvrtc_log_sha256": executable.nvrtc_log_sha256,
     }
     derived = _digest(record)

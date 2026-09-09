@@ -126,6 +126,13 @@ class TriangleWindingPolicy(str, Enum):
     CW_IS_FRONT = "cw_is_front"
 
 
+class TriangleHitSelectionPolicy(str, Enum):
+    """Physical meaning of equal-distance built-in-triangle hits."""
+
+    CANONICAL_DISTANCE_PRIMITIVE = "canonical_distance_primitive"
+    PROVIDER_NATIVE_CLOSEST = "provider_native_closest"
+
+
 class AdjacencySide(str, Enum):
     FRONT = "front"
     BACK = "back"

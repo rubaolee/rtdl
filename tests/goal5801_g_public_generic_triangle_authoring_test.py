@@ -152,6 +152,8 @@ def _physical_plan(
     *,
     first_metadata_argument_index: int = 2,
     second_metadata_argument_index: int = 3,
+    hit_selection_policy: v4.TriangleHitSelectionPolicy = (
+        v4.TriangleHitSelectionPolicy.CANONICAL_DISTANCE_PRIMITIVE),
 ) -> v4.BuiltinTriangleCallbackPhysicalPlan:
     oracle_sha = hashlib.sha256(
         inspect.getsource(_cpu_primitive_id_or_miss).encode("utf-8"),
@@ -182,6 +184,7 @@ def _physical_plan(
         orientation=orientation,
         first_metadata_argument_index=first_metadata_argument_index,
         second_metadata_argument_index=second_metadata_argument_index,
+        hit_selection_policy=hit_selection_policy,
     )
 
 
@@ -368,6 +371,38 @@ with tempfile.TemporaryDirectory() as directory:
                 swapped_call.index("params.front_values"),
             )
 
+    def test_hit_selection_policy_changes_plan_and_wrapper_identity(self):
+        with tempfile.TemporaryDirectory() as directory:
+            native = Path(directory) / "librtdl_optix.so"
+            native.write_bytes(b"identity-only-test-native")
+            verified = v4.verify_builtin_triangle_callback_source(
+                PRIMITIVE_ID_SOURCE, _manifest())
+            canonical_plan = _physical_plan(verified)
+            provider_plan = _physical_plan(
+                verified,
+                hit_selection_policy=(
+                    v4.TriangleHitSelectionPolicy.PROVIDER_NATIVE_CLOSEST),
+            )
+            self.assertNotEqual(
+                canonical_plan.plan_sha256, provider_plan.plan_sha256)
+            canonical = verified.compile(
+                physical_plan=canonical_plan, target=_target(native))
+            provider = verified.compile(
+                physical_plan=provider_plan, target=_target(native))
+            self.assertNotEqual(
+                canonical.identity.identity_sha256,
+                provider.identity.identity_sha256,
+            )
+            self.assertNotEqual(
+                canonical._expected_wrapper.source_sha256,
+                provider._expected_wrapper.source_sha256,
+            )
+            self.assertEqual(
+                provider._declared_physical_bindings[
+                    "hit_selection_policy"],
+                "provider_native_closest",
+            )
+
     def test_public_batch_has_no_expected_output_or_oracle_surface(self):
         with self.assertRaises(TypeError):
             v4.BuiltinTriangleCallbackBatch(
@@ -421,6 +456,7 @@ with tempfile.TemporaryDirectory() as directory:
                 authority_sha256: str
                 plan_sha256: str
                 abi_sha256: str
+                hit_selection_policy: object
 
             executable = Executable(
                 wrapper=program._expected_wrapper,
@@ -430,6 +466,7 @@ with tempfile.TemporaryDirectory() as directory:
                     program._authority),
                 plan_sha256=program._canonical_plan.plan_sha256,
                 abi_sha256=program._abi.abi_sha256,
+                hit_selection_policy=program._physical_plan.hit_selection_policy,
             )
             with mock.patch.object(
                 public_triangle,

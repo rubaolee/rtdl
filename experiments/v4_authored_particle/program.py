@@ -121,6 +121,7 @@ def build_face_first_physical_plan(
         orientation=orientation,
         first_metadata_argument_index=2,
         second_metadata_argument_index=3,
+        hit_selection_policy=v4.TriangleHitSelectionPolicy.PROVIDER_NATIVE_CLOSEST,
     )
 
 

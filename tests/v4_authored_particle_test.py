@@ -18,6 +18,19 @@ from rtdsl.v4_builtin_triangle_standard_library import ADJACENCY_SOURCE
 
 
 class V4AuthoredParticleTest(unittest.TestCase):
+    def test_measurement_worker_uses_prevalidated_strong_pyoptix_core(self):
+        worker = (
+            Path(__file__).resolve().parents[1]
+            / "scripts/v4_authored_particle_worker.py"
+        ).read_text(encoding="utf-8")
+        self.assertIn(
+            "prevalidate_formal_particle_execution_input", worker)
+        self.assertIn(
+            "owner.execute_exact_core_prevalidated(prevalidated)", worker)
+        self.assertIn(
+            "owner.materialize_exact_core_completion(completion)", worker)
+        self.assertNotIn("owner.execute_complete(*columns, expected)", worker)
+
     def test_face_first_oracle_projection_is_exact_and_read_only(self):
         adjacency = np.array(
             [[11, 12, 90], [21, 22, 91]], dtype=np.uint32)

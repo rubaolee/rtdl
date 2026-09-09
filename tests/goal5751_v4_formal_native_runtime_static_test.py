@@ -69,7 +69,7 @@ class Goal5751FormalNativeRuntimeStaticTest(unittest.TestCase):
         # forward declaration.  Triangle is a physical geometry family, not an
         # application identity and does not belong to the formal-sphere slice.
         formal = formal.split(
-            "static TriangleAccelHolder build_v4_triangle_anyhit_accel", 1)[0]
+            "enum class V4BuiltinTriangleHitSelectionPolicy", 1)[0]
         for forbidden in ("arkade", "rayjoin", "x_hd", "triangle", "paper_app"):
             self.assertNotIn(forbidden, formal.lower())
 

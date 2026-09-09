@@ -140,9 +140,22 @@ def _configure_device_resident_query_batches(library):
         "rtdl_optix_v4_destroy_prepared_builtin_triangle_query_batch_v1",
         None,
     )
+    prepare_rows = getattr(
+        library,
+        "rtdl_optix_v4_prepare_builtin_triangle_query_batch_rows_v2",
+        None,
+    )
+    execute_rows = getattr(
+        library,
+        "rtdl_optix_v4_execute_prepared_builtin_triangle_callback_batch_rows_v4",
+        None,
+    )
     symbols = (prepare, execute, destroy)
     if all(symbol is None for symbol in symbols):
-        return symbols
+        if prepare_rows is not None or execute_rows is not None:
+            raise RuntimeError(
+                "native library has packed-row ABI without query-batch ABI")
+        return (*symbols, None, None)
     if any(symbol is None for symbol in symbols):
         raise RuntimeError(
             "native library has a partial prepared triangle query-batch ABI")
@@ -162,9 +175,28 @@ def _configure_device_resident_query_batches(library):
     destroy.argtypes = [
         ctypes.c_uint64, ctypes.POINTER(ctypes.c_char), ctypes.c_size_t,
     ]
+    if (prepare_rows is None) != (execute_rows is None):
+        raise RuntimeError(
+            "native library has a partial prepared triangle packed-row ABI")
+    if prepare_rows is not None:
+        prepare_rows.argtypes = [
+            ctypes.c_uint64, ctypes.POINTER(ctypes.c_float),
+            ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+            ctypes.c_size_t, ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.POINTER(ctypes.c_uint32)),
+            ctypes.POINTER(ctypes.c_char), ctypes.c_size_t,
+        ]
+        execute_rows.argtypes = [
+            ctypes.c_uint64, ctypes.c_uint64,
+            ctypes.POINTER(_CompactLifecycleSummary),
+            ctypes.POINTER(ctypes.c_char), ctypes.c_size_t,
+        ]
     for symbol in symbols:
         symbol.restype = ctypes.c_int
-    return symbols
+    for symbol in (prepare_rows, execute_rows):
+        if symbol is not None:
+            symbol.restype = ctypes.c_int
+    return (*symbols, prepare_rows, execute_rows)
 
 
 def _raise(status, error, label):
@@ -182,13 +214,13 @@ class PreparedBuiltinTriangleQueryBatch:
 
     __slots__ = (
         "_binding_digest", "_count", "_directions", "_owner",
-        "_native_token", "_origins", "_pointers", "_semantic_digest",
-        "_tmax", "_token",
+        "_host_output", "_host_output_pointer", "_native_token", "_origins",
+        "_pointers", "_semantic_digest", "_tmax", "_token",
     )
 
     def __init__(
         self, *, owner, origins, directions, tmax, binding_digest,
-        semantic_digest, native_token, token,
+        semantic_digest, native_token, host_output, host_output_pointer, token,
     ):
         if token is not _PREPARED_QUERY_BATCH_TOKEN:
             raise RuntimeError("prepared triangle query batch requires its owner")
@@ -204,6 +236,8 @@ class PreparedBuiltinTriangleQueryBatch:
         object.__setattr__(self, "_binding_digest", binding_digest)
         object.__setattr__(self, "_semantic_digest", semantic_digest)
         object.__setattr__(self, "_native_token", int(native_token))
+        object.__setattr__(self, "_host_output", host_output)
+        object.__setattr__(self, "_host_output_pointer", host_output_pointer)
         object.__setattr__(self, "_token", token)
 
     def __setattr__(self, name, value):
@@ -352,6 +386,8 @@ class PreparedBuiltinTriangleOwner:
             prepare_query_batch,
             execute_query_batch,
             destroy_query_batch,
+            prepare_query_batch_rows,
+            execute_query_batch_rows,
         ) = _configure_device_resident_query_batches(library)
         token = ctypes.c_uint64()
         error = ctypes.create_string_buffer(16384)
@@ -372,6 +408,8 @@ class PreparedBuiltinTriangleOwner:
         self._prepare_query_batch = prepare_query_batch
         self._execute_query_batch = execute_query_batch
         self._destroy_query_batch = destroy_query_batch
+        self._prepare_query_batch_rows = prepare_query_batch_rows
+        self._execute_query_batch_rows = execute_query_batch_rows
         self._destroy = destroy
         self._vertex_count = len(vertices)
         self._primitive_count = len(triangles)
@@ -455,8 +493,32 @@ class PreparedBuiltinTriangleOwner:
         tmax = frozen(query_array[:, 6], (count,))
         binding_digest, semantic_digest = self._binding_identity(count)
         native_token = 0
+        host_output = None
+        host_output_pointer = None
         prepare_device_batch = getattr(self, "_prepare_query_batch", None)
-        if prepare_device_batch is not None:
+        prepare_device_rows = getattr(self, "_prepare_query_batch_rows", None)
+        if prepare_device_rows is not None:
+            returned_token = ctypes.c_uint64()
+            returned_output = ctypes.POINTER(ctypes.c_uint32)()
+            error = ctypes.create_string_buffer(16384)
+            _raise(int(prepare_device_rows(
+                self._token,
+                origins.ctypes.data_as(ctypes.POINTER(ctypes.c_float)),
+                directions.ctypes.data_as(ctypes.POINTER(ctypes.c_float)),
+                tmax.ctypes.data_as(ctypes.POINTER(ctypes.c_float)),
+                count, ctypes.byref(returned_token),
+                ctypes.byref(returned_output), error, len(error),
+            )), error, "prepared built-in triangle packed-row batch prepare")
+            native_token = int(returned_token.value)
+            if native_token == 0 or not returned_output:
+                raise RuntimeError(
+                    "prepared built-in triangle packed-row batch returned null")
+            host_output = _np.ctypeslib.as_array(
+                returned_output, shape=(count * 3,)).reshape(count, 3)
+            host_output.setflags(write=False)
+            host_output_pointer = returned_output
+            self._native_query_batch_tokens.add(native_token)
+        elif prepare_device_batch is not None:
             returned_token = ctypes.c_uint64()
             error = ctypes.create_string_buffer(16384)
             _raise(int(prepare_device_batch(
@@ -474,7 +536,8 @@ class PreparedBuiltinTriangleOwner:
         return PreparedBuiltinTriangleQueryBatch(
             owner=self, origins=origins, directions=directions, tmax=tmax,
             binding_digest=binding_digest, semantic_digest=semantic_digest,
-            native_token=native_token,
+            native_token=native_token, host_output=host_output,
+            host_output_pointer=host_output_pointer,
             token=_PREPARED_QUERY_BATCH_TOKEN,
         )
 
@@ -494,6 +557,14 @@ class PreparedBuiltinTriangleOwner:
                 or value._origins.shape != (value._count, 3) \
                 or value._directions.shape != (value._count, 3) \
                 or value._tmax.shape != (value._count,) \
+                or (value._host_output is not None and (
+                    value._host_output_pointer is None
+                    or value._host_output.shape != (value._count, 3)
+                    or value._host_output.dtype.str != "<u4"
+                    or not value._host_output.flags.c_contiguous
+                    or value._host_output.flags.writeable
+                    or int(value._host_output.ctypes.data)
+                    != ctypes.addressof(value._host_output_pointer.contents))) \
                 or any(item.dtype.str != "<f4" or not item.flags.c_contiguous
                        or item.flags.writeable for item in columns):
             raise RuntimeError("prepared triangle query batch identity drifted")
@@ -592,9 +663,19 @@ class PreparedBuiltinTriangleOwner:
                 origins_native = (ctypes.c_float * len(origins))(*origins)
                 directions_native = (ctypes.c_float * len(directions))(*directions)
                 tmax_native = (ctypes.c_float * count)(*tmax_values)
-            output_0 = (ctypes.c_uint32 * count)(); output_1 = (ctypes.c_uint32 * count)()
-            output_2 = (ctypes.c_uint32 * count)(); error = ctypes.create_string_buffer(16384)
+            packed_row_mode = bool(
+                partner_column_output
+                and prepared_query_batch
+                and queries._host_output is not None
+                and getattr(self, "_execute_query_batch_rows", None) is not None)
+            if not packed_row_mode:
+                output_0 = (ctypes.c_uint32 * count)()
+                output_1 = (ctypes.c_uint32 * count)()
+                output_2 = (ctypes.c_uint32 * count)()
+            error = ctypes.create_string_buffer(16384)
             compact_columns = partner_column_output and self._execute_columns is not None
+            compact_columns = compact_columns or (
+                partner_column_output and packed_row_mode)
             if compact_columns:
                 summary = _CompactLifecycleSummary()
             else:
@@ -611,7 +692,12 @@ class PreparedBuiltinTriangleOwner:
             )
             try:
                 if compact_columns:
-                    if prepared_query_batch and queries._native_token:
+                    if packed_row_mode:
+                        _raise(int(self._execute_query_batch_rows(
+                            self._token, queries._native_token,
+                            ctypes.byref(summary), error, len(error))), error,
+                            "prepared built-in triangle packed-row execute")
+                    elif prepared_query_batch and queries._native_token:
                         _raise(int(self._execute_query_batch(
                             self._token, queries._native_token,
                             output_0, output_1, output_2,
@@ -636,11 +722,23 @@ class PreparedBuiltinTriangleOwner:
                     if not numpy_queries:
                         raise ValueError(
                             "partner column output requires NumPy query columns")
-                    observed = _np.column_stack((
-                        _np.ctypeslib.as_array(output_0),
-                        _np.ctypeslib.as_array(output_1),
-                        _np.ctypeslib.as_array(output_2),
-                    )).astype(_np.uint32, copy=False)
+                    if packed_row_mode:
+                        # The reusable pinned rows belong to the native query
+                        # batch.  Public results must remain valid after its
+                        # next execution and after owner teardown.
+                        observed = _np.array(
+                            queries._host_output,
+                            dtype=_np.uint32,
+                            order="C",
+                            copy=True,
+                        )
+                        observed.setflags(write=False)
+                    else:
+                        observed = _np.column_stack((
+                            _np.ctypeslib.as_array(output_0),
+                            _np.ctypeslib.as_array(output_1),
+                            _np.ctypeslib.as_array(output_2),
+                        )).astype(_np.uint32, copy=False)
                     if not compact_columns and any(
                         int(item.first_error_claimed) or int(item.error_code)
                         for item in statuses

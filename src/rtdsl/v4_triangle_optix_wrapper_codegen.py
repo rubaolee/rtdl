@@ -26,6 +26,7 @@ from .v4_typed_physical_schema import (
     BufferSemantic,
     GeometryFamily,
     ReferenceTemplateId,
+    TriangleHitSelectionPolicy,
     VerifiedPhysicalSchemaAuthority,
     CanonicalPhysicalPlan,
     default_reference_templates,
@@ -86,6 +87,9 @@ def generate_trusted_optix_triangle_wrapper_v1(
     authority: VerifiedPhysicalSchemaAuthority,
     plan: CanonicalPhysicalPlan,
     abi: CompiledCallbackAbi,
+    *,
+    hit_selection_policy: TriangleHitSelectionPolicy = (
+        TriangleHitSelectionPolicy.CANONICAL_DISTANCE_PRIMITIVE),
 ) -> GeneratedOptixWrapper:
     """Generate the exact four-role built-in-triangle wrapper.
 
@@ -96,6 +100,8 @@ def generate_trusted_optix_triangle_wrapper_v1(
     """
 
     fresh = _fresh_authority(authority, plan)
+    if not isinstance(hit_selection_policy, TriangleHitSelectionPolicy):
+        _fail("hit_selection_policy", type(hit_selection_policy).__name__)
     try:
         canonical = verify_compiled_callback_abi(
             abi,
@@ -196,6 +202,15 @@ struct V4TriangleLaunchStatus {
     unsigned long long launch_index;
     unsigned int error_site, effect_tag, nonce_word, invocation_mask;
 };
+struct V4TriangleCompactControl {
+    unsigned int schema_version, ok, first_error_claimed, error_code;
+    unsigned long long validated_row_count;
+    unsigned int required_invocation_mask, terminal_invocation_mask;
+    unsigned int invalid_row_count;
+    unsigned long long first_invalid_row;
+    unsigned long long role_counters[7];
+    unsigned long long success_status_d2h_bytes;
+};
 struct V4TriangleParams {
     OptixTraversableHandle traversable;
     const float* query_ox; const float* query_oy; const float* query_oz;
@@ -206,9 +221,11 @@ struct V4TriangleParams {
     const unsigned int* boundary_owner;
     unsigned int primitive_count, query_count;
     unsigned int* output_0; unsigned int* output_1; unsigned int* output_2;
+    unsigned int* output_rows;
     unsigned int* observed_primitive_index; unsigned int* observed_hit_kind;
     float* observed_barycentric_x; float* observed_barycentric_y;
     V4TriangleLaunchStatus* status; unsigned long long* role_counters;
+    V4TriangleCompactControl* compact_control;
 };
 extern "C" { __constant__ V4TriangleParams params; }
 
@@ -222,7 +239,38 @@ static __forceinline__ __device__ void v4_first_error(
         record->error_code = code; record->stage = stage; record->role = role;
         record->launch_index = launch_index; record->error_site = site;
         record->effect_tag = effect; record->nonce_word = nonce;
+        if (params.compact_control != nullptr) {
+            V4TriangleCompactControl* control = params.compact_control;
+            atomicAdd(&control->invalid_row_count, 1u);
+            atomicMin(&control->first_invalid_row,
+                      (unsigned long long)query);
+            atomicExch(&control->ok, 0u);
+            if (atomicCAS(&control->first_error_claimed, 0u, 1u) == 0u)
+                control->error_code = code;
+        }
     }
+}
+static __forceinline__ __device__ bool v4_complete_query(
+        unsigned int query) {
+    V4TriangleLaunchStatus* record = params.status + query;
+    const unsigned int mask = record->invocation_mask;
+    const unsigned int required = (1u << 1u) | (1u << 6u);
+    const unsigned int terminal = mask & ((1u << 4u) | (1u << 5u));
+    const bool valid = record->first_error_claimed == 0u &&
+        record->error_code == 0u && record->stage == 0u &&
+        record->role == 0u && record->error_site == 0u &&
+        record->effect_tag == 0u && record->nonce_word == 0u &&
+        (mask & ~((1u << 7u) - 1u)) == 0u &&
+        (mask & required) == required &&
+        (terminal == (1u << 4u) || terminal == (1u << 5u));
+    if (!valid) {
+        v4_first_error(
+            query, 0xffff5001u, 0u, 0u, query, 0u, 0u, 0u);
+        return false;
+    }
+    if (params.compact_control != nullptr)
+        atomicAdd(&params.compact_control->validated_row_count, 1ull);
+    return true;
 }
 static __forceinline__ __device__ bool v4_commit_leaf_status(
         unsigned int query, unsigned int ok, unsigned int error_code,
@@ -273,6 +321,148 @@ static __forceinline__ __device__ bool v4_commit_leaf_status(
         for index, name in enumerate(payload_fields)
     )
     payload_args = ", ".join(f"payload_{index}" for index in range(3))
+
+    if hit_selection_policy is TriangleHitSelectionPolicy.PROVIDER_NATIVE_CLOSEST:
+        native_closest_inputs = {
+            "in.context.launch_index": q,
+            "in.hit.t": "optixGetRayTmax()",
+            "in.hit.primitive_index": "primitive_index",
+            "in.hit.hit_kind": "hit_kind",
+            "in.hit.barycentrics.x": "barycentrics.x",
+            "in.hit.barycentrics.y": "barycentrics.y",
+            f"in.{first_view}.columns": first_view_source,
+            f"in.{first_view}.length": "(unsigned long long)params.primitive_count",
+            f"in.{second_view}.columns": second_view_source,
+            f"in.{second_view}.length": "(unsigned long long)params.primitive_count",
+        }
+        for index, name in enumerate(payload_fields):
+            native_closest_inputs[f"in.payload.{name}"] = (
+                f"optixGetPayload_{index}()")
+        native_ch, native_ch_out = _call_block(
+            roles[CallbackRole.CLOSEST_HIT], "ch", native_closest_inputs,
+            query_expression=q, failure_statement="return;",
+        )
+        native_ch_payload = "\n".join(
+            f"    optixSetPayload_{index}({native_ch_out[f'out.payload.payload.{name}']});"
+            for index, name in enumerate(payload_fields)
+        )
+
+        native_miss_inputs = {
+            "in.context.launch_index": q,
+            "in.ray.origin.x": "ray_origin.x",
+            "in.ray.origin.y": "ray_origin.y",
+            "in.ray.origin.z": "ray_origin.z",
+            "in.ray.direction.x": "ray_direction.x",
+            "in.ray.direction.y": "ray_direction.y",
+            "in.ray.direction.z": "ray_direction.z",
+            "in.ray.tmin": "optixGetRayTmin()",
+            "in.ray.tmax": "optixGetRayTmax()",
+        }
+        for index, name in enumerate(payload_fields):
+            native_miss_inputs[f"in.payload.{name}"] = (
+                f"optixGetPayload_{index}()")
+        native_ms, native_ms_out = _call_block(
+            roles[CallbackRole.MISS], "ms", native_miss_inputs,
+            query_expression=q, failure_statement="return;",
+        )
+        native_ms_payload = "\n".join(
+            f"    optixSetPayload_{index}({native_ms_out[f'out.payload.payload.{name}']});"
+            for index, name in enumerate(payload_fields)
+        )
+
+        native_raygen = f'''
+extern "C" __global__ void __raygen__rtdl_v4_triangle() {{
+    const unsigned int query = optixGetLaunchIndex().x;
+    if (query >= params.query_count) return;
+    params.status[query] = {{0u, 0u, 0u, 0u, (unsigned long long)query, 0u, 0u, 0u, 0u}};
+    params.observed_primitive_index[query] = 0xffffffffu;
+    params.observed_hit_kind[query] = 0xffffffffu;
+    params.observed_barycentric_x[query] = __int_as_float(0x7fffffffu);
+    params.observed_barycentric_y[query] = __int_as_float(0x7fffffffu);
+{_indent(mr, 4)}
+    if ({mr_out['out.effect_tag']} != {_effect_tag(roles[CallbackRole.MAKE_RAY], EffectKind.TRACE_REQUEST)}u) {{
+        v4_first_error(query, 0xffff1002u, 0u, 0u, query, 0u, {mr_out['out.effect_tag']}, 0u); return;
+    }}
+{payload_init}
+    optixTrace(params.traversable,
+        make_float3({mr_out['out.trace_request.origin.x']}, {mr_out['out.trace_request.origin.y']}, {mr_out['out.trace_request.origin.z']}),
+        make_float3({mr_out['out.trace_request.direction.x']}, {mr_out['out.trace_request.direction.y']}, {mr_out['out.trace_request.direction.z']}),
+        {mr_out['out.trace_request.tmin']}, {mr_out['out.trace_request.tmax']}, 0.0f,
+        OptixVisibilityMask(255), OPTIX_RAY_FLAG_DISABLE_ANYHIT,
+        0, 1, 0, {payload_args});
+    if (params.status[query].first_error_claimed != 0u) return;
+{_indent(fin, 4)}
+    if ({fin_out['out.effect_tag']} != {_effect_tag(roles[CallbackRole.FINALIZE], EffectKind.OUTPUT)}u) {{
+        v4_first_error(query, 0xffff1003u, 0u, 0u, query, 0u, {fin_out['out.effect_tag']}, 0u); return;
+    }}
+    if (params.output_rows != nullptr) {{
+        const unsigned int row = query * 3u;
+        params.output_rows[row + 0u] = {fin_out[f'out.output.value.{output_fields[0]}']};
+        params.output_rows[row + 1u] = {fin_out[f'out.output.value.{output_fields[1]}']};
+        params.output_rows[row + 2u] = {fin_out[f'out.output.value.{output_fields[2]}']};
+    }} else {{
+        params.output_0[query] = {fin_out[f'out.output.value.{output_fields[0]}']};
+        params.output_1[query] = {fin_out[f'out.output.value.{output_fields[1]}']};
+        params.output_2[query] = {fin_out[f'out.output.value.{output_fields[2]}']};
+    }}
+    if (!v4_complete_query(query)) return;
+}}
+'''
+        native_closest = f'''
+extern "C" __global__ void __closesthit__rtdl_v4_triangle_native() {{
+    const unsigned int query = optixGetLaunchIndex().x;
+    const unsigned int primitive_index = optixGetPrimitiveIndex();
+    const unsigned int hit_kind = optixGetHitKind();
+    const float2 barycentrics = optixGetTriangleBarycentrics();
+    if (query >= params.query_count || primitive_index >= params.primitive_count ||
+            (hit_kind != 0xfeu && hit_kind != 0xffu) ||
+            !isfinite(optixGetRayTmax()) || !isfinite(barycentrics.x) ||
+            !isfinite(barycentrics.y)) {{
+        v4_first_error(query, 0xffff1004u, 0u, 0u, query, 0u, 0u, 0u); return;
+    }}
+    params.observed_primitive_index[query] = primitive_index;
+    params.observed_hit_kind[query] = hit_kind;
+    params.observed_barycentric_x[query] = barycentrics.x;
+    params.observed_barycentric_y[query] = barycentrics.y;
+{_indent(native_ch, 4)}
+    if ({native_ch_out['out.effect_tag']} != {_effect_tag(roles[CallbackRole.CLOSEST_HIT], EffectKind.PAYLOAD)}u) {{
+        v4_first_error(query, 0xffff1005u, 0u, 0u, query, 0u, {native_ch_out['out.effect_tag']}, 0u); return;
+    }}
+{native_ch_payload}
+}}
+'''
+        native_miss = f'''
+extern "C" __global__ void __miss__rtdl_v4_triangle() {{
+    const unsigned int query = optixGetLaunchIndex().x;
+    if (query >= params.query_count) return;
+    const float3 ray_origin = optixGetWorldRayOrigin();
+    const float3 ray_direction = optixGetWorldRayDirection();
+{_indent(native_ms, 4)}
+    if ({native_ms_out['out.effect_tag']} != {_effect_tag(roles[CallbackRole.MISS], EffectKind.PAYLOAD)}u) {{
+        v4_first_error(query, 0xffff1006u, 0u, 0u, query, 0u, {native_ms_out['out.effect_tag']}, 0u); return;
+    }}
+{native_ms_payload}
+}}
+'''
+        source = (
+            common + "\n" + metadata_binding_manifest + "\n" + prototypes
+            + "\n" + native_raygen + native_closest + native_miss
+        )
+        return GeneratedOptixWrapper(
+            schema="rtdl.v4.generated_trusted_optix_triangle_wrapper.v1",
+            physical_template="builtin_triangle_u32x3_provider_native_closest_v1",
+            callback_ir_sha256=fresh.callback.ir_sha256,
+            callback_abi_sha256=canonical.abi_sha256,
+            source=source,
+            source_sha256=hashlib.sha256(source.encode("utf-8")).hexdigest(),
+            role_symbols=tuple(
+                (role.value, roles[role].symbol)
+                for role in sorted(
+                    required_roles,
+                    key=lambda item: list(CallbackRole).index(item),
+                )
+            ),
+        )
 
     # OptiX does not define primitive-index tie breaking for equal-distance
     # built-in-triangle hits.  The compiler-owned any-hit program below
@@ -459,9 +649,17 @@ extern "C" __global__ void __raygen__rtdl_v4_triangle() {{
     if ({fin_out['out.effect_tag']} != {_effect_tag(roles[CallbackRole.FINALIZE], EffectKind.OUTPUT)}u) {{
         v4_first_error(query, 0xffff1003u, 0u, 0u, query, 0u, {fin_out['out.effect_tag']}, 0u); return;
     }}
-    params.output_0[query] = {fin_out[f'out.output.value.{output_fields[0]}']};
-    params.output_1[query] = {fin_out[f'out.output.value.{output_fields[1]}']};
-    params.output_2[query] = {fin_out[f'out.output.value.{output_fields[2]}']};
+    if (params.output_rows != nullptr) {{
+        const unsigned int row = query * 3u;
+        params.output_rows[row + 0u] = {fin_out[f'out.output.value.{output_fields[0]}']};
+        params.output_rows[row + 1u] = {fin_out[f'out.output.value.{output_fields[1]}']};
+        params.output_rows[row + 2u] = {fin_out[f'out.output.value.{output_fields[2]}']};
+    }} else {{
+        params.output_0[query] = {fin_out[f'out.output.value.{output_fields[0]}']};
+        params.output_1[query] = {fin_out[f'out.output.value.{output_fields[1]}']};
+        params.output_2[query] = {fin_out[f'out.output.value.{output_fields[2]}']};
+    }}
+    if (!v4_complete_query(query)) return;
 }}
 '''
 

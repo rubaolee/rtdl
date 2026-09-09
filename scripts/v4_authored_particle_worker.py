@@ -107,12 +107,15 @@ def _prepare_rtdl(args: argparse.Namespace, data: dict[str, object]):
     prepared_batch = owner.prepare_batch(batch)
     expected = face_first_expected(arrays["expected"])
 
-    def execute() -> tuple[np.ndarray, object]:
+    def invoke() -> tuple[np.ndarray, object]:
         result = owner.execute(prepared_batch)
         output = np.asarray(result.output, dtype=np.uint32)
         if not np.array_equal(output, expected):
             raise RuntimeError("source-authored RTDL Particle output mismatch")
         return output, result
+
+    def finish(pending: tuple[np.ndarray, object]) -> tuple[np.ndarray, object]:
+        return pending
 
     def observe(result: object) -> dict[str, object]:
         return {
@@ -124,7 +127,7 @@ def _prepare_rtdl(args: argparse.Namespace, data: dict[str, object]):
             "role_counters": list(result.role_counters),
         }
 
-    return owner, execute, observe, {
+    return owner, invoke, finish, observe, {
         "source_sha256": verified.source_sha256,
         "callback_ir_sha256": verified.callback.ir_sha256,
         "program_identity_sha256": program.identity.identity_sha256,
@@ -135,12 +138,15 @@ def _prepare_rtdl(args: argparse.Namespace, data: dict[str, object]):
         "path_class": "public_source_verify_compile_materialize_prepare_execute",
         "prepared_query_batch_used": True,
         "prepared_query_batch_device_resident": prepared_batch.device_resident,
+        "timed_endpoint": (
+            "public_execute_complete_u32x3_d2h_sync_and_external_oracle"),
         "declared_optix_sdk": args.optix_sdk,
     }
 
 
 def _prepare_pyoptix(args: argparse.Namespace, data: dict[str, object]):
     from experiments.goal5814_particle.public_pyoptix_owner import (
+        prevalidate_formal_particle_execution_input,
         prepare_formal_particle_owner,
     )
 
@@ -157,9 +163,16 @@ def _prepare_pyoptix(args: argparse.Namespace, data: dict[str, object]):
     columns = tuple(
         np.ascontiguousarray(arrays["queries"][:, index]) for index in range(7)
     )
+    for column in columns:
+        column.setflags(write=False)
+    prevalidated = prevalidate_formal_particle_execution_input(
+        *columns, expected)
 
-    def execute() -> tuple[np.ndarray, object]:
-        result = owner.execute_complete(*columns, expected)
+    def invoke() -> object:
+        return owner.execute_exact_core_prevalidated(prevalidated)
+
+    def finish(completion: object) -> tuple[np.ndarray, object]:
+        result = owner.materialize_exact_core_completion(completion)
         output = np.asarray(result.output, dtype=np.uint32)
         if not np.array_equal(output, expected):
             raise RuntimeError("PyOptiX Particle face-first output mismatch")
@@ -174,13 +187,16 @@ def _prepare_pyoptix(args: argparse.Namespace, data: dict[str, object]):
             },
         }
 
-    return owner, execute, observe, {
+    return owner, invoke, finish, observe, {
         "pyoptix_ptx_sha256": hashlib.sha256(ptx).hexdigest(),
         "pyoptix_device_source_sha256": _sha(
             Path(__file__).resolve().parents[1]
             / "experiments/v4_authored_particle/pyoptix_device.cu"
         ),
         "path_class": "public_pyoptix_handwritten_cuda_precompiled_ptx",
+        "prevalidated_execution_input_used": True,
+        "timed_endpoint": (
+            "exact_core_complete_u32x3_d2h_sync_and_internal_oracle"),
     }
 
 
@@ -209,27 +225,33 @@ def main() -> int:
     data = load_particle(args.data_root)
     prepare_started = time.perf_counter_ns()
     if args.arm == "rtdl":
-        owner, execute, observe, metadata = _prepare_rtdl(args, data)
+        owner, invoke, finish, observe, metadata = _prepare_rtdl(args, data)
     else:
-        owner, execute, observe, metadata = _prepare_pyoptix(args, data)
+        owner, invoke, finish, observe, metadata = _prepare_pyoptix(args, data)
     prepare_ns = time.perf_counter_ns() - prepare_started
     try:
         for _ in range(args.warmups):
-            execute()
+            finish(invoke())
         samples = []
         last_output = None
         last_execution = None
         for _ in range(args.samples):
             started = time.perf_counter_ns()
-            last_output, last_execution = execute()
-            samples.append(time.perf_counter_ns() - started)
+            pending = invoke()
+            elapsed_ns = time.perf_counter_ns() - started
+            last_output, last_execution = finish(pending)
+            samples.append(elapsed_ns)
+        if last_output is not None:
+            last_output = np.array(
+                last_output, dtype=np.uint32, order="C", copy=True)
+            last_output.setflags(write=False)
     finally:
         owner.close()
     if last_output is None or last_execution is None:
         raise AssertionError("worker retained no output")
     last_evidence = observe(last_execution)
     result = {
-        "schema": "rtdl.v4.authored_particle_worker.v1",
+        "schema": "rtdl.v4.authored_particle_worker.v2",
         "status": "PASS",
         "arm": args.arm,
         "machine": _machine(),
@@ -247,6 +269,8 @@ def main() -> int:
         "maximum_ns": max(samples),
         "metadata": metadata,
         "last_execution_evidence": last_evidence,
+        "retained_output_owned": bool(last_output.flags.owndata),
+        "retained_output_read_only": not bool(last_output.flags.writeable),
     }
     print(json.dumps(result, allow_nan=False, sort_keys=True, separators=(",", ":")))
     return 0
