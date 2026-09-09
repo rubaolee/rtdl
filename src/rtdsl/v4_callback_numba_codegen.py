@@ -564,6 +564,20 @@ class _Emitter:
         kinds = _leaf_scalar_kinds(result_type, self.records)
         leaves: list[str] = []
         for a, b, kind in zip(left.leaves, right.leaves, kinds):
+            if kind is ScalarKind.U32 and op == "add":
+                wide_left = self.temp("u32_add_left")
+                wide_right = self.temp("u32_add_right")
+                wide_sum = self.temp("u32_add_sum")
+                self.emit(f"{wide_left} = _u64({a})")
+                self.emit(f"{wide_right} = _u64({b})")
+                self.emit(f"{wide_sum} = {wide_left} + {wide_right}")
+                self.emit(f"if {wide_sum} > {(1 << 32) - 1}:")
+                with self.block():
+                    self.emit_failure(RuntimeStatus.INTEGER_OVERFLOW, path)
+                temp = self.temp("numeric")
+                self.emit(f"{temp} = _u32({wide_sum})")
+                leaves.append(temp)
+                continue
             if kind in {ScalarKind.I32, ScalarKind.U32, ScalarKind.I64, ScalarKind.U64}:
                 _fail(
                     "integer_numeric_codegen_pending",

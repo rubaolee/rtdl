@@ -33,6 +33,8 @@ def _compile_one(request, *, np, numba, cuda, types):
         "__builtins__": {},
         "math": math,
         "_f32": np.float32,
+        "_u32": np.uint32,
+        "_u64": np.uint64,
         "range": range,
         "abs": abs,
     }

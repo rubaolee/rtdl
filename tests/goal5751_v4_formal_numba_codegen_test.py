@@ -71,13 +71,195 @@ class Goal5751FormalNumbaCodegenTest(unittest.TestCase):
                 any_hit_proof_authority=self.proof,
             )
 
-    def test_checked_integer_arithmetic_is_rejected_not_silently_wrapped(self):
-        overflow_source = SOURCE.replace(
+    def test_checked_u32_addition_uses_widened_sum_and_fails_closed(self):
+        addition_source = SOURCE.replace(
             "updated = SearchPayload(best_t=hit.t, best_id=hit.hit_kind)",
-            "overflow_id = hit.hit_kind + U32_MAX\n            updated = SearchPayload(best_t=hit.t, best_id=overflow_id)",
+            "sum_id = hit.hit_kind + 1\n            updated = SearchPayload(best_t=hit.t, best_id=sum_id)",
             1,
         )
-        program = compile_callback_source(overflow_source, manifest())
+        program = compile_callback_source(addition_source, manifest())
+        proof = dataclasses.replace(
+            self.proof,
+            callback_ir_sha256=program.ir_sha256,
+            effect_digest=program.effect_digest,
+        )
+        abi = compile_callback_abi(program, any_hit_proof_authority=proof)
+        leaf = generate_formal_numba_leaf(
+            program, abi, CallbackRole.ANY_HIT,
+            any_hit_proof_authority=proof,
+        )
+        self.assertIn("_u64(", leaf.generated_source)
+        self.assertIn("_u32(", leaf.generated_source)
+
+        for hit_kind, expected in (
+            (0x80000000, 0x80000001),
+            (0xFFFFFFFE, 0xFFFFFFFF),
+        ):
+            with self.subTest(hit_kind=hit_kind):
+                outputs, arguments = self._arguments(leaf)
+                arguments.update({
+                    "in.context.launch_index": 3,
+                    "in.hit.t": 1.0,
+                    "in.hit.hit_kind": hit_kind,
+                    "in.payload.best_t": 9.0,
+                    "in.payload.best_id": 10,
+                })
+                self._run(leaf, arguments)
+                self.assertEqual(outputs["status.ok"][0], 1)
+                self.assertEqual(outputs["status.error_code"][0], 0)
+                self.assertEqual(
+                    outputs["out.accept_continue.payload.best_id"][0], expected
+                )
+
+        overflow_outputs, overflow_arguments = self._arguments(leaf)
+        overflow_arguments.update({
+            "in.context.launch_index": 4,
+            "in.hit.t": 1.0,
+            "in.hit.hit_kind": 0xFFFFFFFF,
+            "in.payload.best_t": 9.0,
+            "in.payload.best_id": 10,
+        })
+        self._run(leaf, overflow_arguments)
+        self.assertEqual(overflow_outputs["status.ok"][0], 0)
+        self.assertEqual(
+            overflow_outputs["status.error_code"][0],
+            dict(abi.runtime_status_codes)["integer_overflow"],
+        )
+
+    def test_checked_u32_addition_accepts_max_plus_zero(self):
+        addition_source = SOURCE.replace(
+            "updated = SearchPayload(best_t=hit.t, best_id=hit.hit_kind)",
+            "sum_id = hit.hit_kind + 0\n            updated = SearchPayload(best_t=hit.t, best_id=sum_id)",
+            1,
+        )
+        program = compile_callback_source(addition_source, manifest())
+        proof = dataclasses.replace(
+            self.proof,
+            callback_ir_sha256=program.ir_sha256,
+            effect_digest=program.effect_digest,
+        )
+        abi = compile_callback_abi(program, any_hit_proof_authority=proof)
+        leaf = generate_formal_numba_leaf(
+            program, abi, CallbackRole.ANY_HIT,
+            any_hit_proof_authority=proof,
+        )
+        outputs, arguments = self._arguments(leaf)
+        arguments.update({
+            "in.context.launch_index": 5,
+            "in.hit.t": 1.0,
+            "in.hit.hit_kind": 0xFFFFFFFF,
+            "in.payload.best_t": 9.0,
+            "in.payload.best_id": 10,
+        })
+        self._run(leaf, arguments)
+        self.assertEqual(outputs["status.ok"][0], 1)
+        self.assertEqual(outputs["status.error_code"][0], 0)
+        self.assertEqual(
+            outputs["out.accept_continue.payload.best_id"][0], 0xFFFFFFFF
+        )
+
+    def test_chained_checked_u32_addition_fails_at_second_overflow(self):
+        addition_source = SOURCE.replace(
+            "updated = SearchPayload(best_t=hit.t, best_id=hit.hit_kind)",
+            "first_id = hit.hit_kind + 1\n            second_id = first_id + 1\n            updated = SearchPayload(best_t=hit.t, best_id=second_id)",
+            1,
+        )
+        program = compile_callback_source(addition_source, manifest())
+        proof = dataclasses.replace(
+            self.proof,
+            callback_ir_sha256=program.ir_sha256,
+            effect_digest=program.effect_digest,
+        )
+        abi = compile_callback_abi(program, any_hit_proof_authority=proof)
+        leaf = generate_formal_numba_leaf(
+            program, abi, CallbackRole.ANY_HIT,
+            any_hit_proof_authority=proof,
+        )
+        outputs, arguments = self._arguments(leaf)
+        arguments.update({
+            "in.context.launch_index": 6,
+            "in.hit.t": 1.0,
+            "in.hit.hit_kind": 0xFFFFFFFE,
+            "in.payload.best_t": 9.0,
+            "in.payload.best_id": 10,
+        })
+        self._run(leaf, arguments)
+        self.assertEqual(outputs["status.ok"][0], 0)
+        self.assertEqual(
+            outputs["status.error_code"][0],
+            dict(abi.runtime_status_codes)["integer_overflow"],
+        )
+        self.assertNotEqual(outputs["status.error_site"][0], 0)
+        self.assertEqual(outputs["status.effect_tag"][0], 0)
+        self.assertEqual(outputs["out.effect_tag"][0], 0)
+
+    def test_checked_u32_helper_overflow_propagates_fail_closed(self):
+        helper_source = SOURCE.replace(
+            "@optix.program(",
+            "@optix.helper\n"
+            "def increment_id(value: u32) -> u32:\n"
+            "    result = value + 1\n"
+            "    return result\n\n"
+            "@optix.program(",
+            1,
+        ).replace(
+            "updated = SearchPayload(best_t=hit.t, best_id=hit.hit_kind)",
+            "sum_id = increment_id(hit.hit_kind)\n            updated = SearchPayload(best_t=hit.t, best_id=sum_id)",
+            1,
+        )
+        program = compile_callback_source(helper_source, manifest())
+        proof = dataclasses.replace(
+            self.proof,
+            callback_ir_sha256=program.ir_sha256,
+            effect_digest=program.effect_digest,
+        )
+        abi = compile_callback_abi(program, any_hit_proof_authority=proof)
+        leaf = generate_formal_numba_leaf(
+            program, abi, CallbackRole.ANY_HIT,
+            any_hit_proof_authority=proof,
+        )
+
+        success_outputs, success_arguments = self._arguments(leaf)
+        success_arguments.update({
+            "in.context.launch_index": 7,
+            "in.hit.t": 1.0,
+            "in.hit.hit_kind": 0xFFFFFFFE,
+            "in.payload.best_t": 9.0,
+            "in.payload.best_id": 10,
+        })
+        self._run(leaf, success_arguments)
+        self.assertEqual(success_outputs["status.ok"][0], 1)
+        self.assertEqual(success_outputs["status.error_code"][0], 0)
+        self.assertEqual(
+            success_outputs["out.accept_continue.payload.best_id"][0],
+            0xFFFFFFFF,
+        )
+
+        overflow_outputs, overflow_arguments = self._arguments(leaf)
+        overflow_arguments.update({
+            "in.context.launch_index": 8,
+            "in.hit.t": 1.0,
+            "in.hit.hit_kind": 0xFFFFFFFF,
+            "in.payload.best_t": 9.0,
+            "in.payload.best_id": 10,
+        })
+        self._run(leaf, overflow_arguments)
+        self.assertEqual(overflow_outputs["status.ok"][0], 0)
+        self.assertEqual(
+            overflow_outputs["status.error_code"][0],
+            dict(abi.runtime_status_codes)["integer_overflow"],
+        )
+        self.assertNotEqual(overflow_outputs["status.error_site"][0], 0)
+        self.assertEqual(overflow_outputs["status.effect_tag"][0], 0)
+        self.assertEqual(overflow_outputs["out.effect_tag"][0], 0)
+
+    def test_other_checked_integer_arithmetic_remains_codegen_pending(self):
+        multiply_source = SOURCE.replace(
+            "updated = SearchPayload(best_t=hit.t, best_id=hit.hit_kind)",
+            "product_id = hit.hit_kind * 2\n            updated = SearchPayload(best_t=hit.t, best_id=product_id)",
+            1,
+        )
+        program = compile_callback_source(multiply_source, manifest())
         proof = dataclasses.replace(
             self.proof,
             callback_ir_sha256=program.ir_sha256,
@@ -242,6 +424,8 @@ class Goal5751FormalNumbaCodegenTest(unittest.TestCase):
             "__builtins__": {},
             "math": math,
             "_f32": np.float32,
+            "_u32": np.uint32,
+            "_u64": np.uint64,
             "range": range,
             "abs": abs,
         }
