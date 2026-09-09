@@ -442,10 +442,14 @@ extern "C" __global__ void __closesthit__rtdl_v4_triangle_native() {{
             !isfinite(barycentrics.y)) {{
         v4_first_error(query, 0xffff1004u, 0u, 0u, query, 0u, 0u, 0u); return;
     }}
-    params.observed_primitive_index[query] = primitive_index;
-    params.observed_hit_kind[query] = hit_kind;
-    params.observed_barycentric_x[query] = barycentrics.x;
-    params.observed_barycentric_y[query] = barycentrics.y;
+    if (params.observed_primitive_index != nullptr)
+        params.observed_primitive_index[query] = primitive_index;
+    if (params.observed_hit_kind != nullptr)
+        params.observed_hit_kind[query] = hit_kind;
+    if (params.observed_barycentric_x != nullptr)
+        params.observed_barycentric_x[query] = barycentrics.x;
+    if (params.observed_barycentric_y != nullptr)
+        params.observed_barycentric_y[query] = barycentrics.y;
 {_indent(native_ch, 4)}
     if ({native_ch_out['out.effect_tag']} != {_effect_tag(roles[CallbackRole.CLOSEST_HIT], EffectKind.PAYLOAD)}u) {{
         v4_first_error(query, 0xffff1005u, 0u, 0u, query, 0u, {native_ch_out['out.effect_tag']}, 0u); return;

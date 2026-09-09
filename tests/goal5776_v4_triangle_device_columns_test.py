@@ -531,6 +531,19 @@ class Goal5776V4TriangleDeviceColumnsTest(unittest.TestCase):
         self.assertIn("if (params.status != nullptr)", codegen)
         self.assertIn(
             "if (params.observed_primitive_index != nullptr)", codegen)
+        closest_begin = codegen.index(
+            'extern "C" __global__ void '
+            '__closesthit__rtdl_v4_triangle_native()')
+        closest_end = codegen.index("native_miss = f", closest_begin)
+        native_closest = codegen[closest_begin:closest_end]
+        self.assertIn(
+            "if (params.observed_primitive_index != nullptr)",
+            native_closest,
+        )
+        self.assertIn(
+            "if (params.observed_barycentric_y != nullptr)",
+            native_closest,
+        )
         self.assertIn(
             "atomicAdd(&params.compact_control->validated_row_count", codegen)
 
