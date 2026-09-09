@@ -150,12 +150,18 @@ def _configure_device_resident_query_batches(library):
         "rtdl_optix_v4_execute_prepared_builtin_triangle_callback_batch_rows_v4",
         None,
     )
+    prepare_aos_rows = getattr(
+        library,
+        "rtdl_optix_v4_prepare_builtin_triangle_query_batch_aos_rows_v3",
+        None,
+    )
     symbols = (prepare, execute, destroy)
     if all(symbol is None for symbol in symbols):
-        if prepare_rows is not None or execute_rows is not None:
+        if prepare_rows is not None or execute_rows is not None \
+                or prepare_aos_rows is not None:
             raise RuntimeError(
                 "native library has packed-row ABI without query-batch ABI")
-        return (*symbols, None, None)
+        return (*symbols, None, None, None)
     if any(symbol is None for symbol in symbols):
         raise RuntimeError(
             "native library has a partial prepared triangle query-batch ABI")
@@ -178,6 +184,9 @@ def _configure_device_resident_query_batches(library):
     if (prepare_rows is None) != (execute_rows is None):
         raise RuntimeError(
             "native library has a partial prepared triangle packed-row ABI")
+    if prepare_aos_rows is not None and execute_rows is None:
+        raise RuntimeError(
+            "native library has a partial prepared triangle AoS-row ABI")
     if prepare_rows is not None:
         prepare_rows.argtypes = [
             ctypes.c_uint64, ctypes.POINTER(ctypes.c_float),
@@ -191,12 +200,19 @@ def _configure_device_resident_query_batches(library):
             ctypes.POINTER(_CompactLifecycleSummary),
             ctypes.POINTER(ctypes.c_char), ctypes.c_size_t,
         ]
+    if prepare_aos_rows is not None:
+        prepare_aos_rows.argtypes = [
+            ctypes.c_uint64, ctypes.POINTER(ctypes.c_float), ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.POINTER(ctypes.c_uint32)),
+            ctypes.POINTER(ctypes.c_char), ctypes.c_size_t,
+        ]
     for symbol in symbols:
         symbol.restype = ctypes.c_int
-    for symbol in (prepare_rows, execute_rows):
+    for symbol in (prepare_rows, execute_rows, prepare_aos_rows):
         if symbol is not None:
             symbol.restype = ctypes.c_int
-    return (*symbols, prepare_rows, execute_rows)
+    return (*symbols, prepare_rows, execute_rows, prepare_aos_rows)
 
 
 def _raise(status, error, label):
@@ -254,30 +270,43 @@ class _PreparedOutputDigestCache:
 
 
 class PreparedBuiltinTriangleQueryBatch:
-    """Owner-bound immutable host query columns admitted before execution."""
+    """Owner-bound immutable query snapshot admitted before execution."""
 
     __slots__ = (
         "_binding_digest", "_count", "_directions", "_owner",
         "_host_output", "_host_output_pointer", "_native_token", "_origins",
-        "_output_digest_cache", "_pointers", "_semantic_digest", "_tmax",
-        "_token",
+        "_output_digest_cache", "_pointers", "_query_rows",
+        "_semantic_digest", "_tmax", "_token",
     )
 
     def __init__(
         self, *, owner, origins, directions, tmax, binding_digest,
         semantic_digest, native_token, host_output, host_output_pointer, token,
+        query_rows=None,
     ):
         if token is not _PREPARED_QUERY_BATCH_TOKEN:
             raise RuntimeError("prepared triangle query batch requires its owner")
+        if query_rows is None:
+            if origins is None or directions is None or tmax is None:
+                raise RuntimeError(
+                    "prepared triangle query batch host columns are incomplete")
+            count = int(tmax.shape[0])
+            pointers = tuple(
+                int(value.ctypes.data) for value in (origins, directions, tmax))
+        else:
+            if origins is not None or directions is not None or tmax is not None \
+                    or query_rows.ndim != 2 or query_rows.shape[1] != 7:
+                raise RuntimeError(
+                    "prepared triangle AoS query snapshot is malformed")
+            count = int(query_rows.shape[0])
+            pointers = (int(query_rows.ctypes.data),)
         object.__setattr__(self, "_owner", owner)
         object.__setattr__(self, "_origins", origins)
         object.__setattr__(self, "_directions", directions)
         object.__setattr__(self, "_tmax", tmax)
-        object.__setattr__(self, "_count", int(tmax.shape[0]))
-        object.__setattr__(
-            self, "_pointers",
-            tuple(int(value.ctypes.data) for value in (origins, directions, tmax)),
-        )
+        object.__setattr__(self, "_query_rows", query_rows)
+        object.__setattr__(self, "_count", count)
+        object.__setattr__(self, "_pointers", pointers)
         object.__setattr__(self, "_binding_digest", binding_digest)
         object.__setattr__(self, "_semantic_digest", semantic_digest)
         object.__setattr__(self, "_native_token", int(native_token))
@@ -438,6 +467,7 @@ class PreparedBuiltinTriangleOwner:
             destroy_query_batch,
             prepare_query_batch_rows,
             execute_query_batch_rows,
+            prepare_query_batch_aos_rows,
         ) = _configure_device_resident_query_batches(library)
         token = ctypes.c_uint64()
         error = ctypes.create_string_buffer(16384)
@@ -460,6 +490,7 @@ class PreparedBuiltinTriangleOwner:
         self._destroy_query_batch = destroy_query_batch
         self._prepare_query_batch_rows = prepare_query_batch_rows
         self._execute_query_batch_rows = execute_query_batch_rows
+        self._prepare_query_batch_aos_rows = prepare_query_batch_aos_rows
         self._destroy = destroy
         self._vertex_count = len(vertices)
         self._primitive_count = len(triangles)
@@ -519,7 +550,7 @@ class PreparedBuiltinTriangleOwner:
         return binding_digest, semantic_digest
 
     def prepare_query_batch(self, queries):
-        """Copy and admit one reusable host query batch outside execution."""
+        """Snapshot and admit one reusable query batch outside execution."""
 
         self._check()
         try:
@@ -531,27 +562,63 @@ class PreparedBuiltinTriangleOwner:
                 or queries.ndim != 2 or queries.shape[1] != 7:
             raise ValueError("prepared triangle queries must be an Nx7 NumPy array")
         query_array = _np.ascontiguousarray(queries, dtype=_np.float32)
-        if len(query_array) == 0 \
-                or not bool(_np.isfinite(query_array).all()) \
-                or bool((query_array[:, 6] <= 0.0).any()) \
-                or bool(_np.all(query_array[:, 3:6] == 0.0, axis=1).any()):
-            raise ValueError("prepared triangle queries contain an invalid ray")
-
-        def frozen(value, shape):
-            raw = _np.ascontiguousarray(value).tobytes(order="C")
-            return _np.frombuffer(raw, dtype=_np.float32).reshape(shape)
-
         count = len(query_array)
-        origins = frozen(query_array[:, :3], (count, 3))
-        directions = frozen(query_array[:, 3:6], (count, 3))
-        tmax = frozen(query_array[:, 6], (count,))
+        if count == 0:
+            raise ValueError("prepared triangle queries contain an invalid ray")
         binding_digest, semantic_digest = self._binding_identity(count)
         native_token = 0
         host_output = None
         host_output_pointer = None
+        query_rows = None
         prepare_device_batch = getattr(self, "_prepare_query_batch", None)
         prepare_device_rows = getattr(self, "_prepare_query_batch_rows", None)
-        if prepare_device_rows is not None:
+        prepare_device_aos_rows = getattr(
+            self, "_prepare_query_batch_aos_rows", None)
+        if prepare_device_aos_rows is not None:
+            # One immutable AoS snapshot replaces the older Python-side
+            # transpose plus three immutable copies.  Native code validates
+            # every row before publishing the device-resident batch token.
+            query_rows = _np.frombuffer(
+                query_array.tobytes(order="C"), dtype=_np.float32,
+            ).reshape(count, 7)
+            origins = directions = tmax = None
+            returned_token = ctypes.c_uint64()
+            returned_output = ctypes.POINTER(ctypes.c_uint32)()
+            error = getattr(self, "_execution_error_buffer", None)
+            if error is None:
+                error = ctypes.create_string_buffer(16384)
+            error[0] = b"\0"
+            _raise(int(prepare_device_aos_rows(
+                self._token,
+                query_rows.ctypes.data_as(ctypes.POINTER(ctypes.c_float)),
+                count, ctypes.byref(returned_token),
+                ctypes.byref(returned_output), error, len(error),
+            )), error, "prepared built-in triangle AoS-row batch prepare")
+            native_token = int(returned_token.value)
+            if native_token == 0 or not returned_output:
+                raise RuntimeError(
+                    "prepared built-in triangle AoS-row batch returned null")
+            host_output = _np.ctypeslib.as_array(
+                returned_output, shape=(count * 3,)).reshape(count, 3)
+            host_output.setflags(write=False)
+            host_output_pointer = returned_output
+            self._native_query_batch_tokens.add(native_token)
+        else:
+            if not bool(_np.isfinite(query_array).all()) \
+                    or bool((query_array[:, 6] <= 0.0).any()) \
+                    or bool(_np.all(
+                        query_array[:, 3:6] == 0.0, axis=1).any()):
+                raise ValueError(
+                    "prepared triangle queries contain an invalid ray")
+
+            def frozen(value, shape):
+                raw = _np.ascontiguousarray(value).tobytes(order="C")
+                return _np.frombuffer(raw, dtype=_np.float32).reshape(shape)
+
+            origins = frozen(query_array[:, :3], (count, 3))
+            directions = frozen(query_array[:, 3:6], (count, 3))
+            tmax = frozen(query_array[:, 6], (count,))
+        if prepare_device_aos_rows is None and prepare_device_rows is not None:
             returned_token = ctypes.c_uint64()
             returned_output = ctypes.POINTER(ctypes.c_uint32)()
             error = getattr(self, "_execution_error_buffer", None)
@@ -575,7 +642,7 @@ class PreparedBuiltinTriangleOwner:
             host_output.setflags(write=False)
             host_output_pointer = returned_output
             self._native_query_batch_tokens.add(native_token)
-        elif prepare_device_batch is not None:
+        elif prepare_device_aos_rows is None and prepare_device_batch is not None:
             returned_token = ctypes.c_uint64()
             error = ctypes.create_string_buffer(16384)
             _raise(int(prepare_device_batch(
@@ -595,7 +662,7 @@ class PreparedBuiltinTriangleOwner:
             binding_digest=binding_digest, semantic_digest=semantic_digest,
             native_token=native_token, host_output=host_output,
             host_output_pointer=host_output_pointer,
-            token=_PREPARED_QUERY_BATCH_TOKEN,
+            token=_PREPARED_QUERY_BATCH_TOKEN, query_rows=query_rows,
         )
         authorities = getattr(self, "_prepared_query_batch_authorities", None)
         if authorities is None:
@@ -740,7 +807,17 @@ class PreparedBuiltinTriangleOwner:
             if not prepared_query_batch:
                 count = len(queries)
                 binding_digest, semantic_digest = self._binding_identity(count)
-            if numpy_queries:
+            if prepared_query_batch and native_token and partner_column_output:
+                origins_native = directions_native = tmax_native = None
+            elif numpy_queries:
+                if origins_array is None:
+                    query_rows = queries._query_rows
+                    if query_rows is None:
+                        raise RuntimeError(
+                            "prepared triangle query batch lost host input")
+                    origins_array = _np.ascontiguousarray(query_rows[:, :3])
+                    directions_array = _np.ascontiguousarray(query_rows[:, 3:6])
+                    tmax_array = _np.ascontiguousarray(query_rows[:, 6])
                 origins_native = origins_array.ctypes.data_as(ctypes.POINTER(ctypes.c_float))
                 directions_native = directions_array.ctypes.data_as(ctypes.POINTER(ctypes.c_float))
                 tmax_native = tmax_array.ctypes.data_as(ctypes.POINTER(ctypes.c_float))

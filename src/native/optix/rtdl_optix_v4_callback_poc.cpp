@@ -2270,39 +2270,21 @@ v4_builtin_triangle_from_token(uint64_t token) {
     return found->second;
 }
 
-static uint64_t prepare_v4_builtin_triangle_query_batch(
-        uint64_t program_token, const float* query_origins_xyz,
-        const float* query_directions_xyz, const float* query_tmax,
-        size_t query_count, uint32_t** host_output_rows = nullptr) {
-    if (!query_origins_xyz || !query_directions_xyz || !query_tmax ||
-            query_count == 0 || query_count > UINT32_MAX)
+static void validate_v4_builtin_triangle_query_row(const float* row) {
+    if (!std::isfinite(row[0]) || !std::isfinite(row[1]) ||
+            !std::isfinite(row[2]) || !std::isfinite(row[3]) ||
+            !std::isfinite(row[4]) || !std::isfinite(row[5]) ||
+            !std::isfinite(row[6]) || row[6] <= 0.0f ||
+            (row[3] == 0.0f && row[4] == 0.0f && row[5] == 0.0f))
         throw std::runtime_error(
-            "V4 prepared built-in triangle query batch inputs are invalid");
-    const auto program = v4_builtin_triangle_from_token(program_token);
-    std::array<std::vector<float>, 7> host_columns;
-    for (auto& column : host_columns) column.resize(query_count);
-    for (size_t index = 0; index < query_count; ++index) {
-        host_columns[0][index] = query_origins_xyz[index * 3 + 0];
-        host_columns[1][index] = query_origins_xyz[index * 3 + 1];
-        host_columns[2][index] = query_origins_xyz[index * 3 + 2];
-        host_columns[3][index] = query_directions_xyz[index * 3 + 0];
-        host_columns[4][index] = query_directions_xyz[index * 3 + 1];
-        host_columns[5][index] = query_directions_xyz[index * 3 + 2];
-        host_columns[6][index] = query_tmax[index];
-        if (!std::isfinite(host_columns[0][index]) ||
-                !std::isfinite(host_columns[1][index]) ||
-                !std::isfinite(host_columns[2][index]) ||
-                !std::isfinite(host_columns[3][index]) ||
-                !std::isfinite(host_columns[4][index]) ||
-                !std::isfinite(host_columns[5][index]) ||
-                !std::isfinite(host_columns[6][index]) ||
-                host_columns[6][index] <= 0.0f ||
-                (host_columns[3][index] == 0.0f &&
-                 host_columns[4][index] == 0.0f &&
-                 host_columns[5][index] == 0.0f))
-            throw std::runtime_error(
-                "V4 prepared built-in triangle query batch contains an invalid ray");
-    }
+            "V4 prepared built-in triangle query batch contains an invalid ray");
+}
+
+static uint64_t materialize_v4_builtin_triangle_query_batch(
+        uint64_t program_token,
+        const std::shared_ptr<V4PreparedBuiltinTriangle>& program,
+        const std::array<std::vector<float>, 7>& host_columns,
+        size_t query_count, uint32_t** host_output_rows) {
     auto batch = std::make_shared<V4PreparedBuiltinTriangleQueryBatch>();
     batch->program_token = program_token;
     batch->program = program;
@@ -2318,7 +2300,6 @@ static uint64_t prepare_v4_builtin_triangle_query_batch(
         CU_CHECK(cuMemAllocHost(
             reinterpret_cast<void**>(&batch->host_output_rows),
             sizeof(uint32_t) * query_count * 3u));
-        *host_output_rows = batch->host_output_rows;
     }
     {
         std::lock_guard<std::mutex> execution_lock(program->execution_mutex);
@@ -2334,7 +2315,57 @@ static uint64_t prepare_v4_builtin_triangle_query_batch(
     if (!g_v4_builtin_triangle_query_batch_registry.emplace(token, batch).second)
         throw std::runtime_error(
             "V4 prepared built-in triangle query batch token collision");
+    if (host_output_rows)
+        *host_output_rows = batch->host_output_rows;
     return token;
+}
+
+static uint64_t prepare_v4_builtin_triangle_query_batch(
+        uint64_t program_token, const float* query_origins_xyz,
+        const float* query_directions_xyz, const float* query_tmax,
+        size_t query_count, uint32_t** host_output_rows = nullptr) {
+    if (!query_origins_xyz || !query_directions_xyz || !query_tmax ||
+            query_count == 0 || query_count > UINT32_MAX)
+        throw std::runtime_error(
+            "V4 prepared built-in triangle query batch inputs are invalid");
+    const auto program = v4_builtin_triangle_from_token(program_token);
+    std::array<std::vector<float>, 7> host_columns;
+    for (auto& column : host_columns) column.resize(query_count);
+    for (size_t index = 0; index < query_count; ++index) {
+        const float row[7] = {
+            query_origins_xyz[index * 3 + 0],
+            query_origins_xyz[index * 3 + 1],
+            query_origins_xyz[index * 3 + 2],
+            query_directions_xyz[index * 3 + 0],
+            query_directions_xyz[index * 3 + 1],
+            query_directions_xyz[index * 3 + 2],
+            query_tmax[index],
+        };
+        validate_v4_builtin_triangle_query_row(row);
+        for (size_t column = 0; column < host_columns.size(); ++column)
+            host_columns[column][index] = row[column];
+    }
+    return materialize_v4_builtin_triangle_query_batch(
+        program_token, program, host_columns, query_count, host_output_rows);
+}
+
+static uint64_t prepare_v4_builtin_triangle_query_batch_aos_rows(
+        uint64_t program_token, const float* query_rows_f32x7,
+        size_t query_count, uint32_t** host_output_rows = nullptr) {
+    if (!query_rows_f32x7 || query_count == 0 || query_count > UINT32_MAX)
+        throw std::runtime_error(
+            "V4 prepared built-in triangle AoS query batch inputs are invalid");
+    const auto program = v4_builtin_triangle_from_token(program_token);
+    std::array<std::vector<float>, 7> host_columns;
+    for (auto& column : host_columns) column.resize(query_count);
+    for (size_t index = 0; index < query_count; ++index) {
+        const float* row = query_rows_f32x7 + index * 7u;
+        validate_v4_builtin_triangle_query_row(row);
+        for (size_t column = 0; column < host_columns.size(); ++column)
+            host_columns[column][index] = row[column];
+    }
+    return materialize_v4_builtin_triangle_query_batch(
+        program_token, program, host_columns, query_count, host_output_rows);
 }
 
 static std::shared_ptr<V4PreparedBuiltinTriangleQueryBatch>

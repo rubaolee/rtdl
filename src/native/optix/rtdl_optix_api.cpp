@@ -474,6 +474,26 @@ extern "C" int rtdl_optix_v4_prepare_builtin_triangle_query_batch_rows_v2(
     }, error_out, error_size);
 }
 
+// App-neutral packed-input successor.  One exact contiguous Nx7 f32 row buffer
+// is validated and snapshotted into the same device-resident query columns as
+// the older split-host-column ABI, without a redundant Python-side transpose.
+extern "C" int rtdl_optix_v4_prepare_builtin_triangle_query_batch_aos_rows_v3(
+        uint64_t prepared_token, const float* query_rows_f32x7,
+        size_t query_count, uint64_t* query_batch_token_out,
+        uint32_t** host_output_rows_out,
+        char* error_out, size_t error_size) {
+    return handle_native_call([&]() {
+        if (!query_batch_token_out || !host_output_rows_out)
+            throw std::runtime_error(
+                "V4 built-in-triangle AoS query batch outputs must not be null");
+        *query_batch_token_out = 0;
+        *host_output_rows_out = nullptr;
+        *query_batch_token_out = prepare_v4_builtin_triangle_query_batch_aos_rows(
+            prepared_token, query_rows_f32x7, query_count,
+            host_output_rows_out);
+    }, error_out, error_size);
+}
+
 extern "C" int rtdl_optix_v4_execute_prepared_builtin_triangle_callback_batch_columns_v3(
         uint64_t prepared_token, uint64_t query_batch_token,
         uint32_t* output_0, uint32_t* output_1, uint32_t* output_2,
