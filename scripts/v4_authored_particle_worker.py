@@ -107,12 +107,15 @@ def _prepare_rtdl(args: argparse.Namespace, data: dict[str, object]):
     prepared_batch = owner.prepare_batch(batch)
     expected = face_first_expected(arrays["expected"])
 
-    def execute() -> tuple[np.ndarray, dict[str, object]]:
+    def execute() -> tuple[np.ndarray, object]:
         result = owner.execute(prepared_batch)
         output = np.asarray(result.output, dtype=np.uint32)
         if not np.array_equal(output, expected):
             raise RuntimeError("source-authored RTDL Particle output mismatch")
-        return output, {
+        return output, result
+
+    def observe(result: object) -> dict[str, object]:
+        return {
             "output_sha256": result.output_sha256,
             "traversal_receipt_sha256": result.traversal_receipt["receipt_sha256"],
             "physical_executor_classification": result.traversal_receipt[
@@ -121,7 +124,7 @@ def _prepare_rtdl(args: argparse.Namespace, data: dict[str, object]):
             "role_counters": list(result.role_counters),
         }
 
-    return owner, execute, {
+    return owner, execute, observe, {
         "source_sha256": verified.source_sha256,
         "callback_ir_sha256": verified.callback.ir_sha256,
         "program_identity_sha256": program.identity.identity_sha256,
@@ -153,12 +156,15 @@ def _prepare_pyoptix(args: argparse.Namespace, data: dict[str, object]):
         np.ascontiguousarray(arrays["queries"][:, index]) for index in range(7)
     )
 
-    def execute() -> tuple[np.ndarray, dict[str, object]]:
+    def execute() -> tuple[np.ndarray, object]:
         result = owner.execute_complete(*columns, expected)
         output = np.asarray(result.output, dtype=np.uint32)
         if not np.array_equal(output, expected):
             raise RuntimeError("PyOptiX Particle face-first output mismatch")
-        return output, {
+        return output, result
+
+    def observe(result: object) -> dict[str, object]:
+        return {
             "control": list(result.control),
             "operation_counts": {
                 name: int(getattr(result.operation_counts, name))
@@ -166,7 +172,7 @@ def _prepare_pyoptix(args: argparse.Namespace, data: dict[str, object]):
             },
         }
 
-    return owner, execute, {
+    return owner, execute, observe, {
         "pyoptix_ptx_sha256": hashlib.sha256(ptx).hexdigest(),
         "pyoptix_device_source_sha256": _sha(
             Path(__file__).resolve().parents[1]
@@ -200,24 +206,25 @@ def main() -> int:
     data = load_particle(args.data_root)
     prepare_started = time.perf_counter_ns()
     if args.arm == "rtdl":
-        owner, execute, metadata = _prepare_rtdl(args, data)
+        owner, execute, observe, metadata = _prepare_rtdl(args, data)
     else:
-        owner, execute, metadata = _prepare_pyoptix(args, data)
+        owner, execute, observe, metadata = _prepare_pyoptix(args, data)
     prepare_ns = time.perf_counter_ns() - prepare_started
     try:
         for _ in range(args.warmups):
             execute()
         samples = []
         last_output = None
-        last_evidence = None
+        last_execution = None
         for _ in range(args.samples):
             started = time.perf_counter_ns()
-            last_output, last_evidence = execute()
+            last_output, last_execution = execute()
             samples.append(time.perf_counter_ns() - started)
     finally:
         owner.close()
-    if last_output is None or last_evidence is None:
+    if last_output is None or last_execution is None:
         raise AssertionError("worker retained no output")
+    last_evidence = observe(last_execution)
     result = {
         "schema": "rtdl.v4.authored_particle_worker.v1",
         "status": "PASS",
