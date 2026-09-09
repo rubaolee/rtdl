@@ -83,14 +83,19 @@ def _project(columns, point_count: int) -> dict[str, object]:
     labels_in = np.asarray(
         columns["component_labels"].copy_to_host(), dtype=np.int64)
     core_in = np.asarray(columns["is_core"].copy_to_host(), dtype=np.int64)
+    counts_in = np.asarray(
+        columns["neighbor_counts"].copy_to_host(), dtype=np.uint32)
     labels = [-1] * point_count
     core = [False] * point_count
+    counts = [0] * point_count
     for index, point_id in enumerate(point_ids.tolist()):
         labels[int(point_id)] = int(labels_in[index])
         core[int(point_id)] = bool(core_in[index])
+        counts[int(point_id)] = int(counts_in[index])
     return {
         "canonical_component_labels": rt.canonical_partition_labels(labels),
         "core_flags": tuple(core),
+        "neighbor_counts": tuple(counts),
     }
 
 

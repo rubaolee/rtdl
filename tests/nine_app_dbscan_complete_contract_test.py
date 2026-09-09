@@ -8,6 +8,7 @@ ROOT = Path(__file__).resolve().parents[1]
 CORE = ROOT / "src/native/optix/rtdl_optix_core.cpp"
 ADAPTERS = ROOT / "src/rtdsl/partner_adapters.py"
 APP = ROOT / "Paper-reproduction-apps/rt-dbscan-paper/v4_whole_app.py"
+HOME_SMOKE = ROOT / "scripts/goal5776_home_rtdbscan_real_scale_smoke.py"
 
 
 class NineAppDbscanCompleteContractTest(unittest.TestCase):
@@ -49,6 +50,11 @@ class NineAppDbscanCompleteContractTest(unittest.TestCase):
         )
         self.assertIn(
             'boundary_assignment_policy="lowest_component_root_two_pass"', source)
+
+    def test_existing_gpu_smoke_projects_exact_neighbor_counts(self):
+        source = HOME_SMOKE.read_text(encoding="utf-8")
+        self.assertIn('columns["neighbor_counts"].copy_to_host()', source)
+        self.assertIn('"neighbor_counts": tuple(counts)', source)
 
 
 if __name__ == "__main__":
