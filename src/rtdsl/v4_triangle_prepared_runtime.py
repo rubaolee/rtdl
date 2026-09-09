@@ -207,6 +207,32 @@ def _raise(status, error, label):
 
 
 _PREPARED_QUERY_BATCH_TOKEN = object()
+_PREPARED_OUTPUT_DIGEST_CACHE_TOKEN = object()
+
+
+class _PreparedOutputDigestCache:
+    """Reuse a digest only after an exact comparison with immutable bytes."""
+
+    __slots__ = ("_digest", "_payload", "_token")
+
+    def __init__(self, *, token):
+        if token is not _PREPARED_OUTPUT_DIGEST_CACHE_TOKEN:
+            raise RuntimeError("prepared output digest cache requires its owner")
+        object.__setattr__(self, "_digest", None)
+        object.__setattr__(self, "_payload", None)
+        object.__setattr__(self, "_token", token)
+
+    def __setattr__(self, name, value):
+        raise AttributeError("prepared output digest cache is immutable")
+
+    def resolve(self, output):
+        payload = memoryview(output).cast("B").tobytes()
+        digest = self._digest
+        if self._payload != payload or digest is None:
+            digest = _bulk_u32x3_digest(output)
+            object.__setattr__(self, "_payload", payload)
+            object.__setattr__(self, "_digest", digest)
+        return digest
 
 
 class PreparedBuiltinTriangleQueryBatch:
@@ -215,7 +241,8 @@ class PreparedBuiltinTriangleQueryBatch:
     __slots__ = (
         "_binding_digest", "_count", "_directions", "_owner",
         "_host_output", "_host_output_pointer", "_native_token", "_origins",
-        "_pointers", "_semantic_digest", "_tmax", "_token",
+        "_output_digest_cache", "_pointers", "_semantic_digest", "_tmax",
+        "_token",
     )
 
     def __init__(
@@ -238,6 +265,11 @@ class PreparedBuiltinTriangleQueryBatch:
         object.__setattr__(self, "_native_token", int(native_token))
         object.__setattr__(self, "_host_output", host_output)
         object.__setattr__(self, "_host_output_pointer", host_output_pointer)
+        object.__setattr__(
+            self, "_output_digest_cache",
+            _PreparedOutputDigestCache(
+                token=_PREPARED_OUTPUT_DIGEST_CACHE_TOKEN),
+        )
         object.__setattr__(self, "_token", token)
 
     def __setattr__(self, name, value):
@@ -548,6 +580,10 @@ class PreparedBuiltinTriangleOwner:
                 or value._token is not _PREPARED_QUERY_BATCH_TOKEN \
                 or value._owner is not self \
                 or value._count <= 0 \
+                or type(value._output_digest_cache) \
+                    is not _PreparedOutputDigestCache \
+                or value._output_digest_cache._token \
+                    is not _PREPARED_OUTPUT_DIGEST_CACHE_TOKEN \
                 or (value._native_token != 0 and (
                     getattr(self, "_execute_query_batch", None) is None
                     or value._native_token not in getattr(
@@ -779,10 +815,12 @@ class PreparedBuiltinTriangleOwner:
                             tuple(map(int, row)) for row in expected_output):
                         raise RuntimeError(
                             "prepared built-in triangle output mismatch")
-                output_sha = (
-                    _bulk_u32x3_digest(observed)
-                    if partner_column_output else _digest(observed)
-                )
+                if packed_row_mode:
+                    output_sha = queries._output_digest_cache.resolve(observed)
+                elif partner_column_output:
+                    output_sha = _bulk_u32x3_digest(observed)
+                else:
+                    output_sha = _digest(observed)
                 if compact_columns:
                     receipt = audit.finish_validated_compact(
                         semantic_digest=semantic_digest,

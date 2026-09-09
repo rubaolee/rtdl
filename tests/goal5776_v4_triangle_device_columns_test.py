@@ -188,6 +188,21 @@ class Goal5776V4TriangleDeviceColumnsTest(unittest.TestCase):
         summary.success_status_d2h_bytes = triangle_runtime.ctypes.sizeof(
             triangle_runtime._CompactLifecycleSummary)
 
+    def test_prepared_output_digest_cache_reuses_only_equal_bytes(self):
+        cache = triangle_runtime._PreparedOutputDigestCache(
+            token=triangle_runtime._PREPARED_OUTPUT_DIGEST_CACHE_TOKEN)
+        first = np.array(((1, 2, 3),), dtype=np.uint32)
+        equal = first.copy()
+        changed = np.array(((1, 2, 4),), dtype=np.uint32)
+        with mock.patch.object(
+                triangle_runtime, "_bulk_u32x3_digest",
+                wraps=triangle_runtime._bulk_u32x3_digest) as digest:
+            first_sha = cache.resolve(first)
+            self.assertEqual(cache.resolve(equal), first_sha)
+            self.assertEqual(digest.call_count, 1)
+            self.assertNotEqual(cache.resolve(changed), first_sha)
+            self.assertEqual(digest.call_count, 2)
+
     def test_packed_row_results_are_owned_across_reuse_and_close(self):
         owner = self._query_batch_owner()
         owner._active = threading.Lock()
@@ -242,6 +257,10 @@ class Goal5776V4TriangleDeviceColumnsTest(unittest.TestCase):
         self.assertTrue(first.output.flags.owndata)
         self.assertFalse(first.output.flags.writeable)
         self.assertIsNot(first.output, host_output)
+        self.assertEqual(
+            batch._output_digest_cache.resolve(first.output),
+            first.output_sha256,
+        )
         owner.close()
         self.assertEqual(destroyed, [19])
         host_output.setflags(write=True)
