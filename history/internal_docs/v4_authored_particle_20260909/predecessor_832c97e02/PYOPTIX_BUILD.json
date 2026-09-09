@@ -1,0 +1,46 @@
+{
+  "compile_ns_diagnostic_only": 137901068,
+  "compile_time_in_primary_timer": false,
+  "compute_capability": [
+    8,
+    9
+  ],
+  "cuda_bindings_version": "12.9.7",
+  "cuda_header": {
+    "bytes": 1156988,
+    "path": "/usr/local/cuda-12.8/targets/x86_64-linux/include/cuda.h",
+    "sha256": "4568cc9e7a321e47707cd6403980f21ac2e2e55170500d0e0a3f54feb03a9acb"
+  },
+  "formal_worker_zero_reached": false,
+  "nvrtc_options": [
+    "--std=c++17",
+    "--device-as-default-execution-space",
+    "--relocatable-device-code=true",
+    "--gpu-architecture=compute_89",
+    "-I/tmp/rtdl-crossgpu/optix-dev/include",
+    "-I/usr/local/cuda-12.8/targets/x86_64-linux/include",
+    "-I/usr/local/cuda-12.8/targets/x86_64-linux/include/nv"
+  ],
+  "optix_device_header": {
+    "bytes": 79274,
+    "path": "/tmp/rtdl-crossgpu/optix-dev/include/optix_device.h",
+    "sha256": "dfd4f7db48315de784c6a309f2d04981108994d01548e4bd262f9ed7a30f6ff3"
+  },
+  "ptx": {
+    "bytes": 8203,
+    "path": "/tmp/rtdl-authored-particle-ptx-832c97e02/PYOPTIX_FACE_FIRST.ptx",
+    "sha256": "d563ac854f1c823a6f4471f3644b23d96f9e3500865718083fd8f5fec12011bc"
+  },
+  "python_executable": "/tmp/rtdl-crossgpu/venv/bin/python",
+  "python_version": "3.12.3",
+  "schema": "rtdl.v4.authored_particle.public_pyoptix_ptx_build.v1",
+  "source": {
+    "bytes": 4220,
+    "path": "/tmp/rtdl-dbscan-6d36dec08/experiments/v4_authored_particle/pyoptix_device.cu",
+    "sha256": "4dfc7537db8d7b2bb2fac80f1434360404ca107041cb3cd25681f46c7ea3443b"
+  },
+  "source_clean_after_build": true,
+  "source_commit": "832c97e0212b56b6e872fbfd8e5a71595dddc34d",
+  "source_tree": "9a978d1b829fe45da067ba10c65c0763136d38d1",
+  "status": "PASS__AUTHORED_PARTICLE_PUBLIC_PYOPTIX_PTX_BUILT"
+}

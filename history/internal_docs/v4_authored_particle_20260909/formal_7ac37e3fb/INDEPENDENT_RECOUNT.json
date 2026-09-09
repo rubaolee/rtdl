@@ -1,0 +1,143 @@
+{
+  "archive": {
+    "bytes": 3646630,
+    "path": "/private/tmp/rtdl-dbscan-nineapp-354f89bf4/history/internal_docs/v4_authored_particle_20260909/formal_7ac37e3fb/TRANSACTION.tar.gz",
+    "sha256": "81cc380f42359010d5cf1ea11c25619fc66e16f1de2228152f82303564b9f695"
+  },
+  "block_bootstrap_95_percent": [
+    1.077594013937506,
+    1.1384719450739
+  ],
+  "block_rows": [
+    {
+      "block": 0,
+      "order": [
+        "rtdl",
+        "pyoptix"
+      ],
+      "pyoptix_median_ns": 155335,
+      "rtdl_median_ns": 167685,
+      "rtdl_over_pyoptix": 1.0795055847040267
+    },
+    {
+      "block": 1,
+      "order": [
+        "pyoptix",
+        "rtdl"
+      ],
+      "pyoptix_median_ns": 150455,
+      "rtdl_median_ns": 172326,
+      "rtdl_over_pyoptix": 1.1453657239706225
+    },
+    {
+      "block": 2,
+      "order": [
+        "rtdl",
+        "pyoptix"
+      ],
+      "pyoptix_median_ns": 147835,
+      "rtdl_median_ns": 168306,
+      "rtdl_over_pyoptix": 1.1384719450739
+    },
+    {
+      "block": 3,
+      "order": [
+        "pyoptix",
+        "rtdl"
+      ],
+      "pyoptix_median_ns": 150655,
+      "rtdl_median_ns": 167316,
+      "rtdl_over_pyoptix": 1.110590421824699
+    },
+    {
+      "block": 4,
+      "order": [
+        "pyoptix",
+        "rtdl"
+      ],
+      "pyoptix_median_ns": 150235,
+      "rtdl_median_ns": 166945,
+      "rtdl_over_pyoptix": 1.1112257463307484
+    },
+    {
+      "block": 5,
+      "order": [
+        "rtdl",
+        "pyoptix"
+      ],
+      "pyoptix_median_ns": 155695,
+      "rtdl_median_ns": 167776,
+      "rtdl_over_pyoptix": 1.077594013937506
+    },
+    {
+      "block": 6,
+      "order": [
+        "pyoptix",
+        "rtdl"
+      ],
+      "pyoptix_median_ns": 157005,
+      "rtdl_median_ns": 166606,
+      "rtdl_over_pyoptix": 1.061150918760549
+    },
+    {
+      "block": 7,
+      "order": [
+        "rtdl",
+        "pyoptix"
+      ],
+      "pyoptix_median_ns": 153575,
+      "rtdl_median_ns": 168415,
+      "rtdl_over_pyoptix": 1.0966303109230018
+    }
+  ],
+  "claim_boundary": {
+    "external_review_completed": false,
+    "natural_at_least_one_second_task": false,
+    "paper_claim_authorized": false,
+    "prepared_5000_query_task_only": true
+  },
+  "complete_expected_output": {
+    "bytes": 60128,
+    "path": "/private/tmp/rtdl-dbscan-nineapp-354f89bf4/history/internal_docs/v4_authored_particle_20260909/formal_7ac37e3fb/EXPECTED_U32.npy",
+    "sha256": "84535828b61be745df5cdc1faee5c343b810df504b8f57404921c1d2d8b9130d"
+  },
+  "controller_result": {
+    "bytes": 1592975,
+    "path": "/private/tmp/particle-formal-recount-7ac37e3fb-v1/rtdl-authored-particle-formal-7ac37e3fb/formal/RESULT.json",
+    "sha256": "5468dc947e02fe50ff640359c5971faf5a12c99068e6b5f7d551db45ec53d27c"
+  },
+  "data_manifest": {
+    "bytes": 2507,
+    "path": "/private/tmp/rtdl-dbscan-nineapp-354f89bf4/history/internal_docs/v4_authored_particle_20260909/formal_7ac37e3fb/PARTICLE_DATA_MANIFEST.json",
+    "sha256": "c6678099ecff9581726781a765213d5b0890f20ada70561b09dd6dd94a4009af"
+  },
+  "discard_count": 0,
+  "engineering_targets_passed": true,
+  "gpu": {
+    "compute_capability": "8.9",
+    "driver": "550.127.05",
+    "name": "NVIDIA RTX 4000 Ada Generation",
+    "uuid": "GPU-2a00572b-6cef-b9e6-db0a-c127783a5d46"
+  },
+  "independent_oracle_sha256": "7351cc39534961f5c0626cbf6f6e6039305ca200307bca63decc06ce4f810c99",
+  "input_sha256": "c6678099ecff9581726781a765213d5b0890f20ada70561b09dd6dd94a4009af",
+  "lifecycle_ns": {
+    "pyoptix": 480718877,
+    "rtdl": 4698472585
+  },
+  "lifecycle_rtdl_over_pyoptix": 9.773846648838797,
+  "lifecycle_worker_count": 2,
+  "output_sha256": "452ec9df2d8ee3c3a274dcbe4e175df305380f25793472e05da448e9556ed73b",
+  "paired_median_rtdl_over_pyoptix": 1.1036103663738503,
+  "primary_timed_call_count": 3440,
+  "primary_worker_count": 16,
+  "retry_count": 0,
+  "schema": "rtdl.nine_app.authored_particle.independent_recount.v1",
+  "source_commit": "7ac37e3fb02269d2b812b3bb8d7da741c64bb0bf",
+  "source_tree": "3e907a05b57ac0b975ef07732e1e0921f0ef36d8",
+  "status": "PASS__INDEPENDENT_RAW_RECONSTRUCTION",
+  "true_optix_pyoptix_worker_count": 9,
+  "true_optix_rtdl_worker_count": 9,
+  "worker_count": 18,
+  "worst_block_rtdl_over_pyoptix": 1.1453657239706225
+}

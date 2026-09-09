@@ -3,11 +3,14 @@ from __future__ import annotations
 import importlib.util
 from pathlib import Path
 import sys
+import tarfile
+import tempfile
 import unittest
 
 
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "scripts/nine_app_authored_particle_independent_recount.py"
+EVIDENCE = ROOT / "history/internal_docs/v4_authored_particle_20260909/formal_7ac37e3fb"
 
 
 def _load():
@@ -37,6 +40,23 @@ class NineAppAuthoredParticleIndependentRecountTest(unittest.TestCase):
     def test_same_float_is_exact_to_binary_roundoff_scale(self):
         self.assertTrue(self.recount._same_float(1.0, 1.0 + 1e-16))
         self.assertFalse(self.recount._same_float(1.0, 1.0 + 1e-12))
+
+    def test_preserved_transaction_reconstructs_from_raw_workers(self):
+        archive = EVIDENCE / "TRANSACTION.tar.gz"
+        with tempfile.TemporaryDirectory() as temporary:
+            with tarfile.open(archive, "r:gz") as stream:
+                stream.extractall(temporary, filter="data")
+            result = self.recount.recount(
+                root=Path(temporary),
+                archive=archive,
+                data_manifest=EVIDENCE / "PARTICLE_DATA_MANIFEST.json",
+                expected_output=EVIDENCE / "EXPECTED_U32.npy",
+            )
+        self.assertEqual(
+            result["status"], "PASS__INDEPENDENT_RAW_RECONSTRUCTION")
+        self.assertEqual(result["worker_count"], 18)
+        self.assertEqual(result["primary_timed_call_count"], 3_440)
+        self.assertTrue(result["engineering_targets_passed"])
 
 if __name__ == "__main__":
     unittest.main()

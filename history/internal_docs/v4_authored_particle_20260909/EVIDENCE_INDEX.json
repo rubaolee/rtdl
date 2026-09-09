@@ -1,0 +1,44 @@
+{
+  "claim_boundary": {
+    "external_review_completed": false,
+    "natural_at_least_one_second_task": false,
+    "paper_claim_authorized": false,
+    "prepared_5000_query_internal_engineering_result": true
+  },
+  "current_transaction": {
+    "files": [
+      {"bytes": 85118, "path": "formal_7ac37e3fb/CALIBRATION.json", "sha256": "077f388f62408c639cd4abc219987b26558fb036e0e898a5d657ecf341b2b7b3"},
+      {"bytes": 60128, "path": "formal_7ac37e3fb/EXPECTED_U32.npy", "sha256": "84535828b61be745df5cdc1faee5c343b810df504b8f57404921c1d2d8b9130d"},
+      {"bytes": 9610, "path": "formal_7ac37e3fb/FORMAL_REPORT.md", "sha256": "26bd329ea4dfb99e1aa19129226b4f71ad54cb755d74f4d449e63b039777be41"},
+      {"bytes": 4225, "path": "formal_7ac37e3fb/INDEPENDENT_RECOUNT.json", "sha256": "f0cd05ef3debacaf23cd6d317a7c36b42b9d722f1350cd22aec1b264f5403fe2"},
+      {"bytes": 316932, "path": "formal_7ac37e3fb/NATIVE_BUILD.json", "sha256": "addc8a1d2edb841abc7600cb6b515c698afcba376fb2b26d123bcf3f409d433e"},
+      {"bytes": 2507, "path": "formal_7ac37e3fb/PARTICLE_DATA_MANIFEST.json", "sha256": "c6678099ecff9581726781a765213d5b0890f20ada70561b09dd6dd94a4009af"},
+      {"bytes": 7111, "path": "formal_7ac37e3fb/PREREGISTRATION.json", "sha256": "18e969a711c3767017ef9fbc0d8044bbd73c39b9faeaf728de306e626bd58c6b"},
+      {"bytes": 1728, "path": "formal_7ac37e3fb/PYOPTIX_BUILD.json", "sha256": "bb9c326085bc3504559fea83068d29beba556a1e6201ef3770531494b9cc96ac"},
+      {"bytes": 1592975, "path": "formal_7ac37e3fb/RESULT.json", "sha256": "5468dc947e02fe50ff640359c5971faf5a12c99068e6b5f7d551db45ec53d27c"},
+      {"bytes": 3257, "path": "formal_7ac37e3fb/SELF_REVIEW.md", "sha256": "f320fbf4e049e9624e98200dfac5d8e00d84af61f6c08aabb74d0bca170ae737"},
+      {"bytes": 3646630, "path": "formal_7ac37e3fb/TRANSACTION.tar.gz", "sha256": "81cc380f42359010d5cf1ea11c25619fc66e16f1de2228152f82303564b9f695"}
+    ],
+    "source_commit": "7ac37e3fb02269d2b812b3bb8d7da741c64bb0bf",
+    "source_tree": "3e907a05b57ac0b975ef07732e1e0921f0ef36d8",
+    "status": "PASS__INTERNAL_ENGINEERING_TARGETS__EXTERNAL_REVIEW_PENDING"
+  },
+  "predecessor_transaction": {
+    "files": [
+      {"bytes": 5086, "path": "predecessor_832c97e02/CALIBRATION.json", "sha256": "b4013ef329e758cf630a2c8447d9f1fb1bd487e3095d90cf2d8117313497bc2b"},
+      {"bytes": 60128, "path": "predecessor_832c97e02/EXPECTED_U32.npy", "sha256": "84535828b61be745df5cdc1faee5c343b810df504b8f57404921c1d2d8b9130d"},
+      {"bytes": 4234, "path": "predecessor_832c97e02/INDEPENDENT_RECOUNT.json", "sha256": "91aafa5b133c8a10540860b74b5d0c0fc93f61bf9cccfb861639d1252f9830a3"},
+      {"bytes": 316932, "path": "predecessor_832c97e02/NATIVE_BUILD.json", "sha256": "d0ee27404a84746dc17e37249a4cffadb872489bc3e7514fd9e6957e8984efb5"},
+      {"bytes": 2507, "path": "predecessor_832c97e02/PARTICLE_DATA_MANIFEST.json", "sha256": "c6678099ecff9581726781a765213d5b0890f20ada70561b09dd6dd94a4009af"},
+      {"bytes": 7110, "path": "predecessor_832c97e02/PREREGISTRATION.json", "sha256": "f1157669fa5f29c8c6a945217dcf6290f1ac3b951f7df546c02e8ee1ba95815c"},
+      {"bytes": 1728, "path": "predecessor_832c97e02/PYOPTIX_BUILD.json", "sha256": "51a19565fd63031316fc3e4d01a577c0d2758c0ad86899b37e960322c2c27d98"},
+      {"bytes": 152319, "path": "predecessor_832c97e02/RESULT.json", "sha256": "6cafcad572c946f662ea42e4b56dfe5cbf56ddea419b7e7265b70e61494855e1"},
+      {"bytes": 2535319, "path": "predecessor_832c97e02/TRANSACTION.tar.gz", "sha256": "0521cadf543daeaf11be892f635b754d94df764259a7d54a5c6f706202471bdf"}
+    ],
+    "limitation": "Worker output hashes retained, but complete worker output bytes absent.",
+    "source_commit": "832c97e0212b56b6e872fbfd8e5a71595dddc34d",
+    "source_tree": "9a978d1b829fe45da067ba10c65c0763136d38d1",
+    "status": "PRESERVED_PREDECESSOR_NOT_POOLED"
+  },
+  "schema": "rtdl.v4.authored_particle.evidence_index.v1"
+}

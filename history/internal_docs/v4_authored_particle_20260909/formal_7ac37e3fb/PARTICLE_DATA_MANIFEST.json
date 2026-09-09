@@ -1,0 +1,95 @@
+{
+  "claim_boundary": {
+    "author_random_particle_bytes_reproduced": false,
+    "full_50000_step_advection": false,
+    "full_author_query_count": true,
+    "full_mesh": true,
+    "performance_result_created": false
+  },
+  "members": {
+    "back_values_u32.npy": {
+      "dtype": "uint32",
+      "sha256": "935e80ed075028c79d3330936a952dffd0e481794175ad6dded467b418596439",
+      "shape": [
+        3392530
+      ],
+      "size_bytes": 13570248
+    },
+    "expected_u32.npy": {
+      "dtype": "uint32",
+      "sha256": "84535828b61be745df5cdc1faee5c343b810df504b8f57404921c1d2d8b9130d",
+      "shape": [
+        5000,
+        3
+      ],
+      "size_bytes": 60128
+    },
+    "front_values_u32.npy": {
+      "dtype": "uint32",
+      "sha256": "35bba630fabf4a164bc28401bdfdd75d47642b7316341c1075ea531dde68a3aa",
+      "shape": [
+        3392530
+      ],
+      "size_bytes": 13570248
+    },
+    "queries_f32.npy": {
+      "dtype": "float32",
+      "sha256": "3c4b63df3f09455842b1abb5035f1105030642f07b39233db9aad9f1d61936fa",
+      "shape": [
+        5000,
+        7
+      ],
+      "size_bytes": 140128
+    },
+    "query_cells_u32.npy": {
+      "dtype": "uint32",
+      "sha256": "6fd422dcab68b20a6e4bfcc5eab70c2878905b26aa321481edfc44f210016bac",
+      "shape": [
+        5000
+      ],
+      "size_bytes": 20128
+    },
+    "triangles_u32.npy": {
+      "dtype": "uint32",
+      "sha256": "6f61ba24fa04d230eef480d587a0e3f47c8c54f6fa56cc7cef5c758f3b50e3a0",
+      "shape": [
+        3392530,
+        3
+      ],
+      "size_bytes": 40710488
+    },
+    "vertices_f32.npy": {
+      "dtype": "float32",
+      "sha256": "ac0db970ebf2e9d64e3f5301327c710261e7b00497c5f1cb197e7ce3472bc5d3",
+      "shape": [
+        314587,
+        3
+      ],
+      "size_bytes": 3775172
+    }
+  },
+  "mesh": {
+    "maximum_edge_length": 0.29829341173171997,
+    "tetrahedron_count": 1659240,
+    "unique_face_count": 3392530,
+    "vertex_count": 314587
+  },
+  "queries": {
+    "author_default_count": 5000,
+    "construction": "strict_interior_convex_combinations_v1",
+    "count": 5000,
+    "direction": [
+      1.0,
+      1e-10,
+      1e-10
+    ],
+    "route_independent_expected_cell": true,
+    "seed_box_eligible_tetrahedra": 3636
+  },
+  "schema": "rtdl.goal5776.particle_real_scale_input.v1",
+  "source": {
+    "path": "/tmp/rtdl-authored-particle/solution_4_crlf.vtu",
+    "public_author_commit": "5cfe63fed227c238905a8f24082b59b5d3160966",
+    "sha256": "b6be6c692256e73ea9f93d71dc81ad99478b49ec3866a9ab0109da35f72c57b8"
+  }
+}
