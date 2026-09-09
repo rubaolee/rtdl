@@ -318,6 +318,15 @@ def _register_audit_abi(library: object) -> None:
 
 def _call_status(symbol: object, *args: object) -> None:
     error = ctypes.create_string_buffer(_ERROR_CAPACITY)
+    _call_status_with_buffer(symbol, error, *args)
+
+
+def _call_status_with_buffer(
+    symbol: object, error: object, *args: object,
+) -> None:
+    if ctypes.sizeof(error) < _ERROR_CAPACITY:
+        raise ValueError("native traversal audit error buffer is too small")
+    error[0] = b"\0"
     status = int(symbol(*args, error, len(error)))
     if status != 0:
         detail = error.value.decode("utf-8", errors="replace")
@@ -1121,6 +1130,7 @@ class OptixTraversalAuditSession:
     provider_library_sha256: str
     nonce_hi: int
     nonce_lo: int
+    _error_buffer: object
     _active: bool = False
 
     @classmethod
@@ -1130,6 +1140,7 @@ class OptixTraversalAuditSession:
         library: object | None = None,
         library_path: Path | None = None,
         nonce: tuple[int, int] | None = None,
+        _error_buffer: object | None = None,
     ) -> "OptixTraversalAuditSession":
         if library is None:
             from . import optix_runtime
@@ -1162,15 +1173,21 @@ class OptixTraversalAuditSession:
             raise ValueError("traversal audit nonce must be nonzero")
 
         _register_audit_abi(library)
+        error_buffer = (
+            ctypes.create_string_buffer(_ERROR_CAPACITY)
+            if _error_buffer is None else _error_buffer
+        )
         session = cls(
             library=library,
             library_path=resolved_library_path,
             provider_library_sha256=provider_library_sha256,
             nonce_hi=nonce_hi,
             nonce_lo=nonce_lo,
+            _error_buffer=error_buffer,
         )
-        _call_status(
+        _call_status_with_buffer(
             library.rtdl_optix_traversal_audit_begin,
+            error_buffer,
             nonce_hi,
             nonce_lo,
         )
@@ -1181,8 +1198,9 @@ class OptixTraversalAuditSession:
         if not self._active:
             return
         try:
-            _call_status(
+            _call_status_with_buffer(
                 self.library.rtdl_optix_traversal_audit_abort,
+                self._error_buffer,
                 self.nonce_hi,
                 self.nonce_lo,
             )
@@ -1201,8 +1219,9 @@ class OptixTraversalAuditSession:
 
         snapshot = _NativeTraversalAuditSnapshot()
         try:
-            _call_status(
+            _call_status_with_buffer(
                 self.library.rtdl_optix_traversal_audit_finish,
+                self._error_buffer,
                 self.nonce_hi,
                 self.nonce_lo,
                 ctypes.byref(snapshot),
@@ -1249,8 +1268,9 @@ class OptixTraversalAuditSession:
             raise RuntimeError("traversal audit session is not active")
         snapshot = _NativeTraversalAuditSnapshot()
         try:
-            _call_status(
+            _call_status_with_buffer(
                 self.library.rtdl_optix_traversal_audit_finish,
+                self._error_buffer,
                 self.nonce_hi,
                 self.nonce_lo,
                 ctypes.byref(snapshot),

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import ctypes
 import hashlib
 from pathlib import Path
 from types import SimpleNamespace
@@ -49,6 +50,20 @@ def _audit_library(path: Path):
 
 
 class Goal5775LoadedProviderIdentityTest(unittest.TestCase):
+    def test_audit_session_reuses_caller_owned_error_buffer(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            path = Path(temporary) / "librtdl_optix.so"
+            path.write_bytes(b"provider")
+            library = _audit_library(path)
+            error = ctypes.create_string_buffer(provenance._ERROR_CAPACITY)
+            error.value = b"stale error"
+            session = provenance.OptixTraversalAuditSession.open(
+                library=library, nonce=(1, 2), _error_buffer=error)
+            self.assertIs(session._error_buffer, error)
+            session.capture()
+            self.assertEqual(library.rtdl_optix_traversal_audit_begin.calls, 1)
+            self.assertEqual(library.rtdl_optix_traversal_audit_finish.calls, 1)
+
     def test_audit_hashes_external_handle_once_but_receipts_stay_fresh(self):
         with tempfile.TemporaryDirectory() as temporary:
             path = Path(temporary) / "librtdl_optix.so"

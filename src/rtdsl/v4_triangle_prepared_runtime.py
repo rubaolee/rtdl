@@ -455,6 +455,9 @@ class PreparedBuiltinTriangleOwner:
         self._closed = False
         self._execution_count = 0
         self._audit_sequence = 0
+        self._audit_nonce_hi = secrets.randbits(64) or 1
+        self._audit_error_buffer = ctypes.create_string_buffer(16384)
+        self._execution_error_buffer = ctypes.create_string_buffer(16384)
         self._native_query_batch_tokens = set()
         self.prepare_seconds = time.perf_counter() - started
         self._session_identity = _digest({
@@ -532,7 +535,10 @@ class PreparedBuiltinTriangleOwner:
         if prepare_device_rows is not None:
             returned_token = ctypes.c_uint64()
             returned_output = ctypes.POINTER(ctypes.c_uint32)()
-            error = ctypes.create_string_buffer(16384)
+            error = getattr(self, "_execution_error_buffer", None)
+            if error is None:
+                error = ctypes.create_string_buffer(16384)
+            error[0] = b"\0"
             _raise(int(prepare_device_rows(
                 self._token,
                 origins.ctypes.data_as(ctypes.POINTER(ctypes.c_float)),
@@ -708,7 +714,10 @@ class PreparedBuiltinTriangleOwner:
                 output_0 = (ctypes.c_uint32 * count)()
                 output_1 = (ctypes.c_uint32 * count)()
                 output_2 = (ctypes.c_uint32 * count)()
-            error = ctypes.create_string_buffer(16384)
+            error = getattr(self, "_execution_error_buffer", None)
+            if error is None:
+                error = ctypes.create_string_buffer(16384)
+            error[0] = b"\0"
             compact_columns = partner_column_output and self._execute_columns is not None
             compact_columns = compact_columns or (
                 partner_column_output and packed_row_mode)
@@ -724,7 +733,12 @@ class PreparedBuiltinTriangleOwner:
             self._audit_sequence += 1
             audit = OptixTraversalAuditSession.open(
                 library=self._library,
-                nonce=(secrets.randbits(64) or 1, self._audit_sequence),
+                nonce=(
+                    getattr(self, "_audit_nonce_hi", None)
+                    or (secrets.randbits(64) or 1),
+                    self._audit_sequence,
+                ),
+                _error_buffer=getattr(self, "_audit_error_buffer", None),
             )
             try:
                 if compact_columns:
