@@ -21,6 +21,12 @@ from .v4_callback_optix_wrapper_codegen import (
     _indent,
     _prototype,
 )
+from .v4_callback_cuda_inline_codegen import (
+    CudaInlineLoweringError,
+    cuda_inline_value,
+    cuda_inline_view,
+    lower_straight_line_effect_to_cuda,
+)
 from .v4_typed_physical_schema import (
     AdjacencySide,
     BufferSemantic,
@@ -310,13 +316,8 @@ static __forceinline__ __device__ bool v4_commit_leaf_status(
     } else if (expected_role == 5u || expected_role == 6u) {
         // Structured native-closest raygen invokes make-ray and finalize once
         // per successful query.  Only the closest/miss terminal choice needs
-        // a contended runtime count in compact mode.  Native admission bounds
-        // query_count to UINT32_MAX, so each terminal count fits its low word;
-        // using a 32-bit atomic avoids unnecessary 64-bit contention while the
-        // public status layout remains an exactly zero-extended u64 counter.
-        unsigned int* compact_counter = reinterpret_cast<unsigned int*>(
-            params.role_counters + expected_role - 1u);
-        atomicAdd(compact_counter, 1u);
+        // a contended runtime count in compact mode.
+        atomicAdd(params.role_counters + expected_role - 1u, 1ull);
     }
     return true;
 }
@@ -349,6 +350,113 @@ static __forceinline__ __device__ bool v4_commit_leaf_status(
     payload_args = ", ".join(f"payload_{index}" for index in range(3))
 
     if hit_selection_policy is TriangleHitSelectionPolicy.PROVIDER_NATIVE_CLOSEST:
+        make_ray_function = program.function_for_role(CallbackRole.MAKE_RAY)
+        miss_function = program.function_for_role(CallbackRole.MISS)
+        finalize_function = program.function_for_role(CallbackRole.FINALIZE)
+        inline_projections = None
+        try:
+            inline_make_ray = lower_straight_line_effect_to_cuda(
+                fresh.callback,
+                make_ray_function,
+                {
+                    make_ray_function.arguments[0].name: cuda_inline_value(
+                        make_ray_function.arguments[0].value_type, q),
+                    make_ray_function.arguments[1].name: cuda_inline_view(
+                        make_ray_function.arguments[1].value_type,
+                        (
+                            "params.query_ox", "params.query_oy",
+                            "params.query_oz", "params.query_dx",
+                            "params.query_dy", "params.query_dz",
+                            "params.query_tmax",
+                        ),
+                        "params.query_count",
+                    ),
+                },
+                prefix="make_ray",
+                failure_statement=(
+                    "v4_first_error(query, 0xffff1101u, 0u, 0u, query, "
+                    "0u, 0u, 0u); return;"),
+            )
+            inline_closest = lower_straight_line_effect_to_cuda(
+                fresh.callback,
+                closest_function,
+                {
+                    closest_function.arguments[0].name: cuda_inline_value(
+                        closest_function.arguments[0].value_type,
+                        "optixGetRayTmax()", "primitive_index", "hit_kind",
+                        "barycentrics.x", "barycentrics.y",
+                    ),
+                    closest_function.arguments[1].name: cuda_inline_value(
+                        closest_function.arguments[1].value_type,
+                        *(f"optixGetPayload_{index}()" for index in range(3)),
+                    ),
+                    closest_function.arguments[2].name: cuda_inline_view(
+                        closest_function.arguments[2].value_type,
+                        (first_view_source,), "params.primitive_count"),
+                    closest_function.arguments[3].name: cuda_inline_view(
+                        closest_function.arguments[3].value_type,
+                        (second_view_source,), "params.primitive_count"),
+                },
+                prefix="closest_hit",
+                failure_statement=(
+                    "v4_first_error(query, 0xffff1102u, 0u, 0u, query, "
+                    "0u, 0u, 0u); return;"),
+            )
+            inline_miss = lower_straight_line_effect_to_cuda(
+                fresh.callback,
+                miss_function,
+                {
+                    miss_function.arguments[0].name: cuda_inline_value(
+                        miss_function.arguments[0].value_type,
+                        "ray_origin.x", "ray_origin.y", "ray_origin.z",
+                        "ray_direction.x", "ray_direction.y",
+                        "ray_direction.z", "optixGetRayTmin()",
+                        "optixGetRayTmax()",
+                    ),
+                    miss_function.arguments[1].name: cuda_inline_value(
+                        miss_function.arguments[1].value_type,
+                        *(f"optixGetPayload_{index}()" for index in range(3)),
+                    ),
+                },
+                prefix="miss",
+                failure_statement=(
+                    "v4_first_error(query, 0xffff1103u, 0u, 0u, query, "
+                    "0u, 0u, 0u); return;"),
+            )
+            inline_finalize = lower_straight_line_effect_to_cuda(
+                fresh.callback,
+                finalize_function,
+                {
+                    finalize_function.arguments[0].name: cuda_inline_value(
+                        finalize_function.arguments[0].value_type,
+                        *(f"payload_{index}" for index in range(3)),
+                    ),
+                },
+                prefix="finalize",
+                failure_statement=(
+                    "v4_first_error(query, 0xffff1104u, 0u, 0u, query, "
+                    "0u, 0u, 0u); return;"),
+            )
+            expected_inline_effects = (
+                EffectKind.TRACE_REQUEST, EffectKind.PAYLOAD,
+                EffectKind.PAYLOAD, EffectKind.OUTPUT,
+            )
+            observed_inline_effects = tuple(item.effect_kind for item in (
+                inline_make_ray, inline_closest, inline_miss,
+                inline_finalize,
+            ))
+            if observed_inline_effects != expected_inline_effects:
+                raise CudaInlineLoweringError(
+                    "inline role effects differ from triangle topology")
+            inline_projections = (
+                inline_make_ray, inline_closest, inline_miss,
+                inline_finalize,
+            )
+        except CudaInlineLoweringError:
+            # The ordinary verified Numba leaf path remains authoritative for
+            # every role outside the structural straight-line subset.
+            inline_projections = None
+
         native_closest_inputs = {
             "in.context.launch_index": q,
             "in.hit.t": "optixGetRayTmax()",
@@ -396,10 +504,87 @@ static __forceinline__ __device__ bool v4_commit_leaf_status(
             for index, name in enumerate(payload_fields)
         )
 
+        inline_raygen = ""
+        inline_closest_body = ""
+        inline_miss_body = ""
+        inline_manifest = "// RTDL_INLINE_STRAIGHT_LINE_PROJECTION=disabled"
+        if inline_projections is not None:
+            inline_make_ray, inline_closest, inline_miss, inline_finalize = (
+                inline_projections)
+            make_fields = {
+                name: value for name, value in inline_make_ray.fields}
+            closest_fields = {
+                name: value for name, value in inline_closest.fields}
+            miss_fields = {name: value for name, value in inline_miss.fields}
+            finalize_fields = {
+                name: value for name, value in inline_finalize.fields}
+            make_payload = make_fields["payload"]
+            closest_payload = closest_fields["payload"]
+            miss_payload = miss_fields["payload"]
+            finalize_output = finalize_fields["value"]
+            inline_identity = hashlib.sha256("".join(
+                item.lowering_sha256 for item in inline_projections
+            ).encode("ascii")).hexdigest()
+            inline_manifest = (
+                "// RTDL_INLINE_STRAIGHT_LINE_PROJECTION=enabled;SHA256="
+                + inline_identity)
+            inline_raygen = f'''
+    if (params.status == nullptr) {{
+{_indent(chr(10).join(inline_make_ray.lines), 8)}
+        unsigned int payload_0 = {make_payload[0]};
+        unsigned int payload_1 = {make_payload[1]};
+        unsigned int payload_2 = {make_payload[2]};
+        optixTrace(params.traversable,
+            make_float3({make_fields['origin'][0]}, {make_fields['origin'][1]},
+                        {make_fields['origin'][2]}),
+            make_float3({make_fields['direction'][0]},
+                        {make_fields['direction'][1]},
+                        {make_fields['direction'][2]}),
+            {make_fields['tmin'][0]}, {make_fields['tmax'][0]}, 0.0f,
+            OptixVisibilityMask(255), OPTIX_RAY_FLAG_DISABLE_ANYHIT,
+            0, 1, 0, payload_0, payload_1, payload_2);
+        if (params.compact_control != nullptr &&
+                params.compact_control->first_error_claimed != 0u) return;
+{_indent(chr(10).join(inline_finalize.lines), 8)}
+        if (params.output_rows != nullptr) {{
+            const unsigned int row = query * 3u;
+            params.output_rows[row + 0u] = {finalize_output[0]};
+            params.output_rows[row + 1u] = {finalize_output[1]};
+            params.output_rows[row + 2u] = {finalize_output[2]};
+        }} else {{
+            params.output_0[query] = {finalize_output[0]};
+            params.output_1[query] = {finalize_output[1]};
+            params.output_2[query] = {finalize_output[2]};
+        }}
+        return;
+    }}
+'''
+            inline_closest_body = f'''
+    if (params.status == nullptr) {{
+{_indent(chr(10).join(inline_closest.lines), 8)}
+        optixSetPayload_0({closest_payload[0]});
+        optixSetPayload_1({closest_payload[1]});
+        optixSetPayload_2({closest_payload[2]});
+        atomicAdd(params.role_counters + 4u, 1ull);
+        return;
+    }}
+'''
+            inline_miss_body = f'''
+    if (params.status == nullptr) {{
+{_indent(chr(10).join(inline_miss.lines), 8)}
+        optixSetPayload_0({miss_payload[0]});
+        optixSetPayload_1({miss_payload[1]});
+        optixSetPayload_2({miss_payload[2]});
+        atomicAdd(params.role_counters + 5u, 1ull);
+        return;
+    }}
+'''
+
         native_raygen = f'''
 extern "C" __global__ void __raygen__rtdl_v4_triangle() {{
     const unsigned int query = optixGetLaunchIndex().x;
     if (query >= params.query_count) return;
+{inline_raygen}
     if (params.status != nullptr)
         params.status[query] = {{0u, 0u, 0u, 0u, (unsigned long long)query, 0u, 0u, 0u, 0u}};
     if (params.observed_primitive_index != nullptr)
@@ -452,6 +637,7 @@ extern "C" __global__ void __closesthit__rtdl_v4_triangle_native() {{
             !isfinite(barycentrics.y)) {{
         v4_first_error(query, 0xffff1004u, 0u, 0u, query, 0u, 0u, 0u); return;
     }}
+{inline_closest_body}
     if (params.observed_primitive_index != nullptr)
         params.observed_primitive_index[query] = primitive_index;
     if (params.observed_hit_kind != nullptr)
@@ -473,6 +659,7 @@ extern "C" __global__ void __miss__rtdl_v4_triangle() {{
     if (query >= params.query_count) return;
     const float3 ray_origin = optixGetWorldRayOrigin();
     const float3 ray_direction = optixGetWorldRayDirection();
+{inline_miss_body}
 {_indent(native_ms, 4)}
     if ({native_ms_out['out.effect_tag']} != {_effect_tag(roles[CallbackRole.MISS], EffectKind.PAYLOAD)}u) {{
         v4_first_error(query, 0xffff1006u, 0u, 0u, query, 0u, {native_ms_out['out.effect_tag']}, 0u); return;
@@ -481,7 +668,8 @@ extern "C" __global__ void __miss__rtdl_v4_triangle() {{
 }}
 '''
         source = (
-            common + "\n" + metadata_binding_manifest + "\n" + prototypes
+            common + "\n" + metadata_binding_manifest + "\n"
+            + inline_manifest + "\n" + prototypes
             + "\n" + native_raygen + native_closest + native_miss
         )
         return GeneratedOptixWrapper(

@@ -64,6 +64,13 @@ class V4AuthoredParticleTest(unittest.TestCase):
                 supports_builtin_triangle=True,
             )
             program = verified.compile(physical_plan=plan, target=target)
+        wrapper_source = program._expected_wrapper.source
+        self.assertIn(
+            "RTDL_INLINE_STRAIGHT_LINE_PROJECTION=enabled", wrapper_source)
+        self.assertIn("_rtdl_inline_make_ray_let_1_0", wrapper_source)
+        self.assertIn("_rtdl_inline_closest_hit_let_1_0", wrapper_source)
+        self.assertIn("_rtdl_inline_finalize_let_1_0", wrapper_source)
+        self.assertNotIn("particle_face_first_transition", wrapper_source)
         self.assertEqual(
             {item.role for item in program.callback.program.functions},
             {

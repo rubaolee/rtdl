@@ -556,11 +556,6 @@ class Goal5776V4TriangleDeviceColumnsTest(unittest.TestCase):
             "atomicAdd(&params.compact_control->validated_row_count", codegen)
         self.assertIn(
             "expected_role == 5u || expected_role == 6u", codegen)
-        self.assertIn(
-            "unsigned int* compact_counter = reinterpret_cast<unsigned int*>(",
-            codegen,
-        )
-        self.assertIn("atomicAdd(compact_counter, 1u)", codegen)
         self.assertIn("initial.validated_row_count = query_count", native)
         self.assertIn("initial.role_counters[1] = query_count", native)
         self.assertIn("initial.role_counters[6] = query_count", native)
