@@ -310,8 +310,13 @@ static __forceinline__ __device__ bool v4_commit_leaf_status(
     } else if (expected_role == 5u || expected_role == 6u) {
         // Structured native-closest raygen invokes make-ray and finalize once
         // per successful query.  Only the closest/miss terminal choice needs
-        // a contended runtime count in compact mode.
-        atomicAdd(params.role_counters + expected_role - 1u, 1ull);
+        // a contended runtime count in compact mode.  Native admission bounds
+        // query_count to UINT32_MAX, so each terminal count fits its low word;
+        // using a 32-bit atomic avoids unnecessary 64-bit contention while the
+        // public status layout remains an exactly zero-extended u64 counter.
+        unsigned int* compact_counter = reinterpret_cast<unsigned int*>(
+            params.role_counters + expected_role - 1u);
+        atomicAdd(compact_counter, 1u);
     }
     return true;
 }
