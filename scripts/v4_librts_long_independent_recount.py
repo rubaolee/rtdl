@@ -44,13 +44,28 @@ def binding(path: str | Path) -> dict[str, Any]:
     return {"path": str(value), "bytes": value.stat().st_size, "sha256": sha256(value)}
 
 
-def read_json(path: str | Path) -> dict[str, Any]:
+def read_json_value(path: str | Path) -> Any:
     def reject(value: str) -> None:
         raise ValueError(f"nonfinite JSON value is forbidden: {value}")
 
-    result = json.loads(Path(path).read_text(encoding="utf-8"), parse_constant=reject)
+    return json.loads(
+        Path(path).read_text(encoding="utf-8"), parse_constant=reject
+    )
+
+
+def read_json(path: str | Path) -> dict[str, Any]:
+    result = read_json_value(path)
     if not isinstance(result, dict):
         raise TypeError(f"JSON object required: {path}")
+    return result
+
+
+def read_command(path: str | Path) -> list[str]:
+    result = read_json_value(path)
+    if not isinstance(result, list) or not result or any(
+        not isinstance(value, str) or not value for value in result
+    ):
+        raise TypeError(f"nonempty JSON string array required: {path}")
     return result
 
 
@@ -88,19 +103,59 @@ def verify_source(prereg: dict[str, Any], repo: Path) -> None:
             raise ValueError(f"recount source bytes differ: {relative}")
 
 
+def expected_worker_command(
+    prereg: dict[str, Any], transaction: Path, operation: str,
+    endpoint: str, block: int, arm: str,
+) -> list[str]:
+    closure = prereg[
+        "point_queries" if operation == OPERATIONS[0] else "range_queries"
+    ]
+    output = (
+        transaction / "workers" / operation / endpoint / f"block-{block}"
+        / arm / "WORKER_RESULT.json"
+    )
+    return [
+        prereg["python"]["path"],
+        str(Path(prereg["source_root"]) / "scripts/v4_librts_long_worker.py"),
+        "--source-root", prereg["source_root"],
+        "--arm", arm,
+        "--endpoint", endpoint,
+        "--operation", operation,
+        "--indexed-npz", prereg["indexed_npz"]["path"],
+        "--query-manifest", closure["manifest"]["path"],
+        "--native", prereg["native_library"]["path"],
+        "--pyoptix-ptx", prereg["pyoptix_ptx"]["path"],
+        "--optix-sdk", prereg["optix_sdk"],
+        "--compute-capability", prereg["gpu"]["compute_capability"],
+        "--warmups", str(prereg[f"{endpoint}_warmups"]),
+        "--repetitions", str(prereg[f"{endpoint}_repetitions"]),
+        "--output", str(output),
+    ]
+
+
 def validate_worker(
     prereg: dict[str, Any], transaction: Path, operation: str,
     endpoint: str, block: int, arm: str,
 ) -> tuple[dict[str, Any], int]:
     directory = transaction / "workers" / operation / endpoint / f"block-{block}" / arm
-    command = read_json(directory / "COMMAND.json")
+    command = read_command(directory / "COMMAND.json")
     exit_record = read_json(directory / "EXIT.json")
     worker = read_json(directory / "WORKER_RESULT.json")
     stdout = (directory / "STDOUT.bin").read_bytes()
     stderr = (directory / "STDERR.bin").read_bytes()
-    if not isinstance(command, list) or exit_record.get("returncode") != 0 \
+    expected_command = expected_worker_command(
+        prereg, transaction, operation, endpoint, block, arm
+    )
+    try:
+        stdout_value = json.loads(stdout.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as error:
+        raise ValueError(
+            f"recount worker stdout is not one JSON document: "
+            f"{operation}/{endpoint}/{block}/{arm}"
+        ) from error
+    if command != expected_command or exit_record.get("returncode") != 0 \
             or exit_record.get("timed_out") is not False \
-            or not stdout or stderr:
+            or not stdout or stderr or stdout_value != worker:
         raise ValueError(f"recount worker process record differs: {operation}/{endpoint}/{block}/{arm}")
     manifest = read_json(
         prereg["point_queries" if operation == OPERATIONS[0] else "range_queries"]

@@ -3,6 +3,7 @@ from __future__ import annotations
 import tempfile
 from pathlib import Path
 import unittest
+import json
 
 import numpy as np
 
@@ -13,6 +14,10 @@ from experiments.v4_librts_long_workload.query_grid import (
     range_grid_oracle,
 )
 from scripts.v4_librts_long_c_only_calibrate import validate_candidates
+from scripts.v4_librts_long_independent_recount import (
+    expected_worker_command,
+    read_command,
+)
 
 
 class V4LibRTSLongQueryGridTest(unittest.TestCase):
@@ -185,6 +190,45 @@ class V4LibRTSLongQueryGridTest(unittest.TestCase):
             (manifests[0].parent / "x.npy").write_bytes(b"corrupt")
             with self.assertRaisesRegex(ValueError, "column differs"):
                 validate_candidates(manifests, "point_contains")
+
+    def test_recount_accepts_only_nonempty_string_array_commands(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "COMMAND.json"
+            path.write_text(json.dumps(["python", "worker.py"]), encoding="utf-8")
+            self.assertEqual(["python", "worker.py"], read_command(path))
+            for invalid in ({"command": []}, [], ["python", ""]):
+                path.write_text(json.dumps(invalid), encoding="utf-8")
+                with self.assertRaisesRegex(TypeError, "string array"):
+                    read_command(path)
+
+    def test_recount_reconstructs_exact_worker_command(self) -> None:
+        transaction = Path("/evidence/transaction")
+        prereg = {
+            "python": {"path": "/venv/bin/python"},
+            "source_root": "/source",
+            "point_queries": {"manifest": {"path": "/data/point.json"}},
+            "range_queries": {"manifest": {"path": "/data/range.json"}},
+            "indexed_npz": {"path": "/data/index.npz"},
+            "native_library": {"path": "/build/librtdl_optix.so"},
+            "pyoptix_ptx": {"path": "/build/librts.ptx"},
+            "optix_sdk": "8.0",
+            "gpu": {"compute_capability": "8.9"},
+            "complete_warmups": 0,
+            "complete_repetitions": 1,
+            "prepared_warmups": 1,
+            "prepared_repetitions": 3,
+        }
+        command = expected_worker_command(
+            prereg, transaction, "range_contains", "prepared", 3, "rtdl"
+        )
+        self.assertIn("/data/range.json", command)
+        self.assertEqual("1", command[command.index("--warmups") + 1])
+        self.assertEqual("3", command[command.index("--repetitions") + 1])
+        self.assertEqual(
+            "/evidence/transaction/workers/range_contains/prepared/"
+            "block-3/rtdl/WORKER_RESULT.json",
+            command[-1],
+        )
 
 
 if __name__ == "__main__":
