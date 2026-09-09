@@ -14,7 +14,7 @@ from .v4_callback_abi import CompiledCallbackAbi, verify_compiled_callback_abi
 from .v4_callback_ir import CallbackRole
 from .v4_callback_numba_codegen import (
     GeneratedFormalNumbaLeaf,
-    compile_formal_numba_leaf_isolated,
+    compile_formal_numba_leaves_isolated,
     generate_formal_numba_leaf,
 )
 from .v4_callback_optix_wrapper_codegen import GeneratedOptixWrapper
@@ -178,24 +178,24 @@ def compile_verified_triangle_executable(
         CallbackRole.FINALIZE,
     )
     generated: list[GeneratedFormalNumbaLeaf] = []
-    compiled: list[DeviceFunctionArtifact] = []
-    symbols: dict[str, str] = {}
     for role in roles:
         leaf = generate_formal_numba_leaf(
             fresh.callback, abi, role, physical_schema_authority=fresh)
-        artifact = compile_formal_numba_leaf_isolated(
-            leaf,
-            compute_capability=compute_capability,
-            accepted_ptx_isa=accepted_ptx_isa,
-            allowed_external_symbols=frozenset(),
-            expected_python_version=expected_python_version,
-            expected_numba_version=expected_numba_version,
-            expected_numpy_version=expected_numpy_version,
-            python_executable=python_executable,
-        )
         generated.append(leaf)
-        compiled.append(artifact)
-        symbols[role.value] = artifact.abi_name
+    compiled = list(compile_formal_numba_leaves_isolated(
+        generated,
+        compute_capability=compute_capability,
+        accepted_ptx_isa=accepted_ptx_isa,
+        allowed_external_symbols=frozenset(),
+        expected_python_version=expected_python_version,
+        expected_numba_version=expected_numba_version,
+        expected_numpy_version=expected_numpy_version,
+        python_executable=python_executable,
+    ))
+    symbols = {
+        role.value: artifact.abi_name
+        for role, artifact in zip(roles, compiled, strict=True)
+    }
     if not isinstance(hit_selection_policy, TriangleHitSelectionPolicy):
         raise TypeError("triangle hit-selection policy is invalid")
     wrapper = generate_trusted_optix_triangle_wrapper_v1(

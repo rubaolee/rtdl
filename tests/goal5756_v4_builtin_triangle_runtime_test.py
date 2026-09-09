@@ -10,6 +10,9 @@ from unittest import mock
 from rtdsl.v4_callback_abi import CallbackAbiError, compile_callback_abi
 from rtdsl.v4_callback_ir import CallbackRole
 from rtdsl.v4_callback_numba_codegen import generate_formal_numba_leaf
+from rtdsl.v4_callback_poc import DeviceFunctionArtifact
+from rtdsl.v4_callback_ptx_composer import ComposedCallbackPtx
+from rtdsl import v4_triangle_optix_compiler as triangle_compiler
 from rtdsl.v4_triangle_optix_runtime import run_builtin_triangle_callback
 from rtdsl.v4_triangle_optix_wrapper_codegen import (
     generate_trusted_optix_triangle_wrapper_v1,
@@ -95,6 +98,104 @@ class _FakeSession:
 
 
 class Goal5756BuiltinTriangleRuntimeTest(unittest.TestCase):
+    def test_triangle_compiler_batches_all_fallback_leaves_in_one_child(self):
+        with mock.patch(
+            "tests.goal5755_v4_typed_physical_schema_test.author_source_bytes",
+            return_value=b"goal5756-batch-fixture",
+        ):
+            authority = admitted()
+        plan, abi, _wrapper = compiled(authority)
+        wrapper_ptx = (
+            ".version 8.4\n.target sm_89\n.address_size 64\n")
+
+        def compile_batch(leaves, **kwargs):
+            self.assertEqual(
+                tuple(item.role for item in leaves),
+                (
+                    CallbackRole.MAKE_RAY,
+                    CallbackRole.CLOSEST_HIT,
+                    CallbackRole.MISS,
+                    CallbackRole.FINALIZE,
+                ),
+            )
+            return tuple(
+                DeviceFunctionArtifact(
+                    schema="rtdl.v4.formal_device_function_artifact.v1",
+                    role=leaf.role.value,
+                    abi_name=leaf.abi_name,
+                    compute_capability=kwargs["compute_capability"],
+                    numeric_mode=leaf.numeric_mode,
+                    generated_source_sha256=leaf.generated_source_sha256,
+                    ir_sha256=leaf.callback_ir_sha256,
+                    ptx=f"// {leaf.role.value}\n",
+                    ptx_sha256=hashlib.sha256(
+                        f"// {leaf.role.value}\n".encode()).hexdigest(),
+                    ptx_version="8.4",
+                    ptx_target="sm_89",
+                    external_symbols=(),
+                    numba_version=kwargs["expected_numba_version"],
+                    python_version=kwargs["expected_python_version"],
+                    nonce_word=leaf.nonce_word,
+                    compiler_function_count=leaf.compiler_function_count,
+                )
+                for leaf in leaves
+            )
+
+        def compose(_wrapper_ptx, leaves, *, exact_symbols_by_role):
+            self.assertEqual(_wrapper_ptx, wrapper_ptx)
+            return ComposedCallbackPtx(
+                ptx="composed-ptx",
+                ptx_sha256=hashlib.sha256(b"composed-ptx").hexdigest(),
+                ptx_version="8.4",
+                ptx_target="sm_89",
+                address_size="64",
+                wrapper_ptx_sha256=hashlib.sha256(
+                    wrapper_ptx.encode()).hexdigest(),
+                leaf_bindings=tuple(
+                    (leaf.role, exact_symbols_by_role[leaf.role])
+                    for leaf in leaves
+                ),
+                stripped_wrapper_externs=tuple(exact_symbols_by_role.values()),
+                stripped_numba_environments=(),
+            )
+
+        with mock.patch.object(
+            triangle_compiler,
+            "compile_formal_numba_leaves_isolated",
+            side_effect=compile_batch,
+        ) as batch, mock.patch.object(
+            triangle_compiler,
+            "_compile_nvrtc",
+            return_value=(wrapper_ptx, "test log"),
+        ), mock.patch.object(
+            triangle_compiler,
+            "compose_callback_ptx",
+            side_effect=compose,
+        ):
+            executable, log = triangle_compiler.compile_verified_triangle_executable(
+                authority,
+                plan,
+                abi,
+                compute_capability=(8, 9),
+                optix_include="/optix/include",
+                cuda_include="/cuda/include",
+                expected_python_version="3.12.0",
+                expected_numba_version="0.65.1",
+                expected_numpy_version="2.4.4",
+            )
+
+        batch.assert_called_once()
+        self.assertEqual(log, "test log")
+        self.assertEqual(
+            tuple(item.role for item in executable.compiled_leaves),
+            tuple(role.value for role in (
+                CallbackRole.MAKE_RAY,
+                CallbackRole.CLOSEST_HIT,
+                CallbackRole.MISS,
+                CallbackRole.FINALIZE,
+            )),
+        )
+
     def test_triangle_abi_and_all_four_numba_leaves_are_generated(self):
         authority = admitted()
         _plan, abi, _wrapper = compiled(authority)
