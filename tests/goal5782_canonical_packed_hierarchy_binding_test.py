@@ -113,6 +113,9 @@ def _bound_columns_endpoint(*rows):
         columns=columns,
         columns_identity=id(columns),
         column_identities=columns.identities(),
+        column_descriptors=native._canonical_hierarchy_columns_descriptors(
+            columns
+        ),
         output_sha256=digest,
         point_count=len(rows),
         selected_backend=str(endpoint["selected_backend"]),
@@ -239,6 +242,83 @@ class Goal5782CanonicalPackedHierarchyBindingTest(unittest.TestCase):
         self.assertEqual(result.point_count, 2)
         self.assertEqual(tuple(result.reducer_value_0), (1.0, 2.0))
         self.assertEqual(tuple(result.status_code), (0, 0))
+
+    def test_typed_column_metadata_is_immutable_at_all_contract_boundaries(self):
+        compiled = _compiled()
+
+        endpoint = _bound_columns_endpoint(_row(0), _row(1))
+        provider_columns = endpoint["columns"]
+        for field, name, value in (
+            ("reducer_value_0", "dtype", np.dtype("<u8")),
+            ("reducer_value_0", "strides", (0,)),
+            ("status_code", "shape", (1, 2)),
+        ):
+            with self.subTest(
+                    stage="before_provider_consume", field=field, name=name), \
+                    self.assertRaises((AttributeError, TypeError)):
+                setattr(getattr(provider_columns, field), name, value)
+
+        binding = hierarchy._bind_canonical_packed_hierarchy_columns_endpoint(
+            compiled, endpoint)
+        bound_columns = binding.columns
+        for field, name, value in (
+            ("reducer_value_0", "dtype", np.dtype("<u8")),
+            ("reducer_value_0", "strides", (0,)),
+            ("status_code", "shape", (1, 2)),
+        ):
+            with self.subTest(
+                    stage="after_frontier_bind", field=field, name=name), \
+                    self.assertRaises((AttributeError, TypeError)):
+                setattr(getattr(bound_columns, field), name, value)
+
+        with mock.patch.object(hierarchy, "_verify_receipt"):
+            result = hierarchy._accept_hierarchy_columns_endpoint(
+                compiled, endpoint, {}, binding=binding)
+        public_column = result.reducer_value_0
+        detached = np.asarray(public_column)
+        detached.dtype = np.dtype("<u8")
+        self.assertEqual(
+            detached.tolist(),
+            [4607182418800017408, 4611686018427387904],
+        )
+        self.assertEqual(np.asarray(public_column).tolist(), [1.0, 2.0])
+        self.assertEqual(result.output_sha256, binding.output_sha256)
+        for field, name, value in (
+            ("reducer_value_0", "dtype", np.dtype("<u8")),
+            ("reducer_value_0", "strides", (0,)),
+            ("status_code", "shape", (1, 2)),
+        ):
+            with self.subTest(
+                    stage="after_public_result", field=field, name=name), \
+                    self.assertRaises((AttributeError, TypeError)):
+                setattr(getattr(result, field), name, value)
+
+    def test_forced_typed_column_internal_metadata_drift_fails_closed(self):
+        endpoint = _bound_columns_endpoint(_row(0), _row(1))
+        column = endpoint["columns"].reducer_value_0
+        with self.assertRaises(AttributeError):
+            object.__setattr__(column, "_dtype_string", "<u8")
+        replacement = native._ImmutableHierarchyColumn(bytes(16), "<i8", 2)
+        object.__setattr__(
+            endpoint["columns"], "reducer_value_0", replacement,
+        )
+        with self.assertRaisesRegex(
+            hierarchy.HierarchyFrontierError, "packed_columns_binding",
+        ):
+            hierarchy._bind_canonical_packed_hierarchy_columns_endpoint(
+                _compiled(), endpoint)
+
+        endpoint = _bound_columns_endpoint(_row(0), _row(1))
+        binding = hierarchy._bind_canonical_packed_hierarchy_columns_endpoint(
+            _compiled(), endpoint)
+        replacement = native._ImmutableHierarchyColumn(bytes(16), "<i8", 2)
+        object.__setattr__(binding.columns, "status_code", replacement)
+        with mock.patch.object(hierarchy, "_verify_receipt"), \
+                self.assertRaisesRegex(
+                    hierarchy.HierarchyFrontierError, "packed_columns_binding",
+                ):
+            hierarchy._accept_hierarchy_columns_endpoint(
+                _compiled(), endpoint, {}, binding=binding)
 
     def test_typed_columns_replay_and_endpoint_replacement_fail_closed(self):
         endpoint = _bound_columns_endpoint(_row(0), _row(1))

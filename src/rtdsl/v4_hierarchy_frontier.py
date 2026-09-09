@@ -38,6 +38,7 @@ from .aggregate_hierarchy_native import (
     AGGREGATE_HIERARCHY_OPTIX_TEMPLATE,
     PreparedNativeAggregateHierarchy3D,
     compile_aggregate_frontier_reduce_candidate_for_functional_validation_3d,
+    _canonical_hierarchy_columns_descriptors,
     consume_canonical_hierarchy_columns_output_binding,
     consume_canonical_hierarchy_output_binding,
     run_aggregate_frontier_reduce_candidate_for_functional_validation_3d,
@@ -211,6 +212,7 @@ class _VerifiedPackedHierarchyColumnsBinding:
 
     columns: Any
     column_identities: tuple[int, ...]
+    column_descriptors: tuple[tuple[int, int, str, int, int], ...]
     output_sha256: str
     plan_sha256: str
     point_count: int
@@ -428,9 +430,10 @@ def _packed_columns_binding_seal_payload(
     binding: _VerifiedPackedHierarchyColumnsBinding,
 ) -> bytes:
     return repr((
-        "rtdl.v4.hierarchy_frontier.packed_columns_binding_authority.v1",
+        "rtdl.v4.hierarchy_frontier.packed_columns_binding_authority.v2",
         id(binding.columns),
         binding.column_identities,
+        binding.column_descriptors,
         binding.output_sha256,
         binding.plan_sha256,
         binding.point_count,
@@ -524,6 +527,7 @@ def _bind_canonical_packed_hierarchy_columns_endpoint(
     provisional = _VerifiedPackedHierarchyColumnsBinding(
         columns=columns,
         column_identities=columns.identities(),
+        column_descriptors=_canonical_hierarchy_columns_descriptors(columns),
         output_sha256=output_sha256,
         plan_sha256=compiled.plan_sha256,
         point_count=compiled.point_count,
@@ -604,13 +608,20 @@ def _accept_hierarchy_columns_endpoint(
         )
     _verify_receipt(receipt, binding.output_sha256)
     columns = binding.columns
-    current_column_identities = columns.identities()
+    try:
+        current_column_identities = columns.identities()
+        current_column_descriptors = _canonical_hierarchy_columns_descriptors(
+            columns
+        )
+    except (RuntimeError, TypeError, ValueError, AttributeError) as exc:
+        _fail("packed_columns_binding", "binding", str(exc))
     if (
         binding.plan_sha256 != compiled.plan_sha256
         or binding.point_count != compiled.point_count
         or binding.endpoint_identity != id(endpoint)
         or endpoint.get("columns") is not columns
         or binding.column_identities != current_column_identities
+        or binding.column_descriptors != current_column_descriptors
         or binding.selected_backend != endpoint.get("selected_backend")
         or binding.selected_template != endpoint.get("selected_template")
         or type(endpoint.get("metadata")) is not dict

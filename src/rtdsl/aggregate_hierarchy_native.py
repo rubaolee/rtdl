@@ -72,6 +72,13 @@ _CANONICAL_HIERARCHY_COLUMN_FIELDS = (
     "exact_contribution_count",
     "status_code",
 )
+_CANONICAL_HIERARCHY_COLUMN_LAYOUT = (
+    ("reducer_value_0", "<f8"),
+    ("visited_node_count", "<i8"),
+    ("aggregate_contribution_count", "<i8"),
+    ("exact_contribution_count", "<i8"),
+    ("status_code", "<i8"),
+)
 
 
 class _FrozenHierarchyRow(dict[str, int | float]):
@@ -106,7 +113,130 @@ class _CanonicalHierarchyOutputBinding:
     consumed: bool = False
 
 
-@dataclass(frozen=True)
+class _ImmutableHierarchyColumn(tuple):
+    """Canonical typed bytes in a metadata-immutable controlled wrapper."""
+
+    __slots__ = ()
+
+    def __new__(
+        cls,
+        storage: bytes,
+        dtype_string: str,
+        size: int,
+    ) -> _ImmutableHierarchyColumn:
+        if type(storage) is not bytes:
+            raise TypeError("immutable hierarchy column storage must be exact bytes")
+        if dtype_string not in {"<f8", "<i8"}:
+            raise ValueError("immutable hierarchy column dtype is unsupported")
+        if type(size) is not int or size < 0:
+            raise ValueError("immutable hierarchy column size is invalid")
+        if len(storage) != size * 8:
+            raise ValueError("immutable hierarchy column byte length is invalid")
+        return tuple.__new__(cls, (storage, dtype_string, size))
+
+    @property
+    def _storage(self) -> bytes:
+        return tuple.__getitem__(self, 0)
+
+    @property
+    def _dtype_string(self) -> str:
+        return tuple.__getitem__(self, 1)
+
+    @property
+    def _size(self) -> int:
+        return tuple.__getitem__(self, 2)
+
+    def _view(self) -> Any:
+        np = __import__("numpy")
+        return np.frombuffer(
+            self._storage,
+            dtype=np.dtype(self._dtype_string),
+            count=self._size,
+        )
+
+    def descriptor(self) -> tuple[int, int, str, int, int]:
+        """Return an O(1) identity and canonical-layout fingerprint."""
+
+        return (
+            id(self),
+            id(self._storage),
+            self._dtype_string,
+            self._size,
+            len(self._storage),
+        )
+
+    @property
+    def dtype(self) -> Any:
+        return self._view().dtype
+
+    @property
+    def shape(self) -> tuple[int]:
+        return (self._size,)
+
+    @property
+    def strides(self) -> tuple[int]:
+        return (8,)
+
+    @property
+    def ndim(self) -> int:
+        return 1
+
+    @property
+    def size(self) -> int:
+        return self._size
+
+    @property
+    def nbytes(self) -> int:
+        return len(self._storage)
+
+    @property
+    def flags(self) -> Any:
+        return self._view().flags
+
+    def __array__(self, dtype: Any = None, copy: bool | None = None) -> Any:
+        np = __import__("numpy")
+        view = self._view()
+        requested = None if dtype is None else np.dtype(dtype)
+        if requested is not None and requested != view.dtype:
+            if copy is False:
+                raise ValueError("dtype conversion requires a copy")
+            return view.astype(requested, copy=True)
+        return view.copy() if copy is True else view
+
+    def __len__(self) -> int:
+        return self._size
+
+    def __iter__(self):
+        return iter(self._view())
+
+    def __getitem__(self, key: Any) -> Any:
+        return self._view()[key]
+
+    def __setitem__(self, _key: Any, _value: Any) -> None:
+        raise ValueError("canonical hierarchy output column is immutable")
+
+    def setflags(self, *_args: object, **_kwargs: object) -> None:
+        raise ValueError("canonical hierarchy output column is immutable")
+
+    def tolist(self) -> list[Any]:
+        return self._view().tolist()
+
+    def __repr__(self) -> str:
+        return (
+            "_ImmutableHierarchyColumn("
+            f"dtype={self._dtype_string!r}, size={self._size}, "
+            f"nbytes={len(self._storage)})"
+        )
+
+    def __reduce__(self) -> tuple[Any, tuple[bytes, str, int]]:
+        return type(self), (self._storage, self._dtype_string, self._size)
+
+    __eq__ = object.__eq__
+    __ne__ = object.__ne__
+    __hash__ = object.__hash__
+
+
+@dataclass(frozen=True, slots=True, eq=False, repr=False)
 class _FrozenHierarchyColumns:
     """Complete canonical columns backed by immutable byte strings."""
 
@@ -126,6 +256,15 @@ class _FrozenHierarchyColumns:
             for name in _CANONICAL_HIERARCHY_COLUMN_FIELDS
         )
 
+    def descriptors(self) -> tuple[tuple[int, int, str, int, int], ...]:
+        return tuple(
+            getattr(self, name).descriptor()
+            for name in _CANONICAL_HIERARCHY_COLUMN_FIELDS
+        )
+
+    def __repr__(self) -> str:
+        return f"_FrozenHierarchyColumns(point_count={self.point_count})"
+
 
 @dataclass
 class _CanonicalHierarchyColumnsOutputBinding:
@@ -134,6 +273,7 @@ class _CanonicalHierarchyColumnsOutputBinding:
     columns: _FrozenHierarchyColumns
     columns_identity: int
     column_identities: tuple[int, ...]
+    column_descriptors: tuple[tuple[int, int, str, int, int], ...]
     output_sha256: str
     point_count: int
     selected_backend: str
@@ -178,10 +318,11 @@ def _canonical_hierarchy_columns_output_seal_payload(
         {
             "schema": (
                 "rtdl.aggregate_hierarchy.canonical_typed_columns_binding."
-                "authority.v1"
+                "authority.v2"
             ),
             "columns_identity": binding.columns_identity,
             "column_identities": binding.column_identities,
+            "column_descriptors": binding.column_descriptors,
             "output_sha256": binding.output_sha256,
             "point_count": binding.point_count,
             "selected_backend": binding.selected_backend,
@@ -286,9 +427,11 @@ def _freeze_canonical_hierarchy_columns(
 
     np = __import__("numpy")
 
-    def freeze(value: Any, dtype: str) -> Any:
+    def freeze(value: Any, dtype: str) -> _ImmutableHierarchyColumn:
         canonical = np.ascontiguousarray(value, dtype=np.dtype(dtype))
-        return np.frombuffer(canonical.tobytes(order="C"), dtype=np.dtype(dtype))
+        return _ImmutableHierarchyColumn(
+            canonical.tobytes(order="C"), dtype, int(canonical.size),
+        )
 
     return _FrozenHierarchyColumns(
         reducer_value_0=freeze(reducer_value_0, "<f8"),
@@ -297,6 +440,42 @@ def _freeze_canonical_hierarchy_columns(
         exact_contribution_count=freeze(exact, "<i8"),
         status_code=freeze(status_codes, "<i8"),
     )
+
+
+def _canonical_hierarchy_columns_descriptors(
+    columns: Any,
+) -> tuple[tuple[int, int, str, int, int], ...]:
+    """Validate the exact immutable wrapper layout without scanning values."""
+
+    if type(columns) is not _FrozenHierarchyColumns:
+        raise RuntimeError("canonical hierarchy columns container changed")
+    descriptors = []
+    expected_size: int | None = None
+    for name, dtype_string in _CANONICAL_HIERARCHY_COLUMN_LAYOUT:
+        column = getattr(columns, name, None)
+        if type(column) is not _ImmutableHierarchyColumn:
+            raise RuntimeError(
+                f"canonical hierarchy column {name!r} wrapper changed"
+            )
+        descriptor = column.descriptor()
+        _, _, observed_dtype, observed_size, observed_nbytes = descriptor
+        if (
+            observed_dtype != dtype_string
+            or observed_nbytes != observed_size * 8
+            or column.ndim != 1
+            or column.shape != (observed_size,)
+            or column.strides != (8,)
+            or bool(column.flags.writeable)
+        ):
+            raise RuntimeError(
+                f"canonical hierarchy column {name!r} layout changed"
+            )
+        if expected_size is None:
+            expected_size = observed_size
+        elif observed_size != expected_size:
+            raise RuntimeError("canonical hierarchy columns differ in length")
+        descriptors.append(descriptor)
+    return tuple(descriptors)
 
 
 def consume_canonical_hierarchy_output_binding(
@@ -343,15 +522,17 @@ def consume_canonical_hierarchy_columns_output_binding(
         raise RuntimeError("canonical hierarchy columns output binding was replayed")
     columns = endpoint.get("columns")
     metadata = endpoint.get("metadata")
+    try:
+        current_descriptors = _canonical_hierarchy_columns_descriptors(columns)
+    except (RuntimeError, TypeError, ValueError, AttributeError):
+        raise RuntimeError("canonical hierarchy columns output binding changed") \
+            from None
     if (
         columns is not binding.columns
         or id(columns) != binding.columns_identity
         or columns.identities() != binding.column_identities
+        or current_descriptors != binding.column_descriptors
         or columns.point_count != binding.point_count
-        or any(
-            bool(getattr(columns, name).flags.writeable)
-            for name in _CANONICAL_HIERARCHY_COLUMN_FIELDS
-        )
         or endpoint.get("row_count") != binding.point_count
         or endpoint.get("partial_result_returned") is not False
         or endpoint.get("selected_backend") != binding.selected_backend
@@ -1246,6 +1427,9 @@ class PreparedNativeAggregateHierarchy3D:
                 columns=columns,
                 columns_identity=id(columns),
                 column_identities=columns.identities(),
+                column_descriptors=_canonical_hierarchy_columns_descriptors(
+                    columns
+                ),
                 output_sha256=str(canonical_output_sha256),
                 point_count=point_count,
                 selected_backend=str(result["selected_backend"]),
