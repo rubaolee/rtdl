@@ -18,6 +18,7 @@ class NineAppDbscanCompleteContractTest(unittest.TestCase):
     def test_predicate_false_source_ranges_are_maximal_and_complete(self):
         from rtdsl.partner_adapters import (
             _contiguous_predicate_false_source_ranges,
+            _plan_predicate_false_second_pass_ranges,
         )
 
         self.assertEqual(
@@ -31,6 +32,22 @@ class NineAppDbscanCompleteContractTest(unittest.TestCase):
                 np.asarray([1, 1, 1], dtype=np.uint32)
             ),
             (),
+        )
+        self.assertEqual(
+            _plan_predicate_false_second_pass_ranges(
+                point_count=4096,
+                false_source_ranges=((4095, 1),),
+                maximum_count=None,
+            ),
+            (((4095, 1),), "contiguous_predicate_false_source_ranges"),
+        )
+        self.assertEqual(
+            _plan_predicate_false_second_pass_ranges(
+                point_count=6,
+                false_source_ranges=((1, 1), (3, 1), (5, 1)),
+                maximum_count=None,
+            ),
+            (((0, 6),), "all_sources_due_predicate_range_fragmentation"),
         )
 
     def test_vectorized_partition_labels_match_first_occurrence_contract(self):

@@ -7341,6 +7341,36 @@ def _contiguous_predicate_false_source_ranges(
     return tuple(ranges)
 
 
+def _plan_predicate_false_second_pass_ranges(
+    *,
+    point_count: int,
+    false_source_ranges: tuple[tuple[int, int], ...],
+    maximum_count: int | None,
+) -> tuple[tuple[tuple[int, int], ...], str]:
+    """Choose sparse ranges only when they do not increase launch count."""
+
+    def chunk_ranges(
+        ranges: tuple[tuple[int, int], ...],
+    ) -> tuple[tuple[int, int], ...]:
+        if maximum_count is None:
+            return ranges
+        chunks: list[tuple[int, int]] = []
+        for range_start, range_count in ranges:
+            range_stop = range_start + range_count
+            for chunk_start in range(range_start, range_stop, maximum_count):
+                chunks.append((
+                    chunk_start,
+                    min(maximum_count, range_stop - chunk_start),
+                ))
+        return tuple(chunks)
+
+    sparse_ranges = chunk_ranges(false_source_ranges)
+    full_ranges = chunk_ranges(((0, point_count),))
+    if len(sparse_ranges) <= len(full_ranges):
+        return sparse_ranges, "contiguous_predicate_false_source_ranges"
+    return full_ranges, "all_sources_due_predicate_range_fragmentation"
+
+
 def _radius_graph_boundary_assignment_canonical_policy(policy: str) -> str:
     return _RADIUS_GRAPH_BOUNDARY_ASSIGNMENT_CANONICAL_POLICY[str(policy)]
 
@@ -7557,20 +7587,14 @@ class PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D:
         if predicate_false_ranges is None:
             raise RuntimeError("predicate-false source ranges were not initialized")
 
-        def iter_false_source_ranges(
+        def plan_second_pass_ranges(
             maximum_count: int | None,
-        ) -> tuple[tuple[int, int], ...]:
-            if maximum_count is None:
-                return predicate_false_ranges
-            chunks: list[tuple[int, int]] = []
-            for range_start, range_count in predicate_false_ranges:
-                range_stop = range_start + range_count
-                for chunk_start in range(range_start, range_stop, maximum_count):
-                    chunks.append((
-                        chunk_start,
-                        min(maximum_count, range_stop - chunk_start),
-                    ))
-            return tuple(chunks)
+        ) -> tuple[tuple[tuple[int, int], ...], str]:
+            return _plan_predicate_false_second_pass_ranges(
+                point_count=self.point_count,
+                false_source_ranges=predicate_false_ranges,
+                maximum_count=maximum_count,
+            )
 
         def apply_predicated_range(query_start: int, query_count: int) -> dict[str, object]:
             return self.prepared_native.apply_device_grouped_union_self_range(
@@ -7597,6 +7621,8 @@ class PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D:
         if use_query_blocks:
             native_range_metadata = []
             second_pass_metadata = []
+            second_pass_ranges: tuple[tuple[int, int], ...] = ()
+            second_pass_source_policy = "not_requested"
             assert query_block_size is not None
             if all_core_flags_true:
                 for query_start in range(0, self.point_count, query_block_size):
@@ -7611,9 +7637,10 @@ class PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D:
                     query_count = min(query_block_size, self.point_count - query_start)
                     first_pass_metadata.append(dict(apply_predicated_range(query_start, query_count)["metadata"]))
                 self._reset_border_candidate_workspace()
-                for query_start, query_count in iter_false_source_ranges(
-                    query_block_size
-                ):
+                second_pass_ranges, second_pass_source_policy = (
+                    plan_second_pass_ranges(query_block_size)
+                )
+                for query_start, query_count in second_pass_ranges:
                     second_pass_metadata.append(dict(apply_predicated_range(query_start, query_count)["metadata"]))
                 native_range_metadata = first_pass_metadata + second_pass_metadata
                 grouped_stream_policy = "optix_applies_query_blocked_predicated_union_then_lowest_root_boundary_assignment"
@@ -7644,11 +7671,14 @@ class PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D:
                     "boundary_assignment_canonical_policy": self.boundary_assignment_canonical_policy,
                     "boundary_assignment_pass_count": boundary_assignment_pass_count,
                     "boundary_assignment_second_pass_source_policy": (
-                        "contiguous_predicate_false_source_ranges"
+                        second_pass_source_policy
                     ),
                     "boundary_assignment_second_pass_source_count": sum(
                         count for _, count in predicate_false_ranges
                     ),
+                    "boundary_assignment_second_pass_query_count": sum(
+                        count for _, count in second_pass_ranges
+                    ) if self.boundary_assignment_policy == "lowest_component_root_two_pass" else 0,
                     "boundary_assignment_second_pass_launch_count": len(
                         second_pass_metadata
                     ) if self.boundary_assignment_policy == "lowest_component_root_two_pass" else 0,
@@ -7691,9 +7721,12 @@ class PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D:
                 direct_side_effect=self.grouped_union_direct_side_effect,
             )
             self._reset_border_candidate_workspace()
+            second_pass_ranges, second_pass_source_policy = (
+                plan_second_pass_ranges(None)
+            )
             second_pass_metadata = [
                 dict(apply_predicated_range(query_start, query_count)["metadata"])
-                for query_start, query_count in iter_false_source_ranges(None)
+                for query_start, query_count in second_pass_ranges
             ]
             if not second_pass_metadata:
                 raise RuntimeError(
@@ -7713,10 +7746,13 @@ class PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D:
                     "boundary_assignment_first_pass_metadata": dict(first_pass["metadata"]),
                     "boundary_assignment_second_pass_metadata": second_pass_metadata,
                     "boundary_assignment_second_pass_source_policy": (
-                        "contiguous_predicate_false_source_ranges"
+                        second_pass_source_policy
                     ),
                     "boundary_assignment_second_pass_source_count": sum(
                         count for _, count in predicate_false_ranges
+                    ),
+                    "boundary_assignment_second_pass_query_count": sum(
+                        count for _, count in second_pass_ranges
                     ),
                     "boundary_assignment_second_pass_launch_count": len(
                         second_pass_metadata
