@@ -71,6 +71,26 @@ class NineAppDbscanCompleteContractTest(unittest.TestCase):
         self.assertIn('extern "C" __global__ void write_labels', continuation)
         self.assertNotIn("#include <limits.h>", device + continuation)
 
+    def test_public_pyoptix_host_abi_locks_every_parameter_offset(self):
+        from experiments.v4_paper_apps_pyoptix import dbscan_owner
+
+        expected_offsets = {
+            **{name: index * 8 for index, name in enumerate(
+                dbscan_owner.POINTERS)},
+            "count": 64,
+            "min_points": 68,
+            "mode": 72,
+            "reserved": 76,
+            "radius": 80,
+            "trace_tmax": 84,
+        }
+        self.assertEqual(dbscan_owner.PARAM_DTYPE.itemsize, 88)
+        self.assertEqual(
+            {name: dbscan_owner.PARAM_DTYPE.fields[name][1]
+             for name in dbscan_owner.PARAM_DTYPE.names},
+            expected_offsets,
+        )
+
     def test_public_pyoptix_comparator_requires_every_output_column(self):
         adapter = (PYOPTIX / "dbscan_adapter.py").read_text(encoding="utf-8")
         self.assertIn('set(actual) != set(expected)', adapter)

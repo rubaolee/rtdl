@@ -2,9 +2,7 @@
 #include <optix.h>
 #include <optix_device.h>
 
-#if defined(__CUDACC_RTC__)
-#define RTDL_OFFSETOF(T, member) ((unsigned long long)&(((T*)0)->member))
-#else
+#if !defined(__CUDACC_RTC__)
 #include <stddef.h>
 #define RTDL_OFFSETOF(T, member) offsetof(T, member)
 #endif
@@ -30,10 +28,11 @@ struct Params {
 };
 
 static_assert(sizeof(Point) == 16, "point ABI");
-static_assert(
-    sizeof(Params) == 88 && RTDL_OFFSETOF(Params, count) == 64 &&
-        RTDL_OFFSETOF(Params, radius) == 80,
-    "params ABI");
+static_assert(sizeof(Params) == 88, "params ABI size");
+#if !defined(__CUDACC_RTC__)
+static_assert(RTDL_OFFSETOF(Params, count) == 64, "params count offset");
+static_assert(RTDL_OFFSETOF(Params, radius) == 80, "params radius offset");
+#endif
 
 extern "C" {
 __constant__ Params params;
