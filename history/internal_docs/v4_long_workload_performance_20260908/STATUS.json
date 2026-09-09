@@ -1,6 +1,6 @@
 {
   "schema": "rtdl.v4_long_workload_performance.status.v1",
-  "updated_at": "2026-09-08T11:05:11-04:00",
+  "updated_at": "2026-09-09T11:22:53-04:00",
   "authorization": {
     "owner_authorized_after_prior_freeze": true,
     "scope": "existing Particle, graph triangle-counting, and LibRTS performance remediation, strong public-PyOptiX comparison, necessary experiment tooling, and matching evidence/manuscript work",
@@ -80,6 +80,34 @@
     "archive_sha256": "ef2ca7890c9d415dc1edbe71966aabc512209c9d8608d4eaf460c7c1fddf8bdc",
     "archive_bytes": 730851,
     "archive_member_count": 1049
+  },
+  "particle_natural_scale_successor": {
+    "source_commit": "c06fd73a542e7cadaf01bc041b45b2adb327dd2e",
+    "source_tree": "0bbb295019891e002b29929e6ea31727a517efa8",
+    "gpu": "NVIDIA RTX 4000 Ada Generation",
+    "gpu_uuid": "GPU-2a00572b-6cef-b9e6-db0a-c127783a5d46",
+    "query_count": 160000000,
+    "formal_worker_count": 16,
+    "timed_sample_count": 48,
+    "warmup_count": 16,
+    "retry_count": 0,
+    "discard_count": 0,
+    "paired_median_rtdl_over_pyoptix": 1.0012547857230567,
+    "worst_block_rtdl_over_pyoptix": 1.1199250803752048,
+    "engineering_targets_passed": true,
+    "prepared_action_at_least_one_second": false,
+    "rtdl_prepare_median_ns": 24259203588.5,
+    "pyoptix_prepare_median_ns": 10241039224.0,
+    "independent_recount_complete": true,
+    "lead_review_complete": false,
+    "paper_claim_authorized": false,
+    "archive_path": "history/internal_docs/v4_authored_particle_20260909/formal_natural_c06fd73a5/RAW_FORMAL_EVIDENCE.tar.gz",
+    "archive_sha256": "90a0a99ed5df30bd9f2e45f9b798b044a479a957cdbb6fa46e75d90169360132",
+    "archive_bytes": 2520008,
+    "archive_member_count": 117,
+    "independent_recount_sha256": "c18451a94acb5ad139ddc3ad63adeb97075691e0f41a9c299d1b86012d0983c1",
+    "retained_predecessor_failure_sha256": "ff84ffb4d1108689418460b82f532da8490d9e5475066bdae9bada7deb1d395b",
+    "remaining_debt": "RTDL preparation is 2.37x PyOptiX; prepared action is subsecond"
   },
   "post_formal_cpu_sensitivity": {
     "formal_evidence": false,

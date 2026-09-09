@@ -2,8 +2,30 @@
   "claim_boundary": {
     "external_review_completed": false,
     "natural_at_least_one_second_task": false,
+    "natural_160m_prepared_internal_engineering_result": true,
     "paper_claim_authorized": false,
     "prepared_5000_query_internal_engineering_result": true
+  },
+  "natural_scale_successor": {
+    "files": [
+      {"bytes": 7163, "path": "formal_natural_c06fd73a5/FORMAL_REPORT.md", "sha256": "3af2fd4bf9eff9e4fdcc9b0d9daf85a9a27a9f2d2564d81b18e22d45586a7bfe"},
+      {"bytes": 4702, "path": "formal_natural_c06fd73a5/INDEPENDENT_RECOUNT.json", "sha256": "c18451a94acb5ad139ddc3ad63adeb97075691e0f41a9c299d1b86012d0983c1"},
+      {"bytes": 2520008, "path": "formal_natural_c06fd73a5/RAW_FORMAL_EVIDENCE.tar.gz", "sha256": "90a0a99ed5df30bd9f2e45f9b798b044a479a957cdbb6fa46e75d90169360132"},
+      {"bytes": 2398, "path": "formal_natural_c06fd73a5/SELF_REVIEW.md", "sha256": "9bec67a5dba58accc5d2158d1b4f91b02383a6fbf23cb70143c708f015d71141"}
+    ],
+    "paired_median_rtdl_over_pyoptix": 1.0012547857230567,
+    "source_commit": "c06fd73a542e7cadaf01bc041b45b2adb327dd2e",
+    "source_tree": "0bbb295019891e002b29929e6ea31727a517efa8",
+    "status": "PASS__INTERNAL_PREPARED_ENGINEERING_TARGETS__LEAD_REVIEW_PENDING",
+    "worst_block_rtdl_over_pyoptix": 1.1199250803752048
+  },
+  "retained_formal_v2_failure": {
+    "files": [
+      {"bytes": 902, "path": "retained_failures/FORMAL_V2_PTX_TARGET_MISMATCH_b3b0331e3.md", "sha256": "2a8265de820c6e430fcdb0409575e771d5ec839e514fdfd0bd307d17ff155bab"},
+      {"bytes": 7340, "path": "retained_failures/FORMAL_V2_PTX_TARGET_MISMATCH_b3b0331e3.tar.gz", "sha256": "ff84ffb4d1108689418460b82f532da8490d9e5475066bdae9bada7deb1d395b"}
+    ],
+    "source_commit": "b3b0331e351a6c1c7e3d81a022b8c6487f6a6e20",
+    "status": "TERMINAL_FAILURE_RETAINED_NO_RETRY"
   },
   "natural_scale_predecessor": {
     "files": [

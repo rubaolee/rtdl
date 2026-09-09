@@ -21,6 +21,28 @@ sub-millisecond fixed-cost tests. The transaction covers selected stages from
 three of nine historical application mappings, four original operation units,
 and one additional graph scale.
 
+## Separate natural-scale Particle successor
+
+A later, separately preregistered Particle transaction at source
+`c06fd73a542e7cadaf01bc041b45b2adb327dd2e` evaluates 160,000,000 distinct
+strict-interior transition queries and returns the complete 1.92 GB ordered
+U32x3 output. It is not pooled with the `02e84374f...` matrix above.
+
+Across eight balanced fresh-process blocks, its prepared RTDL/public-PyOptiX
+paired median is `1.001255x`, its worst block is `1.119925x`, and all 16
+workers, 48 timed samples and 16 warmups are retained with zero retry or
+discard. A separate clean-clone recount reconstructed the same values. The
+result closes the prepared natural-scale Particle engineering target after a
+generic straight-line Callback-IR inline lowering removed repeated per-ray
+leaf-call overhead.
+
+The row remains subsecond at approximately 0.35 seconds per natural action.
+RTDL preparation is adverse at 24.259 seconds versus 10.241 seconds for
+PyOptiX, so complete-path parity is not established. The exact report and raw
+archive are under
+`../v4_authored_particle_20260909/formal_natural_c06fd73a5/`; public and
+manuscript claims remain unauthorized.
+
 ## Arms and endpoints
 
 - `old_v4`: immutable application baseline source `c5c8be48b...`.

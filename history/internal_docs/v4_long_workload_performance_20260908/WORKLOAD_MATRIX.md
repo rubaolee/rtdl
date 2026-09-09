@@ -25,6 +25,17 @@ general. The arm times are medians of worker medians; paired ratios are medians
 of eight within-block ratios, so dividing displayed arm medians need not
 reproduce the paired estimator exactly.
 
+## Separate Particle natural-scale transaction
+
+The later `c06fd73a5` transaction is separate from the ten-row matrix and is
+not pooled into it. It uses the same real mesh with 160,000,000 distinct
+strict-interior transition queries and a complete ordered 1.92 GB U32x3
+output. Its prepared paired median is `1.001255x` with a `1.119925x` worst
+block, so all eight blocks meet the same engineering envelope. Both arms take
+approximately 0.35 seconds per action; this is materially larger and more
+stable than the original 5,000-query regression but still below one second.
+RTDL/PyOptiX preparation is 24.259/10.241 seconds and remains open debt.
+
 ## What the matrix closes
 
 - The original Particle and LibRTS prepared gaps of roughly 38--39x are not
@@ -41,9 +52,10 @@ reproduce the paired estimator exactly.
 
 ## What remains open
 
-- Particle and LibRTS still lack a distinct-query multi-second prepared scale.
-  Their complete endpoints exceed one second because of preparation, but this
-  does not satisfy the strong-C natural-compute criterion.
+- Particle now has a 160M distinct-query natural-scale prepared transaction,
+  but it remains subsecond; LibRTS still lacks a distinct-query multi-second
+  prepared scale. Preparation exceeding one second does not satisfy the
+  strong-C natural-compute criterion.
 - Six of the nine historical application mappings have no frozen,
   output-equivalent public-PyOptiX owner in this transaction. They are not
   silently counted as measured.
