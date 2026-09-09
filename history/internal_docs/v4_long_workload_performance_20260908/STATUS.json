@@ -1,6 +1,6 @@
 {
   "schema": "rtdl.v4_long_workload_performance.status.v1",
-  "updated_at": "2026-09-09T11:22:53-04:00",
+  "updated_at": "2026-09-09T12:30:14-04:00",
   "authorization": {
     "owner_authorized_after_prior_freeze": true,
     "scope": "existing Particle, graph triangle-counting, and LibRTS performance remediation, strong public-PyOptiX comparison, necessary experiment tooling, and matching evidence/manuscript work",
@@ -81,7 +81,7 @@
     "archive_bytes": 730851,
     "archive_member_count": 1049
   },
-  "particle_natural_scale_successor": {
+  "particle_natural_scale_predecessor_c06fd73a5": {
     "source_commit": "c06fd73a542e7cadaf01bc041b45b2adb327dd2e",
     "source_tree": "0bbb295019891e002b29929e6ea31727a517efa8",
     "gpu": "NVIDIA RTX 4000 Ada Generation",
@@ -107,7 +107,40 @@
     "archive_member_count": 117,
     "independent_recount_sha256": "c18451a94acb5ad139ddc3ad63adeb97075691e0f41a9c299d1b86012d0983c1",
     "retained_predecessor_failure_sha256": "ff84ffb4d1108689418460b82f532da8490d9e5475066bdae9bada7deb1d395b",
-    "remaining_debt": "RTDL preparation is 2.37x PyOptiX; prepared action is subsecond"
+    "disposition": "PRESERVED_PREDECESSOR__SETUP_DEBT_SUPERSEDED_BY_110DEE7AA"
+  },
+  "particle_natural_scale_successor": {
+    "source_commit": "110dee7aa11e57e984cc2509163e021d787c692a",
+    "source_tree": "1e549d791fedd23659bb0e0636747016938cd1c4",
+    "gpu": "NVIDIA RTX 4000 Ada Generation",
+    "gpu_uuid": "GPU-2a00572b-6cef-b9e6-db0a-c127783a5d46",
+    "query_count": 160000000,
+    "formal_worker_count": 16,
+    "timed_sample_count": 48,
+    "warmup_count": 16,
+    "retry_count": 0,
+    "discard_count": 0,
+    "paired_median_rtdl_over_pyoptix": 0.9941092578237594,
+    "worst_block_rtdl_over_pyoptix": 1.0623042952807356,
+    "engineering_targets_passed": true,
+    "prepared_action_at_least_one_second": false,
+    "rtdl_prepare_median_ns": 8983525994.5,
+    "pyoptix_prepare_median_ns": 10462781659.5,
+    "setup_ratio_rtdl_over_pyoptix": 0.8586173627,
+    "same_machine_rtdl_setup_improvement_over_c06fd73a5": 2.7004100176,
+    "independent_recount_complete": true,
+    "lead_review_complete": false,
+    "paper_claim_authorized": false,
+    "archive_path": "history/internal_docs/v4_authored_particle_20260909/formal_natural_110dee7aa/RAW_FORMAL_EVIDENCE.tar.gz",
+    "archive_sha256": "42ebdf176e9625c8c95d7b2e2504ddccc70b42ed4b692fe3360f3c2c5b08bccf",
+    "archive_bytes": 2526713,
+    "archive_member_count": 117,
+    "independent_recount_sha256": "d3ce86641c9d6cee4bd9e4c092207808ab6ff94515dd73112761793564ca2212",
+    "mac_clean_worktree_recount_sha256": "a5597b2a6f3f2fb113ec64b59d1c87ccac7226446e2769147c3cc90b2fd66eeb",
+    "postformal_reconstruction_archive_sha256": "9de850a354bd85366eb354ef796d45e0b9d1ccc71428b117961fd67c684d933a",
+    "original_formal_generated_bytes_retained": false,
+    "original_formal_full_receipt_retained": false,
+    "remaining_debt": "prepared action is subsecond; peak memory and cross-generation behavior are unmeasured; original full timed-worker receipt is unavailable"
   },
   "post_formal_cpu_sensitivity": {
     "formal_evidence": false,
@@ -167,7 +200,9 @@
     "Commit 02e84374f makes exact one-CPU affinity part of config, preregistration, worker pre/post machine evidence, controller validation, and independent recount. The 15-worker dry run passed before formal worker zero.",
     "The fresh FORMAL_V2 transaction completed 240/240 workers and 80/80 paired cells with exact outputs, exact CPU {8} pre/post affinity, zero retry/discard/timeout, and all ten rows within the preregistered engineering envelope.",
     "A different clean checkout independently reconstructed every journal, verified every raw-file hash and input/output identity, imported no project module, and returned PASS__METHOD_AND_TARGET.",
-    "Only cit-Patents/4M supplies a multi-second prepared natural computation. Particle and LibRTS prepared rows remain sub-millisecond fixed-cost regressions, not broad long-workload evidence.",
+    "Only cit-Patents/4M supplies a multi-second prepared natural computation. The 160M Particle successor is about 0.35 seconds per action; original Particle and LibRTS prepared rows remain sub-millisecond fixed-cost regressions. None is broad long-workload evidence.",
+    "The exact 110dee7aa Particle successor closes its same-machine setup disadvantage at 8.984 seconds RTDL versus 10.463 seconds PyOptiX, while retaining 0.994109x prepared paired median and 1.062304x worst block.",
+    "The original Particle formal archive lacks generated compiler bytes and full timed-worker receipts. A separately identified post-formal reconstruction matches all eight recorded program/executable identities and the output digest but is not pooled or relabeled as original evidence.",
     "CPU 8 was selected after a disclosed diagnostic; GPU clocks could not be locked. The result supports the registered controlled-host condition, not invariance over arbitrary CPUs or clocks.",
     "The fixed post-formal 48-logical-CPU scan completed all 384 workers and was independently recounted, but CPU-8 Particle reversed from the formal 0.772559x median to 1.399874x. This scan is not pooled and prohibits a stable short-prepared-row guarantee.",
     "The successor evidence is integrated into a new 12-page local manuscript draft. Cached Tectonic build, all-page rendering, table inspection, and tested private-identity scans pass.",

@@ -27,14 +27,17 @@ reproduce the paired estimator exactly.
 
 ## Separate Particle natural-scale transaction
 
-The later `c06fd73a5` transaction is separate from the ten-row matrix and is
+The current `110dee7aa` transaction is separate from the ten-row matrix and is
 not pooled into it. It uses the same real mesh with 160,000,000 distinct
 strict-interior transition queries and a complete ordered 1.92 GB U32x3
-output. Its prepared paired median is `1.001255x` with a `1.119925x` worst
+output. Its prepared paired median is `0.994109x` with a `1.062304x` worst
 block, so all eight blocks meet the same engineering envelope. Both arms take
 approximately 0.35 seconds per action; this is materially larger and more
 stable than the original 5,000-query regression but still below one second.
-RTDL/PyOptiX preparation is 24.259/10.241 seconds and remains open debt.
+RTDL/PyOptiX preparation is `8.984/10.463` seconds. This closes the measured
+setup disadvantage in its same-machine `c06fd73a5` predecessor, whose RTDL
+preparation median was `24.259` seconds. The current transaction remains
+internal and lead review is pending.
 
 ## What the matrix closes
 
