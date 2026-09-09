@@ -234,6 +234,16 @@ static __forceinline__ __device__ void v4_first_error(
         unsigned int role, unsigned long long launch_index,
         unsigned int site, unsigned int effect, unsigned int nonce) {
     if (query >= params.query_count || code == 0u) return;
+    if (params.status == nullptr) {
+        V4TriangleCompactControl* control = params.compact_control;
+        if (control == nullptr) return;
+        atomicAdd(&control->invalid_row_count, 1u);
+        atomicMin(&control->first_invalid_row, (unsigned long long)query);
+        atomicExch(&control->ok, 0u);
+        if (atomicCAS(&control->first_error_claimed, 0u, 1u) == 0u)
+            control->error_code = code;
+        return;
+    }
     V4TriangleLaunchStatus* record = params.status + query;
     if (atomicCAS(&record->first_error_claimed, 0u, 1u) == 0u) {
         record->error_code = code; record->stage = stage; record->role = role;
@@ -252,6 +262,11 @@ static __forceinline__ __device__ void v4_first_error(
 }
 static __forceinline__ __device__ bool v4_complete_query(
         unsigned int query) {
+    if (params.status == nullptr) {
+        if (params.compact_control == nullptr) return false;
+        atomicAdd(&params.compact_control->validated_row_count, 1ull);
+        return true;
+    }
     V4TriangleLaunchStatus* record = params.status + query;
     const unsigned int mask = record->invocation_mask;
     const unsigned int required = (1u << 1u) | (1u << 6u);
@@ -290,7 +305,8 @@ static __forceinline__ __device__ bool v4_commit_leaf_status(
                        stage, role, launch_index, error_site, effect_tag, nonce);
         return false;
     }
-    atomicOr(&params.status[query].invocation_mask, invocation_mask);
+    if (params.status != nullptr)
+        atomicOr(&params.status[query].invocation_mask, invocation_mask);
     atomicAdd(params.role_counters + expected_role - 1u, 1ull);
     return true;
 }
@@ -374,11 +390,16 @@ static __forceinline__ __device__ bool v4_commit_leaf_status(
 extern "C" __global__ void __raygen__rtdl_v4_triangle() {{
     const unsigned int query = optixGetLaunchIndex().x;
     if (query >= params.query_count) return;
-    params.status[query] = {{0u, 0u, 0u, 0u, (unsigned long long)query, 0u, 0u, 0u, 0u}};
-    params.observed_primitive_index[query] = 0xffffffffu;
-    params.observed_hit_kind[query] = 0xffffffffu;
-    params.observed_barycentric_x[query] = __int_as_float(0x7fffffffu);
-    params.observed_barycentric_y[query] = __int_as_float(0x7fffffffu);
+    if (params.status != nullptr)
+        params.status[query] = {{0u, 0u, 0u, 0u, (unsigned long long)query, 0u, 0u, 0u, 0u}};
+    if (params.observed_primitive_index != nullptr)
+        params.observed_primitive_index[query] = 0xffffffffu;
+    if (params.observed_hit_kind != nullptr)
+        params.observed_hit_kind[query] = 0xffffffffu;
+    if (params.observed_barycentric_x != nullptr)
+        params.observed_barycentric_x[query] = __int_as_float(0x7fffffffu);
+    if (params.observed_barycentric_y != nullptr)
+        params.observed_barycentric_y[query] = __int_as_float(0x7fffffffu);
 {_indent(mr, 4)}
     if ({mr_out['out.effect_tag']} != {_effect_tag(roles[CallbackRole.MAKE_RAY], EffectKind.TRACE_REQUEST)}u) {{
         v4_first_error(query, 0xffff1002u, 0u, 0u, query, 0u, {mr_out['out.effect_tag']}, 0u); return;
@@ -390,7 +411,8 @@ extern "C" __global__ void __raygen__rtdl_v4_triangle() {{
         {mr_out['out.trace_request.tmin']}, {mr_out['out.trace_request.tmax']}, 0.0f,
         OptixVisibilityMask(255), OPTIX_RAY_FLAG_DISABLE_ANYHIT,
         0, 1, 0, {payload_args});
-    if (params.status[query].first_error_claimed != 0u) return;
+    if (params.status != nullptr &&
+            params.status[query].first_error_claimed != 0u) return;
 {_indent(fin, 4)}
     if ({fin_out['out.effect_tag']} != {_effect_tag(roles[CallbackRole.FINALIZE], EffectKind.OUTPUT)}u) {{
         v4_first_error(query, 0xffff1003u, 0u, 0u, query, 0u, {fin_out['out.effect_tag']}, 0u); return;
@@ -518,11 +540,16 @@ extern "C" __global__ void __miss__rtdl_v4_triangle() {{
 extern "C" __global__ void __raygen__rtdl_v4_triangle() {{
     const unsigned int query = optixGetLaunchIndex().x;
     if (query >= params.query_count) return;
-    params.status[query] = {{0u, 0u, 0u, 0u, (unsigned long long)query, 0u, 0u, 0u, 0u}};
-    params.observed_primitive_index[query] = 0xffffffffu;
-    params.observed_hit_kind[query] = 0xffffffffu;
-    params.observed_barycentric_x[query] = __int_as_float(0x7fffffffu);
-    params.observed_barycentric_y[query] = __int_as_float(0x7fffffffu);
+    if (params.status != nullptr)
+        params.status[query] = {{0u, 0u, 0u, 0u, (unsigned long long)query, 0u, 0u, 0u, 0u}};
+    if (params.observed_primitive_index != nullptr)
+        params.observed_primitive_index[query] = 0xffffffffu;
+    if (params.observed_hit_kind != nullptr)
+        params.observed_hit_kind[query] = 0xffffffffu;
+    if (params.observed_barycentric_x != nullptr)
+        params.observed_barycentric_x[query] = __int_as_float(0x7fffffffu);
+    if (params.observed_barycentric_y != nullptr)
+        params.observed_barycentric_y[query] = __int_as_float(0x7fffffffu);
 {_indent(mr, 4)}
     if ({mr_out['out.effect_tag']} != {_effect_tag(roles[CallbackRole.MAKE_RAY], EffectKind.TRACE_REQUEST)}u) {{
         v4_first_error(query, 0xffff1002u, 0u, 0u, query, 0u, {mr_out['out.effect_tag']}, 0u); return;
@@ -552,7 +579,8 @@ extern "C" __global__ void __raygen__rtdl_v4_triangle() {{
         0, 1, 0, {payload_args}, best_t_bits, best_primitive,
         best_hit_kind, best_barycentric_x, best_barycentric_y, best_found,
         collector_reserved_0, collector_reserved_1);
-    if (params.status[query].first_error_claimed != 0u) return;
+    if (params.status != nullptr &&
+            params.status[query].first_error_claimed != 0u) return;
     if (best_found == 1u) {{
         const float selected_hit_t = __uint_as_float(best_t_bits);
         const unsigned int selected_primitive_index = best_primitive;
@@ -629,10 +657,14 @@ extern "C" __global__ void __raygen__rtdl_v4_triangle() {{
         }}
         const unsigned int selected_hit_kind =
             direction_dot_normal < 0.0f ? 0xfeu : 0xffu;
-        params.observed_primitive_index[query] = selected_primitive_index;
-        params.observed_hit_kind[query] = selected_hit_kind;
-        params.observed_barycentric_x[query] = selected_barycentrics.x;
-        params.observed_barycentric_y[query] = selected_barycentrics.y;
+        if (params.observed_primitive_index != nullptr)
+            params.observed_primitive_index[query] = selected_primitive_index;
+        if (params.observed_hit_kind != nullptr)
+            params.observed_hit_kind[query] = selected_hit_kind;
+        if (params.observed_barycentric_x != nullptr)
+            params.observed_barycentric_x[query] = selected_barycentrics.x;
+        if (params.observed_barycentric_y != nullptr)
+            params.observed_barycentric_y[query] = selected_barycentrics.y;
 {_indent(ch, 8)}
         if ({ch_out['out.effect_tag']} != {_effect_tag(roles[CallbackRole.CLOSEST_HIT], EffectKind.PAYLOAD)}u) {{
             v4_first_error(query, 0xffff1005u, 0u, 0u, query, 0u, {ch_out['out.effect_tag']}, 0u); return;

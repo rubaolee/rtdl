@@ -508,6 +508,9 @@ class Goal5776V4TriangleDeviceColumnsTest(unittest.TestCase):
     def test_device_resident_query_batch_native_section_is_app_neutral(self):
         native = NATIVE.read_text(encoding="utf-8")
         api = API.read_text(encoding="utf-8")
+        codegen = (
+            ROOT / "src/rtdsl/v4_triangle_optix_wrapper_codegen.py"
+        ).read_text(encoding="utf-8")
         for symbol in (
             "rtdl_optix_v4_prepare_builtin_triangle_query_batch_columns_v1",
             "rtdl_optix_v4_execute_prepared_builtin_triangle_callback_batch_columns_v3",
@@ -524,6 +527,12 @@ class Goal5776V4TriangleDeviceColumnsTest(unittest.TestCase):
             self.assertNotIn(forbidden, section)
         self.assertIn("prepared_query_batch->query_columns", section)
         self.assertIn("prepared_query_batch->program.get()", section)
+        self.assertIn("if (params.status == nullptr) {", codegen)
+        self.assertIn("if (params.status != nullptr)", codegen)
+        self.assertIn(
+            "if (params.observed_primitive_index != nullptr)", codegen)
+        self.assertIn(
+            "atomicAdd(&params.compact_control->validated_row_count", codegen)
 
     def test_compact_triangle_summary_is_fail_closed(self):
         summary = triangle_runtime._CompactLifecycleSummary()
