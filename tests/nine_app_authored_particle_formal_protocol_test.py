@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import ast
+import base64
+import hashlib
 import importlib.util
 import json
 from pathlib import Path
@@ -89,12 +91,18 @@ class NineAppAuthoredParticleFormalProtocolTest(unittest.TestCase):
         self.assertLessEqual(first[1], max(values))
 
     def test_worker_validation_recounts_median_and_lifecycle_fields(self):
+        output_bytes = bytes(60_000)
+        output_digest = hashlib.sha256()
+        output_digest.update(b"<u4")
+        output_digest.update(b"(5000, 3)")
+        output_digest.update(output_bytes)
+        output_sha256 = output_digest.hexdigest()
         prereg = {
             "source_commit": "commit",
             "source_tree": "tree",
             "data_manifest": {"sha256": "input"},
             "independent_oracle_sha256": "oracle",
-            "output_sha256": "output",
+            "output_sha256": output_sha256,
             "pyoptix_ptx": {"sha256": "ptx"},
             "worker_machine": {"gpu_uuid": "gpu"},
         }
@@ -107,7 +115,9 @@ class NineAppAuthoredParticleFormalProtocolTest(unittest.TestCase):
             "independent_oracle_sha256": "oracle",
             "query_count": 5_000,
             "output_shape": [5_000, 3],
-            "output_sha256": "output",
+            "output_sha256": output_sha256,
+            "output_u32_le_base64": base64.b64encode(
+                output_bytes).decode("ascii"),
             "warmup_count": 1,
             "sample_count": 3,
             "samples_ns": [11, 13, 17],
@@ -152,6 +162,13 @@ class NineAppAuthoredParticleFormalProtocolTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.protocol.validate_worker(
                 prereg, bad_lifecycle, "pyoptix", warmups=1, samples=3)
+
+        bad_output = json.loads(json.dumps(result))
+        bad_output["output_u32_le_base64"] = base64.b64encode(
+            bytes(59_999) + b"x").decode("ascii")
+        with self.assertRaises(ValueError):
+            self.protocol.validate_worker(
+                prereg, bad_output, "pyoptix", warmups=1, samples=3)
 
     def test_lifecycle_worker_allows_zero_warmups(self):
         validate = self.worker_repetition_validator

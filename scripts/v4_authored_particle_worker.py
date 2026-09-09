@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import base64
 import hashlib
 import json
 import os
@@ -303,6 +304,8 @@ def main() -> int:
         "query_count": int(last_output.shape[0]),
         "output_shape": list(last_output.shape),
         "output_sha256": _output_digest(last_output),
+        "output_u32_le_base64": base64.b64encode(
+            memoryview(last_output).cast("B")).decode("ascii"),
         "prepare_ns": prepare_ns,
         "close_ns": close_ns,
         "lifecycle_ns": lifecycle_ns,

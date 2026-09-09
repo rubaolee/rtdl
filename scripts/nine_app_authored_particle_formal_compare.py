@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import base64
 import hashlib
 import importlib.metadata
 import json
@@ -231,6 +232,16 @@ def validate_worker(
     prereg: dict[str, object], result: dict[str, object], arm: str,
     *, warmups: int, samples: int,
 ) -> None:
+    try:
+        output_bytes = base64.b64decode(
+            result.get("output_u32_le_base64", ""), validate=True)
+    except (ValueError, TypeError) as error:
+        raise ValueError(
+            f"formal Particle {arm} output encoding differs") from error
+    output_digest = hashlib.sha256()
+    output_digest.update(b"<u4")
+    output_digest.update(b"(5000, 3)")
+    output_digest.update(output_bytes)
     if result.get("schema") != "rtdl.v4.authored_particle_worker.v2" \
             or result.get("status") != "PASS" \
             or result.get("arm") != arm \
@@ -245,6 +256,8 @@ def validate_worker(
             or result.get("query_count") != 5_000 \
             or result.get("output_shape") != [5_000, 3] \
             or result.get("output_sha256") != prereg["output_sha256"] \
+            or len(output_bytes) != 60_000 \
+            or output_digest.hexdigest() != prereg["output_sha256"] \
             or result.get("warmup_count") != warmups \
             or result.get("sample_count") != samples \
             or len(result.get("samples_ns", [])) != samples \
