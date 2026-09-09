@@ -30,7 +30,8 @@ class AuthoredParticleTransitionEnsembleTest(unittest.TestCase):
         cells = np.asarray([[0, 1, 2, 3]], dtype=np.uint32)
         triangles, front, back, cell_faces, oriented = _faces_like_author(
             vertices, cells)
-        queries, expected, query_cells, minimum = _generate_chunk(
+        (queries, expected, query_cells, minimum,
+         exit_minimum, rejected) = _generate_chunk(
             start=0,
             stop=10_000,
             eligible=np.asarray([0], dtype=np.int64),
@@ -43,6 +44,8 @@ class AuthoredParticleTransitionEnsembleTest(unittest.TestCase):
             tmax=2.0,
         )
         self.assertGreater(minimum, 0.0)
+        self.assertGreater(exit_minimum, 1.0e-3)
+        self.assertGreaterEqual(rejected, 0)
         self.assertEqual(np.unique(queries[:, :3], axis=0).shape[0], 10_000)
         np.testing.assert_array_equal(expected[:, 0], query_cells)
         self.assertTrue(np.all(expected[:, 2] < len(triangles)))
