@@ -17,6 +17,24 @@ RTDL/PyOptiX median <= 1.20 with every block <= 1.35 on the same natural task,
 while every failure and adverse row remains reportable. No upload, external
 sending, or submission is authorized by this override.
 
+The current Particle setup-remediation successor is exact measured source
+`110dee7aa11e57e984cc2509163e021d787c692a`, tree
+`1e549d791fedd23659bb0e0636747016938cd1c4`. On one RTX 4000 Ada, its natural
+160M-query transaction retained 16/16 workers, 48 timed samples and 16 warmups
+with zero retry/discard. Paired RTDL/PyOptiX median is `0.994109x` and worst
+block is `1.062304x`; both pass the internal `1.20x`/`1.35x` prepared-path
+targets. RTDL setup median is `8.983526 s` versus PyOptiX `10.462782 s`, and is
+`2.700410x` faster than the same-machine `c06fd73a5` RTDL predecessor setup.
+The change batches isolated fallback-leaf compilation, adds one immutable
+packed `f32x7` ray-row ABI, and transposes/validates it on the GPU before token
+publication; the split-column ABI remains fallback and no Particle formula or
+identity selects the path. The 2,526,713-byte raw archive SHA-256 is
+`42ebdf176e9625c8c95d7b2e2504ddccc70b42ed4b692fe3360f3c2c5b08bccf`.
+Pod and clean-Mac recounts agree except for the expected absolute archive path.
+This is one unlocked-clock Ada result, the action remains about 0.35 seconds,
+peak memory is unmeasured, and lead/external review and public/manuscript claims
+remain pending or unauthorized.
+
 ## Current owner-directed novelty work (2026-09-06)
 
 The user's latest instruction requires concrete literature evidence and a CGO

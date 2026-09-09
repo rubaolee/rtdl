@@ -1,0 +1,151 @@
+{
+  "append_only_ledger_sha256": "b84614e392e78ec1853bd928cb990ad66dbe1d4fed25b86096dd4e440d1f1d8a",
+  "archive": {
+    "bytes": 2526713,
+    "path": "/tmp/rtdl-authored-particle-formal-110dee7aa.tar.gz",
+    "sha256": "42ebdf176e9625c8c95d7b2e2504ddccc70b42ed4b692fe3360f3c2c5b08bccf"
+  },
+  "block_bootstrap_95_percent": [
+    0.9293607544514662,
+    1.0198384562965996
+  ],
+  "block_rows": [
+    {
+      "block": 0,
+      "order": [
+        "rtdl",
+        "pyoptix"
+      ],
+      "pyoptix_median_ns": 348044268,
+      "pyoptix_queries_per_second": 459711636.451947,
+      "rtdl_median_ns": 354948929,
+      "rtdl_over_pyoptix": 1.0198384562965996,
+      "rtdl_queries_per_second": 450769073.8799215
+    },
+    {
+      "block": 1,
+      "order": [
+        "pyoptix",
+        "rtdl"
+      ],
+      "pyoptix_median_ns": 354628648,
+      "pyoptix_queries_per_second": 451176183.60037285,
+      "rtdl_median_ns": 376723536,
+      "rtdl_over_pyoptix": 1.0623042952807356,
+      "rtdl_queries_per_second": 424714637.420477
+    },
+    {
+      "block": 2,
+      "order": [
+        "rtdl",
+        "pyoptix"
+      ],
+      "pyoptix_median_ns": 346353102,
+      "pyoptix_queries_per_second": 461956307.237,
+      "rtdl_median_ns": 347104497,
+      "rtdl_over_pyoptix": 1.0021694478717271,
+      "rtdl_queries_per_second": 460956286.6020719
+    },
+    {
+      "block": 3,
+      "order": [
+        "pyoptix",
+        "rtdl"
+      ],
+      "pyoptix_median_ns": 380291655,
+      "pyoptix_queries_per_second": 420729715.9860108,
+      "rtdl_median_ns": 352061042,
+      "rtdl_over_pyoptix": 0.9257658888149939,
+      "rtdl_queries_per_second": 454466643.3157918
+    },
+    {
+      "block": 4,
+      "order": [
+        "pyoptix",
+        "rtdl"
+      ],
+      "pyoptix_median_ns": 353713567,
+      "pyoptix_queries_per_second": 452343407.003102,
+      "rtdl_median_ns": 348778933,
+      "rtdl_over_pyoptix": 0.9860490677757916,
+      "rtdl_queries_per_second": 458743303.7419149
+    },
+    {
+      "block": 5,
+      "order": [
+        "rtdl",
+        "pyoptix"
+      ],
+      "pyoptix_median_ns": 357105711,
+      "pyoptix_queries_per_second": 448046600.96852946,
+      "rtdl_median_ns": 346249888,
+      "rtdl_over_pyoptix": 0.9696005337758375,
+      "rtdl_queries_per_second": 462094012.2874495
+    },
+    {
+      "block": 6,
+      "order": [
+        "pyoptix",
+        "rtdl"
+      ],
+      "pyoptix_median_ns": 347951864,
+      "pyoptix_queries_per_second": 459833719.9883487,
+      "rtdl_median_ns": 353367316,
+      "rtdl_over_pyoptix": 1.0155637964911146,
+      "rtdl_queries_per_second": 452786640.8561679
+    },
+    {
+      "block": 7,
+      "order": [
+        "rtdl",
+        "pyoptix"
+      ],
+      "pyoptix_median_ns": 383337687,
+      "pyoptix_queries_per_second": 417386563.9252944,
+      "rtdl_median_ns": 356259002,
+      "rtdl_over_pyoptix": 0.9293607544514662,
+      "rtdl_queries_per_second": 449111458.5225274
+    }
+  ],
+  "calibration_medians_ns": [
+    354820694,
+    349655162,
+    345382969
+  ],
+  "calibration_worker_count": 3,
+  "claim_boundary": {
+    "full_trajectory_tracking": false,
+    "lead_independent_recount_completed": false,
+    "natural_single_transition_ensemble": true,
+    "paper_claim_authorized": false,
+    "temporal_particle_simulation": false
+  },
+  "controller_result_sha256": "f79c84da0e4ed6ea8e998f82b5ac2b3a225f93f3831500a0fadfd52bf6f8592e",
+  "discard_count": 0,
+  "engineering_targets_passed": true,
+  "formal_worker_count": 16,
+  "gpu": {
+    "compute_capability": "8.9",
+    "driver": "550.127.05",
+    "name": "NVIDIA RTX 4000 Ada Generation",
+    "uuid": "GPU-2a00572b-6cef-b9e6-db0a-c127783a5d46"
+  },
+  "independent_oracle_sha256": "71354f158a3dce581dfbf927adaac6624bcbbf314092ff8c5acee3e02a2a6edb",
+  "input_sha256": "16955209bbfa75875bab41918e95643b371bb8f0a89dbc1418202ddbe52ee187",
+  "output_sha256": "6c4ec71524be3d7b241c3d66c4cd06a5aa7089b3948bf1d8dd8aab550f0dec89",
+  "paired_median_rtdl_over_pyoptix": 0.9941092578237594,
+  "preregistration_sha256": "dc9b429dd5387bd0f7cf6f7073415ee26a002bae31f5f94a1d0af3db86f3813d",
+  "pyoptix_prepare_median_ns": 10462781659.5,
+  "query_count": 160000000,
+  "retry_count": 0,
+  "rtdl_prepare_median_ns": 8983525994.5,
+  "rtdl_target_compatibility_probe_median_ns": 347062955,
+  "schema": "rtdl.v4.authored_particle.transition_ensemble_recount.v2",
+  "source_commit": "110dee7aa11e57e984cc2509163e021d787c692a",
+  "source_file_count_verified_from_git": 20,
+  "source_tree": "1e549d791fedd23659bb0e0636747016938cd1c4",
+  "status": "PASS__SEPARATE_SCRIPT_RAW_RECONSTRUCTION__LEAD_RECOUNT_PENDING",
+  "timed_sample_count": 48,
+  "warmup_count": 16,
+  "worst_block_rtdl_over_pyoptix": 1.0623042952807356
+}
