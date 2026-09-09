@@ -622,6 +622,12 @@ class Goal5776V4TriangleDeviceColumnsTest(unittest.TestCase):
     def test_device_resident_query_batch_native_section_is_app_neutral(self):
         native = NATIVE.read_text(encoding="utf-8")
         api = API.read_text(encoding="utf-8")
+        helper = (
+            ROOT / "src/native/optix/rtdl_optix_cuda_helpers.cu"
+        ).read_text(encoding="utf-8")
+        prelude = (
+            ROOT / "src/native/optix/rtdl_optix_prelude.h"
+        ).read_text(encoding="utf-8")
         codegen = (
             ROOT / "src/rtdsl/v4_triangle_optix_wrapper_codegen.py"
         ).read_text(encoding="utf-8")
@@ -666,6 +672,25 @@ class Goal5776V4TriangleDeviceColumnsTest(unittest.TestCase):
         self.assertIn("initial.validated_row_count = query_count", native)
         self.assertIn("initial.role_counters[1] = query_count", native)
         self.assertIn("initial.role_counters[6] = query_count", native)
+        transpose_symbol = (
+            "rtdl_cuda_transpose_validate_ray_f32x7_precompiled")
+        self.assertIn(transpose_symbol, native)
+        self.assertIn(transpose_symbol, helper)
+        self.assertIn(transpose_symbol, prelude)
+        transpose_begin = helper.index(
+            "static __global__ void rtdl_transpose_validate_ray_f32x7_kernel")
+        transpose_end = helper.index(
+            "static __global__ void rtdl_local_grid_nearest_seed_3d_kernel",
+            transpose_begin,
+        )
+        transpose = helper[transpose_begin:transpose_end].lower()
+        self.assertIn("atomicmin(first_invalid_row", transpose)
+        self.assertIn("query_tmax[index] = tmax", transpose)
+        for forbidden in (
+            "particle", "tracking", "cell_transition", "neighbor_cell",
+            "triangle_counting", "raydb", "rayjoin", "barneshut",
+        ):
+            self.assertNotIn(forbidden, transpose)
 
     def test_compact_triangle_summary_is_fail_closed(self):
         summary = triangle_runtime._CompactLifecycleSummary()

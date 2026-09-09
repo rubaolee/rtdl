@@ -644,6 +644,45 @@ static __global__ void rtdl_pack_ray3d_device_columns_kernel(
     rays[idx] = ray;
 }
 
+static __global__ void rtdl_transpose_validate_ray_f32x7_kernel(
+        const float* rows,
+        float* query_ox,
+        float* query_oy,
+        float* query_oz,
+        float* query_dx,
+        float* query_dy,
+        float* query_dz,
+        float* query_tmax,
+        uint64_t query_count,
+        unsigned long long* first_invalid_row)
+{
+    const uint64_t index =
+        static_cast<uint64_t>(blockIdx.x) * blockDim.x + threadIdx.x;
+    if (index >= query_count) return;
+    const float* row = rows + index * 7u;
+    const float ox = row[0];
+    const float oy = row[1];
+    const float oz = row[2];
+    const float dx = row[3];
+    const float dy = row[4];
+    const float dz = row[5];
+    const float tmax = row[6];
+    if (!isfinite(ox) || !isfinite(oy) || !isfinite(oz) ||
+            !isfinite(dx) || !isfinite(dy) || !isfinite(dz) ||
+            !isfinite(tmax) || tmax <= 0.0f ||
+            (dx == 0.0f && dy == 0.0f && dz == 0.0f)) {
+        atomicMin(first_invalid_row,
+                  static_cast<unsigned long long>(index));
+    }
+    query_ox[index] = ox;
+    query_oy[index] = oy;
+    query_oz[index] = oz;
+    query_dx[index] = dx;
+    query_dy[index] = dy;
+    query_dz[index] = dz;
+    query_tmax[index] = tmax;
+}
+
 static void rtdl_cuda_check(cudaError_t status, const char* operation)
 {
     if (status != cudaSuccess) {
@@ -680,6 +719,65 @@ void rtdl_cuda_pack_ray3d_device_columns_precompiled(
         ray_count);
     rtdl_cuda_check(cudaGetLastError(), "launching 3-D ray-column pack kernel");
     rtdl_cuda_check(cudaDeviceSynchronize(), "synchronizing 3-D ray-column pack kernel");
+}
+
+void rtdl_cuda_transpose_validate_ray_f32x7_precompiled(
+        const float* query_rows,
+        float* query_ox,
+        float* query_oy,
+        float* query_oz,
+        float* query_dx,
+        float* query_dy,
+        float* query_dz,
+        float* query_tmax,
+        uint64_t query_count,
+        uint64_t* first_invalid_row_out)
+{
+    if (query_rows == nullptr || query_ox == nullptr || query_oy == nullptr ||
+            query_oz == nullptr || query_dx == nullptr || query_dy == nullptr ||
+            query_dz == nullptr || query_tmax == nullptr ||
+            query_count == 0u || query_count > UINT32_MAX ||
+            first_invalid_row_out == nullptr) {
+        throw std::runtime_error(
+            "V4 packed ray-row transpose inputs are invalid");
+    }
+    unsigned long long* first_invalid_device = nullptr;
+    try {
+        rtdl_cuda_check(cudaMalloc(
+            reinterpret_cast<void**>(&first_invalid_device),
+            sizeof(*first_invalid_device)),
+            "allocating V4 packed ray-row validation status");
+        rtdl_cuda_check(cudaMemset(
+            first_invalid_device, 0xff, sizeof(*first_invalid_device)),
+            "initializing V4 packed ray-row validation status");
+        const unsigned block = 256u;
+        const unsigned grid = static_cast<unsigned>(
+            (query_count + block - 1u) / block);
+        rtdl_transpose_validate_ray_f32x7_kernel<<<grid, block>>>(
+            query_rows,
+            query_ox, query_oy, query_oz,
+            query_dx, query_dy, query_dz,
+            query_tmax,
+            query_count,
+            first_invalid_device);
+        rtdl_cuda_check(
+            cudaGetLastError(),
+            "launching V4 packed ray-row transpose and validation");
+        rtdl_cuda_check(cudaMemcpy(
+            first_invalid_row_out,
+            first_invalid_device,
+            sizeof(*first_invalid_row_out),
+            cudaMemcpyDeviceToHost),
+            "downloading V4 packed ray-row validation status");
+        const cudaError_t free_status = cudaFree(first_invalid_device);
+        first_invalid_device = nullptr;
+        rtdl_cuda_check(
+            free_status, "freeing V4 packed ray-row validation status");
+    } catch (...) {
+        if (first_invalid_device != nullptr)
+            cudaFree(first_invalid_device);
+        throw;
+    }
 }
 
 static __global__ void rtdl_local_grid_nearest_seed_3d_kernel(

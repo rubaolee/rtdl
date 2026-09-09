@@ -2280,22 +2280,14 @@ static void validate_v4_builtin_triangle_query_row(const float* row) {
             "V4 prepared built-in triangle query batch contains an invalid ray");
 }
 
-static uint64_t materialize_v4_builtin_triangle_query_batch(
+static uint64_t publish_v4_builtin_triangle_query_batch(
         uint64_t program_token,
         const std::shared_ptr<V4PreparedBuiltinTriangle>& program,
-        const std::array<std::vector<float>, 7>& host_columns,
+        const std::shared_ptr<V4PreparedBuiltinTriangleQueryBatch>& batch,
         size_t query_count, uint32_t** host_output_rows) {
-    auto batch = std::make_shared<V4PreparedBuiltinTriangleQueryBatch>();
     batch->program_token = program_token;
     batch->program = program;
     batch->query_count = query_count;
-    for (size_t column = 0; column < batch->query_columns.size(); ++column) {
-        batch->query_columns[column] =
-            std::make_unique<DevPtr>(sizeof(float) * query_count);
-        upload(
-            batch->query_columns[column]->ptr,
-            host_columns[column].data(), query_count);
-    }
     if (host_output_rows) {
         CU_CHECK(cuMemAllocHost(
             reinterpret_cast<void**>(&batch->host_output_rows),
@@ -2318,6 +2310,23 @@ static uint64_t materialize_v4_builtin_triangle_query_batch(
     if (host_output_rows)
         *host_output_rows = batch->host_output_rows;
     return token;
+}
+
+static uint64_t materialize_v4_builtin_triangle_query_batch(
+        uint64_t program_token,
+        const std::shared_ptr<V4PreparedBuiltinTriangle>& program,
+        const std::array<std::vector<float>, 7>& host_columns,
+        size_t query_count, uint32_t** host_output_rows) {
+    auto batch = std::make_shared<V4PreparedBuiltinTriangleQueryBatch>();
+    for (size_t column = 0; column < batch->query_columns.size(); ++column) {
+        batch->query_columns[column] =
+            std::make_unique<DevPtr>(sizeof(float) * query_count);
+        upload(
+            batch->query_columns[column]->ptr,
+            host_columns[column].data(), query_count);
+    }
+    return publish_v4_builtin_triangle_query_batch(
+        program_token, program, batch, query_count, host_output_rows);
 }
 
 static uint64_t prepare_v4_builtin_triangle_query_batch(
@@ -2356,16 +2365,30 @@ static uint64_t prepare_v4_builtin_triangle_query_batch_aos_rows(
         throw std::runtime_error(
             "V4 prepared built-in triangle AoS query batch inputs are invalid");
     const auto program = v4_builtin_triangle_from_token(program_token);
-    std::array<std::vector<float>, 7> host_columns;
-    for (auto& column : host_columns) column.resize(query_count);
-    for (size_t index = 0; index < query_count; ++index) {
-        const float* row = query_rows_f32x7 + index * 7u;
-        validate_v4_builtin_triangle_query_row(row);
-        for (size_t column = 0; column < host_columns.size(); ++column)
-            host_columns[column][index] = row[column];
+    auto batch = std::make_shared<V4PreparedBuiltinTriangleQueryBatch>();
+    for (auto& column : batch->query_columns)
+        column = std::make_unique<DevPtr>(sizeof(float) * query_count);
+    {
+        DevPtr packed_rows(sizeof(float) * query_count * 7u);
+        upload(packed_rows.ptr, query_rows_f32x7, query_count * 7u);
+        uint64_t first_invalid_row = UINT64_MAX;
+        rtdl_cuda_transpose_validate_ray_f32x7_precompiled(
+            reinterpret_cast<const float*>(packed_rows.ptr),
+            reinterpret_cast<float*>(batch->query_columns[0]->ptr),
+            reinterpret_cast<float*>(batch->query_columns[1]->ptr),
+            reinterpret_cast<float*>(batch->query_columns[2]->ptr),
+            reinterpret_cast<float*>(batch->query_columns[3]->ptr),
+            reinterpret_cast<float*>(batch->query_columns[4]->ptr),
+            reinterpret_cast<float*>(batch->query_columns[5]->ptr),
+            reinterpret_cast<float*>(batch->query_columns[6]->ptr),
+            query_count,
+            &first_invalid_row);
+        if (first_invalid_row != UINT64_MAX)
+            throw std::runtime_error(
+                "V4 prepared built-in triangle query batch contains an invalid ray");
     }
-    return materialize_v4_builtin_triangle_query_batch(
-        program_token, program, host_columns, query_count, host_output_rows);
+    return publish_v4_builtin_triangle_query_batch(
+        program_token, program, batch, query_count, host_output_rows);
 }
 
 static std::shared_ptr<V4PreparedBuiltinTriangleQueryBatch>

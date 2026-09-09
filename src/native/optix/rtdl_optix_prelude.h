@@ -134,6 +134,18 @@ void rtdl_cuda_pack_ray3d_device_columns_precompiled(
         void* rays_out,
         uint32_t ray_count);
 
+void rtdl_cuda_transpose_validate_ray_f32x7_precompiled(
+        const float* query_rows,
+        float* query_ox,
+        float* query_oy,
+        float* query_oz,
+        float* query_dx,
+        float* query_dy,
+        float* query_dz,
+        float* query_tmax,
+        uint64_t query_count,
+        uint64_t* first_invalid_row_out);
+
 void rtdl_cuda_local_grid_nearest_seed_3d_precompiled(
         const double* query_coords,
         const int64_t* query_ids,
