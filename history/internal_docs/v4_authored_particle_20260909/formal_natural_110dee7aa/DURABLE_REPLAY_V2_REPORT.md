@@ -48,7 +48,7 @@ The CPU-only preflight ran against the network-volume handoff and exact clean
 - triangles `[3392530,3]`, vertices `[314587,3]`;
 - queries `[160000000,7]`, expected output `[160000000,3]`;
 - formal program identity `da62ce40ed6e51db638eb916c842161e6025d764abedb4932dfe84f3db710530`;
-- formal executable identity `0663bfeefefac2b389c31edbe6d331adbc7fa54f4c7632db666cc6a87a4fa19`;
+- formal executable identity `0663bfeefefac2b389c31edbe6d331adbc7fa54f4c7632db666cc6a87a4fa19c`;
 - `gpu_execution_performed: false`.
 
 The retained output is `DURABLE_DATA_PREFLIGHT_V2.json`, 982 bytes, SHA-256
@@ -62,3 +62,8 @@ an explicit direct-directory contract; it does not prove the subsequent GPU
 compile/execute path, create a second output, or close independent complete
 array replay. It creates no performance evidence and changes no latency or
 memory conclusion.
+
+The immutable six-file successor packet retains the earlier report byte that
+omitted the final `c` from the displayed executable identity. Its included
+machine JSON contains the correct 64-digit value. The packet was not rebuilt;
+this repository report is the explicit documentation correction.
