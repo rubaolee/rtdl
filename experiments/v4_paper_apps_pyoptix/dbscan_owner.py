@@ -84,6 +84,7 @@ class PublicPyOptixDbscanOwner:
 
         self.closed = False
         self.lock = threading.Lock()
+        self._counts_and_core_ready = False
         self.count = len(points)
         self.min_points = min_points
         self.epsilon = float(radius)
@@ -215,12 +216,14 @@ class PublicPyOptixDbscanOwner:
             if self.closed:
                 raise RuntimeError("prepared public-PyOptiX DBSCAN owner is closed")
             cp = self.runtime.cp
+            count_and_core_reused = self._counts_and_core_ready
             with self.stream:
                 self.status.fill(0)
                 self._kernel(
                     "initialize", self.parent, self.border, self.roots,
                     self.first, self.markers, self.labels)
-                self._trace(0)
+                if not count_and_core_reused:
+                    self._trace(0)
                 self._trace(1)
                 self._kernel(
                     "extract_core_roots", self.parent, self.core, self.roots,
@@ -250,6 +253,7 @@ class PublicPyOptixDbscanOwner:
             if (counts < 1).any() or (counts > self.count).any() \
                     or ((labels < 0) & (core != 0)).any():
                 raise RuntimeError("count/label output domain violated")
+            self._counts_and_core_ready = True
             output = {
                 "canonical_component_labels": tuple(map(int, labels)),
                 "core_flags": tuple(bool(value) for value in core),
@@ -259,7 +263,9 @@ class PublicPyOptixDbscanOwner:
                 "schema": "rtdl.public_pyoptix.dbscan.complete_output.v1",
                 "output": output,
                 "directed_edge_count": int(counts.sum(dtype=np.uint64)),
-                "successful_optix_launches": 3,
+                "successful_optix_launches": (
+                    2 if count_and_core_reused else 3),
+                "exact_count_and_core_cache_reused": count_and_core_reused,
                 "device_status": status,
                 "boundary_assignment": "lowest_adjacent_core_component_root",
                 "canonical_labels": "dense_first_appearance_in_input_order",

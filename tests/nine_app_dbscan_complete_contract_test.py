@@ -63,7 +63,9 @@ class NineAppDbscanCompleteContractTest(unittest.TestCase):
         continuation = (PYOPTIX / "dbscan_continuation.cu").read_text(
             encoding="utf-8")
         self.assertNotIn("rtdsl", owner)
-        self.assertIn("successful_optix_launches\": 3", owner)
+        self.assertIn("exact_count_and_core_cache_reused", owner)
+        self.assertIn("if not count_and_core_reused:", owner)
+        self.assertIn("2 if count_and_core_reused else 3", owner)
         self.assertIn('"neighbor_counts": tuple(map(int, counts))', owner)
         self.assertIn("atomicCAS(params.parent + high, high, low)", device)
         self.assertNotIn("atomicMin(params.parent + high", device)
