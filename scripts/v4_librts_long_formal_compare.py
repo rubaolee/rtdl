@@ -185,8 +185,24 @@ def freeze(args) -> dict[str, Any]:
         raise ValueError("formal LibRTS C-only calibration does not authorize both scales")
     native_manifest = read_json(args.native_manifest)
     native = binding(args.native)
-    if native_manifest.get("native_sha256") != native["sha256"]:
+    if native_manifest.get("native_sha256") != native["sha256"] \
+            or native_manifest.get("status") \
+            != "PASS__FRESH_NATIVE_WITH_EMBEDDED_AABB_INDEX_PROGRAM" \
+            or native_manifest.get("git_commit") != commit \
+            or native_manifest.get("git_commit_after_build") != commit \
+            or native_manifest.get("git_status_before_build") != [] \
+            or native_manifest.get("git_status_after_build") != []:
         raise ValueError("native build manifest differs from native library")
+    pyoptix_manifest = read_json(args.pyoptix_ptx_manifest)
+    pyoptix_ptx = binding(args.pyoptix_ptx)
+    pyoptix_program = pyoptix_manifest.get("programs", {}).get("librts", {})
+    if pyoptix_manifest.get("status") \
+            != "PASS__PREBUILT_PTX_READY_FOR_UNTIMED_DRY_RUN" \
+            or pyoptix_manifest.get("source_commit") != commit \
+            or pyoptix_manifest.get("source_tree") != tree \
+            or pyoptix_manifest.get("source_clean_after_build") is not True \
+            or pyoptix_program.get("ptx_sha256") != pyoptix_ptx["sha256"]:
+        raise ValueError("PyOptiX PTX build manifest differs from source or PTX")
     python = args.python.resolve(strict=True)
     indexed = binding(args.indexed_npz)
     for closure in (point, range_):
@@ -208,7 +224,8 @@ def freeze(args) -> dict[str, Any]:
         "range_queries": range_,
         "native_library": native,
         "native_manifest": binding(args.native_manifest),
-        "pyoptix_ptx": binding(args.pyoptix_ptx),
+        "pyoptix_ptx": pyoptix_ptx,
+        "pyoptix_ptx_manifest": binding(args.pyoptix_ptx_manifest),
         "c_only_calibration": binding(args.calibration),
         "optix_sdk": args.optix_sdk,
         "operations": list(OPERATIONS),
@@ -253,7 +270,7 @@ def validate_prereg(path: Path) -> dict[str, Any]:
         checked_binding(row)
     for name in (
         "python", "indexed_npz", "native_library", "native_manifest",
-        "pyoptix_ptx", "c_only_calibration",
+        "pyoptix_ptx", "pyoptix_ptx_manifest", "c_only_calibration",
     ):
         checked_binding(value[name])
     for operation in OPERATIONS:
@@ -522,6 +539,7 @@ def main() -> int:
     freeze_parser.add_argument("--native", type=Path, required=True)
     freeze_parser.add_argument("--native-manifest", type=Path, required=True)
     freeze_parser.add_argument("--pyoptix-ptx", type=Path, required=True)
+    freeze_parser.add_argument("--pyoptix-ptx-manifest", type=Path, required=True)
     freeze_parser.add_argument("--calibration", type=Path, required=True)
     freeze_parser.add_argument("--optix-sdk", required=True)
     freeze_parser.add_argument("--worker-timeout-seconds", type=int, default=900)
