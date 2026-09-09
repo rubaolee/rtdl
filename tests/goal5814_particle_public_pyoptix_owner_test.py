@@ -25,6 +25,7 @@ from experiments.goal5814_particle.public_pyoptix_owner import (
     PublicPyOptixRuntime,
     _prevalidate_particle_execution_input,
     prevalidate_formal_particle_execution_input,
+    prevalidate_particle_execution_input,
     prepare_formal_particle_owner,
 )
 
@@ -568,6 +569,19 @@ class Goal5814ParticlePublicPyOptixOwnerTest(unittest.TestCase):
         admitted = prevalidate_formal_particle_execution_input(
             *columns, nonowning_expected)
         self.assertEqual(admitted.query_count, 5000)
+
+    def test_variable_scale_admission_binds_exact_shape(self):
+        shape, _vertices, _triangles, _front, _back, queries, expected = \
+            _fixture()
+        columns = _soa_columns(queries)
+        for item in (*columns, expected):
+            item.setflags(write=False)
+        admitted = prevalidate_particle_execution_input(
+            *columns, expected, shape=shape)
+        self.assertEqual(admitted.query_count, shape.query_count)
+        with self.assertRaises(TypeError):
+            prevalidate_particle_execution_input(
+                *columns, expected, shape=object())
 
     def test_matrix_adapter_is_explicitly_nonformal(self):
         owner, fake_optix, queries, expected = self.prepare_owner()

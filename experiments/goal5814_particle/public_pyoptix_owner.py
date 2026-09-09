@@ -384,6 +384,29 @@ def prevalidate_formal_particle_execution_input(
     )
 
 
+def prevalidate_particle_execution_input(
+        query_ox: np.ndarray,
+        query_oy: np.ndarray,
+        query_oz: np.ndarray,
+        query_dx: np.ndarray,
+        query_dy: np.ndarray,
+        query_dz: np.ndarray,
+        query_tmax: np.ndarray,
+        expected: np.ndarray,
+        *,
+        shape: ParticleProblemShape,
+        ) -> PrevalidatedParticleExecutionInput:
+    """Validate an immutable variable-scale transition ensemble."""
+
+    if type(shape) is not ParticleProblemShape:
+        raise TypeError("shape must be an exact ParticleProblemShape")
+    return _prevalidate_particle_execution_input(
+        query_ox, query_oy, query_oz,
+        query_dx, query_dy, query_dz, query_tmax, expected,
+        query_count=shape.query_count,
+    )
+
+
 def _validate_static_arrays(
         vertices: np.ndarray,
         triangles: np.ndarray,
