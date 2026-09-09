@@ -2363,6 +2363,8 @@ static void execute_v4_prepared_builtin_triangle_callback(
         const std::shared_ptr<V4PreparedBuiltinTriangleQueryBatch>&
             prepared_query_batch = nullptr,
         uint32_t* output_rows = nullptr) {
+    const auto profile_total_start = goal5807_profile_now();
+    auto profile_phase_start = profile_total_start;
     const bool compact_column_mode = output_summary != nullptr;
     const bool device_query_mode = prepared_query_batch != nullptr;
     const bool packed_row_mode = output_rows != nullptr;
@@ -2451,6 +2453,11 @@ static void execute_v4_prepared_builtin_triangle_callback(
     const CUdeviceptr status = prepared->status ? prepared->status->ptr : 0;
     const CUdeviceptr counters = prepared->counters ? prepared->counters->ptr : 0;
     DevPtr& parameter_device = *prepared->parameters;
+    auto profile_phase_end = goal5807_profile_now();
+    goal5807_emit_native_phase(
+        "builtin_triangle_u32x3", "execute.lookup_and_capacity",
+        profile_phase_start, profile_phase_end);
+    profile_phase_start = goal5807_profile_now();
     if (inline_compact_control) {
         RtdlV4CallbackProductStatusSummary initial = {};
         initial.schema_version = 2u;
@@ -2467,6 +2474,11 @@ static void execute_v4_prepared_builtin_triangle_callback(
     } else {
         CU_CHECK(cuMemsetD8(counters, 0, sizeof(uint64_t) * 7));
     }
+    profile_phase_end = goal5807_profile_now();
+    goal5807_emit_native_phase(
+        "builtin_triangle_u32x3", "execute.status_reset",
+        profile_phase_start, profile_phase_end);
+    profile_phase_start = goal5807_profile_now();
     V4TriangleParams parameters = {};
     parameters.traversable = prepared->accel.handle;
     parameters.query_ox = reinterpret_cast<const float*>(query_device[0]);
@@ -2504,6 +2516,11 @@ static void execute_v4_prepared_builtin_triangle_callback(
             prepared->status_summary->ptr)
         : nullptr;
     upload(parameter_device.ptr, &parameters, 1);
+    profile_phase_end = goal5807_profile_now();
+    goal5807_emit_native_phase(
+        "builtin_triangle_u32x3", "execute.parameter_upload",
+        profile_phase_start, profile_phase_end);
+    profile_phase_start = goal5807_profile_now();
     rtdl_optix_bind_traversal_audit_context(
         "v4_builtin_triangle_callback_ir_four_role_composed", prepared->accel.handle);
     OPTIX_CHECK(optixLaunch(
@@ -2534,6 +2551,11 @@ static void execute_v4_prepared_builtin_triangle_callback(
                     output_summary->role_counters[5] != query_count)
             throw std::runtime_error(
                 "V4 prepared built-in triangle compact lifecycle rejected execution");
+        profile_phase_end = goal5807_profile_now();
+        goal5807_emit_native_phase(
+            "builtin_triangle_u32x3", "execute.launch_and_status",
+            profile_phase_start, profile_phase_end);
+        profile_phase_start = goal5807_profile_now();
         // Public result bytes cross the host boundary only after the compact
         // device-status summary has been accepted.
         if (packed_row_mode) {
@@ -2548,6 +2570,11 @@ static void execute_v4_prepared_builtin_triangle_callback(
         }
     } else {
         CU_CHECK(cuStreamSynchronize(0));
+        profile_phase_end = goal5807_profile_now();
+        goal5807_emit_native_phase(
+            "builtin_triangle_u32x3", "execute.launch_completion",
+            profile_phase_start, profile_phase_end);
+        profile_phase_start = goal5807_profile_now();
         download(output_0, out0, query_count);
         download(output_1, out1, query_count);
         download(output_2, out2, query_count);
@@ -2563,6 +2590,13 @@ static void execute_v4_prepared_builtin_triangle_callback(
                 throw std::runtime_error(
                     "V4 prepared built-in triangle callback failed closed");
     }
+    profile_phase_end = goal5807_profile_now();
+    goal5807_emit_native_phase(
+        "builtin_triangle_u32x3", "execute.output_download",
+        profile_phase_start, profile_phase_end);
+    goal5807_emit_native_phase(
+        "builtin_triangle_u32x3", "execute.total",
+        profile_total_start, goal5807_profile_now());
 }
 
 static void execute_v4_prepared_builtin_triangle_callback_query_batch(
