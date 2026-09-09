@@ -446,6 +446,37 @@ class Goal5814ParticlePublicPyOptixOwnerTest(unittest.TestCase):
         self.assertEqual(result.operation_counts.query_h2d_copy_call_count, 7)
         self.assertTrue(np.array_equal(result.output, expected))
 
+    def test_prevalidated_query_batch_can_be_uploaded_once_for_replay(self):
+        owner, fake_optix, queries, expected = self.prepare_owner()
+        fake_optix.next_output = expected
+        columns = _soa_columns(queries)
+        for item in (*columns, expected):
+            item.setflags(write=False)
+        admitted = _prevalidate_particle_execution_input(
+            *columns, expected, query_count=queries.shape[0])
+
+        resident = owner.prepare_exact_core_prevalidated(admitted)
+        self.assertIs(resident, admitted)
+        prepare_counts = owner.prepared_input_operation_counts
+        self.assertEqual(prepare_counts.query_h2d_copy_call_count, 7)
+        self.assertEqual(
+            prepare_counts.query_h2d_bytes,
+            sum(column.nbytes for column in admitted.columns),
+        )
+        self.assertEqual(prepare_counts.explicit_stream_sync_call_count, 1)
+
+        completion = owner.execute_prepared_exact_core(resident)
+        result = owner.materialize_exact_core_completion(completion)
+        self.assertTrue(np.array_equal(result.output, expected))
+        self.assertEqual(result.operation_counts.query_h2d_copy_call_count, 0)
+        self.assertEqual(result.operation_counts.query_h2d_bytes, 0)
+        self.assertEqual(result.operation_counts.parameter_h2d_copy_call_count, 1)
+
+        other = _prevalidate_particle_execution_input(
+            *columns, expected, query_count=queries.shape[0])
+        with self.assertRaisesRegex(ValueError, "not resident"):
+            owner.execute_prepared_exact_core(other)
+
     def test_prevalidated_capability_rejects_forgery_and_storage_drift(self):
         owner, fake_optix, queries, expected = self.prepare_owner()
         fake_optix.next_output = expected

@@ -27,6 +27,9 @@ from experiments.v4_paper_apps_pyoptix.particle_adapter import (
 )
 
 
+ROOT = Path(__file__).resolve().parents[1]
+
+
 def _sha(path: Path) -> str:
     digest = hashlib.sha256()
     with path.open("rb") as stream:
@@ -67,6 +70,21 @@ def _machine() -> dict[str, object]:
         "driver": driver,
         "compute_capability": capability,
         "cuda_visible_devices": os.environ.get("CUDA_VISIBLE_DEVICES"),
+    }
+
+
+def _git_identity() -> dict[str, str]:
+    def capture(*arguments: str) -> str:
+        return subprocess.run(
+            ["git", *arguments], cwd=ROOT, check=True,
+            capture_output=True, text=True,
+        ).stdout.strip()
+
+    if capture("status", "--porcelain", "--untracked-files=no"):
+        raise RuntimeError("authored Particle worker requires clean tracked source")
+    return {
+        "commit": capture("rev-parse", "HEAD"),
+        "tree": capture("rev-parse", "HEAD^{tree}"),
     }
 
 
@@ -134,6 +152,7 @@ def _prepare_rtdl(args: argparse.Namespace, data: dict[str, object]):
         "executable_identity_sha256": materialized.identity.identity_sha256,
         "composed_ptx_sha256": materialized.identity.composed_ptx_sha256,
         "wrapper_source_sha256": materialized.identity.wrapper_source_sha256,
+        "native_library_sha256": materialized.identity.native_library_sha256,
         "protocol_contract_verdict": materialized.protocol_contract_decision.verdict,
         "path_class": "public_source_verify_compile_materialize_prepare_execute",
         "prepared_query_batch_used": True,
@@ -167,9 +186,13 @@ def _prepare_pyoptix(args: argparse.Namespace, data: dict[str, object]):
         column.setflags(write=False)
     prevalidated = prevalidate_formal_particle_execution_input(
         *columns, expected)
+    resident = owner.prepare_exact_core_prevalidated(prevalidated)
+    prepared_counts = owner.prepared_input_operation_counts
+    if prepared_counts is None:
+        raise RuntimeError("PyOptiX resident query preparation lacked counters")
 
     def invoke() -> object:
-        return owner.execute_exact_core_prevalidated(prevalidated)
+        return owner.execute_prepared_exact_core(resident)
 
     def finish(completion: object) -> tuple[np.ndarray, object]:
         result = owner.materialize_exact_core_completion(completion)
@@ -195,6 +218,12 @@ def _prepare_pyoptix(args: argparse.Namespace, data: dict[str, object]):
         ),
         "path_class": "public_pyoptix_handwritten_cuda_precompiled_ptx",
         "prevalidated_execution_input_used": True,
+        "prepared_query_batch_used": True,
+        "prepared_query_batch_device_resident": True,
+        "prepared_query_batch_operation_counts": {
+            name: int(getattr(prepared_counts, name))
+            for name in prepared_counts.__dataclass_fields__
+        },
         "timed_endpoint": (
             "exact_core_complete_u32x3_d2h_sync_and_internal_oracle"),
     }
@@ -229,6 +258,7 @@ def main() -> int:
     else:
         owner, invoke, finish, observe, metadata = _prepare_pyoptix(args, data)
     prepare_ns = time.perf_counter_ns() - prepare_started
+    close_ns = None
     try:
         for _ in range(args.warmups):
             finish(invoke())
@@ -246,7 +276,10 @@ def main() -> int:
                 last_output, dtype=np.uint32, order="C", copy=True)
             last_output.setflags(write=False)
     finally:
+        close_started = time.perf_counter_ns()
         owner.close()
+        close_ns = time.perf_counter_ns() - close_started
+    lifecycle_ns = time.perf_counter_ns() - prepare_started
     if last_output is None or last_execution is None:
         raise AssertionError("worker retained no output")
     last_evidence = observe(last_execution)
@@ -254,6 +287,7 @@ def main() -> int:
         "schema": "rtdl.v4.authored_particle_worker.v2",
         "status": "PASS",
         "arm": args.arm,
+        "source": _git_identity(),
         "machine": _machine(),
         "input_sha256": data["input_sha256"],
         "independent_oracle_sha256": data["independent_oracle_sha256"],
@@ -261,6 +295,8 @@ def main() -> int:
         "output_shape": list(last_output.shape),
         "output_sha256": _output_digest(last_output),
         "prepare_ns": prepare_ns,
+        "close_ns": close_ns,
+        "lifecycle_ns": lifecycle_ns,
         "warmup_count": args.warmups,
         "sample_count": args.samples,
         "samples_ns": samples,

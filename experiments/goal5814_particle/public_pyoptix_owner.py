@@ -514,7 +514,11 @@ class PublicPyOptixParticleOwner:
         self.host_params = host_params
         self.pinned_keepalive = pinned_keepalive
         self.prepare_operation_counts = prepare_counts.frozen_copy()
+        self.prepared_input_operation_counts: \
+            ParticleExecutionCounters | None = None
         self.last_execute_operation_counts: ParticleExecutionCounters | None = None
+        self._resident_prevalidated_input: \
+            PrevalidatedParticleExecutionInput | None = None
         self._execution_lock = threading.Lock()
         self._execution_generation = 0
         self._closed = False
@@ -952,7 +956,7 @@ class PublicPyOptixParticleOwner:
         return value.columns, value.expected
 
     def _execute_exact_core_locked(
-            self, query_columns: tuple[np.ndarray, ...],
+            self, query_columns: tuple[np.ndarray, ...] | None,
             expected: np.ndarray) -> ParticleExactCoreCompletion:
         if self._closed:
             raise RuntimeError("Goal5814 Particle owner is closed")
@@ -961,13 +965,15 @@ class PublicPyOptixParticleOwner:
         # completion, including a later attempt that terminates on status.
         self._execution_generation += 1
         counts = ParticleExecutionCounters()
-        query_stride = query_count * np.dtype(np.float32).itemsize
-        for column_index, column in enumerate(query_columns):
-            np.copyto(self.host_queries[column_index], column, casting="no")
-            self._enqueue_h2d(
-                int(self.query_columns_device.ptr) + column_index * query_stride,
-                self.host_queries[column_index], query_stride, counts,
-                kind="query")
+        if query_columns is not None:
+            query_stride = query_count * np.dtype(np.float32).itemsize
+            for column_index, column in enumerate(query_columns):
+                np.copyto(self.host_queries[column_index], column, casting="no")
+                self._enqueue_h2d(
+                    int(self.query_columns_device.ptr)
+                    + column_index * query_stride,
+                    self.host_queries[column_index], query_stride, counts,
+                    kind="query")
 
         self.host_control[0] = (
             np.uint32(0), UINT32_MAX, np.uint32(0), np.uint32(0))
@@ -1055,6 +1061,45 @@ class PublicPyOptixParticleOwner:
             columns, expected = self._require_prevalidated_input(value)
             return self._execute_exact_core_locked(columns, expected)
 
+    def prepare_exact_core_prevalidated(
+            self, value: PrevalidatedParticleExecutionInput,
+            ) -> PrevalidatedParticleExecutionInput:
+        """Upload one immutable admitted query batch for repeated execution."""
+
+        with self._execution_lock:
+            if self._closed:
+                raise RuntimeError("Goal5814 Particle owner is closed")
+            columns, _expected = self._require_prevalidated_input(value)
+            counts = ParticleExecutionCounters()
+            query_stride = self.shape.query_count \
+                * np.dtype(np.float32).itemsize
+            for column_index, column in enumerate(columns):
+                np.copyto(self.host_queries[column_index], column, casting="no")
+                self._enqueue_h2d(
+                    int(self.query_columns_device.ptr)
+                    + column_index * query_stride,
+                    self.host_queries[column_index], query_stride, counts,
+                    kind="query")
+            self.stream.synchronize()
+            counts.explicit_stream_sync_call_count += 1
+            self._resident_prevalidated_input = value
+            self.prepared_input_operation_counts = counts.frozen_copy()
+            return value
+
+    def execute_prepared_exact_core(
+            self, value: PrevalidatedParticleExecutionInput,
+            ) -> ParticleExactCoreCompletion:
+        """Execute the exact core without repeating immutable query H2D."""
+
+        with self._execution_lock:
+            if self._closed:
+                raise RuntimeError("Goal5814 Particle owner is closed")
+            _columns, expected = self._require_prevalidated_input(value)
+            if value is not self._resident_prevalidated_input:
+                raise ValueError(
+                    "Particle input is not resident in this prepared owner")
+            return self._execute_exact_core_locked(None, expected)
+
     def materialize_exact_core_completion(
             self, completion: ParticleExactCoreCompletion,
             ) -> ParticleExecutionResult:
@@ -1107,6 +1152,7 @@ class PublicPyOptixParticleOwner:
             if self._closed:
                 return
             self._closed = True
+            self._resident_prevalidated_input = None
             self.stream = None
             self.params_device = None
             self.control_device = None
@@ -1151,6 +1197,12 @@ class FormalPublicPyOptixParticleOwner:
         counts = self.__owner.last_execute_operation_counts
         return None if counts is None else counts.frozen_copy()
 
+    @property
+    def prepared_input_operation_counts(
+            self) -> ParticleExecutionCounters | None:
+        counts = self.__owner.prepared_input_operation_counts
+        return None if counts is None else counts.frozen_copy()
+
     def execute_complete(
             self,
             query_ox: np.ndarray,
@@ -1176,6 +1228,24 @@ class FormalPublicPyOptixParticleOwner:
         if value.query_count != FORMAL_PARTICLE_SHAPE.query_count:
             raise TypeError("formal prevalidated Particle input differs")
         return self.__owner.execute_exact_core_prevalidated(value)
+
+    def prepare_exact_core_prevalidated(
+            self, value: PrevalidatedParticleExecutionInput,
+            ) -> PrevalidatedParticleExecutionInput:
+        """Upload an admitted formal query batch before measured replay."""
+
+        if value.query_count != FORMAL_PARTICLE_SHAPE.query_count:
+            raise TypeError("formal prevalidated Particle input differs")
+        return self.__owner.prepare_exact_core_prevalidated(value)
+
+    def execute_prepared_exact_core(
+            self, value: PrevalidatedParticleExecutionInput,
+            ) -> ParticleExactCoreCompletion:
+        """Run the resident formal query batch through the exact core."""
+
+        if value.query_count != FORMAL_PARTICLE_SHAPE.query_count:
+            raise TypeError("formal prevalidated Particle input differs")
+        return self.__owner.execute_prepared_exact_core(value)
 
     def materialize_exact_core_completion(
             self, completion: ParticleExactCoreCompletion,

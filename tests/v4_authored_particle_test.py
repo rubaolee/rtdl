@@ -26,7 +26,9 @@ class V4AuthoredParticleTest(unittest.TestCase):
         self.assertIn(
             "prevalidate_formal_particle_execution_input", worker)
         self.assertIn(
-            "owner.execute_exact_core_prevalidated(prevalidated)", worker)
+            "owner.prepare_exact_core_prevalidated(prevalidated)", worker)
+        self.assertIn(
+            "owner.execute_prepared_exact_core(resident)", worker)
         self.assertIn(
             "owner.materialize_exact_core_completion(completion)", worker)
         self.assertNotIn("owner.execute_complete(*columns, expected)", worker)
