@@ -104,10 +104,11 @@ def _prepare_rtdl(args: argparse.Namespace, data: dict[str, object]):
     )
     owner = materialized.prepare(static_input)
     batch = v4.BuiltinTriangleCallbackBatch(queries=arrays["queries"])
+    prepared_batch = owner.prepare_batch(batch)
     expected = face_first_expected(arrays["expected"])
 
     def execute() -> tuple[np.ndarray, dict[str, object]]:
-        result = owner.execute(batch)
+        result = owner.execute(prepared_batch)
         output = np.asarray(result.output, dtype=np.uint32)
         if not np.array_equal(output, expected):
             raise RuntimeError("source-authored RTDL Particle output mismatch")
@@ -129,6 +130,7 @@ def _prepare_rtdl(args: argparse.Namespace, data: dict[str, object]):
         "wrapper_source_sha256": materialized.identity.wrapper_source_sha256,
         "protocol_contract_verdict": materialized.protocol_contract_decision.verdict,
         "path_class": "public_source_verify_compile_materialize_prepare_execute",
+        "prepared_query_batch_used": True,
     }
 
 

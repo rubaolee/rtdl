@@ -510,6 +510,36 @@ class BuiltinTriangleCallbackBatch:
         return not isinstance(self.queries, tuple)
 
 
+class PreparedBuiltinTriangleCallbackBatch:
+    """Owner-bound immutable query columns admitted outside execution."""
+
+    __slots__ = ("_owner", "_query_count", "_runtime_batch", "_token")
+
+    def __init__(
+        self, *, owner: object, runtime_batch: object, query_count: int,
+        _construction_token: object,
+    ) -> None:
+        if _construction_token is not _CONSTRUCTION_TOKEN:
+            _fail(
+                "GC027_LIVE_AUTHORITY_REQUIRED", "prepared_batch",
+                "use PreparedBuiltinTriangleCallbackProgram.prepare_batch",
+            )
+        object.__setattr__(self, "_owner", owner)
+        object.__setattr__(self, "_runtime_batch", runtime_batch)
+        object.__setattr__(self, "_query_count", query_count)
+        object.__setattr__(self, "_token", _construction_token)
+
+    def __setattr__(self, name: str, value: object) -> None:
+        raise AttributeError("prepared built-in-triangle batch is immutable")
+
+    def __getstate__(self):
+        _fail("GC009_NONSERIALIZABLE", "prepared_batch", "cannot be serialized")
+
+    @property
+    def query_count(self) -> int:
+        return self._query_count
+
+
 @dataclass(frozen=True)
 class BuiltinTriangleCallbackProgramIdentity:
     source_sha256: str
@@ -1333,11 +1363,51 @@ class PreparedBuiltinTriangleCallbackProgram:
         if threading.get_ident() != self._thread:
             _fail("GC011_THREAD_BOUNDARY", "prepared", "crossed thread boundary")
 
-    def execute(
+    def prepare_batch(
         self, batch: BuiltinTriangleCallbackBatch,
-    ) -> BuiltinTriangleCallbackExecutionResult:
+    ) -> PreparedBuiltinTriangleCallbackBatch:
+        """Admit reusable immutable query columns before measured execution."""
+
         self._check_open()
         if not isinstance(batch, BuiltinTriangleCallbackBatch):
+            _fail("GC022_BATCH_REQUIRED", "prepare_batch.batch", type(batch).__name__)
+        if not batch.uses_contiguous_columns:
+            _fail(
+                "GC032_PREPARED_BATCH_REQUIRES_BULK", "prepare_batch.batch",
+                "prepared batches require an exact contiguous Nx7 f32 input",
+            )
+        if not self._active.acquire(blocking=False):
+            _fail("GC012_REENTRANT", "prepared.prepare_batch", "already active")
+        try:
+            runtime_batch = self._owner.prepare_query_batch(batch.queries)
+            return PreparedBuiltinTriangleCallbackBatch(
+                owner=self,
+                runtime_batch=runtime_batch,
+                query_count=len(batch.queries),
+                _construction_token=_CONSTRUCTION_TOKEN,
+            )
+        finally:
+            self._active.release()
+
+    def execute(
+        self,
+        batch: BuiltinTriangleCallbackBatch | PreparedBuiltinTriangleCallbackBatch,
+    ) -> BuiltinTriangleCallbackExecutionResult:
+        self._check_open()
+        if type(batch) is PreparedBuiltinTriangleCallbackBatch:
+            if batch._token is not _CONSTRUCTION_TOKEN or batch._owner is not self:
+                _fail(
+                    "GC033_PREPARED_BATCH_OWNER_MISMATCH", "execute.batch",
+                    "prepared batch belongs to another owner",
+                )
+            runtime_queries = batch._runtime_batch
+            query_count = batch.query_count
+            uses_contiguous_columns = True
+        elif isinstance(batch, BuiltinTriangleCallbackBatch):
+            runtime_queries = batch.queries
+            query_count = len(batch.queries)
+            uses_contiguous_columns = batch.uses_contiguous_columns
+        else:
             _fail("GC022_BATCH_REQUIRED", "batch", type(batch).__name__)
         if not self._active.acquire(blocking=False):
             _fail("GC012_REENTRANT", "prepared.execute", "already active")
@@ -1345,11 +1415,11 @@ class PreparedBuiltinTriangleCallbackProgram:
             # Oracles are deliberately absent from the public execution
             # surface.  A caller may compare the returned bytes afterward,
             # but no expected value can influence the trusted owner.
-            if batch.uses_contiguous_columns:
+            if uses_contiguous_columns:
                 result = self._owner.execute(
-                    batch.queries, partner_column_output=True)
+                    runtime_queries, partner_column_output=True)
             else:
-                result = self._owner.execute(batch.queries)
+                result = self._owner.execute(runtime_queries)
             if result.composed_ptx_sha256 != self._identity.composed_ptx_sha256:
                 _fail(
                     "GC023_EXECUTED_PTX_IDENTITY_MISMATCH", "execute.composed_ptx_sha256",
@@ -1363,7 +1433,7 @@ class PreparedBuiltinTriangleCallbackProgram:
                     f"observed {result.native_library_sha256}",
                 )
             observed_output = result.output
-            if batch.uses_contiguous_columns:
+            if uses_contiguous_columns:
                 # The runtime and public wrapper independently derive the same
                 # domain-separated digest directly from the contiguous output
                 # bytes.  Neither side creates per-row Python objects.
@@ -1380,19 +1450,36 @@ class PreparedBuiltinTriangleCallbackProgram:
                 _fail("GC026_TRAVERSAL_RECEIPT_INVALID", "execute.receipt", type(receipt).__name__)
             try:
                 from .physical_execution_provenance import (
+                    ValidatedCompactTraversalReceipt,
+                    validate_bound_compact_traversal_receipt,
                     validate_traversal_receipt,
                 )
-                validate_traversal_receipt(
-                    receipt,
-                    provider_library_sha256=self._identity.native_library_sha256,
-                    route_identity=(
-                        "v4_builtin_triangle_callback_ir:four_role_composed_v1"),
-                    output_digest=result.output_sha256,
-                    expected_program_bundles=(
-                        "v4_builtin_triangle_callback_ir_four_role_composed",),
-                    expected_successful_launch_count=1,
-                    expected_raygen_invocation_count=len(batch.queries),
-                )
+                if type(receipt) is ValidatedCompactTraversalReceipt:
+                    validate_bound_compact_traversal_receipt(
+                        receipt,
+                        provider_library_sha256=(
+                            self._identity.native_library_sha256),
+                        route_identity=(
+                            "v4_builtin_triangle_callback_ir:four_role_composed_v1"),
+                        output_digest=result.output_sha256,
+                        expected_program_bundle=(
+                            "v4_builtin_triangle_callback_ir_four_role_composed"),
+                        expected_successful_launch_count=1,
+                        expected_raygen_invocation_count=query_count,
+                    )
+                else:
+                    validate_traversal_receipt(
+                        receipt,
+                        provider_library_sha256=(
+                            self._identity.native_library_sha256),
+                        route_identity=(
+                            "v4_builtin_triangle_callback_ir:four_role_composed_v1"),
+                        output_digest=result.output_sha256,
+                        expected_program_bundles=(
+                            "v4_builtin_triangle_callback_ir_four_role_composed",),
+                        expected_successful_launch_count=1,
+                        expected_raygen_invocation_count=query_count,
+                    )
             except (RuntimeError, TypeError, ValueError):
                 _fail(
                     "GC026_TRAVERSAL_RECEIPT_INVALID", "execute.receipt",
@@ -1444,6 +1531,7 @@ __all__ = [
     "BuiltinTriangleOrientationDeclaration",
     "BuiltinTriangleU32x3FieldIds",
     "MaterializedBuiltinTriangleCallbackProgram",
+    "PreparedBuiltinTriangleCallbackBatch",
     "PreparedBuiltinTriangleCallbackProgram",
     "PublicCallbackLifecycleError",
     "VerifiedBuiltinTriangleCallbackProgram",

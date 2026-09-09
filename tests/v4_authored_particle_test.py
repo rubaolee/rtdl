@@ -67,6 +67,51 @@ class V4AuthoredParticleTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             face_first_expected(np.zeros((2, 4), dtype=np.uint32))
 
+    def test_public_prepared_batch_is_owner_bound_and_requires_bulk_input(self):
+        from rtdsl import v4_public_builtin_triangle as public_triangle
+
+        class FakeOwner:
+            lifecycle_receipt = {}
+
+            def prepare_query_batch(self, queries):
+                return ("runtime_batch", id(queries))
+
+        identity = v4.BuiltinTriangleCallbackExecutableIdentity(
+            program_identity_sha256="1" * 64,
+            physical_schema_sha256="2" * 64,
+            canonical_plan_sha256="3" * 64,
+            callback_abi_sha256="4" * 64,
+            wrapper_source_sha256="5" * 64,
+            generated_executable_sha256="6" * 64,
+            composed_ptx_sha256="7" * 64,
+            native_library_sha256="8" * 64,
+        )
+        decision = v4.ProtocolContractDecision(
+            verdict="ACCEPT",
+            findings=(),
+            contract_sha256="9" * 64,
+            projection_sha256="a" * 64,
+        )
+        owner = public_triangle.PreparedBuiltinTriangleCallbackProgram(
+            owner=FakeOwner(),
+            identity=identity,
+            decision=decision,
+            _construction_token=public_triangle._CONSTRUCTION_TOKEN,
+        )
+        batch = v4.BuiltinTriangleCallbackBatch(
+            queries=np.zeros((2, 7), dtype=np.float32),
+        )
+        prepared = owner.prepare_batch(batch)
+        self.assertEqual(prepared.query_count, 2)
+        with self.assertRaises(AttributeError):
+            prepared.query_count = 3
+        with self.assertRaises(v4.PublicCallbackLifecycleError) as sequence:
+            owner.prepare_batch(v4.BuiltinTriangleCallbackBatch(queries=(
+                ((0.0, 0.0, 0.0), (1.0, 0.0, 0.0), 1.0),
+            )))
+        self.assertEqual(
+            sequence.exception.code, "GC032_PREPARED_BATCH_REQUIRES_BULK")
+
 
 if __name__ == "__main__":
     unittest.main()
