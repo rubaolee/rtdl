@@ -140,6 +140,7 @@ def _generate_chunk(
     vertices: np.ndarray, cells: np.ndarray, triangles: np.ndarray,
     front: np.ndarray, back: np.ndarray, cell_faces: np.ndarray,
     tmax: float, exit_barycentric_margin: float = 1.0e-3,
+    initial_attempt: int = 0,
 ) -> tuple[np.ndarray, np.ndarray, np.ndarray, float, float, int]:
     indices = np.arange(start, stop, dtype=np.uint64)
     chosen = eligible[(indices % np.uint64(len(eligible))).astype(np.int64)]
@@ -151,7 +152,7 @@ def _generate_chunk(
     minimum_cell_barycentric = math.inf
     minimum_exit_barycentric = math.inf
     rejected_candidate_count = 0
-    for attempt in range(16):
+    for attempt in range(initial_attempt, initial_attempt + 16):
         if len(pending) == 0:
             break
         current_indices = indices[pending]
@@ -217,6 +218,82 @@ def _generate_chunk(
             f"Particle strict-exit resampling exhausted: {len(pending)}")
     return (
         queries, expected, chosen.astype(np.uint32),
+        minimum_cell_barycentric, minimum_exit_barycentric,
+        rejected_candidate_count,
+    )
+
+
+def _origin_bits(origins: np.ndarray) -> np.ndarray:
+    return np.ascontiguousarray(origins, dtype=np.float32).view(np.dtype([
+        ("x", "<u4"), ("y", "<u4"), ("z", "<u4"),
+    ])).reshape(-1)
+
+
+def _repair_duplicate_origins(
+    *, queries: np.ndarray, expected: np.ndarray, query_cells: np.ndarray,
+    eligible: np.ndarray, vertices: np.ndarray, cells: np.ndarray,
+    triangles: np.ndarray, front: np.ndarray, back: np.ndarray,
+    cell_faces: np.ndarray, tmax: float,
+) -> tuple[int, int, float, float, int]:
+    """Replace only non-first duplicate origins with deterministic valid rows."""
+
+    bits = _origin_bits(queries[:, :3])
+    unique_bits, first_indices = np.unique(bits, return_index=True)
+    duplicate_count = len(bits) - len(unique_bits)
+    if duplicate_count == 0:
+        return len(bits), 0, math.inf, math.inf, 0
+
+    first_mask = np.zeros(len(bits), dtype=np.bool_)
+    first_mask[first_indices] = True
+    duplicate_indices = np.flatnonzero(~first_mask)
+    if len(duplicate_indices) != duplicate_count:
+        raise AssertionError("Particle duplicate index accounting differs")
+
+    replacement_bits: set[bytes] = set()
+    minimum_cell_barycentric = math.inf
+    minimum_exit_barycentric = math.inf
+    rejected_candidate_count = 0
+    for raw_index in duplicate_indices:
+        index = int(raw_index)
+        for repair_round in range(1, 65):
+            (candidate_query, candidate_expected, candidate_cell,
+             candidate_minimum, candidate_exit_minimum,
+             candidate_rejected) = _generate_chunk(
+                start=index,
+                stop=index + 1,
+                eligible=eligible,
+                vertices=vertices,
+                cells=cells,
+                triangles=triangles,
+                front=front,
+                back=back,
+                cell_faces=cell_faces,
+                tmax=tmax,
+                initial_attempt=repair_round * 16,
+            )
+            rejected_candidate_count += candidate_rejected
+            candidate_bit = _origin_bits(candidate_query[:, :3])[0]
+            insertion = int(np.searchsorted(unique_bits, candidate_bit))
+            matches_original = insertion < len(unique_bits) \
+                and bool(unique_bits[insertion] == candidate_bit)
+            candidate_key = bytes(candidate_bit)
+            if matches_original or candidate_key in replacement_bits:
+                continue
+            queries[index] = candidate_query[0]
+            expected[index] = candidate_expected[0]
+            query_cells[index] = candidate_cell[0]
+            replacement_bits.add(candidate_key)
+            minimum_cell_barycentric = min(
+                minimum_cell_barycentric, candidate_minimum)
+            minimum_exit_barycentric = min(
+                minimum_exit_barycentric, candidate_exit_minimum)
+            break
+        else:
+            raise RuntimeError(
+                "Particle duplicate-origin repair exhausted: "
+                f"row={index}")
+    return (
+        len(bits), duplicate_count,
         minimum_cell_barycentric, minimum_exit_barycentric,
         rejected_candidate_count,
     )
@@ -297,13 +374,26 @@ def main() -> int:
     expected.flush()
     query_cells.flush()
 
-    origin_bits = np.ascontiguousarray(queries[:, :3]).view(np.dtype([
-        ("x", "<u4"), ("y", "<u4"), ("z", "<u4"),
-    ])).reshape(-1)
-    distinct_count = int(np.unique(origin_bits).size)
-    if distinct_count != args.query_count:
-        raise RuntimeError(
-            f"Particle generated origins are not distinct: {distinct_count}")
+    (distinct_count, repaired_duplicate_count, repair_minimum,
+     repair_exit_minimum, repair_rejected) = _repair_duplicate_origins(
+        queries=queries,
+        expected=expected,
+        query_cells=query_cells,
+        eligible=eligible,
+        vertices=vertices,
+        cells=oriented_cells,
+        triangles=triangles,
+        front=front,
+        back=back,
+        cell_faces=cell_faces,
+        tmax=float(base["maximum_edge_length"]),
+    )
+    minimum = min(minimum, repair_minimum)
+    exit_minimum = min(exit_minimum, repair_exit_minimum)
+    rejected_candidate_count += repair_rejected
+    queries.flush()
+    expected.flush()
+    query_cells.flush()
 
     members = {}
     for path, shape, dtype in (
@@ -338,7 +428,13 @@ def main() -> int:
             "minimum_exit_triangle_barycentric_weight": exit_minimum,
             "exit_triangle_barycentric_margin": 1.0e-3,
             "rejected_candidate_count": rejected_candidate_count,
-            "maximum_resample_attempts_per_row": 16,
+            "repaired_duplicate_origin_count": repaired_duplicate_count,
+            "uniqueness_verification": (
+                "global_exact_f32_bits_unique_then_nonfirst_duplicates_"
+                "replaced_outside_original_and_replacement_sets"),
+            "maximum_initial_resample_attempts_per_row": 16,
+            "maximum_duplicate_repair_rounds": 64,
+            "duplicate_repair_attempts_per_round": 16,
             "direction": AUTHOR_DIRECTION.tolist(),
             "maximum_distance": base["maximum_edge_length"],
             "chunk_size": args.chunk_size,

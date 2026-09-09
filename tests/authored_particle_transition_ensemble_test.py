@@ -6,6 +6,7 @@ import numpy as np
 
 from scripts.generate_authored_particle_transition_ensemble import (
     _generate_chunk,
+    _repair_duplicate_origins,
     _strict_barycentric_weights,
 )
 from scripts.goal5776_prepare_particle_mesh import _faces_like_author
@@ -49,6 +50,51 @@ class AuthoredParticleTransitionEnsembleTest(unittest.TestCase):
         self.assertEqual(np.unique(queries[:, :3], axis=0).shape[0], 10_000)
         np.testing.assert_array_equal(expected[:, 0], query_cells)
         self.assertTrue(np.all(expected[:, 2] < len(triangles)))
+
+    def test_duplicate_origin_repair_preserves_rows_and_oracle(self):
+        vertices = np.asarray([
+            [0.0, 0.0, 0.0],
+            [1.0, 0.0, 0.0],
+            [0.0, 1.0, 0.0],
+            [0.0, 0.0, 1.0],
+        ], dtype=np.float32)
+        cells = np.asarray([[0, 1, 2, 3]], dtype=np.uint32)
+        triangles, front, back, cell_faces, oriented = _faces_like_author(
+            vertices, cells)
+        queries, expected, query_cells, *_ = _generate_chunk(
+            start=0,
+            stop=100,
+            eligible=np.asarray([0], dtype=np.int64),
+            vertices=vertices.astype(np.float64),
+            cells=oriented,
+            triangles=triangles,
+            front=front,
+            back=back,
+            cell_faces=cell_faces,
+            tmax=2.0,
+        )
+        queries[-1, :3] = queries[0, :3]
+        (distinct_count, repaired_count, minimum, exit_minimum,
+         rejected) = _repair_duplicate_origins(
+            queries=queries,
+            expected=expected,
+            query_cells=query_cells,
+            eligible=np.asarray([0], dtype=np.int64),
+            vertices=vertices.astype(np.float64),
+            cells=oriented,
+            triangles=triangles,
+            front=front,
+            back=back,
+            cell_faces=cell_faces,
+            tmax=2.0,
+        )
+        self.assertEqual(distinct_count, 100)
+        self.assertEqual(repaired_count, 1)
+        self.assertGreater(minimum, 0.0)
+        self.assertGreater(exit_minimum, 1.0e-3)
+        self.assertGreaterEqual(rejected, 0)
+        self.assertEqual(np.unique(queries[:, :3], axis=0).shape[0], 100)
+        np.testing.assert_array_equal(expected[:, 0], query_cells)
 
 
 if __name__ == "__main__":
