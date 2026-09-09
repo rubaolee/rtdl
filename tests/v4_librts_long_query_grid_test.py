@@ -78,6 +78,7 @@ class V4LibRTSLongQueryGridTest(unittest.TestCase):
                 y_count=3,
                 output=output,
                 indexed_identity={"indexed_npz_sha256": "0" * 64},
+                stream_chunk_rows=4,
             )
             columns, loaded = load_query_columns(output / "MANIFEST.json")
             self.assertEqual(9, manifest["query_count"])
@@ -94,6 +95,16 @@ class V4LibRTSLongQueryGridTest(unittest.TestCase):
             )
             self.assertEqual(brute, manifest["expected_count_u64"])
             self.assertEqual("0" * 64, manifest["indexed_identity"]["indexed_npz_sha256"])
+            self.assertEqual(
+                {
+                    "enabled": True,
+                    "chunk_rows": 4,
+                    "chunk_count": 3,
+                    "partition": "contiguous_nonoverlapping_full_cover",
+                    "query_validation_and_h2d_inside_action": True,
+                },
+                manifest["streaming"],
+            )
 
     def test_range_generation_matches_brute_force(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

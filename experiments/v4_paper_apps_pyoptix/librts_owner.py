@@ -76,6 +76,17 @@ class LibRTSCountResult:
     device_status: int
 
 
+@dataclass(frozen=True, slots=True)
+class LibRTSStreamCountResult:
+    operation: str
+    checked_u64: int
+    query_count: int
+    indexed_count: int
+    chunk_rows: int
+    chunk_counts: tuple[int, ...]
+    device_statuses: tuple[int, ...]
+
+
 def _as_f32_column(label: str, value: Any, count: int | None = None) -> np.ndarray:
     result = np.ascontiguousarray(np.asarray(value, dtype=np.float32))
     if result.ndim != 1 or (count is not None and result.size != count):
@@ -436,18 +447,83 @@ class PublicPyOptixLibRTSCountOwner:
             device_status=observed_status,
         )
 
-    def close(self) -> None:
-        if self._closed:
-            return
-        self._closed = True
-        self.stream = None
-        self.device_params = None
+    def _release_query_batch(self) -> None:
         self.query_operation = None
         self.query_device = ()
         self.query_count = 0
         self.query_layout = None
         self.query_counts = None
         self.query_status = None
+
+    def execute_count_query_column_stream(
+        self,
+        *,
+        operation: str,
+        columns: Mapping[str, Any],
+        chunk_rows: int,
+        expected_count: int | None = None,
+    ) -> LibRTSStreamCountResult:
+        """Execute one logical column batch through bounded device chunks."""
+
+        self._guard()
+        if self.query_operation is not None:
+            raise RuntimeError("streamed queries require no bound query batch")
+        if isinstance(chunk_rows, bool) or not isinstance(chunk_rows, int) \
+                or not 0 < chunk_rows <= 0xFFFFFFFF:
+            raise ValueError("chunk_rows must be inside nonzero U32")
+        names = (
+            ("x", "y")
+            if operation == "point_contains"
+            else ("min_x", "min_y", "max_x", "max_y")
+        )
+        if operation not in OPERATION_CODES or set(columns) != set(names):
+            raise ValueError("streamed query columns do not match the operation")
+        query_count = len(columns[names[0]])
+        if query_count <= 0 or any(len(columns[name]) != query_count for name in names):
+            raise ValueError("query-column stream must contain equal nonempty columns")
+
+        total = 0
+        chunk_counts = []
+        statuses = []
+        for start in range(0, query_count, chunk_rows):
+            stop = min(start + chunk_rows, query_count)
+            chunk = {name: columns[name][start:stop] for name in names}
+            try:
+                self.bind_query_columns(operation=operation, columns=chunk)
+                if self.query_layout != "device_f32_soa" \
+                        or self.query_count != stop - start:
+                    raise RuntimeError("streamed query preparation returned an invalid layout")
+                result = self.execute_count(operation=operation)
+            finally:
+                self._release_query_batch()
+            value = int(result.checked_u64)
+            if value < 0 or total > 0xFFFFFFFFFFFFFFFF - value:
+                raise OverflowError("streamed LibRTS count exceeds U64")
+            total += value
+            chunk_counts.append(value)
+            statuses.append(int(result.device_status))
+        if expected_count is not None and total != int(expected_count):
+            raise RuntimeError(
+                f"LibRTS PyOptiX stream oracle mismatch: "
+                f"expected={expected_count} observed={total}"
+            )
+        return LibRTSStreamCountResult(
+            operation=operation,
+            checked_u64=total,
+            query_count=query_count,
+            indexed_count=self.indexed_count,
+            chunk_rows=chunk_rows,
+            chunk_counts=tuple(chunk_counts),
+            device_statuses=tuple(statuses),
+        )
+
+    def close(self) -> None:
+        if self._closed:
+            return
+        self._closed = True
+        self.stream = None
+        self.device_params = None
+        self._release_query_batch()
         self.host_params_keepalive = None
         self.host_params = None
         self.host_total_keepalive = None
@@ -480,6 +556,7 @@ __all__ = [
     "DEVICE_SOURCE",
     "PARAM_DTYPE",
     "LibRTSCountResult",
+    "LibRTSStreamCountResult",
     "PublicPyOptixLibRTSCountOwner",
     "normalize_indexed_columns",
     "normalize_queries",

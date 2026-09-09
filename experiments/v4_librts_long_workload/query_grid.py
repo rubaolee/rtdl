@@ -242,11 +242,16 @@ def generate_query_grid(
     y_count: int,
     output: str | Path,
     indexed_identity: Mapping[str, Any] | None = None,
+    stream_chunk_rows: int | None = None,
 ) -> dict[str, Any]:
     if x_count <= 0 or y_count <= 0:
         raise ValueError("Cartesian query axis counts must be positive")
     if x_count * y_count > 0xFFFFFFFF:
         raise ValueError("Cartesian query count exceeds the U32 OptiX launch limit")
+    if stream_chunk_rows is not None and not (
+        0 < stream_chunk_rows <= 0xFFFFFFFF
+    ):
+        raise ValueError("stream_chunk_rows must be inside nonzero U32")
     output = Path(output).resolve()
     if output.exists():
         raise FileExistsError(output)
@@ -321,6 +326,17 @@ def generate_query_grid(
             "float_contract": "all indexed and query coordinates lowered to float32",
         },
         "derivation": derivation,
+        "streaming": {
+            "enabled": stream_chunk_rows is not None,
+            "chunk_rows": stream_chunk_rows,
+            "chunk_count": (
+                None
+                if stream_chunk_rows is None
+                else (query_count + stream_chunk_rows - 1) // stream_chunk_rows
+            ),
+            "partition": "contiguous_nonoverlapping_full_cover",
+            "query_validation_and_h2d_inside_action": stream_chunk_rows is not None,
+        },
     }
     manifest_path = output / "MANIFEST.json"
     manifest_path.write_text(

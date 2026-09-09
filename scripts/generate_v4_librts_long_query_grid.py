@@ -24,6 +24,7 @@ def main() -> int:
     )
     parser.add_argument("--x-count", type=int, required=True)
     parser.add_argument("--y-count", type=int, required=True)
+    parser.add_argument("--stream-chunk-rows", type=int)
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     with np.load(args.indexed_npz.resolve(strict=True), allow_pickle=False) as arrays:
@@ -42,6 +43,7 @@ def main() -> int:
             "indexed_npz": str(args.indexed_npz.resolve(strict=True)),
             "indexed_npz_sha256": sha256_file(args.indexed_npz),
         },
+        stream_chunk_rows=args.stream_chunk_rows,
     )
     print(json.dumps(result, indent=2, sort_keys=True, allow_nan=False))
     return 0

@@ -281,6 +281,126 @@ class PreparedVerifiedAabbRelationCountV4:
                 "canonical_v4_aabb_relation_to_device_scalar_count_v1"),
         }
 
+    def execute_count_query_column_stream(
+        self,
+        *,
+        point_columns=None,
+        box_columns=None,
+        chunk_rows: int,
+    ) -> dict[str, object]:
+        """Count one logical typed-column batch using bounded device chunks."""
+
+        self._guard()
+        if self._prepared_queries is not None:
+            raise RuntimeError("streamed queries require no bound prepared query batch")
+        if isinstance(chunk_rows, bool) or not isinstance(chunk_rows, int) \
+                or not 0 < chunk_rows <= 0xFFFFFFFF:
+            raise ValueError("chunk_rows must be inside nonzero U32")
+        if (point_columns is None) == (box_columns is None):
+            raise ValueError("stream exactly one point-column or box-column batch")
+
+        operation = (
+            "point_contains"
+            if self._authority.algebra is AabbCountAlgebra.POINT_CONTAINS
+            else "range_contains"
+        )
+        if point_columns is not None:
+            if operation != "point_contains":
+                raise ValueError("point query-column stream requires point-count algebra")
+            names = ("x", "y")
+            columns = point_columns
+        else:
+            if operation != "range_contains":
+                raise ValueError("box query-column stream requires range-count algebra")
+            names = ("min_x", "min_y", "max_x", "max_y")
+            columns = box_columns
+        if set(columns) != set(names):
+            raise ValueError(f"query-column stream must be exactly {names!r}")
+        query_count = len(columns[names[0]])
+        if query_count <= 0 or any(len(columns[name]) != query_count for name in names):
+            raise ValueError("query-column stream must contain equal nonempty columns")
+
+        total = 0
+        receipts = []
+        physical_counts = []
+        for chunk_index, start in enumerate(range(0, query_count, chunk_rows)):
+            stop = min(start + chunk_rows, query_count)
+            chunk = {name: columns[name][start:stop] for name in names}
+            if operation == "point_contains":
+                prepared_queries = prepare_optix_aabb_point_query_columns_f32_2d(
+                    x=chunk["x"], y=chunk["y"])
+            else:
+                prepared_queries = prepare_optix_aabb_box_query_columns_f32_2d(
+                    min_x=chunk["min_x"], min_y=chunk["min_y"],
+                    max_x=chunk["max_x"], max_y=chunk["max_y"],
+                    enable_range_intersects=False,
+                )
+            if prepared_queries.device_layout != "device_f32_soa" \
+                    or prepared_queries.count != stop - start:
+                prepared_queries.close()
+                raise RuntimeError("streamed query preparation returned an invalid layout")
+
+            audit = None
+            try:
+                audit = OptixTraversalAuditSession.open(library=self._library)
+                result = self._prepared.count_prepared_queries(
+                    prepared_queries, operation=operation)
+                value = int(result["counts"][operation])
+                output_digest = _digest({"count": value})
+                receipt = audit.finish_validated_compact(
+                    semantic_digest=_digest({
+                        "authority": self._authority.authority_nonce,
+                        "algebra": self._authority.algebra.value,
+                        "logical_query_count": query_count,
+                        "chunk_index": chunk_index,
+                        "chunk_start": start,
+                        "chunk_stop": stop,
+                        "native": self._native_sha256,
+                    }),
+                    output_digest=output_digest,
+                    route_identity=(
+                        "v4_callback_ir:closed_aabb_relation:device_count_v1"),
+                    expected_program_bundle="aabb_index_count_2d",
+                    expected_raygen_invocation_count=stop - start,
+                )
+            except Exception:
+                if audit is not None:
+                    audit.abort()
+                raise
+            finally:
+                prepared_queries.close()
+            validate_bound_compact_traversal_receipt(
+                receipt,
+                provider_library_sha256=self._native_sha256,
+                route_identity=(
+                    "v4_callback_ir:closed_aabb_relation:device_count_v1"),
+                output_digest=output_digest,
+                expected_program_bundle="aabb_index_count_2d",
+                expected_raygen_invocation_count=stop - start,
+            )
+            if value < 0 or result.get("rt_core_accelerated") is not True:
+                raise RuntimeError("streamed AABB relation count returned invalid metadata")
+            if total > 0xFFFFFFFFFFFFFFFF - value:
+                raise OverflowError("streamed AABB relation count exceeds U64")
+            total += value
+            receipts.append(receipt)
+            physical_counts.append(value)
+
+        self._execution_count += 1
+        return {
+            "count": total,
+            "operation": operation,
+            "query_count": query_count,
+            "chunk_rows": chunk_rows,
+            "chunk_count": len(receipts),
+            "chunk_counts": physical_counts,
+            "traversal_receipts": receipts,
+            "native_library_sha256": self._native_sha256,
+            "physical_lowering": (
+                "canonical_v4_aabb_relation_to_device_scalar_count_v1"),
+            "stream_contract": "contiguous_nonoverlapping_full_cover_checked_u64_v1",
+        }
+
     def close(self) -> None:
         if self._closed:
             return

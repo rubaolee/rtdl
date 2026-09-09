@@ -210,6 +210,73 @@ class Goal5776AabbRelationCountLoweringTest(unittest.TestCase):
         )
         self.assertEqual(owner._execution_count, 1)
 
+    def test_streamed_columns_cover_each_row_once_and_publish_one_u64(self):
+        owner = object.__new__(PreparedVerifiedAabbRelationCountV4)
+        owner._closed = False
+        owner._pid = os.getpid()
+        owner._thread = threading.get_ident()
+        owner._authority = SimpleNamespace(
+            algebra=AabbCountAlgebra.POINT_CONTAINS,
+            authority_nonce="authority",
+        )
+        owner._prepared_queries = None
+        owner._library = object()
+        owner._native_sha256 = "a" * 64
+        owner._execution_count = 0
+        owner._prepared = SimpleNamespace(
+            count_prepared_queries=mock.Mock(side_effect=lambda query, **_: {
+                "counts": {"point_contains": query.count},
+                "rt_core_accelerated": True,
+            })
+        )
+        handles = []
+
+        def prepare(*, x, y):
+            handle = SimpleNamespace(
+                count=len(x),
+                device_layout="device_f32_soa",
+                close=mock.Mock(),
+            )
+            handles.append(handle)
+            return handle
+
+        receipt = {
+            "physical_executor_classification": "optix_traversal_observed",
+            "receipt_sha256": "b" * 64,
+        }
+        audit = SimpleNamespace(
+            finish_validated_compact=mock.Mock(return_value=receipt),
+            abort=mock.Mock(),
+        )
+        columns = {
+            "x": np.arange(5, dtype=np.float32),
+            "y": np.arange(5, dtype=np.float32),
+        }
+        with mock.patch(
+            "rtdsl.v4_aabb_relation_count_lowering."
+            "prepare_optix_aabb_point_query_columns_f32_2d",
+            side_effect=prepare,
+        ), mock.patch(
+            "rtdsl.v4_aabb_relation_count_lowering.OptixTraversalAuditSession.open",
+            return_value=audit,
+        ), mock.patch(
+            "rtdsl.v4_aabb_relation_count_lowering."
+            "validate_bound_compact_traversal_receipt",
+            return_value=receipt,
+        ) as validate:
+            result = owner.execute_count_query_column_stream(
+                point_columns=columns,
+                chunk_rows=2,
+            )
+        self.assertEqual(result["count"], 5)
+        self.assertEqual(result["query_count"], 5)
+        self.assertEqual(result["chunk_count"], 3)
+        self.assertEqual(result["chunk_counts"], [2, 2, 1])
+        self.assertEqual([handle.count for handle in handles], [2, 2, 1])
+        self.assertTrue(all(handle.close.call_count == 1 for handle in handles))
+        self.assertEqual(validate.call_count, 3)
+        self.assertEqual(owner._execution_count, 1)
+
 
 if __name__ == "__main__":
     unittest.main()

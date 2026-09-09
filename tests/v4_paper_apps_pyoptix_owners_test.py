@@ -4,6 +4,7 @@ import hashlib
 import json
 import tempfile
 import unittest
+from unittest import mock
 from dataclasses import dataclass
 from pathlib import Path
 from types import SimpleNamespace
@@ -23,6 +24,8 @@ from experiments.v4_paper_apps_pyoptix.librts_owner import (
     PARAM_DTYPE as LIBRTS_PARAM_DTYPE,
 )
 from experiments.v4_paper_apps_pyoptix.librts_owner import (
+    LibRTSCountResult,
+    PublicPyOptixLibRTSCountOwner,
     normalize_indexed_columns,
     normalize_queries,
 )
@@ -115,6 +118,45 @@ class V4PaperAppsPyOptixOwnersTest(unittest.TestCase):
         )
         with self.assertRaises(ValueError):
             normalize_indexed_columns(bad)
+
+    def test_librts_streamed_columns_cover_each_row_once(self) -> None:
+        owner = object.__new__(PublicPyOptixLibRTSCountOwner)
+        owner._closed = False
+        owner.query_operation = None
+        owner.query_device = ()
+        owner.query_count = 0
+        owner.query_layout = None
+        owner.query_counts = None
+        owner.query_status = None
+        owner.indexed_count = 2
+
+        def bind(*, operation, columns):
+            owner.query_operation = operation
+            owner.query_count = len(columns["x"])
+            owner.query_layout = "device_f32_soa"
+
+        owner.bind_query_columns = mock.Mock(side_effect=bind)
+        owner.execute_count = mock.Mock(side_effect=lambda **_: LibRTSCountResult(
+            operation="point_contains",
+            checked_u64=owner.query_count,
+            query_count=owner.query_count,
+            indexed_count=owner.indexed_count,
+            device_status=0,
+        ))
+        result = owner.execute_count_query_column_stream(
+            operation="point_contains",
+            columns={
+                "x": np.arange(5, dtype=np.float32),
+                "y": np.arange(5, dtype=np.float32),
+            },
+            chunk_rows=2,
+            expected_count=5,
+        )
+        self.assertEqual(result.checked_u64, 5)
+        self.assertEqual(result.chunk_counts, (2, 2, 1))
+        self.assertEqual(result.device_statuses, (0, 0, 0))
+        self.assertEqual(owner.bind_query_columns.call_count, 3)
+        self.assertIsNone(owner.query_operation)
 
     def test_librts_worker_binds_queries_symmetrically_before_execute(self) -> None:
         source = (

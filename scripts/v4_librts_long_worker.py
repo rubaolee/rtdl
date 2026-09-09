@@ -103,7 +103,7 @@ def _load_indexed(path: Path):
     return result
 
 
-def _prepare_rtdl(args, indexed, columns, expected: int):
+def _prepare_rtdl(args, indexed, columns, expected: int, chunk_rows: int | None):
     from rtdsl.v4_typed_physical_schema import ReferenceTargetProfile
 
     app = _load_module(
@@ -127,72 +127,121 @@ def _prepare_rtdl(args, indexed, columns, expected: int):
         operation=args.operation,
         native_library_path=args.native,
     )
-    if args.operation == "point_contains":
-        owner.bind_query_columns(point_columns=columns)
+    if chunk_rows is None:
+        if args.operation == "point_contains":
+            owner.bind_query_columns(point_columns=columns)
+        else:
+            owner.bind_query_columns(box_columns=columns)
+        query_layout = owner.lifecycle_receipt["prepared_query_layout"]
+        if query_layout != "device_f32_soa":
+            raise RuntimeError(
+                f"RTDL LibRTS requires device_f32_soa queries, observed {query_layout!r}"
+            )
     else:
-        owner.bind_query_columns(box_columns=columns)
-    query_layout = owner.lifecycle_receipt["prepared_query_layout"]
-    if query_layout != "device_f32_soa":
-        raise RuntimeError(
-            f"RTDL LibRTS requires device_f32_soa queries, observed {query_layout!r}"
-        )
+        query_layout = "device_f32_soa_per_chunk"
 
     def execute() -> dict[str, Any]:
-        result = owner.execute_count()
+        if chunk_rows is None:
+            result = owner.execute_count()
+            receipts = (result.get("traversal_receipt"),)
+        else:
+            kwargs = (
+                {"point_columns": columns}
+                if args.operation == "point_contains"
+                else {"box_columns": columns}
+            )
+            result = owner.execute_count_query_column_stream(
+                **kwargs, chunk_rows=chunk_rows
+            )
+            receipts = tuple(result.get("traversal_receipts", ()))
         value = int(result["count"])
         if value != expected:
             raise RuntimeError(
                 f"RTDL LibRTS oracle mismatch: expected={expected} observed={value}"
             )
-        receipt = result.get("traversal_receipt")
-        if not isinstance(receipt, Mapping) or receipt.get(
-            "physical_executor_classification"
-        ) != "optix_traversal_observed":
+        if not receipts or any(
+            not isinstance(receipt, Mapping)
+            or receipt.get("physical_executor_classification")
+            != "optix_traversal_observed"
+            for receipt in receipts
+        ):
             raise RuntimeError("RTDL LibRTS execution lacks validated OptiX receipt")
         return {
             "count": value,
-            "receipt_sha256": receipt.get("receipt_sha256"),
-            "physical_executor_classification": receipt.get(
-                "physical_executor_classification"
-            ),
+            "chunk_count": len(receipts),
+            "receipt_sha256": [
+                receipt.get("receipt_sha256") for receipt in receipts
+            ],
+            "physical_executor_classification": "optix_traversal_observed",
         }
 
     return owner, execute, {
-        "path": "public_v4_verified_aabb_relation_count_device_f32_soa",
+        "path": (
+            "public_v4_verified_aabb_relation_count_device_f32_soa"
+            if chunk_rows is None
+            else "public_v4_verified_aabb_relation_count_streamed_device_f32_soa"
+        ),
         "native_sha256": native_sha256,
         "query_gas_built": False,
         "device_query_layout": query_layout,
+        "stream_chunk_rows": chunk_rows,
+        "query_validation_and_h2d_inside_action": chunk_rows is not None,
     }
 
 
-def _prepare_pyoptix(args, indexed, columns, expected: int):
+def _prepare_pyoptix(args, indexed, columns, expected: int, chunk_rows: int | None):
     from experiments.v4_paper_apps_pyoptix.librts_owner import (
         PublicPyOptixLibRTSCountOwner,
     )
 
     ptx = args.pyoptix_ptx.read_bytes()
     owner = PublicPyOptixLibRTSCountOwner.prepare(indexed, prebuilt_ptx=ptx)
-    owner.bind_query_columns(operation=args.operation, columns=columns)
-    if owner.query_layout != "device_f32_soa":
-        raise RuntimeError(
-            f"PyOptiX LibRTS requires device_f32_soa queries, observed {owner.query_layout!r}"
-        )
+    if chunk_rows is None:
+        owner.bind_query_columns(operation=args.operation, columns=columns)
+        if owner.query_layout != "device_f32_soa":
+            raise RuntimeError(
+                f"PyOptiX LibRTS requires device_f32_soa queries, observed {owner.query_layout!r}"
+            )
+        query_layout = owner.query_layout
+    else:
+        query_layout = "device_f32_soa_per_chunk"
 
     def execute() -> dict[str, Any]:
-        result = owner.execute_count(
-            operation=args.operation,
-            expected_count=expected,
-        )
+        if chunk_rows is None:
+            result = owner.execute_count(
+                operation=args.operation,
+                expected_count=expected,
+            )
+            chunk_count = 1
+        else:
+            result = owner.execute_count_query_column_stream(
+                operation=args.operation,
+                columns=columns,
+                chunk_rows=chunk_rows,
+                expected_count=expected,
+            )
+            chunk_count = len(result.chunk_counts)
         return {
             "count": int(result.checked_u64),
-            "device_status": int(result.device_status),
+            "chunk_count": chunk_count,
+            "device_status": (
+                int(result.device_status)
+                if chunk_rows is None
+                else list(result.device_statuses)
+            ),
         }
 
     return owner, execute, {
-        "path": "public_pyoptix_custom_aabb_device_f32_soa",
+        "path": (
+            "public_pyoptix_custom_aabb_device_f32_soa"
+            if chunk_rows is None
+            else "public_pyoptix_custom_aabb_streamed_device_f32_soa"
+        ),
         "ptx_sha256": hashlib.sha256(ptx).hexdigest(),
         "query_gas_built": False,
-        "device_query_layout": owner.query_layout,
+        "device_query_layout": query_layout,
+        "stream_chunk_rows": chunk_rows,
+        "query_validation_and_h2d_inside_action": chunk_rows is not None,
     }
 
 
@@ -211,16 +260,28 @@ def run(args) -> dict[str, Any]:
     if manifest["operation"] != args.operation:
         raise ValueError("query manifest operation differs from worker operation")
     expected = int(manifest["expected_count_u64"])
+    streaming = manifest.get("streaming", {})
+    chunk_rows = streaming.get("chunk_rows") if streaming.get("enabled") else None
+    if chunk_rows is not None:
+        expected_chunks = (
+            int(manifest["query_count"]) + int(chunk_rows) - 1
+        ) // int(chunk_rows)
+        if type(chunk_rows) is not int or not 0 < chunk_rows <= 0xFFFFFFFF \
+                or streaming.get("chunk_count") != expected_chunks \
+                or streaming.get("partition") \
+                != "contiguous_nonoverlapping_full_cover" \
+                or streaming.get("query_validation_and_h2d_inside_action") is not True:
+            raise ValueError("query manifest streaming contract differs")
     input_ended = time.perf_counter_ns()
 
     prepare_started = time.perf_counter_ns()
     if args.arm == "rtdl":
         owner, execute, method = _prepare_rtdl(
-            args, indexed, columns, expected
+            args, indexed, columns, expected, chunk_rows
         )
     else:
         owner, execute, method = _prepare_pyoptix(
-            args, indexed, columns, expected
+            args, indexed, columns, expected, chunk_rows
         )
     prepare_ended = time.perf_counter_ns()
     warmup_outputs = []
@@ -260,6 +321,7 @@ def run(args) -> dict[str, Any]:
         "expected_count_u64": expected,
         "mean_hits_per_query": float(manifest["mean_hits_per_query"]),
         "all_queries_distinct": bool(manifest["all_queries_distinct"]),
+        "streaming": streaming,
         "samples_ns": samples,
         "median_ns": median_ns,
         "queries_per_second_at_median": int(manifest["query_count"]) / (median_ns / 1e9),
@@ -290,6 +352,14 @@ def run(args) -> dict[str, Any]:
         "timing_boundary": {
             "action_includes": [
                 "public_execute_entry",
+                *(
+                    [
+                        "query_chunk_validation_and_h2d",
+                        "contiguous_nonoverlapping_full_query_cover",
+                    ]
+                    if chunk_rows is not None
+                    else []
+                ),
                 "optix_launch",
                 "device_u32_to_u64_reduction",
                 "stream_synchronization",
@@ -300,7 +370,7 @@ def run(args) -> dict[str, Any]:
             "action_excludes": [
                 "input_file_load_and_digest",
                 "indexed_gas_prepare",
-                "query_column_upload",
+                *(["query_column_upload"] if chunk_rows is None else []),
                 "untimed_warmup",
                 "close",
             ],
