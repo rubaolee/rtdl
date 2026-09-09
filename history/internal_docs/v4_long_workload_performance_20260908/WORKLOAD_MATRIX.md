@@ -39,7 +39,9 @@ across CPUs, GPUs or time populations.
 RTDL/PyOptiX preparation is `8.984/10.463` seconds. This closes the measured
 setup disadvantage in its same-machine `c06fd73a5` predecessor, whose RTDL
 preparation median was `24.259` seconds. The current transaction remains
-internal and lead review is pending.
+internal. A bounded lead review accepted only its exact numerical observation
+and narrow source-route interpretation; matrix-wide independent review and
+public/manuscript authorization remain pending.
 
 ## What the matrix closes
 
@@ -76,9 +78,10 @@ internal and lead review is pending.
   `1.399874x`; only 36/48 Particle and 41/48 LibRTS CPUs kept both scan blocks
   at or below `1.35x`. These sub-millisecond rows are not stable performance
   guarantees.
-- Formal GPU peak-memory measurements were not captured. Static input and
-  segment sizes are available; no peak-memory value should be invented from
-  them.
+- Formal GPU peak-memory measurements were not captured. A separate Particle
+  160M diagnostic sampled 9.153 GiB RTDL versus 6.831 GiB PyOptiX whole-device
+  peaks and 14.537 GiB versus 18.603 GiB direct-worker RSS. It documents the
+  packed-transpose host/device trade-off and is not pooled with formal results.
 
 ## Custody
 

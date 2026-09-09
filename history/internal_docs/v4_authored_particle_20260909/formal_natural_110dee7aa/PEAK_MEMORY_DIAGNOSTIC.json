@@ -1,0 +1,586 @@
+{
+  "claim_boundary": {
+    "direct_worker_rss_excludes_child_processes": true,
+    "formal_timing_evidence": false,
+    "memory_values_descriptive": true,
+    "nvml_sampling_can_miss_short_lived_peak": true,
+    "pooled_with_formal_transaction": false,
+    "sampler_perturbs_latency": true
+  },
+  "gpu_name": "NVIDIA RTX 4000 Ada Generation",
+  "gpu_uuid": "GPU-2a00572b-6cef-b9e6-db0a-c127783a5d46",
+  "orders": [
+    "rtdl",
+    "pyoptix",
+    "pyoptix",
+    "rtdl"
+  ],
+  "query_count": 160000000,
+  "rows": [
+    {
+      "arm": "rtdl",
+      "baseline_device_used_bytes": 345571328,
+      "command": [
+        "/tmp/rtdl-crossgpu/venv/bin/python",
+        "/tmp/rtdl-particle-110dee7aa/scripts/authored_particle_transition_ensemble_worker.py",
+        "--arm",
+        "rtdl",
+        "--base-particle-dir",
+        "/tmp/rtdl-authored-particle-data-ba8c93eed/particle",
+        "--ensemble-dir",
+        "/dev/shm/rtdl-particle-transition-ensemble-160m-63c35f720",
+        "--query-count",
+        "160000000",
+        "--warmups",
+        "1",
+        "--samples",
+        "1",
+        "--native",
+        "/tmp/rtdl-authored-particle-native-110dee7aa/librtdl_optix.so",
+        "--optix-include",
+        "/tmp/rtdl-crossgpu/optix-dev/include",
+        "--cuda-include",
+        "/usr/local/cuda-12.8/targets/x86_64-linux/include",
+        "--compute-capability",
+        "8.9",
+        "--optix-sdk",
+        "8.0.0"
+      ],
+      "ordinal": 0,
+      "peak_device_used_bytes": 9827975168,
+      "peak_worker_gpu_bytes": 0,
+      "peak_worker_rss_kib": 15242244,
+      "peak_worker_vmhwm_kib": 15242244,
+      "sample_count": 2094,
+      "sampler_process_wall_ns": 22928985933,
+      "sampling_interval_requested_ms": 10.0,
+      "stderr": "",
+      "worker_pid": 139373,
+      "worker_result": {
+        "arm": "rtdl",
+        "base_manifest_sha256": "c6678099ecff9581726781a765213d5b0890f20ada70561b09dd6dd94a4009af",
+        "claim_boundary": {
+          "diagnostic_only": true,
+          "formal_worker_zero_reached": false,
+          "natural_single_transition_ensemble": true,
+          "temporal_particle_simulation": false
+        },
+        "close_ns": 681033660,
+        "ensemble_manifest_sha256": "637436a97a913e329d68a0901798e320d37b2a56c37493cd8cbdb1295af7865f",
+        "independent_oracle_sha256": "71354f158a3dce581dfbf927adaac6624bcbbf314092ff8c5acee3e02a2a6edb",
+        "input_sha256": "16955209bbfa75875bab41918e95643b371bb8f0a89dbc1418202ddbe52ee187",
+        "last_execution_evidence": {
+          "output_sha256": "6c4ec71524be3d7b241c3d66c4cd06a5aa7089b3948bf1d8dd8aab550f0dec89",
+          "physical_executor_classification": "optix_traversal_observed",
+          "role_counters": [
+            0,
+            160000000,
+            0,
+            0,
+            160000000,
+            0,
+            160000000
+          ]
+        },
+        "machine": {
+          "compute_capability": "8.9",
+          "cuda_visible_devices": "GPU-2a00572b-6cef-b9e6-db0a-c127783a5d46",
+          "driver": "550.127.05",
+          "gpu_name": "NVIDIA RTX 4000 Ada Generation",
+          "gpu_uuid": "GPU-2a00572b-6cef-b9e6-db0a-c127783a5d46",
+          "hostname": "4adbab12e6d1",
+          "numba_cuda_use_nvidia_binding": "1",
+          "python": "3.12.3"
+        },
+        "median_ns": 348813238,
+        "metadata": {
+          "executable_identity_sha256": "0663bfeefefac2b389c31edbe6d331adbc7fa54f4c7632db666cc6a87a4fa19c",
+          "native_library_sha256": "e797495ac513056dc3b66796d81716a73639b1499c609938eacdc14f5b4f5011",
+          "oracle_validation": "canonical_u32x3_sha256",
+          "path_class": "public_rtdl_provider_native_closest_prepared",
+          "prepared_query_batch_device_resident": true,
+          "program_identity_sha256": "da62ce40ed6e51db638eb916c842161e6025d764abedb4932dfe84f3db710530"
+        },
+        "output_sha256": "6c4ec71524be3d7b241c3d66c4cd06a5aa7089b3948bf1d8dd8aab550f0dec89",
+        "output_shape": [
+          160000000,
+          3
+        ],
+        "prepare_ns": 9122372735,
+        "query_count": 160000000,
+        "sample_count": 1,
+        "samples_ns": [
+          348813238
+        ],
+        "schema": "rtdl.v4.authored_particle.transition_ensemble_worker.v2",
+        "source": {
+          "commit": "110dee7aa11e57e984cc2509163e021d787c692a",
+          "tree": "1e549d791fedd23659bb0e0636747016938cd1c4"
+        },
+        "status": "PASS",
+        "warmup_count": 1
+      }
+    },
+    {
+      "arm": "pyoptix",
+      "baseline_device_used_bytes": 345571328,
+      "command": [
+        "/tmp/rtdl-crossgpu/venv/bin/python",
+        "/tmp/rtdl-particle-110dee7aa/scripts/authored_particle_transition_ensemble_worker.py",
+        "--arm",
+        "pyoptix",
+        "--base-particle-dir",
+        "/tmp/rtdl-authored-particle-data-ba8c93eed/particle",
+        "--ensemble-dir",
+        "/dev/shm/rtdl-particle-transition-ensemble-160m-63c35f720",
+        "--query-count",
+        "160000000",
+        "--warmups",
+        "1",
+        "--samples",
+        "1",
+        "--pyoptix-ptx",
+        "/tmp/rtdl-authored-particle-pyoptix-110dee7aa/PYOPTIX_FACE_FIRST.ptx"
+      ],
+      "ordinal": 1,
+      "peak_device_used_bytes": 7334461440,
+      "peak_worker_gpu_bytes": 0,
+      "peak_worker_rss_kib": 19507212,
+      "peak_worker_vmhwm_kib": 19507212,
+      "sample_count": 2087,
+      "sampler_process_wall_ns": 23060174605,
+      "sampling_interval_requested_ms": 10.0,
+      "stderr": "",
+      "worker_pid": 139489,
+      "worker_result": {
+        "arm": "pyoptix",
+        "base_manifest_sha256": "c6678099ecff9581726781a765213d5b0890f20ada70561b09dd6dd94a4009af",
+        "claim_boundary": {
+          "diagnostic_only": true,
+          "formal_worker_zero_reached": false,
+          "natural_single_transition_ensemble": true,
+          "temporal_particle_simulation": false
+        },
+        "close_ns": 111044,
+        "ensemble_manifest_sha256": "637436a97a913e329d68a0901798e320d37b2a56c37493cd8cbdb1295af7865f",
+        "independent_oracle_sha256": "71354f158a3dce581dfbf927adaac6624bcbbf314092ff8c5acee3e02a2a6edb",
+        "input_sha256": "16955209bbfa75875bab41918e95643b371bb8f0a89dbc1418202ddbe52ee187",
+        "last_execution_evidence": {
+          "control": [
+            160000000,
+            4294967295,
+            0,
+            0
+          ],
+          "operation_counts": {
+            "accel_build_call_count": 0,
+            "context_creation_call_count": 0,
+            "control_d2h_bytes": 16,
+            "control_d2h_copy_call_count": 1,
+            "control_reset_h2d_bytes": 16,
+            "control_reset_h2d_copy_call_count": 1,
+            "d2h_copy_bytes": 1920000016,
+            "d2h_copy_call_count": 2,
+            "device_memset_bytes": 0,
+            "device_memset_call_count": 0,
+            "explicit_stream_sync_call_count": 2,
+            "h2d_copy_bytes": 136,
+            "h2d_copy_call_count": 2,
+            "module_creation_call_count": 0,
+            "optix_launch_call_count": 1,
+            "output_d2h_after_status_failure": 0,
+            "output_d2h_bytes": 1920000000,
+            "output_d2h_copy_call_count": 1,
+            "parameter_h2d_bytes": 120,
+            "parameter_h2d_copy_call_count": 1,
+            "pinned_host_allocation_bytes": 0,
+            "pinned_host_allocation_call_count": 0,
+            "pipeline_creation_call_count": 0,
+            "program_group_creation_call_count": 0,
+            "query_h2d_bytes": 0,
+            "query_h2d_copy_call_count": 0,
+            "raw_device_allocation_bytes": 0,
+            "raw_device_allocation_call_count": 0,
+            "raygen_invocation_count": 160000000,
+            "status_before_output": 1,
+            "stream_creation_call_count": 0
+          }
+        },
+        "machine": {
+          "compute_capability": "8.9",
+          "cuda_visible_devices": "GPU-2a00572b-6cef-b9e6-db0a-c127783a5d46",
+          "driver": "550.127.05",
+          "gpu_name": "NVIDIA RTX 4000 Ada Generation",
+          "gpu_uuid": "GPU-2a00572b-6cef-b9e6-db0a-c127783a5d46",
+          "hostname": "4adbab12e6d1",
+          "numba_cuda_use_nvidia_binding": "1",
+          "python": "3.12.3"
+        },
+        "median_ns": 346809661,
+        "metadata": {
+          "output_layout": "aos_u32x3_c_contiguous",
+          "output_strides": [
+            12,
+            4
+          ],
+          "path_class": "public_pyoptix_native_closest_prepared",
+          "prepared_query_batch_device_resident": true,
+          "prepared_query_batch_operation_counts": {
+            "accel_build_call_count": 0,
+            "context_creation_call_count": 0,
+            "control_d2h_bytes": 0,
+            "control_d2h_copy_call_count": 0,
+            "control_reset_h2d_bytes": 0,
+            "control_reset_h2d_copy_call_count": 0,
+            "d2h_copy_bytes": 0,
+            "d2h_copy_call_count": 0,
+            "device_memset_bytes": 0,
+            "device_memset_call_count": 0,
+            "explicit_stream_sync_call_count": 1,
+            "h2d_copy_bytes": 4480000000,
+            "h2d_copy_call_count": 7,
+            "module_creation_call_count": 0,
+            "optix_launch_call_count": 0,
+            "output_d2h_after_status_failure": 0,
+            "output_d2h_bytes": 0,
+            "output_d2h_copy_call_count": 0,
+            "parameter_h2d_bytes": 0,
+            "parameter_h2d_copy_call_count": 0,
+            "pinned_host_allocation_bytes": 0,
+            "pinned_host_allocation_call_count": 0,
+            "pipeline_creation_call_count": 0,
+            "program_group_creation_call_count": 0,
+            "query_h2d_bytes": 4480000000,
+            "query_h2d_copy_call_count": 7,
+            "raw_device_allocation_bytes": 0,
+            "raw_device_allocation_call_count": 0,
+            "raygen_invocation_count": 0,
+            "status_before_output": 0,
+            "stream_creation_call_count": 0
+          },
+          "pyoptix_ptx_sha256": "658590f7d6adcde0f936fb3619ca95f3d26c61c914e581327b015f2fd9ef91fc"
+        },
+        "output_sha256": "6c4ec71524be3d7b241c3d66c4cd06a5aa7089b3948bf1d8dd8aab550f0dec89",
+        "output_shape": [
+          160000000,
+          3
+        ],
+        "prepare_ns": 10357558097,
+        "query_count": 160000000,
+        "sample_count": 1,
+        "samples_ns": [
+          346809661
+        ],
+        "schema": "rtdl.v4.authored_particle.transition_ensemble_worker.v2",
+        "source": {
+          "commit": "110dee7aa11e57e984cc2509163e021d787c692a",
+          "tree": "1e549d791fedd23659bb0e0636747016938cd1c4"
+        },
+        "status": "PASS",
+        "warmup_count": 1
+      }
+    },
+    {
+      "arm": "pyoptix",
+      "baseline_device_used_bytes": 345571328,
+      "command": [
+        "/tmp/rtdl-crossgpu/venv/bin/python",
+        "/tmp/rtdl-particle-110dee7aa/scripts/authored_particle_transition_ensemble_worker.py",
+        "--arm",
+        "pyoptix",
+        "--base-particle-dir",
+        "/tmp/rtdl-authored-particle-data-ba8c93eed/particle",
+        "--ensemble-dir",
+        "/dev/shm/rtdl-particle-transition-ensemble-160m-63c35f720",
+        "--query-count",
+        "160000000",
+        "--warmups",
+        "1",
+        "--samples",
+        "1",
+        "--pyoptix-ptx",
+        "/tmp/rtdl-authored-particle-pyoptix-110dee7aa/PYOPTIX_FACE_FIRST.ptx"
+      ],
+      "ordinal": 2,
+      "peak_device_used_bytes": 7334461440,
+      "peak_worker_gpu_bytes": 0,
+      "peak_worker_rss_kib": 19506344,
+      "peak_worker_vmhwm_kib": 19506344,
+      "sample_count": 2206,
+      "sampler_process_wall_ns": 24293064090,
+      "sampling_interval_requested_ms": 10.0,
+      "stderr": "",
+      "worker_pid": 139558,
+      "worker_result": {
+        "arm": "pyoptix",
+        "base_manifest_sha256": "c6678099ecff9581726781a765213d5b0890f20ada70561b09dd6dd94a4009af",
+        "claim_boundary": {
+          "diagnostic_only": true,
+          "formal_worker_zero_reached": false,
+          "natural_single_transition_ensemble": true,
+          "temporal_particle_simulation": false
+        },
+        "close_ns": 158286,
+        "ensemble_manifest_sha256": "637436a97a913e329d68a0901798e320d37b2a56c37493cd8cbdb1295af7865f",
+        "independent_oracle_sha256": "71354f158a3dce581dfbf927adaac6624bcbbf314092ff8c5acee3e02a2a6edb",
+        "input_sha256": "16955209bbfa75875bab41918e95643b371bb8f0a89dbc1418202ddbe52ee187",
+        "last_execution_evidence": {
+          "control": [
+            160000000,
+            4294967295,
+            0,
+            0
+          ],
+          "operation_counts": {
+            "accel_build_call_count": 0,
+            "context_creation_call_count": 0,
+            "control_d2h_bytes": 16,
+            "control_d2h_copy_call_count": 1,
+            "control_reset_h2d_bytes": 16,
+            "control_reset_h2d_copy_call_count": 1,
+            "d2h_copy_bytes": 1920000016,
+            "d2h_copy_call_count": 2,
+            "device_memset_bytes": 0,
+            "device_memset_call_count": 0,
+            "explicit_stream_sync_call_count": 2,
+            "h2d_copy_bytes": 136,
+            "h2d_copy_call_count": 2,
+            "module_creation_call_count": 0,
+            "optix_launch_call_count": 1,
+            "output_d2h_after_status_failure": 0,
+            "output_d2h_bytes": 1920000000,
+            "output_d2h_copy_call_count": 1,
+            "parameter_h2d_bytes": 120,
+            "parameter_h2d_copy_call_count": 1,
+            "pinned_host_allocation_bytes": 0,
+            "pinned_host_allocation_call_count": 0,
+            "pipeline_creation_call_count": 0,
+            "program_group_creation_call_count": 0,
+            "query_h2d_bytes": 0,
+            "query_h2d_copy_call_count": 0,
+            "raw_device_allocation_bytes": 0,
+            "raw_device_allocation_call_count": 0,
+            "raygen_invocation_count": 160000000,
+            "status_before_output": 1,
+            "stream_creation_call_count": 0
+          }
+        },
+        "machine": {
+          "compute_capability": "8.9",
+          "cuda_visible_devices": "GPU-2a00572b-6cef-b9e6-db0a-c127783a5d46",
+          "driver": "550.127.05",
+          "gpu_name": "NVIDIA RTX 4000 Ada Generation",
+          "gpu_uuid": "GPU-2a00572b-6cef-b9e6-db0a-c127783a5d46",
+          "hostname": "4adbab12e6d1",
+          "numba_cuda_use_nvidia_binding": "1",
+          "python": "3.12.3"
+        },
+        "median_ns": 371808497,
+        "metadata": {
+          "output_layout": "aos_u32x3_c_contiguous",
+          "output_strides": [
+            12,
+            4
+          ],
+          "path_class": "public_pyoptix_native_closest_prepared",
+          "prepared_query_batch_device_resident": true,
+          "prepared_query_batch_operation_counts": {
+            "accel_build_call_count": 0,
+            "context_creation_call_count": 0,
+            "control_d2h_bytes": 0,
+            "control_d2h_copy_call_count": 0,
+            "control_reset_h2d_bytes": 0,
+            "control_reset_h2d_copy_call_count": 0,
+            "d2h_copy_bytes": 0,
+            "d2h_copy_call_count": 0,
+            "device_memset_bytes": 0,
+            "device_memset_call_count": 0,
+            "explicit_stream_sync_call_count": 1,
+            "h2d_copy_bytes": 4480000000,
+            "h2d_copy_call_count": 7,
+            "module_creation_call_count": 0,
+            "optix_launch_call_count": 0,
+            "output_d2h_after_status_failure": 0,
+            "output_d2h_bytes": 0,
+            "output_d2h_copy_call_count": 0,
+            "parameter_h2d_bytes": 0,
+            "parameter_h2d_copy_call_count": 0,
+            "pinned_host_allocation_bytes": 0,
+            "pinned_host_allocation_call_count": 0,
+            "pipeline_creation_call_count": 0,
+            "program_group_creation_call_count": 0,
+            "query_h2d_bytes": 4480000000,
+            "query_h2d_copy_call_count": 7,
+            "raw_device_allocation_bytes": 0,
+            "raw_device_allocation_call_count": 0,
+            "raygen_invocation_count": 0,
+            "status_before_output": 0,
+            "stream_creation_call_count": 0
+          },
+          "pyoptix_ptx_sha256": "658590f7d6adcde0f936fb3619ca95f3d26c61c914e581327b015f2fd9ef91fc"
+        },
+        "output_sha256": "6c4ec71524be3d7b241c3d66c4cd06a5aa7089b3948bf1d8dd8aab550f0dec89",
+        "output_shape": [
+          160000000,
+          3
+        ],
+        "prepare_ns": 10919488940,
+        "query_count": 160000000,
+        "sample_count": 1,
+        "samples_ns": [
+          371808497
+        ],
+        "schema": "rtdl.v4.authored_particle.transition_ensemble_worker.v2",
+        "source": {
+          "commit": "110dee7aa11e57e984cc2509163e021d787c692a",
+          "tree": "1e549d791fedd23659bb0e0636747016938cd1c4"
+        },
+        "status": "PASS",
+        "warmup_count": 1
+      }
+    },
+    {
+      "arm": "rtdl",
+      "baseline_device_used_bytes": 345571328,
+      "command": [
+        "/tmp/rtdl-crossgpu/venv/bin/python",
+        "/tmp/rtdl-particle-110dee7aa/scripts/authored_particle_transition_ensemble_worker.py",
+        "--arm",
+        "rtdl",
+        "--base-particle-dir",
+        "/tmp/rtdl-authored-particle-data-ba8c93eed/particle",
+        "--ensemble-dir",
+        "/dev/shm/rtdl-particle-transition-ensemble-160m-63c35f720",
+        "--query-count",
+        "160000000",
+        "--warmups",
+        "1",
+        "--samples",
+        "1",
+        "--native",
+        "/tmp/rtdl-authored-particle-native-110dee7aa/librtdl_optix.so",
+        "--optix-include",
+        "/tmp/rtdl-crossgpu/optix-dev/include",
+        "--cuda-include",
+        "/usr/local/cuda-12.8/targets/x86_64-linux/include",
+        "--compute-capability",
+        "8.9",
+        "--optix-sdk",
+        "8.0.0"
+      ],
+      "ordinal": 3,
+      "peak_device_used_bytes": 9827975168,
+      "peak_worker_gpu_bytes": 0,
+      "peak_worker_rss_kib": 15243536,
+      "peak_worker_vmhwm_kib": 15243536,
+      "sample_count": 2084,
+      "sampler_process_wall_ns": 22646599298,
+      "sampling_interval_requested_ms": 10.0,
+      "stderr": "",
+      "worker_pid": 139627,
+      "worker_result": {
+        "arm": "rtdl",
+        "base_manifest_sha256": "c6678099ecff9581726781a765213d5b0890f20ada70561b09dd6dd94a4009af",
+        "claim_boundary": {
+          "diagnostic_only": true,
+          "formal_worker_zero_reached": false,
+          "natural_single_transition_ensemble": true,
+          "temporal_particle_simulation": false
+        },
+        "close_ns": 684075772,
+        "ensemble_manifest_sha256": "637436a97a913e329d68a0901798e320d37b2a56c37493cd8cbdb1295af7865f",
+        "independent_oracle_sha256": "71354f158a3dce581dfbf927adaac6624bcbbf314092ff8c5acee3e02a2a6edb",
+        "input_sha256": "16955209bbfa75875bab41918e95643b371bb8f0a89dbc1418202ddbe52ee187",
+        "last_execution_evidence": {
+          "output_sha256": "6c4ec71524be3d7b241c3d66c4cd06a5aa7089b3948bf1d8dd8aab550f0dec89",
+          "physical_executor_classification": "optix_traversal_observed",
+          "role_counters": [
+            0,
+            160000000,
+            0,
+            0,
+            160000000,
+            0,
+            160000000
+          ]
+        },
+        "machine": {
+          "compute_capability": "8.9",
+          "cuda_visible_devices": "GPU-2a00572b-6cef-b9e6-db0a-c127783a5d46",
+          "driver": "550.127.05",
+          "gpu_name": "NVIDIA RTX 4000 Ada Generation",
+          "gpu_uuid": "GPU-2a00572b-6cef-b9e6-db0a-c127783a5d46",
+          "hostname": "4adbab12e6d1",
+          "numba_cuda_use_nvidia_binding": "1",
+          "python": "3.12.3"
+        },
+        "median_ns": 347215704,
+        "metadata": {
+          "executable_identity_sha256": "0663bfeefefac2b389c31edbe6d331adbc7fa54f4c7632db666cc6a87a4fa19c",
+          "native_library_sha256": "e797495ac513056dc3b66796d81716a73639b1499c609938eacdc14f5b4f5011",
+          "oracle_validation": "canonical_u32x3_sha256",
+          "path_class": "public_rtdl_provider_native_closest_prepared",
+          "prepared_query_batch_device_resident": true,
+          "program_identity_sha256": "da62ce40ed6e51db638eb916c842161e6025d764abedb4932dfe84f3db710530"
+        },
+        "output_sha256": "6c4ec71524be3d7b241c3d66c4cd06a5aa7089b3948bf1d8dd8aab550f0dec89",
+        "output_shape": [
+          160000000,
+          3
+        ],
+        "prepare_ns": 8969457316,
+        "query_count": 160000000,
+        "sample_count": 1,
+        "samples_ns": [
+          347215704
+        ],
+        "schema": "rtdl.v4.authored_particle.transition_ensemble_worker.v2",
+        "source": {
+          "commit": "110dee7aa11e57e984cc2509163e021d787c692a",
+          "tree": "1e549d791fedd23659bb0e0636747016938cd1c4"
+        },
+        "status": "PASS",
+        "warmup_count": 1
+      }
+    }
+  ],
+  "schema": "rtdl.v4.authored_particle.peak_memory_diagnostic.v1",
+  "source_commit": "110dee7aa11e57e984cc2509163e021d787c692a",
+  "status": "PASS__DESCRIPTIVE_MEMORY_ONLY",
+  "summary": {
+    "pyoptix": {
+      "median_peak_device_used_bytes": 7334461440.0,
+      "median_peak_worker_gpu_bytes": 0.0,
+      "median_peak_worker_rss_kib": 19506778.0,
+      "peak_device_used_bytes": [
+        7334461440,
+        7334461440
+      ],
+      "peak_worker_gpu_bytes": [
+        0,
+        0
+      ],
+      "peak_worker_rss_kib": [
+        19507212,
+        19506344
+      ]
+    },
+    "rtdl": {
+      "median_peak_device_used_bytes": 9827975168.0,
+      "median_peak_worker_gpu_bytes": 0.0,
+      "median_peak_worker_rss_kib": 15242890.0,
+      "peak_device_used_bytes": [
+        9827975168,
+        9827975168
+      ],
+      "peak_worker_gpu_bytes": [
+        0,
+        0
+      ],
+      "peak_worker_rss_kib": [
+        15242244,
+        15243536
+      ]
+    }
+  }
+}

@@ -3,7 +3,7 @@
 Date: 2026-09-09
 
 Verdict:
-`INTERNAL_ACCEPT_EXACT_PARTICLE_PREPARED_AND_SETUP_RESULT__LEAD_REVIEW_PENDING`.
+`LEAD_BOUNDED_ACCEPT_EXACT_NUMERICAL_AND_SOURCE_ROUTE_OBSERVATION__EXTERNAL_REVIEW_PENDING`.
 
 ## Passed checks
 
@@ -41,8 +41,11 @@ Verdict:
   with a full traversal/lifecycle receipt.
 - A later untimed replay saved the complete 1.92 GB observed output together
   with query/oracle/base data, deployed artifacts, commands and a standalone
-  verifier on the RunPod network volume. The verifier rehashed all 45 payload
+  verifier on the RunPod network volume. The verifier rehashed all 47 payload
   files and compared every output row to the transformed independent oracle.
+- A separate balanced-order memory diagnostic retained two fresh workers per
+  arm. All four reproduced the formal output digest; its latency observations
+  are excluded from the formal estimator.
 
 ## Reviewer-style attacks checked
 
@@ -95,9 +98,10 @@ then wrote an immutable preregistration before formal worker zero.
   affected modules pass, but this historical fixture gap remains.
 - The 160M prepared action remains about 0.35 seconds, below the preferred
   one-second natural-action target.
-- No formal peak-memory measurement exists. Device transpose reduces host
-  duplication but temporarily adds a 4.48 GB packed device buffer; memory cost
-  could matter on smaller GPUs.
+- No formal peak-memory measurement exists. The separate descriptive
+  diagnostic found a 9.153 GiB RTDL whole-device peak versus 6.831 GiB for
+  PyOptiX, while direct-worker RSS was 14.537 GiB versus 18.603 GiB. The
+  transpose lowers host materialization but adds temporary device staging.
 - `cudaMemcpy` and validation status synchronization remain in setup. The
   optimization does not make setup asynchronous or zero-copy.
 - The result is from one RTX 4000 Ada GPU with unlocked clocks. It is not a
@@ -112,9 +116,10 @@ then wrote an immutable preregistration before formal worker zero.
 - The complete post-formal output and multi-gigabyte data handoff are not in
   Git. Their RunPod network-volume availability depends on the owner retaining
   that volume and does not become original timed-worker custody.
-- Lead independent review and external review have not occurred. The pod and
-  Mac recounts are tool-level reconstructions performed under the same
-  engineering effort, not independent reviewer votes.
+- A bounded lead review at local commit `6a87302149180777d784f63cf76a8843a7c732a4`
+  accepted the exact numerical observation and narrow source-route wording.
+  External review has not occurred. Pod and Mac recounts are tool-level
+  reconstructions, not independent reviewer votes.
 
 ## Rejected shortcuts
 
@@ -129,9 +134,9 @@ then wrote an immutable preregistration before formal worker zero.
 
 ## Next gate
 
-Lead review must verify the new source, original archive and separately labeled
-post-formal supplement, rerun the independent recount from a foreign clean
-checkout, and decide how narrowly the paper may use this result. The reviewer
-must not treat the reconstructed receipt as a retained timed-worker receipt.
-Cross-generation replay and peak-memory evidence are desirable but remain
-separate work, not silently satisfied by this transaction.
+The bounded lead review accepted only the exact numerical observation and
+narrow source-route interpretation. External review, final-byte review and
+submission authorization remain open. No reviewer may treat the reconstructed
+receipt as a retained timed-worker receipt. Cross-generation replay and formal
+peak-memory evidence remain separate work; the descriptive memory diagnostic
+does not silently satisfy either requirement.

@@ -46,7 +46,12 @@ labeled post-formal compiler-artifact reconstruction are under
 `../v4_authored_particle_20260909/formal_natural_110dee7aa/`. The original
 timed workers did not retain full traversal receipts or generated compiler
 bytes; the post-formal replay is not pooled. Public and manuscript claims
-remain unauthorized.
+remain unauthorized. A bounded lead review accepted the exact numerical
+observation and narrow source-route interpretation; this does not complete the
+matrix-wide independent-review gate. A separate post-formal memory diagnostic
+found a 9.153 GiB RTDL whole-device peak versus 6.831 GiB for PyOptiX, while
+direct-worker RSS was 14.537 GiB versus 18.603 GiB. Those descriptive memory
+values are not pooled with formal latency evidence.
 
 ## Arms and endpoints
 
@@ -246,8 +251,10 @@ No failed transaction was rewritten or pooled:
   Particle successor RTDL and PyOptiX use different device programs; Graph uses
   the same application algorithm with separately authored implementations;
   LibRTS layouts and compact kernels differ.
-- Formal peak GPU memory was not measured. No value is inferred from static
-  input sizes.
+- Formal peak GPU memory was not measured. For the separate Particle 160M
+  successor only, a non-formal 10 ms sampled diagnostic records lower RTDL
+  direct-worker RSS but 2.322 GiB higher whole-device peak. It is an
+  implementation trade-off, not a formal or portfolio-wide memory claim.
 - This transaction does not prove arbitrary Python, arbitrary Callback IR,
   arbitrary topology synthesis, broad nine-app performance, easier authoring,
   or intrinsic language overhead.

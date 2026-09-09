@@ -31,9 +31,16 @@ publication; the split-column ABI remains fallback and no Particle formula or
 identity selects the path. The 2,526,713-byte raw archive SHA-256 is
 `42ebdf176e9625c8c95d7b2e2504ddccc70b42ed4b692fe3360f3c2c5b08bccf`.
 Pod and clean-Mac recounts agree except for the expected absolute archive path.
-This is one unlocked-clock Ada result, the action remains about 0.35 seconds,
-peak memory is unmeasured, and lead/external review and public/manuscript claims
-remain pending or unauthorized.
+This is one unlocked-clock Ada result and the action remains about 0.35 seconds.
+A bounded lead review at local commit `6a8730214...` accepted the exact
+numerical observation and narrow source-route interpretation; external review,
+public release and submission remain unauthorized. A verified 47-file,
+approximately 8.7 GiB post-formal replay handoff is retained on the RunPod
+network volume, but it is neither Git nor original timed-worker custody. A
+separate descriptive memory diagnostic found 9.153 GiB versus 6.831 GiB
+whole-device peaks and 14.537 GiB versus 18.603 GiB direct-worker RSS for RTDL
+versus PyOptiX. Formal peak memory remains unmeasured; this records a
+host/device staging trade-off, not a general memory claim.
 
 ## Current owner-directed novelty work (2026-09-06)
 

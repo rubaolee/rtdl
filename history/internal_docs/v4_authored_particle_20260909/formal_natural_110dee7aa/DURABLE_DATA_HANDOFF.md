@@ -10,24 +10,24 @@ volume:
 `/workspace/rtdl-particle-110dee7aa-durable`
 
 - Approximate allocated payload size: `8.7 GiB` as reported by `du`.
-- Registered payload files: 45.
+- Registered payload files: 47.
 - `SHA256SUMS` SHA-256:
-  `d2859cdea49c239aed34381a989b757232e8cb06237c61d83b5e347ce815ea48`.
+  `43e0bc33cd0eb9a702a35619ddc71f9a1a8d66fc7a2cd9df95b3e95dbf3645c5`.
 - `FILE_SIZES.tsv` SHA-256:
-  `78bc5fa0ae5006e7f03e21196a6d9ce240226e5f8f707fb8dfcec22dc55e9ff9`.
+  `cc2ac779e58d45b6f4ffe9ff8ffcb6a9e9da251a06aec335cfbafe3e7a603eed`.
 - Handoff `README.md` SHA-256:
-  `2605eec8653bae2d154621c273c42fecb52d3e2bbcf6cd98f60fbb926a346368`.
+  `6b1375a051181c965d8a0459a75e72c4b78f09ba1fa79c17c7afd83e7528cabb`.
 - Exact source archive SHA-256:
   `fddb4a480cfcd087153b8a0a28c429099e44de6e769bc4bb3b8fd70a34a74eb7`.
 
 The standalone `tools/verify_durable_particle_110dee7aa.py` imports NumPy but
-not RTDL. It rehashed all 45 registered files, checked array shapes and dtypes,
+not RTDL. It rehashed all 47 registered files, checked array shapes and dtypes,
 then compared the observed output against the independent adjacency oracle in
 one-million-row chunks after the public `(2,0,1)` column transformation. Its
 result was:
 
 ```text
-PASS durable Particle handoff: 45 files; output=6c4ec71524be3d7b241c3d66c4cd06a5aa7089b3948bf1d8dd8aab550f0dec89
+PASS durable Particle handoff: 47 files; output=6c4ec71524be3d7b241c3d66c4cd06a5aa7089b3948bf1d8dd8aab550f0dec89
 ```
 
 ## Large data identities
@@ -56,6 +56,14 @@ equal to the formal registered output digest and the transformed oracle.
 - A second replay command that reads durable data/artifact paths and accepts an
   exact clean Git checkout through `SOURCE_ROOT`.
 - Producing environment and Python package records.
+- The exact descriptive peak-memory diagnostic tool and its raw JSON result.
+
+The diagnostic tool is
+`tools/particle_peak_memory_diagnostic_110dee7aa.py`, SHA-256
+`192b12ce24db902c0f164670ca0addc93f825e281955df6e49872f3c13f8f446`.
+An exact repository copy is `PEAK_MEMORY_DIAGNOSTIC_TOOL.py`.
+Its raw result is `PEAK_MEMORY_DIAGNOSTIC.json`, SHA-256
+`0c3ee2df8d9411f3a6ef4e6e344cc802abe4b97bbba3d94b5e8eba20099ce49e`.
 
 ## Boundary
 

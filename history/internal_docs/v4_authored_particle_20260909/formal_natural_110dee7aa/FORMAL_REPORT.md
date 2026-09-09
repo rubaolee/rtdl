@@ -17,9 +17,11 @@ RTX 4000 Ada Generation GPU:
 - retry and discard counts: zero.
 
 The separately invoked independent recount reconstructed the same result from
-the raw archive without importing the controller. This is an internal
-engineering result. Lead review, external review, paper wording and public
-claims remain unauthorized.
+the raw archive without importing the controller. A bounded lead review at
+local commit `6a87302149180777d784f63cf76a8843a7c732a4` accepted the exact numerical
+observation and a narrow source-route interpretation for author-side manuscript
+wording. It did not authorize superiority, one-second, arbitrary-callback,
+external-review, public-release or submission claims.
 
 ## Setup debt result
 
@@ -137,9 +139,9 @@ Before Pod shutdown, the available 160M query, query-cell and oracle arrays,
 the complete post-formal observed output, base mesh, deployed artifacts,
 original formal package, exact source archive, reconstruction tools and
 environment records were copied to the RunPod network volume at
-`/workspace/rtdl-particle-110dee7aa-durable`. Its 45 payload files are bound by
+`/workspace/rtdl-particle-110dee7aa-durable`. Its 47 payload files are bound by
 `SHA256SUMS` SHA-256
-`d2859cdea49c239aed34381a989b757232e8cb06237c61d83b5e347ce815ea48`.
+`43e0bc33cd0eb9a702a35619ddc71f9a1a8d66fc7a2cd9df95b3e95dbf3645c5`.
 The standalone verifier rehashed all members and compared the observed output
 to the independent oracle in bounded chunks. This is a durable handoff while
 the owner retains the network volume, not repository custody or original
@@ -194,6 +196,28 @@ shape. No application name, dataset hash, query count, expected answer,
 Particle field or cell-transition formula is present in the new path. The old
 split-column ABI remains as a compatibility fallback.
 
+## Descriptive peak-memory diagnostic
+
+A separate balanced-order `A,C,C,A` diagnostic ran two fresh workers per arm
+with requested 10 ms host-RSS and whole-device NVML sampling. All four workers
+returned the formal output digest. The pre-worker whole-device baseline was
+identical at 345,571,328 bytes.
+
+| Arm | Whole-device peak | Baseline-subtracted peak | Direct-worker RSS median |
+| --- | ---: | ---: | ---: |
+| RTDL | 9.153 GiB | 8.831 GiB | 14.537 GiB |
+| Public PyOptiX | 6.831 GiB | 6.509 GiB | 18.603 GiB |
+
+RTDL therefore used 2.322 GiB more whole-device memory while its direct worker
+RSS was 4.066 GiB lower in this diagnostic. This is the expected trade-off of
+keeping one packed host snapshot while temporarily holding packed device
+staging beside the transposed device columns. NVML per-process accounting was
+unavailable, so the GPU values are whole-device totals, not allocation
+attribution. Sampling can miss shorter peaks, direct RSS excludes compiler
+children, and the monitor perturbs latency; no sampled latency enters the
+formal estimator. The raw result is `PEAK_MEMORY_DIAGNOSTIC.json`, SHA-256
+`0c3ee2df8d9411f3a6ef4e6e344cc802abe4b97bbba3d94b5e8eba20099ce49e`.
+
 ## Retained failure chronology
 
 Commit `5cc68659c0dc38990b57866511b2b6834613d1f3` first introduced the packed
@@ -216,10 +240,10 @@ public-path smoke and rejected an injected zero-direction row with
   the preferred long-action duration despite processing 160M distinct rays.
 - Only one Ada GPU was measured; clocks were not locked and no
   cross-generation successor result exists.
-- Formal peak host/GPU memory was not captured. The device transpose
-  temporarily holds the packed 4.48 GB AoS buffer alongside the 4.48 GB SoA
-  columns before releasing the packed buffer. No lower peak-memory claim is
-  allowed.
+- Formal peak host/GPU memory was not captured. A separate descriptive
+  diagnostic found lower direct-worker RSS but higher whole-device peak for
+  RTDL. It is not pooled with formal timing and does not authorize a general
+  peak-memory claim.
 - The original archive contains exact data manifests, both deployed arm
   binaries, compact worker evidence and all timing records, but not RTDL's
   generated compiler bytes, full timed-worker receipts, or the multi-gigabyte
@@ -237,8 +261,10 @@ public-path smoke and rejected an injected zero-direction row with
 ## Claim boundary
 
 The defensible internal conclusion is narrow: for this exact 160M-query
-transition-stage batch, the generic compiler and packed device-preparation
-successor is performance-competitive with competent public PyOptiX in prepared
-execution and removes the previously measured same-machine setup disadvantage.
-It does not authorize a public speedup, complete-application parity,
-one-second-workload coverage, cross-GPU stability or paper acceptance.
+transition-stage batch and eight measured blocks, the generic compiler and
+packed device-preparation successor is within the registered performance
+envelope of competent public PyOptiX in prepared execution and removes the
+previously measured same-machine setup disadvantage. Its lower direct-worker
+RSS comes with a higher sampled whole-device peak. It does not authorize a
+public speedup, complete-application parity, one-second-workload coverage,
+cross-GPU stability or paper acceptance.

@@ -58,13 +58,13 @@ DSO/C PTX, original formal package, exact source archive, generated artifacts,
 full replay receipt, environment, commands and standalone verifier were copied
 beside it under `/workspace/rtdl-particle-110dee7aa-durable`.
 
-The handoff registers 45 payload files. `SHA256SUMS` has SHA-256
-`d2859cdea49c239aed34381a989b757232e8cb06237c61d83b5e347ce815ea48`.
+The handoff registers 47 payload files. `SHA256SUMS` has SHA-256
+`43e0bc33cd0eb9a702a35619ddc71f9a1a8d66fc7a2cd9df95b3e95dbf3645c5`.
 The saved observed output is 1,920,000,128 bytes with file SHA-256
 `387fec59337c0246647fb31b957669f81b9ae26a7875bbc86c7a1875557ae43d`
 and canonical array digest
 `6c4ec71524be3d7b241c3d66c4cd06a5aa7089b3948bf1d8dd8aab550f0dec89`.
-An RTDL-independent verifier rehashed all 45 files, checked shapes/dtypes and
+An RTDL-independent verifier rehashed all 47 files, checked shapes/dtypes and
 compared every observed row against the oracle's `(face,selected,neighbor)`
 column transformation. It passed.
 
@@ -72,6 +72,11 @@ This output is actual post-formal replay output, but it is not output retained
 from a timed formal worker. The network volume is not Git and remains durable
 only while its owner retains it. `DURABLE_DATA_HANDOFF.md` records the exact
 location, hashes, restore procedure and claim boundary.
+
+The two additional registered files are the exact tool and raw result for a
+separate post-formal peak-memory diagnostic. That diagnostic is descriptive,
+is not pooled with formal latency samples, and does not repair original timed
+worker custody.
 
 ## Claim boundary
 

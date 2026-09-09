@@ -1,6 +1,8 @@
 {
   "claim_boundary": {
+    "descriptive_peak_memory_diagnostic_completed": true,
     "external_review_completed": false,
+    "formal_peak_memory_measured": false,
     "durable_network_volume_data_handoff_recorded": true,
     "natural_at_least_one_second_task": false,
     "natural_160m_prepared_internal_engineering_result": true,
@@ -16,19 +18,24 @@
       "postformal_replay_pooled_with_formal_timings": false
     },
     "files": [
-      {"bytes": 3298, "path": "formal_natural_110dee7aa/DURABLE_DATA_HANDOFF.md", "sha256": "e66d4513458c07ef4e9d471bfc2f4a00e0f570b169f447b9422d548291397661"},
-      {"bytes": 12515, "path": "formal_natural_110dee7aa/FORMAL_REPORT.md", "sha256": "22cabe23514a5ef9257ce41133e03703b8458ff2ce03109cdf2bbe0f02f27a85"},
+      {"bytes": 3716, "path": "formal_natural_110dee7aa/DURABLE_DATA_HANDOFF.md", "sha256": "14529ca6a191279e44547b32b5ef7c3aee8b60147d6fc4916825d5a591319b8b"},
+      {"bytes": 14032, "path": "formal_natural_110dee7aa/FORMAL_REPORT.md", "sha256": "008c39e490e680066cbb7b2d11346bdfd6a99a7379f9a0a2af64fd86e42ca548"},
       {"bytes": 4693, "path": "formal_natural_110dee7aa/INDEPENDENT_RECOUNT.json", "sha256": "d3ce86641c9d6cee4bd9e4c092207808ab6ff94515dd73112761793564ca2212"},
       {"bytes": 4788, "path": "formal_natural_110dee7aa/INDEPENDENT_RECOUNT_MAC.json", "sha256": "a5597b2a6f3f2fb113ec64b59d1c87ccac7226446e2769147c3cc90b2fd66eeb"},
       {"bytes": 33286, "path": "formal_natural_110dee7aa/POSTFORMAL_RECONSTRUCTION.tar.gz", "sha256": "9de850a354bd85366eb354ef796d45e0b9d1ccc71428b117961fd67c684d933a"},
-      {"bytes": 4466, "path": "formal_natural_110dee7aa/POSTFORMAL_RECONSTRUCTION_REPORT.md", "sha256": "ed7c4cd10d4d4a5830a0f74c184d71fe5d6ef4f76e3949589000a25fa0b27d8f"},
+      {"bytes": 4714, "path": "formal_natural_110dee7aa/POSTFORMAL_RECONSTRUCTION_REPORT.md", "sha256": "3b4cb08d949fcfe5eea8dec6f7d5562f6b9c90a4fc0928ddf8bef0dd937bd260"},
+      {"bytes": 21750, "path": "formal_natural_110dee7aa/PEAK_MEMORY_DIAGNOSTIC.json", "sha256": "0c3ee2df8d9411f3a6ef4e6e344cc802abe4b97bbba3d94b5e8eba20099ce49e"},
+      {"bytes": 8655, "path": "formal_natural_110dee7aa/PEAK_MEMORY_DIAGNOSTIC_TOOL.py", "sha256": "192b12ce24db902c0f164670ca0addc93f825e281955df6e49872f3c13f8f446"},
+      {"bytes": 3026, "path": "formal_natural_110dee7aa/PEAK_MEMORY_REPORT.md", "sha256": "76f580e33fa7bf85efbc25e478d2cbe53af2dc7fd8a1c7f842b6f04315d56af5"},
       {"bytes": 2526713, "path": "formal_natural_110dee7aa/RAW_FORMAL_EVIDENCE.tar.gz", "sha256": "42ebdf176e9625c8c95d7b2e2504ddccc70b42ed4b692fe3360f3c2c5b08bccf"},
-      {"bytes": 7490, "path": "formal_natural_110dee7aa/SELF_REVIEW.md", "sha256": "43ef79c92550a9b5046107ec36fc5a099636f4c8e9d6cbcdb1d76a308b6dd013"}
+      {"bytes": 7872, "path": "formal_natural_110dee7aa/SELF_REVIEW.md", "sha256": "6b6e6a926032ba9f7c479c822781246afbc8e4ca864c3f8ca6013e4146179ee2"}
     ],
     "paired_median_rtdl_over_pyoptix": 0.9941092578237594,
     "source_commit": "110dee7aa11e57e984cc2509163e021d787c692a",
     "source_tree": "1e549d791fedd23659bb0e0636747016938cd1c4",
-    "status": "PASS__INTERNAL_ENGINEERING_TARGETS__LEAD_CUSTODY_REVIEW_PENDING",
+    "lead_review_commit": "6a87302149180777d784f63cf76a8843a7c732a4",
+    "lead_review_scope": "exact numerical observation and narrow source-route interpretation only",
+    "status": "PASS__INTERNAL_ENGINEERING_TARGETS__LEAD_BOUNDED_REVIEW_COMPLETE__EXTERNAL_REVIEW_PENDING",
     "worst_block_rtdl_over_pyoptix": 1.0623042952807356
   },
   "natural_scale_successor": {

@@ -1,6 +1,6 @@
 {
   "schema": "rtdl.v4_long_workload_performance.status.v1",
-  "updated_at": "2026-09-09T12:30:14-04:00",
+  "updated_at": "2026-09-09T12:47:37-04:00",
   "authorization": {
     "owner_authorized_after_prior_freeze": true,
     "scope": "existing Particle, graph triangle-counting, and LibRTS performance remediation, strong public-PyOptiX comparison, necessary experiment tooling, and matching evidence/manuscript work",
@@ -129,7 +129,9 @@
     "setup_ratio_rtdl_over_pyoptix": 0.8586173627,
     "same_machine_rtdl_setup_improvement_over_c06fd73a5": 2.7004100176,
     "independent_recount_complete": true,
-    "lead_review_complete": false,
+    "lead_review_complete": true,
+    "lead_review_commit": "6a87302149180777d784f63cf76a8843a7c732a4",
+    "lead_review_scope": "exact numerical observation and narrow source-route interpretation only",
     "paper_claim_authorized": false,
     "archive_path": "history/internal_docs/v4_authored_particle_20260909/formal_natural_110dee7aa/RAW_FORMAL_EVIDENCE.tar.gz",
     "archive_sha256": "42ebdf176e9625c8c95d7b2e2504ddccc70b42ed4b692fe3360f3c2c5b08bccf",
@@ -140,7 +142,17 @@
     "postformal_reconstruction_archive_sha256": "9de850a354bd85366eb354ef796d45e0b9d1ccc71428b117961fd67c684d933a",
     "original_formal_generated_bytes_retained": false,
     "original_formal_full_receipt_retained": false,
-    "remaining_debt": "prepared action is subsecond; peak memory and cross-generation behavior are unmeasured; original full timed-worker receipt is unavailable"
+    "formal_peak_memory_measured": false,
+    "descriptive_peak_memory_diagnostic_complete": true,
+    "descriptive_peak_memory_json": "history/internal_docs/v4_authored_particle_20260909/formal_natural_110dee7aa/PEAK_MEMORY_DIAGNOSTIC.json",
+    "descriptive_peak_memory_json_sha256": "0c3ee2df8d9411f3a6ef4e6e344cc802abe4b97bbba3d94b5e8eba20099ce49e",
+    "descriptive_peak_memory_sampling_interval_ms": 10.0,
+    "descriptive_peak_memory_rtdl_total_device_peak_bytes": 9827975168,
+    "descriptive_peak_memory_pyoptix_total_device_peak_bytes": 7334461440,
+    "descriptive_peak_memory_rtdl_direct_worker_rss_median_bytes": 15608719360,
+    "descriptive_peak_memory_pyoptix_direct_worker_rss_median_bytes": 19974940672,
+    "descriptive_peak_memory_limitations": "whole-device rather than per-process GPU accounting; 10 ms sampling may miss shorter peaks; direct-worker RSS excludes compiler children; monitoring latency is not formal evidence",
+    "remaining_debt": "prepared action is subsecond; formal peak memory and cross-generation behavior are unmeasured; original full timed-worker receipt is unavailable"
   },
   "post_formal_cpu_sensitivity": {
     "formal_evidence": false,
@@ -203,6 +215,8 @@
     "Only cit-Patents/4M supplies a multi-second prepared natural computation. The 160M Particle successor is about 0.35 seconds per action; original Particle and LibRTS prepared rows remain sub-millisecond fixed-cost regressions. None is broad long-workload evidence.",
     "The exact 110dee7aa Particle successor closes its same-machine setup disadvantage at 8.984 seconds RTDL versus 10.463 seconds PyOptiX, while retaining 0.994109x prepared paired median and 1.062304x worst block.",
     "The original Particle formal archive lacks generated compiler bytes and full timed-worker receipts. A separately identified post-formal reconstruction matches all eight recorded program/executable identities and the output digest but is not pooled or relabeled as original evidence.",
+    "A bounded lead review at local commit 6a8730214 accepted the exact 110dee7aa numerical observation and narrow source-route interpretation only; matrix-wide independent review, external review, public release, and submission remain incomplete or unauthorized.",
+    "A separate Particle memory diagnostic reproduced the output in four balanced fresh workers and found lower RTDL direct-worker RSS but 2.322 GiB higher whole-device peak; it is descriptive, not formal latency or memory evidence.",
     "CPU 8 was selected after a disclosed diagnostic; GPU clocks could not be locked. The result supports the registered controlled-host condition, not invariance over arbitrary CPUs or clocks.",
     "The fixed post-formal 48-logical-CPU scan completed all 384 workers and was independently recounted, but CPU-8 Particle reversed from the formal 0.772559x median to 1.399874x. This scan is not pooled and prohibits a stable short-prepared-row guarantee.",
     "The successor evidence is integrated into a new 12-page local manuscript draft. Cached Tectonic build, all-page rendering, table inspection, and tested private-identity scans pass.",
