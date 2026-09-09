@@ -18,7 +18,7 @@ import time
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SCHEMA = "rtdl.v4.authored_particle.transition_ensemble_formal.v2"
+SCHEMA = "rtdl.v4.authored_particle.transition_ensemble_formal.v3"
 PREREG_SCHEMA = f"{SCHEMA}.preregistration"
 QUERY_COUNT = 160_000_000
 WARMUPS = 1
@@ -151,6 +151,8 @@ def worker_environment(prereg: dict[str, object]) -> dict[str, str]:
         "CUDA_CACHE_DISABLE": "1",
         "OPTIX_CACHE_ENABLED": "0",
         "OPTIX_CACHE_MAXSIZE": "0",
+        "NUMBA_CUDA_USE_NVIDIA_BINDING": prereg[
+            "numba_cuda_use_nvidia_binding"],
     })
     return environment
 
@@ -201,9 +203,11 @@ def validate_worker(
         "driver": prereg["gpu"]["driver"],
         "compute_capability": prereg["gpu"]["compute_capability"],
         "cuda_visible_devices": prereg["gpu"]["uuid"],
+        "numba_cuda_use_nvidia_binding": prereg[
+            "numba_cuda_use_nvidia_binding"],
     }
     if value.get("schema") \
-            != "rtdl.v4.authored_particle.transition_ensemble_worker.v1" \
+            != "rtdl.v4.authored_particle.transition_ensemble_worker.v2" \
             or value.get("status") != "PASS" \
             or value.get("arm") != arm \
             or value.get("source") != {
@@ -295,6 +299,7 @@ def validate_prereg(path: str | Path) -> dict[str, object]:
             or prereg["worker_timeout_seconds"] < 120 \
             or prereg.get("retry_count") != 0 \
             or prereg.get("discard_count") != 0 \
+            or prereg.get("numba_cuda_use_nvidia_binding") != "1" \
             or prereg.get("engineering_targets") != {
                 "paired_median_rtdl_over_pyoptix_at_most": 1.20,
                 "every_block_rtdl_over_pyoptix_at_most": 1.35,
@@ -391,7 +396,7 @@ def run_worker(
             prereg, result, arm, samples=samples,
             formal_worker=formal_worker)
     elif result.get("schema") \
-            != "rtdl.v4.authored_particle.transition_ensemble_worker.v1" \
+            != "rtdl.v4.authored_particle.transition_ensemble_worker.v2" \
             or result.get("status") != "PASS" \
             or result.get("arm") != arm \
             or result.get("source") != {
@@ -452,6 +457,10 @@ def command_freeze(args: argparse.Namespace) -> int:
         "cuda_include": str(args.cuda_include.resolve(strict=True)),
         "cuda_home": str(args.cuda_home.resolve(strict=True)),
         "ld_library_path": os.environ.get("LD_LIBRARY_PATH", ""),
+        # Numba's NVIDIA binding selects the same CUDA component family used
+        # by the pinned NVRTC wrapper compiler. Without this explicit choice,
+        # leaf PTX 8.7 cannot be composed with wrapper PTX 8.4.
+        "numba_cuda_use_nvidia_binding": "1",
         "gpu": gpu,
         "hostname": platform.node(),
         "python_version": platform.python_version(),

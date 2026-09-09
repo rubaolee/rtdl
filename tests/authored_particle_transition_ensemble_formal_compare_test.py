@@ -22,6 +22,8 @@ class AuthoredParticleTransitionEnsembleFormalCompareTest(unittest.TestCase):
             "python": "/python",
             "optix_include": "/optix/include",
             "cuda_include": "/cuda/include",
+            "cuda_home": "/cuda",
+            "ld_library_path": "/cuda/lib",
             "optix_sdk": "8.0.0",
             "gpu": {
                 "uuid": "GPU-test",
@@ -31,6 +33,7 @@ class AuthoredParticleTransitionEnsembleFormalCompareTest(unittest.TestCase):
             },
             "hostname": "host",
             "python_version": "3.12.3",
+            "numba_cuda_use_nvidia_binding": "1",
             "ensemble_manifest": {"sha256": "e" * 64},
             "base_manifest": {"sha256": "3" * 64},
             "input_sha256": "f" * 64,
@@ -43,7 +46,7 @@ class AuthoredParticleTransitionEnsembleFormalCompareTest(unittest.TestCase):
         prereg = cls._prereg()
         count = formal.QUERY_COUNT
         value = {
-            "schema": "rtdl.v4.authored_particle.transition_ensemble_worker.v1",
+            "schema": "rtdl.v4.authored_particle.transition_ensemble_worker.v2",
             "status": "PASS",
             "arm": arm,
             "source": {
@@ -58,6 +61,7 @@ class AuthoredParticleTransitionEnsembleFormalCompareTest(unittest.TestCase):
                 "driver": prereg["gpu"]["driver"],
                 "compute_capability": prereg["gpu"]["compute_capability"],
                 "cuda_visible_devices": prereg["gpu"]["uuid"],
+                "numba_cuda_use_nvidia_binding": "1",
             },
             "query_count": count,
             "output_shape": [count, 3],
@@ -122,7 +126,7 @@ class AuthoredParticleTransitionEnsembleFormalCompareTest(unittest.TestCase):
     def test_schedule_is_balanced_and_natural_scale_is_fixed(self):
         self.assertEqual(
             formal.SCHEMA,
-            "rtdl.v4.authored_particle.transition_ensemble_formal.v2")
+            "rtdl.v4.authored_particle.transition_ensemble_formal.v3")
         self.assertEqual(recount.TRANSACTION_SCHEMA, formal.SCHEMA)
         self.assertIn(
             "src/rtdsl/v4_callback_cuda_inline_codegen.py",
@@ -143,6 +147,10 @@ class AuthoredParticleTransitionEnsembleFormalCompareTest(unittest.TestCase):
         calibration = formal.worker_command(
             prereg, "pyoptix", samples=1, formal_worker=False)
         self.assertNotIn("--formal-worker", calibration)
+
+    def test_worker_environment_pins_numba_cuda_binding(self):
+        environment = formal.worker_environment(self._prereg())
+        self.assertEqual(environment["NUMBA_CUDA_USE_NVIDIA_BINDING"], "1")
 
     def test_public_pyoptix_output_is_direct_contiguous_aos(self):
         authored = (formal.ROOT / "experiments/v4_authored_particle" /

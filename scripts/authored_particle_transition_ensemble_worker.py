@@ -73,6 +73,8 @@ def _machine() -> dict[str, object]:
         "driver": driver,
         "compute_capability": capability,
         "cuda_visible_devices": os.environ.get("CUDA_VISIBLE_DEVICES"),
+        "numba_cuda_use_nvidia_binding": os.environ.get(
+            "NUMBA_CUDA_USE_NVIDIA_BINDING"),
     }
 
 
@@ -309,7 +311,7 @@ def main() -> int:
             },
         }
     result = {
-        "schema": "rtdl.v4.authored_particle.transition_ensemble_worker.v1",
+        "schema": "rtdl.v4.authored_particle.transition_ensemble_worker.v2",
         "status": "PASS",
         "arm": args.arm,
         "source": _git_identity(),

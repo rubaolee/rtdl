@@ -16,8 +16,8 @@ import tarfile
 import tempfile
 
 
-SCHEMA = "rtdl.v4.authored_particle.transition_ensemble_recount.v1"
-TRANSACTION_SCHEMA = "rtdl.v4.authored_particle.transition_ensemble_formal.v2"
+SCHEMA = "rtdl.v4.authored_particle.transition_ensemble_recount.v2"
+TRANSACTION_SCHEMA = "rtdl.v4.authored_particle.transition_ensemble_formal.v3"
 QUERY_COUNT = 160_000_000
 WARMUPS = 1
 SAMPLES = 3
@@ -191,10 +191,12 @@ def validate_worker_result(
         "driver": prereg["gpu"]["driver"],
         "compute_capability": prereg["gpu"]["compute_capability"],
         "cuda_visible_devices": prereg["gpu"]["uuid"],
+        "numba_cuda_use_nvidia_binding": prereg[
+            "numba_cuda_use_nvidia_binding"],
     }
     timings = value.get("samples_ns", [])
     if value.get("schema") \
-            != "rtdl.v4.authored_particle.transition_ensemble_worker.v1" \
+            != "rtdl.v4.authored_particle.transition_ensemble_worker.v2" \
             or value.get("status") != "PASS" \
             or value.get("arm") != arm \
             or value.get("source") != {
@@ -385,6 +387,7 @@ def recount(*, archive: Path, source_repo: Path) -> dict[str, object]:
                         != ORDERS \
                     or prereg.get("retry_count") != 0 \
                     or prereg.get("discard_count") != 0 \
+                    or prereg.get("numba_cuda_use_nvidia_binding") != "1" \
                     or prereg.get("engineering_targets") != {
                         "paired_median_rtdl_over_pyoptix_at_most": 1.20,
                         "every_block_rtdl_over_pyoptix_at_most": 1.35,
