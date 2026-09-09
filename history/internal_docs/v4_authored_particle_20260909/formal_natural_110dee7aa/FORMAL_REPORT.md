@@ -149,6 +149,13 @@ timed-worker output custody. See `DURABLE_DATA_HANDOFF.md`.
 The repository retains a separate 16,742-byte metadata-only packet for
 independent inspection of the handoff manifests, tools, commands, receipts,
 environment and verifier stdout; it does not contain or replace the arrays.
+Independent review of that immutable packet found that its never-executed
+durable replay command mismatched the recorded `base_particle` directory with
+the source loader's implicit `particle/` suffix. A separately identified v2
+tool now uses an explicit direct-directory contract and passed a full CPU data
+preflight. The v2 GPU replay command remains unexecuted, so independent complete
+array replay remains open. This does not affect the original `/tmp`-backed
+post-formal GPU replay or any formal timing.
 
 ## Paired result
 

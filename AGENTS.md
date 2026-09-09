@@ -41,6 +41,13 @@ separate descriptive memory diagnostic found 9.153 GiB versus 6.831 GiB
 whole-device peaks and 14.537 GiB versus 18.603 GiB direct-worker RSS for RTDL
 versus PyOptiX. Formal peak memory remains unmeasured; this records a
 host/device staging trade-off, not a general memory claim.
+Independent review later found that the first never-executed portable replay
+command mismatched the recorded `base_particle` directory with the source
+loader's implicit `particle/` suffix. Preserve that command and metadata package
+as adverse handoff evidence. A separately identified v2 direct-directory tool
+passed a full CPU data-path preflight against all durable hashes and formal
+identities; its full GPU replay command has not been executed, so independent
+complete-array replay remains open.
 
 ## Current owner-directed novelty work (2026-09-06)
 

@@ -116,6 +116,11 @@ then wrote an immutable preregistration before formal worker zero.
 - The complete post-formal output and multi-gigabyte data handoff are not in
   Git. Their RunPod network-volume availability depends on the owner retaining
   that volume and does not become original timed-worker custody.
+- Independent review found that the first never-executed durable replay command
+  passes `base_particle` where the old loader implicitly requires `particle`.
+  The old command and package remain preserved. A v2 direct-directory loader
+  passed CPU data-path preflight, but its full GPU replay remains unexecuted;
+  independent complete-array replay is still open.
 - A bounded lead review at local commit `6a87302149180777d784f63cf76a8843a7c732a4`
   accepted the exact numerical observation and narrow source-route wording.
   External review has not occurred. Pod and Mac recounts are tool-level

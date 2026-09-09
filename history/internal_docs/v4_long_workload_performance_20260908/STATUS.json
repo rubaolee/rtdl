@@ -1,6 +1,6 @@
 {
   "schema": "rtdl.v4_long_workload_performance.status.v1",
-  "updated_at": "2026-09-09T12:47:37-04:00",
+  "updated_at": "2026-09-09T13:05:36-04:00",
   "authorization": {
     "owner_authorized_after_prior_freeze": true,
     "scope": "existing Particle, graph triangle-counting, and LibRTS performance remediation, strong public-PyOptiX comparison, necessary experiment tooling, and matching evidence/manuscript work",
@@ -152,7 +152,12 @@
     "descriptive_peak_memory_rtdl_direct_worker_rss_median_bytes": 15608719360,
     "descriptive_peak_memory_pyoptix_direct_worker_rss_median_bytes": 19974940672,
     "descriptive_peak_memory_limitations": "whole-device rather than per-process GPU accounting; 10 ms sampling may miss shorter peaks; direct-worker RSS excludes compiler children; monitoring latency is not formal evidence",
-    "remaining_debt": "prepared action is subsecond; formal peak memory and cross-generation behavior are unmeasured; original full timed-worker receipt is unavailable"
+    "durable_portable_replay_predecessor_command_executed": false,
+    "durable_portable_replay_predecessor_path_contract_valid": false,
+    "durable_portable_replay_successor_cpu_preflight_complete": true,
+    "durable_portable_replay_successor_cpu_preflight_sha256": "7b10e19f8007dbf0cc0275fd46b44aaca532bdd7d9951815982888bed8bdaa39",
+    "durable_portable_replay_successor_gpu_replay_complete": false,
+    "remaining_debt": "prepared action is subsecond; formal peak memory and cross-generation behavior are unmeasured; original full timed-worker receipt and independent durable-path complete-array GPU replay are unavailable"
   },
   "post_formal_cpu_sensitivity": {
     "formal_evidence": false,
@@ -217,6 +222,7 @@
     "The original Particle formal archive lacks generated compiler bytes and full timed-worker receipts. A separately identified post-formal reconstruction matches all eight recorded program/executable identities and the output digest but is not pooled or relabeled as original evidence.",
     "A bounded lead review at local commit 6a8730214 accepted the exact 110dee7aa numerical observation and narrow source-route interpretation only; matrix-wide independent review, external review, public release, and submission remain incomplete or unauthorized.",
     "A separate Particle memory diagnostic reproduced the output in four balanced fresh workers and found lower RTDL direct-worker RSS but 2.322 GiB higher whole-device peak; it is descriptive, not formal latency or memory evidence.",
+    "Independent review found the first durable-path replay command unusable because base_particle was passed through a loader that appends particle; that command was never executed and remains preserved. A v2 direct-directory successor passed full CPU data-path preflight, but its GPU replay remains unexecuted.",
     "CPU 8 was selected after a disclosed diagnostic; GPU clocks could not be locked. The result supports the registered controlled-host condition, not invariance over arbitrary CPUs or clocks.",
     "The fixed post-formal 48-logical-CPU scan completed all 384 workers and was independently recounted, but CPU-8 Particle reversed from the formal 0.772559x median to 1.399874x. This scan is not pooled and prohibits a stable short-prepared-row guarantee.",
     "The successor evidence is integrated into a new 12-page local manuscript draft. Cached Tectonic build, all-page rendering, table inspection, and tested private-identity scans pass.",

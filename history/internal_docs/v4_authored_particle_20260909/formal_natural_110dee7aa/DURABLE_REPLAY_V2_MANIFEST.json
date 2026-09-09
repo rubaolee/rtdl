@@ -1,0 +1,51 @@
+{
+  "schema": "rtdl.v4.authored_particle.durable_replay_successor.v1",
+  "status": "PASS__CPU_DATA_PATH_PREFLIGHT__GPU_REPLAY_NOT_EXECUTED",
+  "source_commit": "110dee7aa11e57e984cc2509163e021d787c692a",
+  "source_tree": "1e549d791fedd23659bb0e0636747016938cd1c4",
+  "predecessor": {
+    "metadata_package_sha256": "7aef8c3a2aa3fc615030aea7dc6c18f6e8369a9a128f57509b7af54ded3f5772",
+    "reconstruction_tool_sha256": "a9faf58f9196ca36161ee35828e92e9286780cf8e23afa54c0fb3f950500112b",
+    "durable_replay_command_sha256": "390a7d8caf8aa194ec69903d97517ead8f359c5adf191cb8777338a59e6be443",
+    "durable_replay_command_executed": false,
+    "defect": "The command passes data/base_particle, but the reconstruction tool resolves that path and calls load_particle(base_root.parent); load_particle then appends particle and seeks data/particle/MANIFEST.json. The recorded handoff contains data/base_particle/MANIFEST.json and no data/particle alias."
+  },
+  "successor_files": [
+    {
+      "bytes": 15697,
+      "path": "POSTFORMAL_PARTICLE_RECONSTRUCT_DURABLE_V2.py",
+      "sha256": "9590090775fad23ddbf010e88a6d0e61ae7cb47c32930cacbd46a0ac641b4ed7"
+    },
+    {
+      "bytes": 631,
+      "path": "RUN_DURABLE_DATA_PREFLIGHT_V2.sh",
+      "sha256": "9f766aa4fdac981cd0e9cf405fadfcde482b57f7d089699bc616e2682edd938e"
+    },
+    {
+      "bytes": 1484,
+      "path": "RUN_POSTFORMAL_PARTICLE_REPLAY_FROM_DURABLE_V2.sh",
+      "sha256": "6be2f41450c2a3440af56e9f767d1b8f15dba68336e13efa01616483fe2b3094"
+    },
+    {
+      "bytes": 982,
+      "path": "DURABLE_DATA_PREFLIGHT_V2.json",
+      "sha256": "7b10e19f8007dbf0cc0275fd46b44aaca532bdd7d9951815982888bed8bdaa39"
+    }
+  ],
+  "execution": {
+    "cpu_data_path_preflight_executed": true,
+    "cpu_data_path_preflight_status": "PASS__DURABLE_DIRECT_DIRECTORY_CONTRACT",
+    "cpu_data_path_preflight_gpu_execution_performed": false,
+    "successor_full_gpu_replay_command_executed": false,
+    "original_tmp_backed_postformal_gpu_replay_remains_valid": true,
+    "formal_timing_or_result_changed": false
+  },
+  "claim_boundary": {
+    "old_script_and_package_preserved": true,
+    "predecessor_portable_command_usable": false,
+    "successor_loader_path_contract_cpu_validated": true,
+    "successor_gpu_replay_validated": false,
+    "independent_complete_array_replay_closed": false,
+    "new_performance_evidence": false
+  }
+}

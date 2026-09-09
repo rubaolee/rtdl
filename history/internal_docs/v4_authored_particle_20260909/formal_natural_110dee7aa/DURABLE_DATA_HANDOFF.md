@@ -64,8 +64,13 @@ equal to the formal registered output digest and the transformed oracle.
 - Exact `110dee7aa` source-tree Git archive.
 - Thirteen reconstructed RTDL compiler artifacts and one full replay receipt.
 - The exact original post-formal replay script and command.
-- A second replay command that reads durable data/artifact paths and accepts an
-  exact clean Git checkout through `SOURCE_ROOT`.
+- The original second replay command intended to read durable data/artifact
+  paths. Independent review found its `base_particle`/implicit `particle`
+  directory mismatch before that command was ever executed; it remains
+  preserved as an adverse handoff artifact.
+- A separately identified v2 reconstruction tool and replay command with an
+  explicit direct-directory contract. Its CPU-only full data-path preflight
+  passed; its full GPU replay command has not been executed.
 - Producing environment and Python package records.
 - The exact descriptive peak-memory diagnostic tool and its raw JSON result.
 
@@ -87,3 +92,9 @@ The network volume is more durable than `/tmp` and `/dev/shm`, but it is not
 Git or archival-publication custody. These bytes remain available only while
 the owner retains the underlying RunPod network volume. The repository keeps
 this identity and verification record, not the multi-gigabyte payload itself.
+See `DURABLE_REPLAY_V2_REPORT.md` for the preserved defect, successor identities
+and exact validation boundary.
+
+The v2 successor packet is `DURABLE_REPLAY_V2_HANDOFF.tar.gz`, 7,376 bytes and
+six members, SHA-256
+`a9cac232fbc6cb5d1d30cf444ec29cdd32a22ee8e3f5d746b1736e697085e708`.

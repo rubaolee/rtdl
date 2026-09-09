@@ -71,7 +71,10 @@ column transformation. It passed.
 This output is actual post-formal replay output, but it is not output retained
 from a timed formal worker. The network volume is not Git and remains durable
 only while its owner retains it. `DURABLE_DATA_HANDOFF.md` records the exact
-location, hashes, restore procedure and claim boundary.
+location, hashes and claim boundary. The first portable replay command in the
+metadata handoff was never executed and has a retained directory-contract
+defect. `DURABLE_REPLAY_V2_REPORT.md` records the explicit-directory successor,
+its passing CPU data-path preflight and its still-unexecuted GPU replay status.
 
 The two additional registered files are the exact tool and raw result for a
 separate post-formal peak-memory diagnostic. That diagnostic is descriptive,
@@ -87,6 +90,7 @@ worker custody.
 - Post-formal 160M correctness replay matched the registered output: **yes**.
 - Supplement pooled into formal timings: **no**.
 - Missing original timed receipt repaired or relabeled: **no**.
+- Independent complete-array replay from durable paths closed: **no**.
 - New performance claim authorized: **no**.
 
 This supplement strengthens reproducibility and corrects documentation. It does
