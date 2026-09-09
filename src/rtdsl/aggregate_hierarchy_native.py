@@ -65,6 +65,13 @@ _CANONICAL_HIERARCHY_OUTPUT_KEY = secrets.token_bytes(32)
 _CANONICAL_HIERARCHY_OUTPUT_SCHEMA = (
     b"rtdl.aggregate_hierarchy.canonical_column_binding.v1\x00"
 )
+_CANONICAL_HIERARCHY_COLUMN_FIELDS = (
+    "reducer_value_0",
+    "visited_node_count",
+    "aggregate_contribution_count",
+    "exact_contribution_count",
+    "status_code",
+)
 
 
 class _FrozenHierarchyRow(dict[str, int | float]):
@@ -99,6 +106,43 @@ class _CanonicalHierarchyOutputBinding:
     consumed: bool = False
 
 
+@dataclass(frozen=True)
+class _FrozenHierarchyColumns:
+    """Complete canonical columns backed by immutable byte strings."""
+
+    reducer_value_0: Any
+    visited_node_count: Any
+    aggregate_contribution_count: Any
+    exact_contribution_count: Any
+    status_code: Any
+
+    @property
+    def point_count(self) -> int:
+        return int(self.reducer_value_0.size)
+
+    def identities(self) -> tuple[int, ...]:
+        return tuple(
+            id(getattr(self, name))
+            for name in _CANONICAL_HIERARCHY_COLUMN_FIELDS
+        )
+
+
+@dataclass
+class _CanonicalHierarchyColumnsOutputBinding:
+    """One-shot authority over provider-created immutable typed columns."""
+
+    columns: _FrozenHierarchyColumns
+    columns_identity: int
+    column_identities: tuple[int, ...]
+    output_sha256: str
+    point_count: int
+    selected_backend: str
+    selected_template: str
+    physical_executor_kind: str
+    authority_seal: str
+    consumed: bool = False
+
+
 def _canonical_hierarchy_output_seal_payload(
     binding: _CanonicalHierarchyOutputBinding,
 ) -> bytes:
@@ -123,6 +167,38 @@ def _seal_canonical_hierarchy_output(
     return hmac.new(
         _CANONICAL_HIERARCHY_OUTPUT_KEY,
         _canonical_hierarchy_output_seal_payload(binding),
+        hashlib.sha256,
+    ).hexdigest()
+
+
+def _canonical_hierarchy_columns_output_seal_payload(
+    binding: _CanonicalHierarchyColumnsOutputBinding,
+) -> bytes:
+    return json.dumps(
+        {
+            "schema": (
+                "rtdl.aggregate_hierarchy.canonical_typed_columns_binding."
+                "authority.v1"
+            ),
+            "columns_identity": binding.columns_identity,
+            "column_identities": binding.column_identities,
+            "output_sha256": binding.output_sha256,
+            "point_count": binding.point_count,
+            "selected_backend": binding.selected_backend,
+            "selected_template": binding.selected_template,
+            "physical_executor_kind": binding.physical_executor_kind,
+        },
+        sort_keys=True,
+        separators=(",", ":"),
+    ).encode("utf-8")
+
+
+def _seal_canonical_hierarchy_columns_output(
+    binding: _CanonicalHierarchyColumnsOutputBinding,
+) -> str:
+    return hmac.new(
+        _CANONICAL_HIERARCHY_OUTPUT_KEY,
+        _canonical_hierarchy_columns_output_seal_payload(binding),
         hashlib.sha256,
     ).hexdigest()
 
@@ -198,6 +274,31 @@ def _validate_and_hash_canonical_hierarchy_columns(
     )
 
 
+def _freeze_canonical_hierarchy_columns(
+    *,
+    reducer_value_0: Any,
+    visited: Any,
+    aggregate: Any,
+    exact: Any,
+    status_codes: Any,
+) -> _FrozenHierarchyColumns:
+    """Copy validated outputs once into genuinely immutable typed storage."""
+
+    np = __import__("numpy")
+
+    def freeze(value: Any, dtype: str) -> Any:
+        canonical = np.ascontiguousarray(value, dtype=np.dtype(dtype))
+        return np.frombuffer(canonical.tobytes(order="C"), dtype=np.dtype(dtype))
+
+    return _FrozenHierarchyColumns(
+        reducer_value_0=freeze(reducer_value_0, "<f8"),
+        visited_node_count=freeze(visited, "<i8"),
+        aggregate_contribution_count=freeze(aggregate, "<i8"),
+        exact_contribution_count=freeze(exact, "<i8"),
+        status_code=freeze(status_codes, "<i8"),
+    )
+
+
 def consume_canonical_hierarchy_output_binding(
     endpoint: Mapping[str, Any],
 ) -> tuple[tuple[Mapping[str, int | float], ...], str]:
@@ -228,6 +329,44 @@ def consume_canonical_hierarchy_output_binding(
         raise RuntimeError("canonical hierarchy output binding changed")
     binding.consumed = True
     return binding.rows, binding.output_sha256
+
+
+def consume_canonical_hierarchy_columns_output_binding(
+    endpoint: Mapping[str, Any],
+) -> tuple[_FrozenHierarchyColumns, str]:
+    """Consume once the private immutable typed-column output authority."""
+
+    binding = endpoint.get("_canonical_columns_output_binding")
+    if type(binding) is not _CanonicalHierarchyColumnsOutputBinding:
+        raise RuntimeError("canonical hierarchy columns output binding is missing")
+    if binding.consumed:
+        raise RuntimeError("canonical hierarchy columns output binding was replayed")
+    columns = endpoint.get("columns")
+    metadata = endpoint.get("metadata")
+    if (
+        columns is not binding.columns
+        or id(columns) != binding.columns_identity
+        or columns.identities() != binding.column_identities
+        or columns.point_count != binding.point_count
+        or any(
+            bool(getattr(columns, name).flags.writeable)
+            for name in _CANONICAL_HIERARCHY_COLUMN_FIELDS
+        )
+        or endpoint.get("row_count") != binding.point_count
+        or endpoint.get("partial_result_returned") is not False
+        or endpoint.get("selected_backend") != binding.selected_backend
+        or endpoint.get("selected_template") != binding.selected_template
+        or type(metadata) is not dict
+        or metadata.get("physical_executor_kind")
+        != binding.physical_executor_kind
+        or not hmac.compare_digest(
+            binding.authority_seal,
+            _seal_canonical_hierarchy_columns_output(binding),
+        )
+    ):
+        raise RuntimeError("canonical hierarchy columns output binding changed")
+    binding.consumed = True
+    return binding.columns, binding.output_sha256
 
 
 def _sha256_path(path: Path) -> str:
@@ -928,12 +1067,17 @@ class PreparedNativeAggregateHierarchy3D:
         *,
         softening: float = 0.0,
         canonical_output_binding: bool = False,
+        canonical_column_output_binding: bool = False,
     ) -> dict[str, Any]:
         if self._closed or not self._handle.value:
             raise RuntimeError("prepared native aggregate hierarchy is closed")
         softening = float(softening)
         if not math.isfinite(softening) or softening < 0.0:
             raise ValueError("softening must be finite and non-negative")
+        if canonical_output_binding and canonical_column_output_binding:
+            raise ValueError(
+                "canonical row and typed-column bindings are mutually exclusive"
+            )
         opening = self._plan.spec.opening
         if not isinstance(opening, ContinuationPayloadOpening):
             raise RuntimeError("prepared native plan no longer has continuation semantics")
@@ -986,7 +1130,10 @@ class PreparedNativeAggregateHierarchy3D:
                 f"source_id={first}, status_code={int(status_codes[first])}"
             )
 
-        if canonical_output_binding:
+        canonical_binding_requested = (
+            canonical_output_binding or canonical_column_output_binding
+        )
+        if canonical_binding_requested:
             canonical_output_sha256 = _validate_and_hash_canonical_hierarchy_columns(
                 reducer_value_0=reducer_value_0,
                 visited=visited,
@@ -1000,28 +1147,39 @@ class PreparedNativeAggregateHierarchy3D:
         else:
             canonical_output_sha256 = None
 
-        rows = tuple(
-            (_FrozenHierarchyRow({
-                "source_id": index,
-                "reducer_value_0": float(reducer_value_0[index]),
-                "reducer_value_1": 0.0,
-                "reducer_value_2": 0.0,
-                "visited_node_count": int(visited[index]),
-                "aggregate_contribution_count": int(aggregate[index]),
-                "exact_contribution_count": int(exact[index]),
-                "status_code": int(status_codes[index]),
-            }) if canonical_output_binding else {
-                "source_id": index,
-                "reducer_value_0": float(reducer_value_0[index]),
-                "reducer_value_1": 0.0,
-                "reducer_value_2": 0.0,
-                "visited_node_count": int(visited[index]),
-                "aggregate_contribution_count": int(aggregate[index]),
-                "exact_contribution_count": int(exact[index]),
-                "status_code": int(status_codes[index]),
-            })
-            for index in range(point_count)
-        )
+        if canonical_column_output_binding:
+            columns = _freeze_canonical_hierarchy_columns(
+                reducer_value_0=reducer_value_0,
+                visited=visited,
+                aggregate=aggregate,
+                exact=exact,
+                status_codes=status_codes,
+            )
+            rows = None
+        else:
+            columns = None
+            rows = tuple(
+                (_FrozenHierarchyRow({
+                    "source_id": index,
+                    "reducer_value_0": float(reducer_value_0[index]),
+                    "reducer_value_1": 0.0,
+                    "reducer_value_2": 0.0,
+                    "visited_node_count": int(visited[index]),
+                    "aggregate_contribution_count": int(aggregate[index]),
+                    "exact_contribution_count": int(exact[index]),
+                    "status_code": int(status_codes[index]),
+                }) if canonical_output_binding else {
+                    "source_id": index,
+                    "reducer_value_0": float(reducer_value_0[index]),
+                    "reducer_value_1": 0.0,
+                    "reducer_value_2": 0.0,
+                    "visited_node_count": int(visited[index]),
+                    "aggregate_contribution_count": int(aggregate[index]),
+                    "exact_contribution_count": int(exact[index]),
+                    "status_code": int(status_codes[index]),
+                })
+                for index in range(point_count)
+            )
         result = {
             "contract_version": AGGREGATE_FRONTIER_REDUCE_3D_EXECUTION_CONTRACT,
             "backend": (
@@ -1032,9 +1190,8 @@ class PreparedNativeAggregateHierarchy3D:
             "selected_backend": self._plan.selected_backend,
             "selected_template": self._plan.selected_template,
             "output_schema": AGGREGATE_FRONTIER_REDUCE_3D_OUTPUT_SCHEMA,
-            "row_count": len(rows),
+            "row_count": point_count,
             "partial_result_returned": False,
-            "rows": rows,
             "metadata": {
                 "compiler_plan": self._plan.to_metadata(),
                 "native_prepare_seconds": self.prepare_seconds,
@@ -1056,8 +1213,19 @@ class PreparedNativeAggregateHierarchy3D:
                 ),
                 "selection_owner": self._plan.selection_owner,
                 "app_identity_used_for_selection": False,
+                "canonical_output_representation": (
+                    "immutable_typed_columns"
+                    if canonical_column_output_binding
+                    else "immutable_rows"
+                    if canonical_output_binding
+                    else "rows"
+                ),
             },
         }
+        if columns is not None:
+            result["columns"] = columns
+        else:
+            result["rows"] = rows
         if canonical_output_binding:
             physical_executor_kind = result["metadata"]["physical_executor_kind"]
             binding = _CanonicalHierarchyOutputBinding(
@@ -1072,6 +1240,23 @@ class PreparedNativeAggregateHierarchy3D:
             )
             binding.authority_seal = _seal_canonical_hierarchy_output(binding)
             result["_canonical_output_binding"] = binding
+        elif canonical_column_output_binding:
+            physical_executor_kind = result["metadata"]["physical_executor_kind"]
+            column_binding = _CanonicalHierarchyColumnsOutputBinding(
+                columns=columns,
+                columns_identity=id(columns),
+                column_identities=columns.identities(),
+                output_sha256=str(canonical_output_sha256),
+                point_count=point_count,
+                selected_backend=str(result["selected_backend"]),
+                selected_template=str(result["selected_template"]),
+                physical_executor_kind=str(physical_executor_kind),
+                authority_seal="",
+            )
+            column_binding.authority_seal = (
+                _seal_canonical_hierarchy_columns_output(column_binding)
+            )
+            result["_canonical_columns_output_binding"] = column_binding
         return result
 
     def close(self) -> None:
@@ -1196,6 +1381,7 @@ def run_aggregate_frontier_reduce_candidate_for_functional_validation_3d(
     softening: float = 0.0,
     max_output_rows: int | None = None,
     canonical_output_binding: bool = False,
+    canonical_column_output_binding: bool = False,
 ) -> dict[str, Any]:
     """Execute one already registered candidate at the complete endpoint."""
 
@@ -1206,10 +1392,13 @@ def run_aggregate_frontier_reduce_candidate_for_functional_validation_3d(
         max_output_rows=max_output_rows,
     )
     with PreparedNativeAggregateHierarchy3D(plan) as prepared:
-        completed = dict(prepared.execute(
-            softening=softening,
-            canonical_output_binding=canonical_output_binding,
-        ))
+        execute_kwargs = {
+            "softening": softening,
+            "canonical_output_binding": canonical_output_binding,
+        }
+        if canonical_column_output_binding:
+            execute_kwargs["canonical_column_output_binding"] = True
+        completed = dict(prepared.execute(**execute_kwargs))
     metadata = dict(completed.get("metadata", {}))
     metadata.update(
         {
@@ -1238,6 +1427,7 @@ __all__ = (
     "compile_aggregate_frontier_reduce_3d",
     "compile_aggregate_frontier_reduce_default_3d",
     "compile_aggregate_frontier_reduce_candidate_for_functional_validation_3d",
+    "consume_canonical_hierarchy_columns_output_binding",
     "consume_canonical_hierarchy_output_binding",
     "prepare_aggregate_frontier_reduce_explicit_native_3d",
     "run_aggregate_frontier_reduce_compiler_3d",

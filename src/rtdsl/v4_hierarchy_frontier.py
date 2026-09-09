@@ -26,7 +26,7 @@ import re
 import secrets
 import threading
 import time
-from typing import Mapping
+from typing import Any, Mapping
 
 from .aggregate_hierarchy import (
     AGGREGATE_HIERARCHY_3D_REDUCER_AGGREGATE_COUNT,
@@ -38,6 +38,7 @@ from .aggregate_hierarchy_native import (
     AGGREGATE_HIERARCHY_OPTIX_TEMPLATE,
     PreparedNativeAggregateHierarchy3D,
     compile_aggregate_frontier_reduce_candidate_for_functional_validation_3d,
+    consume_canonical_hierarchy_columns_output_binding,
     consume_canonical_hierarchy_output_binding,
     run_aggregate_frontier_reduce_candidate_for_functional_validation_3d,
 )
@@ -169,10 +170,47 @@ class HierarchyFrontierResult:
 
 
 @dataclass(frozen=True)
+class HierarchyFrontierColumnsResult:
+    """Complete immutable scalar-reducer and diagnostic output columns.
+
+    Source IDs are the implicit dense range ``[0, point_count)`` and the two
+    unused reducer lanes are exact positive-zero columns, matching the row
+    schema without materializing Python objects for those constant columns.
+    """
+
+    reducer_value_0: Any
+    visited_node_count: Any
+    aggregate_contribution_count: Any
+    exact_contribution_count: Any
+    status_code: Any
+    point_count: int
+    output_sha256: str
+    plan_sha256: str
+    traversal_receipt: dict[str, object]
+    endpoint_metadata: dict[str, object]
+
+
+@dataclass(frozen=True)
 class _VerifiedPackedHierarchyRowsBinding:
     """Private single-process authority for one immutable endpoint snapshot."""
 
     rows: tuple[Mapping[str, int | float], ...]
+    output_sha256: str
+    plan_sha256: str
+    point_count: int
+    endpoint_identity: int
+    selected_backend: str
+    selected_template: str
+    physical_executor_kind: str
+    authority_seal: str
+
+
+@dataclass(frozen=True)
+class _VerifiedPackedHierarchyColumnsBinding:
+    """Private authority for one immutable typed-column endpoint snapshot."""
+
+    columns: Any
+    column_identities: tuple[int, ...]
     output_sha256: str
     plan_sha256: str
     point_count: int
@@ -386,6 +424,48 @@ def _seal_packed_binding(
     ).hexdigest()
 
 
+def _packed_columns_binding_seal_payload(
+    binding: _VerifiedPackedHierarchyColumnsBinding,
+) -> bytes:
+    return repr((
+        "rtdl.v4.hierarchy_frontier.packed_columns_binding_authority.v1",
+        id(binding.columns),
+        binding.column_identities,
+        binding.output_sha256,
+        binding.plan_sha256,
+        binding.point_count,
+        binding.endpoint_identity,
+        binding.selected_backend,
+        binding.selected_template,
+        binding.physical_executor_kind,
+    )).encode("utf-8")
+
+
+def _seal_packed_columns_binding(
+    binding: _VerifiedPackedHierarchyColumnsBinding,
+) -> str:
+    return hmac.new(
+        _PACKED_OUTPUT_BINDING_KEY,
+        _packed_columns_binding_seal_payload(binding),
+        hashlib.sha256,
+    ).hexdigest()
+
+
+def _require_registered_optix_endpoint(endpoint: Mapping[str, object]) -> str:
+    metadata = endpoint.get("metadata")
+    if type(metadata) is not dict:
+        _fail("physical_identity", "endpoint.metadata", "exact dict required")
+    physical_executor_kind = metadata.get("physical_executor_kind")
+    if (
+        endpoint.get("selected_backend") != "optix_traversal"
+        or endpoint.get("selected_template") != AGGREGATE_HIERARCHY_OPTIX_TEMPLATE
+        or physical_executor_kind
+        != "true_optix_triangle_traversal_with_exact_f64_opening"
+    ):
+        _fail("physical_identity", "endpoint", "registered true-OptiX family required")
+    return str(physical_executor_kind)
+
+
 def _bind_canonical_packed_hierarchy_endpoint(
     compiled: CompiledHierarchyFrontier,
     endpoint: Mapping[str, object],
@@ -406,17 +486,7 @@ def _bind_canonical_packed_hierarchy_endpoint(
         _fail("packed_binding", "endpoint", str(exc))
     if len(raw_rows) != compiled.point_count:
         _fail("complete_output", "endpoint", "one complete row per source required")
-    metadata = endpoint.get("metadata")
-    if type(metadata) is not dict:
-        _fail("physical_identity", "endpoint.metadata", "exact dict required")
-    physical_executor_kind = metadata.get("physical_executor_kind")
-    if (
-        endpoint.get("selected_backend") != "optix_traversal"
-        or endpoint.get("selected_template") != AGGREGATE_HIERARCHY_OPTIX_TEMPLATE
-        or physical_executor_kind
-        != "true_optix_triangle_traversal_with_exact_f64_opening"
-    ):
-        _fail("physical_identity", "endpoint", "registered true-OptiX family required")
+    physical_executor_kind = _require_registered_optix_endpoint(endpoint)
     provisional = _VerifiedPackedHierarchyRowsBinding(
         rows=raw_rows,
         output_sha256=output_sha256,
@@ -432,6 +502,41 @@ def _bind_canonical_packed_hierarchy_endpoint(
         **{
             **provisional.__dict__,
             "authority_seal": _seal_packed_binding(provisional),
+        }
+    )
+
+
+def _bind_canonical_packed_hierarchy_columns_endpoint(
+    compiled: CompiledHierarchyFrontier,
+    endpoint: Mapping[str, object],
+) -> _VerifiedPackedHierarchyColumnsBinding:
+    """Consume the provider's immutable typed-column authority once."""
+
+    try:
+        columns, output_sha256 = (
+            consume_canonical_hierarchy_columns_output_binding(endpoint)
+        )
+    except (RuntimeError, TypeError, ValueError) as exc:
+        _fail("packed_columns_binding", "endpoint", str(exc))
+    if columns.point_count != compiled.point_count:
+        _fail("complete_output", "endpoint", "one complete value per source required")
+    physical_executor_kind = _require_registered_optix_endpoint(endpoint)
+    provisional = _VerifiedPackedHierarchyColumnsBinding(
+        columns=columns,
+        column_identities=columns.identities(),
+        output_sha256=output_sha256,
+        plan_sha256=compiled.plan_sha256,
+        point_count=compiled.point_count,
+        endpoint_identity=id(endpoint),
+        selected_backend=str(endpoint["selected_backend"]),
+        selected_template=str(endpoint["selected_template"]),
+        physical_executor_kind=physical_executor_kind,
+        authority_seal="",
+    )
+    return _VerifiedPackedHierarchyColumnsBinding(
+        **{
+            **provisional.__dict__,
+            "authority_seal": _seal_packed_columns_binding(provisional),
         }
     )
 
@@ -480,6 +585,62 @@ def _accept_hierarchy_endpoint(
         plan_sha256=compiled.plan_sha256,
         traversal_receipt=dict(receipt),
         endpoint_metadata=metadata,
+    )
+
+
+def _accept_hierarchy_columns_endpoint(
+    compiled: CompiledHierarchyFrontier,
+    endpoint: Mapping[str, object],
+    receipt: Mapping[str, object],
+    *,
+    binding: _VerifiedPackedHierarchyColumnsBinding,
+) -> HierarchyFrontierColumnsResult:
+    """Accept only the private immutable typed-column endpoint binding."""
+
+    if type(binding) is not _VerifiedPackedHierarchyColumnsBinding:
+        _fail(
+            "packed_columns_binding", "binding",
+            "private verified columns binding required",
+        )
+    _verify_receipt(receipt, binding.output_sha256)
+    columns = binding.columns
+    current_column_identities = columns.identities()
+    if (
+        binding.plan_sha256 != compiled.plan_sha256
+        or binding.point_count != compiled.point_count
+        or binding.endpoint_identity != id(endpoint)
+        or endpoint.get("columns") is not columns
+        or binding.column_identities != current_column_identities
+        or binding.selected_backend != endpoint.get("selected_backend")
+        or binding.selected_template != endpoint.get("selected_template")
+        or type(endpoint.get("metadata")) is not dict
+        or binding.physical_executor_kind
+        != endpoint["metadata"].get("physical_executor_kind")
+        or not hmac.compare_digest(
+            binding.authority_seal,
+            _seal_packed_columns_binding(
+                _VerifiedPackedHierarchyColumnsBinding(
+                    **{**binding.__dict__, "authority_seal": ""}
+                )
+            ),
+        )
+    ):
+        _fail(
+            "packed_columns_binding", "binding",
+            "columns binding authority changed or replayed",
+        )
+    _require_registered_optix_endpoint(endpoint)
+    return HierarchyFrontierColumnsResult(
+        reducer_value_0=columns.reducer_value_0,
+        visited_node_count=columns.visited_node_count,
+        aggregate_contribution_count=columns.aggregate_contribution_count,
+        exact_contribution_count=columns.exact_contribution_count,
+        status_code=columns.status_code,
+        point_count=binding.point_count,
+        output_sha256=binding.output_sha256,
+        plan_sha256=compiled.plan_sha256,
+        traversal_receipt=dict(receipt),
+        endpoint_metadata=dict(endpoint["metadata"]),
     )
 
 
@@ -566,7 +727,12 @@ class PreparedHierarchyFrontierOwner:
             "execution_count": self._execution_count,
         }
 
-    def execute(self, *, softening: float = 0.0) -> HierarchyFrontierResult:
+    def _execute_bound(
+        self,
+        *,
+        softening: float,
+        typed_columns: bool,
+    ) -> HierarchyFrontierResult | HierarchyFrontierColumnsResult:
         self._check_owner()
         if not self._active.acquire(blocking=False):
             raise RuntimeError("prepared hierarchy owner is already executing")
@@ -575,12 +741,22 @@ class PreparedHierarchyFrontierOwner:
             library = self._native._library
             audit = OptixTraversalAuditSession.open(library=library)
             try:
-                endpoint = self._native.execute(
-                    softening=softening,
-                    canonical_output_binding=True,
-                )
-                binding = _bind_canonical_packed_hierarchy_endpoint(
-                    self._compiled, endpoint)
+                if typed_columns:
+                    endpoint = self._native.execute(
+                        softening=softening,
+                        canonical_column_output_binding=True,
+                    )
+                    binding = _bind_canonical_packed_hierarchy_columns_endpoint(
+                        self._compiled, endpoint,
+                    )
+                else:
+                    endpoint = self._native.execute(
+                        softening=softening,
+                        canonical_output_binding=True,
+                    )
+                    binding = _bind_canonical_packed_hierarchy_endpoint(
+                        self._compiled, endpoint,
+                    )
                 receipt = audit.finish(
                     semantic_digest=self._compiled.spec_sha256,
                     output_digest=binding.output_sha256,
@@ -590,13 +766,36 @@ class PreparedHierarchyFrontierOwner:
             except Exception:
                 audit.abort()
                 raise
-            accepted = _accept_hierarchy_endpoint(
-                self._compiled, endpoint, receipt,
-                binding=binding)
+            if typed_columns:
+                accepted = _accept_hierarchy_columns_endpoint(
+                    self._compiled, endpoint, receipt,
+                    binding=binding,
+                )
+            else:
+                accepted = _accept_hierarchy_endpoint(
+                    self._compiled, endpoint, receipt,
+                    binding=binding,
+                )
             self._execution_count += 1
             return accepted
         finally:
             self._active.release()
+
+    def execute(self, *, softening: float = 0.0) -> HierarchyFrontierResult:
+        return self._execute_bound(
+            softening=softening,
+            typed_columns=False,
+        )
+
+    def execute_columns(
+        self,
+        *,
+        softening: float = 0.0,
+    ) -> HierarchyFrontierColumnsResult:
+        return self._execute_bound(
+            softening=softening,
+            typed_columns=True,
+        )
 
     def close(self) -> None:
         self._check_owner()
@@ -653,15 +852,50 @@ def execute_hierarchy_frontier(
         compiled, endpoint, receipt, binding=binding)
 
 
+def execute_hierarchy_frontier_columns(
+    compiled: CompiledHierarchyFrontier,
+    spec: AggregateFrontierReduceSpec3D,
+    *,
+    softening: float = 0.0,
+) -> HierarchyFrontierColumnsResult:
+    """Execute one complete bounded result without Python row materialization."""
+
+    _verify_compiled(compiled, spec)
+    library = optix_runtime._load_optix_library()
+    semantic_digest = compiled.spec_sha256
+    with OptixTraversalAuditSession.open(library=library) as audit:
+        endpoint = run_aggregate_frontier_reduce_candidate_for_functional_validation_3d(
+            spec,
+            physical_candidate="optix_traversal",
+            softening=softening,
+            max_output_rows=compiled.schema.maximum_output_rows,
+            canonical_column_output_binding=True,
+        )
+        binding = _bind_canonical_packed_hierarchy_columns_endpoint(
+            compiled, endpoint,
+        )
+        receipt = audit.finish(
+            semantic_digest=semantic_digest,
+            output_digest=binding.output_sha256,
+            route_identity="v4_generic_bounded_hierarchy_frontier_reduce",
+            expected_program_bundles=(HIERARCHY_FRONTIER_PROGRAM_BUNDLE,),
+        )
+    return _accept_hierarchy_columns_endpoint(
+        compiled, endpoint, receipt, binding=binding,
+    )
+
+
 __all__ = (
     "CompiledHierarchyFrontier",
     "HierarchyFrontierError",
+    "HierarchyFrontierColumnsResult",
     "HierarchyFrontierResult",
     "HierarchyFrontierSchema",
     "HierarchyReducer",
     "PreparedHierarchyFrontierOwner",
     "compile_hierarchy_frontier",
     "execute_hierarchy_frontier",
+    "execute_hierarchy_frontier_columns",
     "hierarchy_content_sha256",
     "prepare_hierarchy_frontier",
 )

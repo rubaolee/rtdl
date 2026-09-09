@@ -75,6 +75,57 @@ def _bound_endpoint(*rows):
     return endpoint
 
 
+def _bound_columns_endpoint(*rows):
+    values = np.asarray([row["reducer_value_0"] for row in rows], dtype=np.float64)
+    visited = np.asarray([row["visited_node_count"] for row in rows], dtype=np.int64)
+    aggregate = np.asarray(
+        [row["aggregate_contribution_count"] for row in rows], dtype=np.int64)
+    exact = np.asarray(
+        [row["exact_contribution_count"] for row in rows], dtype=np.int64)
+    status = np.asarray([row["status_code"] for row in rows], dtype=np.int64)
+    digest = native._validate_and_hash_canonical_hierarchy_columns(
+        reducer_value_0=values,
+        visited=visited,
+        aggregate=aggregate,
+        exact=exact,
+        status_codes=status,
+        maximum_visits_per_source=9,
+    )
+    columns = native._freeze_canonical_hierarchy_columns(
+        reducer_value_0=values,
+        visited=visited,
+        aggregate=aggregate,
+        exact=exact,
+        status_codes=status,
+    )
+    endpoint = {
+        "columns": columns,
+        "row_count": len(rows),
+        "partial_result_returned": False,
+        "selected_backend": "optix_traversal",
+        "selected_template": hierarchy.AGGREGATE_HIERARCHY_OPTIX_TEMPLATE,
+        "metadata": {
+            "physical_executor_kind":
+                "true_optix_triangle_traversal_with_exact_f64_opening",
+        },
+    }
+    binding = native._CanonicalHierarchyColumnsOutputBinding(
+        columns=columns,
+        columns_identity=id(columns),
+        column_identities=columns.identities(),
+        output_sha256=digest,
+        point_count=len(rows),
+        selected_backend=str(endpoint["selected_backend"]),
+        selected_template=str(endpoint["selected_template"]),
+        physical_executor_kind=str(endpoint["metadata"]["physical_executor_kind"]),
+        authority_seal="",
+    )
+    binding.authority_seal = native._seal_canonical_hierarchy_columns_output(
+        binding)
+    endpoint["_canonical_columns_output_binding"] = binding
+    return endpoint
+
+
 class Goal5782CanonicalPackedHierarchyBindingTest(unittest.TestCase):
     def test_same_semantic_rows_have_stable_binding_without_json(self):
         endpoint = _bound_endpoint(_row(0), _row(1))
@@ -159,6 +210,51 @@ class Goal5782CanonicalPackedHierarchyBindingTest(unittest.TestCase):
                     hierarchy.HierarchyFrontierError, "packed_binding"):
             hierarchy._accept_hierarchy_endpoint(
                 compiled, endpoint, receipt, binding=forged)
+
+    def test_typed_columns_match_row_digest_and_are_genuinely_immutable(self):
+        rows = (_row(0), _row(1))
+        row_binding = hierarchy._bind_canonical_packed_hierarchy_endpoint(
+            _compiled(), _bound_endpoint(*rows))
+        endpoint = _bound_columns_endpoint(*rows)
+        column_binding = hierarchy._bind_canonical_packed_hierarchy_columns_endpoint(
+            _compiled(), endpoint)
+        self.assertEqual(row_binding.output_sha256, column_binding.output_sha256)
+        self.assertNotIn("rows", endpoint)
+        self.assertFalse(column_binding.columns.reducer_value_0.flags.writeable)
+        with self.assertRaises(ValueError):
+            column_binding.columns.reducer_value_0[0] = 7.0
+        with self.assertRaises(ValueError):
+            column_binding.columns.reducer_value_0.setflags(write=True)
+
+    def test_typed_columns_accept_full_contract_without_row_materialization(self):
+        compiled = _compiled()
+        endpoint = _bound_columns_endpoint(_row(0), _row(1))
+        binding = hierarchy._bind_canonical_packed_hierarchy_columns_endpoint(
+            compiled, endpoint)
+        receipt = {"receipt_sha256": "test-only"}
+        with mock.patch.object(hierarchy, "_verify_receipt") as verify:
+            result = hierarchy._accept_hierarchy_columns_endpoint(
+                compiled, endpoint, receipt, binding=binding)
+        verify.assert_called_once_with(receipt, binding.output_sha256)
+        self.assertEqual(result.point_count, 2)
+        self.assertEqual(tuple(result.reducer_value_0), (1.0, 2.0))
+        self.assertEqual(tuple(result.status_code), (0, 0))
+
+    def test_typed_columns_replay_and_endpoint_replacement_fail_closed(self):
+        endpoint = _bound_columns_endpoint(_row(0), _row(1))
+        hierarchy._bind_canonical_packed_hierarchy_columns_endpoint(
+            _compiled(), endpoint)
+        with self.assertRaisesRegex(
+            hierarchy.HierarchyFrontierError, "replayed",
+        ):
+            hierarchy._bind_canonical_packed_hierarchy_columns_endpoint(
+                _compiled(), endpoint)
+        attacked = _bound_columns_endpoint(_row(0), _row(1))
+        attacked["columns"] = _bound_columns_endpoint(
+            _row(0), _row(1))["columns"]
+        with self.assertRaises(hierarchy.HierarchyFrontierError):
+            hierarchy._bind_canonical_packed_hierarchy_columns_endpoint(
+                _compiled(), attacked)
 
 
 if __name__ == "__main__":

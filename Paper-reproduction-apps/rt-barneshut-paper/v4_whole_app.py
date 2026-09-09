@@ -10,6 +10,8 @@ import sys
 import time
 from dataclasses import dataclass
 
+import numpy as np
+
 from rtdsl import (
     aggregate_frontier_reduce_execution_contract_3d,
     aggregate_frontier_reduce_reference_3d,
@@ -78,6 +80,28 @@ def _canonical_force_rows(rows):
     } for row in rows)
 
 
+def _canonical_force_rows_from_values(values, *, force_scale: float):
+    """Project one generic scalar column to the app's frozen row contract."""
+
+    raw = np.asarray(values, dtype=np.float64)
+    scale = float(force_scale)
+    if raw.ndim != 1 or not np.isfinite(scale):
+        raise RuntimeError("malformed Barnes-Hut force projection")
+    scaled = raw * scale
+    if not np.isfinite(scaled).all():
+        raise RuntimeError("non-finite Barnes-Hut force projection")
+    canonical_values = np.empty(scaled.size, dtype=np.float64)
+    output = []
+    for source_id, value in enumerate(scaled):
+        canonical = float(format(float(value), ".9g"))
+        canonical_values[source_id] = canonical
+        output.append({"source_id": source_id, "scalar_force": canonical})
+    frozen_values = np.frombuffer(
+        canonical_values.tobytes(order="C"), dtype=np.dtype("<f8"),
+    )
+    return tuple(output), frozen_values
+
+
 FORCE_RELATIVE_TOLERANCE = 1.0e-5
 FORCE_ABSOLUTE_TOLERANCE = 1.0e-5
 
@@ -112,6 +136,50 @@ def _compare_force_rows(actual, expected):
         "mismatch_count": mismatch_count,
         "maximum_abs_delta": maximum_abs_delta,
         "maximum_rel_delta": maximum_rel_delta,
+    }
+
+
+def _force_value_column(rows):
+    values = np.empty(len(rows), dtype=np.float64)
+    for source_id, row in enumerate(rows):
+        if int(row["source_id"]) != source_id:
+            raise ValueError("force rows must be dense and source-ordered")
+        values[source_id] = float(row["scalar_force"])
+    if not np.isfinite(values).all():
+        raise ValueError("force rows must be finite")
+    return np.frombuffer(values.tobytes(order="C"), dtype=np.dtype("<f8"))
+
+
+def _compare_force_value_columns(actual_values, expected_values):
+    """Vectorized equivalent of the complete app-owned row comparator."""
+
+    actual = np.asarray(actual_values, dtype=np.float64)
+    expected = np.asarray(expected_values, dtype=np.float64)
+    if actual.ndim != 1 or expected.ndim != 1 or actual.size != expected.size:
+        return {
+            "matched": False,
+            "mismatch_count": max(int(actual.size), int(expected.size)),
+            "maximum_abs_delta": float("inf"),
+            "maximum_rel_delta": float("inf"),
+        }
+    if not np.isfinite(actual).all() or not np.isfinite(expected).all():
+        return {
+            "matched": False,
+            "mismatch_count": int(actual.size),
+            "maximum_abs_delta": float("inf"),
+            "maximum_rel_delta": float("inf"),
+        }
+    absolute = np.abs(actual - expected)
+    denominator = np.maximum(np.maximum(np.abs(actual), np.abs(expected)), 1.0)
+    relative = absolute / denominator
+    mismatch = absolute > (
+        FORCE_ABSOLUTE_TOLERANCE + FORCE_RELATIVE_TOLERANCE * denominator
+    )
+    return {
+        "matched": not bool(np.any(mismatch)),
+        "mismatch_count": int(np.count_nonzero(mismatch)),
+        "maximum_abs_delta": float(np.max(absolute, initial=0.0)),
+        "maximum_rel_delta": float(np.max(relative, initial=0.0)),
     }
 
 
@@ -222,23 +290,26 @@ class PreparedRtBarnesHutV4:
     input_sha256: str
     total_prepare_seconds: float
     frozen_expected_rows: tuple[dict[str, float | int], ...] | None = None
+    frozen_expected_values: object | None = None
 
     def execute(self, *, softening: float = 0.0):
         started = time.perf_counter()
-        executed = self.owner.execute(softening=softening)
-        actual = _canonical_force_rows(tuple({
-            "source_id": int(row["source_id"]),
-            "scalar_force": float(row["reducer_value_0"]) * self.force_scale,
-        } for row in executed.rows))
+        executed = self.owner.execute_columns(softening=softening)
+        actual, actual_values = _canonical_force_rows_from_values(
+            executed.reducer_value_0,
+            force_scale=self.force_scale,
+        )
         elapsed = time.perf_counter() - started
         # The independent CPU reference is a post-timer comparator.
-        expected = (
-            self.frozen_expected_rows
-            if self.frozen_expected_rows is not None and float(softening) == 0.0
-            else _reference_rows(
-                self.spec, softening=softening, force_scale=self.force_scale)
-        )
-        comparison = _compare_force_rows(actual, expected)
+        if self.frozen_expected_rows is not None and float(softening) == 0.0:
+            expected = self.frozen_expected_rows
+            expected_values = self.frozen_expected_values
+        else:
+            expected = _reference_rows(
+                self.spec, softening=softening, force_scale=self.force_scale,
+            )
+            expected_values = _force_value_column(expected)
+        comparison = _compare_force_value_columns(actual_values, expected_values)
         return {
             "schema": "rtdl.paper_reproduction.rt_barneshut.v4.prepared.v1",
             "input_sha256": self.input_sha256,
@@ -280,15 +351,22 @@ def prepare_v4(
     spec = data["spec"]
     compiled = compile_hierarchy_frontier(spec, _schema_for(spec))
     owner = prepare_hierarchy_frontier(compiled, spec)
+    frozen_expected_rows = (
+        tuple(data["expected_rows"]) if prepared_input is not None else None
+    )
+    frozen_expected_values = (
+        _force_value_column(frozen_expected_rows)
+        if frozen_expected_rows is not None else None
+    )
+    total_prepare_seconds = time.perf_counter() - started
     return PreparedRtBarnesHutV4(
         owner=owner,
         spec=spec,
         force_scale=float(data["force_scale"]),
         input_sha256=str(data["input_sha256"]),
-        total_prepare_seconds=time.perf_counter() - started,
-        frozen_expected_rows=(
-            tuple(data["expected_rows"]) if prepared_input is not None else None
-        ),
+        total_prepare_seconds=total_prepare_seconds,
+        frozen_expected_rows=frozen_expected_rows,
+        frozen_expected_values=frozen_expected_values,
     )
 
 

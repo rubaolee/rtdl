@@ -15,9 +15,20 @@ class _Native:
     def __init__(self, plan):
         self._library = object()
         self.calls = []
+        self.column_calls = []
         self.closed = False
 
-    def execute(self, *, softening=0.0, canonical_output_binding=False):
+    def execute(
+        self,
+        *,
+        softening=0.0,
+        canonical_output_binding=False,
+        canonical_column_output_binding=False,
+    ):
+        if canonical_column_output_binding:
+            self.column_calls.append(float(softening))
+            return {"columns": object(), "metadata": {},
+                    "partial_result_returned": False}
         if not canonical_output_binding:
             raise AssertionError("V4 prepared hierarchy must request provider binding")
         self.calls.append(float(softening))
@@ -122,6 +133,22 @@ class Goal5773PreparedHierarchyLifecycleTest(unittest.TestCase):
             self.assertIs(self.owner.execute(softening=0.125), sentinel)
         self.assertEqual(self.owner._native.calls, [0.0, 0.125])
         self.assertEqual(self.owner.lifecycle_receipt["execution_count"], 2)
+
+    def test_typed_column_call_reuses_owner_without_requesting_rows(self):
+        sentinel = object()
+        with mock.patch.object(
+            hierarchy.OptixTraversalAuditSession, "open", return_value=_Audit()
+        ), mock.patch.object(
+            hierarchy, "_bind_canonical_packed_hierarchy_columns_endpoint",
+            return_value=SimpleNamespace(output_sha256="c" * 64),
+        ), mock.patch.object(
+            hierarchy, "_accept_hierarchy_columns_endpoint",
+            return_value=sentinel,
+        ):
+            self.assertIs(self.owner.execute_columns(softening=0.25), sentinel)
+        self.assertEqual(self.owner._native.calls, [])
+        self.assertEqual(self.owner._native.column_calls, [0.25])
+        self.assertEqual(self.owner.lifecycle_receipt["execution_count"], 1)
 
     def test_close_invalidates_owner(self):
         native = self.owner._native

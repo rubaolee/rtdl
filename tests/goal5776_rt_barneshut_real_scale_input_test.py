@@ -7,6 +7,9 @@ from pathlib import Path
 import sys
 import tempfile
 import unittest
+from types import SimpleNamespace
+
+import numpy as np
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -83,6 +86,59 @@ class Goal5776RtBarnesHutRealScaleInputTest(unittest.TestCase):
         )
         self.assertFalse(result["matched"])
         self.assertEqual(result["mismatch_count"], 1)
+
+    def test_vectorized_force_comparison_matches_row_contract(self) -> None:
+        app = _load_app()
+        expected = tuple(
+            {"source_id": index, "scalar_force": value}
+            for index, value in enumerate((1.0, 10.0, 1000000.0))
+        )
+        actual = tuple(
+            {"source_id": index, "scalar_force": value}
+            for index, value in enumerate((1.00001, 10.0001, 999999.0))
+        )
+        row_comparison = app._compare_force_rows(actual, expected)
+        column_comparison = app._compare_force_value_columns(
+            app._force_value_column(actual),
+            app._force_value_column(expected),
+        )
+        self.assertEqual(row_comparison, column_comparison)
+
+    def test_prepared_app_uses_generic_typed_columns_and_returns_full_rows(self) -> None:
+        app = _load_app()
+
+        class Owner:
+            lifecycle_receipt = {"execution_count": 1}
+
+            def execute(self, **_kwargs):
+                raise AssertionError("prepared app must not request hierarchy rows")
+
+            def execute_columns(self, **_kwargs):
+                return SimpleNamespace(
+                    reducer_value_0=np.asarray([10.0, 20.0], dtype=np.float64),
+                    traversal_receipt={"provider_library_sha256": "a" * 64},
+                )
+
+            def close(self):
+                return None
+
+        expected = (
+            {"source_id": 0, "scalar_force": 1.0},
+            {"source_id": 1, "scalar_force": 2.0},
+        )
+        prepared = app.PreparedRtBarnesHutV4(
+            owner=Owner(),
+            spec=object(),
+            force_scale=0.1,
+            input_sha256="b" * 64,
+            total_prepare_seconds=1.0,
+            frozen_expected_rows=expected,
+            frozen_expected_values=app._force_value_column(expected),
+        )
+        result = prepared.execute()
+        self.assertTrue(result["matched"])
+        self.assertEqual(result["output"], expected)
+        self.assertEqual(result["mismatch_count"], 0)
 
 
 if __name__ == "__main__":
