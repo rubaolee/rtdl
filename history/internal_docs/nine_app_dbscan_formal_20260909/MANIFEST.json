@@ -1,0 +1,22 @@
+{
+  "artifacts": {
+    "adverse_predecessor_complete_bundle": {
+      "bytes": 3675726,
+      "path": "ADVERSE_PREDECESSOR_COMPLETE_BUNDLE.tar.zst",
+      "sha256": "d4a2817699c1b25075b7c1f819ccb169593355778543acb93877e50137ad0a42",
+      "source_commit": "c02eccd79d1acfd51b48a7176f8fe01581293ae8",
+      "status": "FAILED_ENGINEERING_TARGETS_RETAINED"
+    },
+    "successor_complete_bundle": {
+      "bytes": 3739655,
+      "path": "SUCCESSOR_COMPLETE_BUNDLE.tar.zst",
+      "sha256": "9a873a2eca02d14fcd5706c57c4dfd2739e6d11d930ed7df60e9580e33bbbe6f",
+      "source_commit": "30a2273353d1d128977b0ea99b9194e8af9f3e47",
+      "source_tree": "0ba8e5fbfd0b31166b6613027e2e8289ef9cb541",
+      "status": "PASS__INTERNAL_ENGINEERING_TARGETS__EXTERNAL_REVIEW_PENDING"
+    }
+  },
+  "created_date": "2026-09-09",
+  "paper_claim_authorized": false,
+  "schema": "rtdl.nine_app.dbscan.complete_evidence_manifest.v1"
+}
