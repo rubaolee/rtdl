@@ -131,6 +131,11 @@ def _prepare_rtdl(args, indexed, columns, expected: int):
         owner.bind_query_columns(point_columns=columns)
     else:
         owner.bind_query_columns(box_columns=columns)
+    query_layout = owner.lifecycle_receipt["prepared_query_layout"]
+    if query_layout != "device_f32_soa":
+        raise RuntimeError(
+            f"RTDL LibRTS requires device_f32_soa queries, observed {query_layout!r}"
+        )
 
     def execute() -> dict[str, Any]:
         result = owner.execute_count()
@@ -153,9 +158,10 @@ def _prepare_rtdl(args, indexed, columns, expected: int):
         }
 
     return owner, execute, {
-        "path": "public_v4_verified_aabb_relation_count_typed_f32_columns",
+        "path": "public_v4_verified_aabb_relation_count_device_f32_soa",
         "native_sha256": native_sha256,
         "query_gas_built": False,
+        "device_query_layout": query_layout,
     }
 
 
@@ -167,6 +173,10 @@ def _prepare_pyoptix(args, indexed, columns, expected: int):
     ptx = args.pyoptix_ptx.read_bytes()
     owner = PublicPyOptixLibRTSCountOwner.prepare(indexed, prebuilt_ptx=ptx)
     owner.bind_query_columns(operation=args.operation, columns=columns)
+    if owner.query_layout != "device_f32_soa":
+        raise RuntimeError(
+            f"PyOptiX LibRTS requires device_f32_soa queries, observed {owner.query_layout!r}"
+        )
 
     def execute() -> dict[str, Any]:
         result = owner.execute_count(
@@ -179,9 +189,10 @@ def _prepare_pyoptix(args, indexed, columns, expected: int):
         }
 
     return owner, execute, {
-        "path": "public_pyoptix_custom_aabb_typed_f32_columns",
+        "path": "public_pyoptix_custom_aabb_device_f32_soa",
         "ptx_sha256": hashlib.sha256(ptx).hexdigest(),
         "query_gas_built": False,
+        "device_query_layout": owner.query_layout,
     }
 
 

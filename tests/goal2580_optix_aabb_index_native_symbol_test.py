@@ -88,6 +88,35 @@ class OptixAabbIndexNativeSymbolTest(unittest.TestCase):
         ]
         self.assertIn("prepared_queries->d_total_hit_count.ptr", packed)
 
+    def test_typed_query_columns_remain_soa_through_optix_launch(self) -> None:
+        workloads = (ROOT / "src/native/optix/rtdl_optix_workloads.cpp").read_text(
+            encoding="utf-8"
+        )
+        prepared = workloads[
+            workloads.index("struct PreparedAabbIndexQueries2DOptix"):
+            workloads.index("static uint32_t validate_aabb_index_operation")
+        ]
+        kernel = workloads[
+            workloads.index("static const char* kAabbIndexCountKernelSrc"):
+            workloads.index("static void ensure_aabb_index_count_2d_pipeline")
+        ]
+
+        self.assertIn("bool query_columns_f32 = false", prepared)
+        for field in ("d_query_min_x", "d_query_min_y", "d_query_max_x", "d_query_max_y"):
+            self.assertIn(f"DevPtr {field}", prepared)
+        self.assertIn("query_columns_f32(true)", prepared)
+        self.assertIn("query_columns_f32(!build_query_accel)", prepared)
+        self.assertIn("upload(d_query_min_x.ptr, point_x, point_query_count)", prepared)
+        self.assertIn("upload(d_query_max_y.ptr, maximum_y, box_query_count)", prepared)
+        self.assertIn("if (params.query_columns_f32 != 0u)", kernel)
+        self.assertIn("const GpuPoint q = load_query_point(idx)", kernel)
+        self.assertIn("const GpuAabb2D q = load_query_box(idx)", kernel)
+        self.assertIn("return params.point_queries[index]", kernel)
+        self.assertIn("return params.box_queries[index]", kernel)
+        self.assertIn("point query columns contain nonfinite coordinates", prepared)
+        self.assertIn("box query columns contain nonfinite coordinates", prepared)
+        self.assertIn("box query columns contain inverted bounds", prepared)
+
     def test_contract_documents_optix_row_output_boundary(self) -> None:
         wrapper = (ROOT / "src/rtdsl/optix_runtime.py").read_text(encoding="utf-8")
         self.assertEqual(

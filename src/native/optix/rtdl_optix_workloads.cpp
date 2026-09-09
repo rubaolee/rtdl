@@ -17179,6 +17179,10 @@ struct AabbIndexQueryLaunchParams {
     OptixTraversableHandle traversable;
     const GpuPoint* point_queries;
     const GpuAabb2D* box_queries;
+    const float* query_min_x;
+    const float* query_min_y;
+    const float* query_max_x;
+    const float* query_max_y;
     const GpuAabb2D* indexed_boxes;
     unsigned long long* hit_count;
     uint32_t* query_hit_counts;
@@ -17192,6 +17196,7 @@ struct AabbIndexQueryLaunchParams {
     uint32_t collect_rows;
     uint32_t action_overlap_filter;
     uint32_t action_overlap_boundary;
+    uint32_t query_columns_f32;
     float minimum_overlap_area;
 };
 
@@ -17263,6 +17268,10 @@ struct AabbIndexQueryLaunchParams {
     OptixTraversableHandle traversable;
     const GpuPoint* point_queries;
     const GpuAabb2D* box_queries;
+    const float* query_min_x;
+    const float* query_min_y;
+    const float* query_max_x;
+    const float* query_max_y;
     const GpuAabb2D* indexed_boxes;
     unsigned long long* hit_count;
     uint32_t* query_hit_counts;
@@ -17276,6 +17285,7 @@ struct AabbIndexQueryLaunchParams {
     uint32_t collect_rows;
     uint32_t action_overlap_filter;
     uint32_t action_overlap_boundary;
+    uint32_t query_columns_f32;
     float minimum_overlap_area;
 };
 
@@ -17294,6 +17304,25 @@ static __forceinline__ __device__ bool box_contains_box(const GpuAabb2D& box, co
         && box.min_y <= query.min_y
         && box.max_x >= query.max_x
         && box.max_y >= query.max_y;
+}
+
+static __forceinline__ __device__ GpuPoint load_query_point(uint32_t index) {
+    if (params.query_columns_f32 != 0u) {
+        GpuPoint result = {
+            params.query_min_x[index], params.query_min_y[index], index, 0u};
+        return result;
+    }
+    return params.point_queries[index];
+}
+
+static __forceinline__ __device__ GpuAabb2D load_query_box(uint32_t index) {
+    if (params.query_columns_f32 != 0u) {
+        GpuAabb2D result = {
+            params.query_min_x[index], params.query_min_y[index],
+            params.query_max_x[index], params.query_max_y[index], index};
+        return result;
+    }
+    return params.box_queries[index];
 }
 
 static __forceinline__ __device__ bool segment_intersects_box(
@@ -17372,12 +17401,12 @@ extern "C" __global__ void __raygen__aabb_index_query() {
     float y = 0.0f;
     if (params.operation == 1u) {
         if (idx >= params.point_query_count) return;
-        const GpuPoint q = params.point_queries[idx];
+        const GpuPoint q = load_query_point(idx);
         x = q.x;
         y = q.y;
     } else if (params.operation == 2u) {
         if (idx >= params.box_query_count) return;
-        const GpuAabb2D q = params.box_queries[idx];
+        const GpuAabb2D q = load_query_box(idx);
         x = 0.5f * (q.min_x + q.max_x);
         y = 0.5f * (q.min_y + q.max_y);
     } else if (params.operation == 3u) {
@@ -17417,11 +17446,11 @@ extern "C" __global__ void __intersection__aabb_index_exact() {
     }
     if (params.operation == 1u) {
         const GpuAabb2D indexed = params.indexed_boxes[prim];
-        const GpuPoint query = params.point_queries[qidx];
+        const GpuPoint query = load_query_point(qidx);
         accept = box_contains_point(indexed, query.x, query.y);
     } else if (params.operation == 2u) {
         const GpuAabb2D indexed = params.indexed_boxes[prim];
-        const GpuAabb2D query = params.box_queries[qidx];
+        const GpuAabb2D query = load_query_box(qidx);
         accept = box_contains_box(indexed, query);
     } else if (params.operation == 3u) {
         if (params.intersect_pass == 0u) {
@@ -17473,7 +17502,7 @@ extern "C" __global__ void __anyhit__aabb_index_count() {
         const uint32_t qidx = optixGetPayload_0();
         RtdlAabbPairRow row;
         if (params.operation == 1u) {
-            row.query_id = params.point_queries[qidx].id;
+            row.query_id = load_query_point(qidx).id;
             row.indexed_id = params.indexed_boxes[prim].id;
         } else if (params.operation == 3u && params.intersect_pass == 0u) {
             row.query_id = params.box_queries[qidx].id;
@@ -17725,8 +17754,13 @@ struct PreparedAabbIndexQueries2DOptix {
     uint32_t operation = 0;
     size_t query_count = 0;
     bool range_intersects_ready = false;
+    bool query_columns_f32 = false;
     DevPtr d_point_queries;
     DevPtr d_box_queries;
+    DevPtr d_query_min_x;
+    DevPtr d_query_min_y;
+    DevPtr d_query_max_x;
+    DevPtr d_query_max_y;
     DevPtr d_query_hit_counts;
     DevPtr d_total_hit_count;
     DevPtr d_launch_params;
@@ -17738,8 +17772,13 @@ struct PreparedAabbIndexQueries2DOptix {
         : operation(kAabbIndexOpPointContains),
           query_count(point_query_count),
           range_intersects_ready(false),
+          query_columns_f32(false),
           d_point_queries(sizeof(GpuPoint) * point_query_count),
           d_box_queries(0),
+          d_query_min_x(0),
+          d_query_min_y(0),
+          d_query_max_x(0),
+          d_query_max_y(0),
           d_query_hit_counts(sizeof(uint32_t) * point_query_count),
           d_total_hit_count(sizeof(unsigned long long)),
           d_launch_params(sizeof(AabbIndexQueryLaunchParams)),
@@ -17763,8 +17802,13 @@ struct PreparedAabbIndexQueries2DOptix {
         : operation(kAabbIndexOpPointContains),
           query_count(point_query_count),
           range_intersects_ready(false),
-          d_point_queries(sizeof(GpuPoint) * point_query_count),
+          query_columns_f32(true),
+          d_point_queries(0),
           d_box_queries(0),
+          d_query_min_x(sizeof(float) * point_query_count),
+          d_query_min_y(sizeof(float) * point_query_count),
+          d_query_max_x(0),
+          d_query_max_y(0),
           d_query_hit_counts(sizeof(uint32_t) * point_query_count),
           d_total_hit_count(sizeof(unsigned long long)),
           d_launch_params(sizeof(AabbIndexQueryLaunchParams)),
@@ -17776,13 +17820,12 @@ struct PreparedAabbIndexQueries2DOptix {
         if (point_query_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
             throw std::runtime_error("point_query_count exceeds uint32 launch limit");
         if (point_query_count == 0) return;
-        std::vector<GpuPoint> gpu_points(point_query_count);
         for (size_t i = 0; i < point_query_count; ++i) {
             if (!std::isfinite(point_x[i]) || !std::isfinite(point_y[i]))
                 throw std::runtime_error("point query columns contain nonfinite coordinates");
-            gpu_points[i] = {point_x[i], point_y[i], static_cast<uint32_t>(i), 0u};
         }
-        upload(d_point_queries.ptr, gpu_points.data(), gpu_points.size());
+        upload(d_query_min_x.ptr, point_x, point_query_count);
+        upload(d_query_min_y.ptr, point_y, point_query_count);
     }
 
     PreparedAabbIndexQueries2DOptix(
@@ -17791,8 +17834,13 @@ struct PreparedAabbIndexQueries2DOptix {
         : operation(kAabbIndexOpRangeContains),
           query_count(box_query_count),
           range_intersects_ready(true),
+          query_columns_f32(false),
           d_point_queries(0),
           d_box_queries(sizeof(GpuAabb2D) * box_query_count),
+          d_query_min_x(0),
+          d_query_min_y(0),
+          d_query_max_x(0),
+          d_query_max_y(0),
           d_query_hit_counts(sizeof(uint32_t) * box_query_count),
           d_total_hit_count(sizeof(unsigned long long)),
           d_launch_params(sizeof(AabbIndexQueryLaunchParams)),
@@ -17823,8 +17871,13 @@ struct PreparedAabbIndexQueries2DOptix {
         : operation(kAabbIndexOpRangeContains),
           query_count(box_query_count),
           range_intersects_ready(build_query_accel),
+          query_columns_f32(!build_query_accel),
           d_point_queries(0),
-          d_box_queries(sizeof(GpuAabb2D) * box_query_count),
+          d_box_queries(build_query_accel ? sizeof(GpuAabb2D) * box_query_count : 0),
+          d_query_min_x(build_query_accel ? 0 : sizeof(float) * box_query_count),
+          d_query_min_y(build_query_accel ? 0 : sizeof(float) * box_query_count),
+          d_query_max_x(build_query_accel ? 0 : sizeof(float) * box_query_count),
+          d_query_max_y(build_query_accel ? 0 : sizeof(float) * box_query_count),
           d_query_hit_counts(sizeof(uint32_t) * box_query_count),
           d_total_hit_count(sizeof(unsigned long long)),
           d_launch_params(sizeof(AabbIndexQueryLaunchParams)),
@@ -17837,9 +17890,12 @@ struct PreparedAabbIndexQueries2DOptix {
         if (box_query_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
             throw std::runtime_error("box_query_count exceeds uint32 launch limit");
         if (box_query_count == 0) return;
-        std::vector<GpuAabb2D> gpu_boxes(box_query_count);
+        std::vector<GpuAabb2D> gpu_boxes;
         std::vector<OptixAabb> aabbs;
-        if (build_query_accel) aabbs.resize(box_query_count);
+        if (build_query_accel) {
+            gpu_boxes.resize(box_query_count);
+            aabbs.resize(box_query_count);
+        }
         for (size_t i = 0; i < box_query_count; ++i) {
             const float values[4] = {
                 minimum_x[i], minimum_y[i], maximum_x[i], maximum_y[i]};
@@ -17849,15 +17905,22 @@ struct PreparedAabbIndexQueries2DOptix {
             }
             if (maximum_x[i] < minimum_x[i] || maximum_y[i] < minimum_y[i])
                 throw std::runtime_error("box query columns contain inverted bounds");
-            gpu_boxes[i] = {
-                minimum_x[i], minimum_y[i], maximum_x[i], maximum_y[i],
-                static_cast<uint32_t>(i)};
-            if (build_query_accel)
+            if (build_query_accel) {
+                gpu_boxes[i] = {
+                    minimum_x[i], minimum_y[i], maximum_x[i], maximum_y[i],
+                    static_cast<uint32_t>(i)};
                 aabbs[i] = optix_aabb_for_gpu_box(gpu_boxes[i]);
+            }
         }
-        upload(d_box_queries.ptr, gpu_boxes.data(), gpu_boxes.size());
-        if (build_query_accel)
+        if (build_query_accel) {
+            upload(d_box_queries.ptr, gpu_boxes.data(), gpu_boxes.size());
             accel = build_custom_accel(get_optix_context(), aabbs);
+        } else {
+            upload(d_query_min_x.ptr, minimum_x, box_query_count);
+            upload(d_query_min_y.ptr, minimum_y, box_query_count);
+            upload(d_query_max_x.ptr, maximum_x, box_query_count);
+            upload(d_query_max_y.ptr, maximum_y, box_query_count);
+        }
     }
 };
 
@@ -17926,7 +17989,12 @@ static void launch_aabb_index_count_pass_optix(
         bool action_overlap_filter = false,
         float minimum_overlap_area = 0.0f,
         uint32_t action_overlap_boundary = 1u,
-        CUdeviceptr d_params_scratch = 0)
+        CUdeviceptr d_params_scratch = 0,
+        CUdeviceptr d_query_min_x = 0,
+        CUdeviceptr d_query_min_y = 0,
+        CUdeviceptr d_query_max_x = 0,
+        CUdeviceptr d_query_max_y = 0,
+        bool query_columns_f32 = false)
 {
     ensure_aabb_index_count_2d_pipeline();
 
@@ -17936,6 +18004,10 @@ static void launch_aabb_index_count_pass_optix(
     lp.traversable = traversable;
     lp.point_queries = reinterpret_cast<const GpuPoint*>(d_point_queries);
     lp.box_queries = reinterpret_cast<const GpuAabb2D*>(d_box_queries);
+    lp.query_min_x = reinterpret_cast<const float*>(d_query_min_x);
+    lp.query_min_y = reinterpret_cast<const float*>(d_query_min_y);
+    lp.query_max_x = reinterpret_cast<const float*>(d_query_max_x);
+    lp.query_max_y = reinterpret_cast<const float*>(d_query_max_y);
     lp.indexed_boxes = reinterpret_cast<const GpuAabb2D*>(d_indexed_boxes);
     lp.hit_count = reinterpret_cast<unsigned long long*>(d_hit_count);
     lp.query_hit_counts = reinterpret_cast<uint32_t*>(d_query_hit_counts);
@@ -17949,6 +18021,7 @@ static void launch_aabb_index_count_pass_optix(
     lp.collect_rows = collect_rows ? 1u : 0u;
     lp.action_overlap_filter = action_overlap_filter ? 1u : 0u;
     lp.action_overlap_boundary = action_overlap_boundary;
+    lp.query_columns_f32 = query_columns_f32 ? 1u : 0u;
     lp.minimum_overlap_area = minimum_overlap_area;
 
     std::unique_ptr<DevPtr> owned_params;
@@ -17983,7 +18056,12 @@ static void launch_aabb_index_count_pass_optix_async(
         CUdeviceptr d_hit_count,
         CUdeviceptr d_query_hit_counts,
         CUstream stream,
-        std::vector<std::unique_ptr<DevPtr>>& live_params)
+        std::vector<std::unique_ptr<DevPtr>>& live_params,
+        CUdeviceptr d_query_min_x = 0,
+        CUdeviceptr d_query_min_y = 0,
+        CUdeviceptr d_query_max_x = 0,
+        CUdeviceptr d_query_max_y = 0,
+        bool query_columns_f32 = false)
 {
     ensure_aabb_index_count_2d_pipeline();
     if (launch_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
@@ -17993,6 +18071,10 @@ static void launch_aabb_index_count_pass_optix_async(
     lp.traversable = traversable;
     lp.point_queries = reinterpret_cast<const GpuPoint*>(d_point_queries);
     lp.box_queries = reinterpret_cast<const GpuAabb2D*>(d_box_queries);
+    lp.query_min_x = reinterpret_cast<const float*>(d_query_min_x);
+    lp.query_min_y = reinterpret_cast<const float*>(d_query_min_y);
+    lp.query_max_x = reinterpret_cast<const float*>(d_query_max_x);
+    lp.query_max_y = reinterpret_cast<const float*>(d_query_max_y);
     lp.indexed_boxes = reinterpret_cast<const GpuAabb2D*>(d_indexed_boxes);
     lp.hit_count = reinterpret_cast<unsigned long long*>(d_hit_count);
     lp.query_hit_counts = reinterpret_cast<uint32_t*>(d_query_hit_counts);
@@ -18006,6 +18088,7 @@ static void launch_aabb_index_count_pass_optix_async(
     lp.collect_rows = 0u;
     lp.action_overlap_filter = 0u;
     lp.action_overlap_boundary = 1u;
+    lp.query_columns_f32 = query_columns_f32 ? 1u : 0u;
     lp.minimum_overlap_area = 0.0f;
 
     auto d_params = std::make_unique<DevPtr>(sizeof(AabbIndexQueryLaunchParams));
@@ -18042,7 +18125,12 @@ static void count_prepared_aabb_index_2d_device_optix(
         size_t* hit_count_out,
         CUdeviceptr d_query_hit_counts_scratch = 0,
         CUdeviceptr d_launch_params_scratch = 0,
-        CUdeviceptr d_total_hit_count_scratch = 0)
+        CUdeviceptr d_total_hit_count_scratch = 0,
+        CUdeviceptr d_query_min_x = 0,
+        CUdeviceptr d_query_min_y = 0,
+        CUdeviceptr d_query_max_x = 0,
+        CUdeviceptr d_query_max_y = 0,
+        bool query_columns_f32 = false)
 {
     require_prepared_aabb_index_2d_valid(prepared);
     if (!hit_count_out) throw std::runtime_error("hit_count_out must not be null");
@@ -18052,15 +18140,28 @@ static void count_prepared_aabb_index_2d_device_optix(
         throw std::runtime_error("range_intersects requires prepared box queries with a query GAS");
     if (prepared->box_count == 0) return;
     if (operation == kAabbIndexOpPointContains) {
-        if (!d_point_queries && point_query_count != 0)
-            throw std::runtime_error("device point query buffer must not be null when point_query_count is nonzero");
+        if (query_columns_f32) {
+            if ((!d_query_min_x || !d_query_min_y) && point_query_count != 0)
+                throw std::runtime_error(
+                    "device point query columns must not be null when point_query_count is nonzero");
+        } else if (!d_point_queries && point_query_count != 0) {
+            throw std::runtime_error(
+                "device point query buffer must not be null when point_query_count is nonzero");
+        }
         if (point_query_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
             throw std::runtime_error("point_query_count exceeds uint32 launch limit");
         if (point_query_count == 0) return;
     }
     if (operation == kAabbIndexOpRangeContains) {
-        if (!d_box_queries && box_query_count != 0)
-            throw std::runtime_error("device box query buffer must not be null when box_query_count is nonzero");
+        if (query_columns_f32) {
+            if ((!d_query_min_x || !d_query_min_y || !d_query_max_x || !d_query_max_y)
+                    && box_query_count != 0)
+                throw std::runtime_error(
+                    "device box query columns must not be null when box_query_count is nonzero");
+        } else if (!d_box_queries && box_query_count != 0) {
+            throw std::runtime_error(
+                "device box query buffer must not be null when box_query_count is nonzero");
+        }
         if (box_query_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
             throw std::runtime_error("box_query_count exceeds uint32 launch limit");
         if (box_query_count == 0) return;
@@ -18096,7 +18197,12 @@ static void count_prepared_aabb_index_2d_device_optix(
         false,
         0.0f,
         1u,
-        d_launch_params_scratch);
+        d_launch_params_scratch,
+        d_query_min_x,
+        d_query_min_y,
+        d_query_max_x,
+        d_query_max_y,
+        query_columns_f32);
 
     const unsigned long long count = d_total_hit_count_scratch
         ? reduce_device_u32_sum_u64(
@@ -18254,7 +18360,12 @@ static void count_prepared_aabb_index_2d_packed_queries_optix(
         hit_count_out,
         prepared_queries->d_query_hit_counts.ptr,
         prepared_queries->d_launch_params.ptr,
-        prepared_queries->d_total_hit_count.ptr);
+        prepared_queries->d_total_hit_count.ptr,
+        prepared_queries->d_query_min_x.ptr,
+        prepared_queries->d_query_min_y.ptr,
+        prepared_queries->d_query_max_x.ptr,
+        prepared_queries->d_query_max_y.ptr,
+        prepared_queries->query_columns_f32);
 }
 
 static unsigned long long count_prepared_aabb_index_2d_with_scratch_optix(
@@ -18349,7 +18460,12 @@ static void count_prepared_aabb_index_2d_multi_operation_packed_queries_optix(
                 0,
                 d_point_counts->ptr,
                 stream,
-                live_params);
+                live_params,
+                prepared_point_queries->d_query_min_x.ptr,
+                prepared_point_queries->d_query_min_y.ptr,
+                prepared_point_queries->d_query_max_x.ptr,
+                prepared_point_queries->d_query_max_y.ptr,
+                prepared_point_queries->query_columns_f32);
         }
 
         if (prepared_box_queries && box_query_count != 0) {

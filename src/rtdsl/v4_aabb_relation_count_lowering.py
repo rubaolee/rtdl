@@ -173,7 +173,7 @@ class PreparedVerifiedAabbRelationCountV4:
                 enable_range_intersects=enable_range_intersects,
             )
         self._prepared_queries = prepared
-        self._prepared_query_layout = "typed_f32_columns"
+        self._prepared_query_layout = prepared.device_layout
 
     def _guard(self) -> None:
         if self._closed:

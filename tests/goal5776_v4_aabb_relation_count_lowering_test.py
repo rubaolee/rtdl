@@ -99,7 +99,11 @@ class Goal5776AabbRelationCountLoweringTest(unittest.TestCase):
         owner._authority = SimpleNamespace(
             algebra=AabbCountAlgebra.RANGE_CONTAINS
         )
-        prepared = SimpleNamespace(count=3, operation="range_contains")
+        prepared = SimpleNamespace(
+            count=3,
+            operation="range_contains",
+            device_layout="device_f32_soa",
+        )
         columns = {
             "min_x": np.asarray([0.0, 1.0, 2.0], dtype=np.float32),
             "min_y": np.asarray([0.0, 1.0, 2.0], dtype=np.float32),
@@ -118,7 +122,7 @@ class Goal5776AabbRelationCountLoweringTest(unittest.TestCase):
             enable_range_intersects=False,
         )
         self.assertIs(owner._prepared_queries, prepared)
-        self.assertEqual(owner._prepared_query_layout, "typed_f32_columns")
+        self.assertEqual(owner._prepared_query_layout, "device_f32_soa")
 
     def test_typed_column_binding_rejects_algebra_mismatch(self):
         owner = object.__new__(PreparedVerifiedAabbRelationCountV4)

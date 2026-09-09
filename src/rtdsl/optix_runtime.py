@@ -16650,6 +16650,7 @@ class PreparedOptixAabbQueries2D:
             symbol_name = "rtdl_optix_prepare_aabb_point_queries_2d"
             args = (packed.records, packed.count)
             self.range_intersects_ready = False
+            self.device_layout = "device_packed_aos"
         else:
             packed = pack_aabbs_2d(box_queries)
             self.operation = "range_contains"
@@ -16657,6 +16658,7 @@ class PreparedOptixAabbQueries2D:
             symbol_name = "rtdl_optix_prepare_aabb_box_queries_2d"
             args = (packed.records, packed.count)
             self.range_intersects_ready = True
+            self.device_layout = "device_packed_aos_with_query_accel"
 
         lib = _load_optix_library()
         prepare_symbol = _find_optional_backend_symbol(lib, symbol_name)
@@ -16695,14 +16697,6 @@ class PreparedOptixAabbQueries2D:
             raise ValueError("prepared AABB query columns must have equal lengths")
         if count > 0xFFFFFFFF:
             raise ValueError("prepared AABB query count exceeds the U32 launch limit")
-        if any(not bool(np.isfinite(array).all()) for array in arrays):
-            raise ValueError("prepared AABB query columns contain nonfinite values")
-        if operation == "range_contains" and (
-            bool((arrays[2] < arrays[0]).any())
-            or bool((arrays[3] < arrays[1]).any())
-        ):
-            raise ValueError("prepared AABB box query columns contain inverted bounds")
-
         self = cls.__new__(cls)
         self._handle = ctypes.c_void_p()
         self._closed = False
@@ -16710,6 +16704,11 @@ class PreparedOptixAabbQueries2D:
         self.count = count
         self.range_intersects_ready = (
             operation == "range_contains" and bool(build_query_accel)
+        )
+        self.device_layout = (
+            "device_packed_aos_with_query_accel"
+            if build_query_accel
+            else "device_f32_soa"
         )
         symbol_name = (
             "rtdl_optix_prepare_aabb_point_query_columns_f32_2d"

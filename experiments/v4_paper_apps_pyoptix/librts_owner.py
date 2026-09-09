@@ -346,7 +346,7 @@ class PublicPyOptixLibRTSCountOwner:
         self.stream.synchronize()
         self.query_operation = operation
         self.query_count = query_count
-        self.query_layout = "typed_f32_columns"
+        self.query_layout = "device_f32_soa"
 
     def execute_count(
         self,
