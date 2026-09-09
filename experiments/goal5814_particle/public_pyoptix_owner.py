@@ -505,7 +505,7 @@ class PublicPyOptixParticleOwner:
             control_device: Any,
             params_device: Any,
             stream: Any,
-            host_queries: np.ndarray,
+            host_queries: np.ndarray | None,
             host_output: np.ndarray,
             host_output_rows: np.ndarray,
             host_control: np.ndarray,
@@ -613,9 +613,9 @@ class PublicPyOptixParticleOwner:
             runtime, PARTICLE_PARAM_DTYPE.itemsize, counts)
 
         pinned_keepalive: list[Any] = []
-        host_queries = cls._pinned_array(
-            runtime, (7, shape.query_count), np.float32,
-            pinned_keepalive, counts)
+        # Prepared immutable columns can upload directly.  Allocate mutable
+        # caller staging lazily only for the compatibility SoA entry point.
+        host_queries = None
         host_output = cls._pinned_array(
             runtime, (3, shape.query_count), np.uint32,
             pinned_keepalive, counts)
@@ -980,7 +980,8 @@ class PublicPyOptixParticleOwner:
 
     def _execute_exact_core_locked(
             self, query_columns: tuple[np.ndarray, ...] | None,
-            expected: np.ndarray) -> ParticleExactCoreCompletion:
+            expected: np.ndarray, *, immutable_query_columns: bool = False,
+            ) -> ParticleExactCoreCompletion:
         if self._closed:
             raise RuntimeError("Goal5814 Particle owner is closed")
         query_count = self.shape.query_count
@@ -990,12 +991,20 @@ class PublicPyOptixParticleOwner:
         counts = ParticleExecutionCounters()
         if query_columns is not None:
             query_stride = query_count * np.dtype(np.float32).itemsize
+            if not immutable_query_columns and self.host_queries is None:
+                self.host_queries = self._pinned_array(
+                    self.runtime, (7, query_count), np.float32,
+                    self.pinned_keepalive, counts)
             for column_index, column in enumerate(query_columns):
-                np.copyto(self.host_queries[column_index], column, casting="no")
+                source = column
+                if not immutable_query_columns:
+                    np.copyto(
+                        self.host_queries[column_index], column, casting="no")
+                    source = self.host_queries[column_index]
                 self._enqueue_h2d(
                     int(self.query_columns_device.ptr)
                     + column_index * query_stride,
-                    self.host_queries[column_index], query_stride, counts,
+                    source, query_stride, counts,
                     kind="query")
 
         self.host_control[0] = (
@@ -1082,7 +1091,8 @@ class PublicPyOptixParticleOwner:
 
         with self._execution_lock:
             columns, expected = self._require_prevalidated_input(value)
-            return self._execute_exact_core_locked(columns, expected)
+            return self._execute_exact_core_locked(
+                columns, expected, immutable_query_columns=True)
 
     def prepare_exact_core_prevalidated(
             self, value: PrevalidatedParticleExecutionInput,
@@ -1097,11 +1107,10 @@ class PublicPyOptixParticleOwner:
             query_stride = self.shape.query_count \
                 * np.dtype(np.float32).itemsize
             for column_index, column in enumerate(columns):
-                np.copyto(self.host_queries[column_index], column, casting="no")
                 self._enqueue_h2d(
                     int(self.query_columns_device.ptr)
                     + column_index * query_stride,
-                    self.host_queries[column_index], query_stride, counts,
+                    column, query_stride, counts,
                     kind="query")
             self.stream.synchronize()
             counts.explicit_stream_sync_call_count += 1

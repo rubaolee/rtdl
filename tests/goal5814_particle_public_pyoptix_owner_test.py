@@ -289,7 +289,8 @@ class Goal5814ParticlePublicPyOptixOwnerTest(unittest.TestCase):
         self.assertEqual(counts.stream_creation_call_count, 1)
         self.assertEqual(counts.raw_device_allocation_call_count, 13)
         self.assertEqual(counts.h2d_copy_call_count, 7)
-        self.assertEqual(counts.pinned_host_allocation_call_count, 4)
+        self.assertEqual(counts.pinned_host_allocation_call_count, 3)
+        self.assertIsNone(owner.host_queries)
         build = fake_optix.context.build_input
         self.assertEqual(build.vertexFormat, fake_optix.VERTEX_FORMAT_FLOAT3)
         self.assertEqual(build.vertexStrideInBytes, 12)
@@ -316,6 +317,8 @@ class Goal5814ParticlePublicPyOptixOwnerTest(unittest.TestCase):
         self.assertEqual(result.control, (3, 0xFFFFFFFF, 0, 0))
         counts = result.operation_counts
         self.assertEqual(counts.raw_device_allocation_call_count, 0)
+        self.assertEqual(counts.pinned_host_allocation_call_count, 1)
+        self.assertIsNotNone(owner.host_queries)
         self.assertEqual(counts.query_h2d_copy_call_count, 7)
         self.assertEqual(
             counts.query_h2d_bytes, sum(column.nbytes for column in columns))
@@ -465,6 +468,8 @@ class Goal5814ParticlePublicPyOptixOwnerTest(unittest.TestCase):
             sum(column.nbytes for column in admitted.columns),
         )
         self.assertEqual(prepare_counts.explicit_stream_sync_call_count, 1)
+        self.assertEqual(prepare_counts.pinned_host_allocation_call_count, 0)
+        self.assertIsNone(owner.host_queries)
 
         completion = owner.execute_prepared_exact_core(resident)
         result = owner.materialize_exact_core_completion(completion)
