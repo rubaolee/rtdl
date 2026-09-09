@@ -30,6 +30,13 @@ from experiments.v4_paper_apps_pyoptix.particle_adapter import (
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def validate_repetition_counts(*, warmups: int, samples: int) -> None:
+    if warmups < 0:
+        raise ValueError("warmups must be nonnegative")
+    if samples < 1:
+        raise ValueError("samples must be positive")
+
+
 def _sha(path: Path) -> str:
     digest = hashlib.sha256()
     with path.open("rb") as stream:
@@ -242,8 +249,10 @@ def main() -> int:
     parser.add_argument("--warmups", type=int, default=2)
     parser.add_argument("--samples", type=int, default=12)
     args = parser.parse_args()
-    if args.warmups < 1 or args.samples < 1:
-        parser.error("warmups and samples must be positive")
+    try:
+        validate_repetition_counts(warmups=args.warmups, samples=args.samples)
+    except ValueError as error:
+        parser.error(str(error))
     if args.arm == "rtdl" and any(
         value is None for value in (args.native, args.optix_include, args.cuda_include)
     ):

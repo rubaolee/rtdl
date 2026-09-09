@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import ast
 import importlib.util
 import json
 from pathlib import Path
@@ -10,6 +11,7 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "scripts/nine_app_authored_particle_formal_compare.py"
+WORKER_SCRIPT = ROOT / "scripts/v4_authored_particle_worker.py"
 
 
 def _load():
@@ -23,10 +25,26 @@ def _load():
     return module
 
 
+def _load_worker_repetition_validator():
+    tree = ast.parse(WORKER_SCRIPT.read_text(encoding="utf-8"))
+    function = next(
+        node
+        for node in tree.body
+        if isinstance(node, ast.FunctionDef)
+        and node.name == "validate_repetition_counts"
+    )
+    namespace: dict[str, object] = {}
+    exec(compile(ast.Module(body=[function], type_ignores=[]), WORKER_SCRIPT,
+                 "exec"), namespace)
+    return namespace["validate_repetition_counts"]
+
+
 class NineAppAuthoredParticleFormalProtocolTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.protocol = _load()
+        cls.worker_repetition_validator = staticmethod(
+            _load_worker_repetition_validator())
 
     def test_schedule_has_eight_balanced_fresh_process_pairs(self):
         self.assertEqual(len(self.protocol.ORDERS), 8)
@@ -134,6 +152,14 @@ class NineAppAuthoredParticleFormalProtocolTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.protocol.validate_worker(
                 prereg, bad_lifecycle, "pyoptix", warmups=1, samples=3)
+
+    def test_lifecycle_worker_allows_zero_warmups(self):
+        validate = self.worker_repetition_validator
+        validate(warmups=0, samples=1)
+        with self.assertRaisesRegex(ValueError, "warmups must be nonnegative"):
+            validate(warmups=-1, samples=1)
+        with self.assertRaisesRegex(ValueError, "samples must be positive"):
+            validate(warmups=0, samples=0)
 
 
 if __name__ == "__main__":
