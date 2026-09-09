@@ -6851,7 +6851,9 @@ void union_grouped_min_root(int* parent, int left, int right) {
         }
         const int high = left_root > right_root ? left_root : right_root;
         const int low = left_root > right_root ? right_root : left_root;
-        const int old = atomicMin(parent + high, low);
+        // Do not overwrite a parent edge installed by another union.  A
+        // failed CAS recomputes both roots and preserves every accepted edge.
+        const int old = atomicCAS(parent + high, high, low);
         if (old == high) {
             return;
         }
@@ -6875,7 +6877,7 @@ void union_grouped_min_root_with_telemetry(
         if (telemetry_out && 0u < params.telemetry_count) {
             atomicAdd(telemetry_out + 0, 1ull);
         }
-        const int old = atomicMin(parent + high, low);
+        const int old = atomicCAS(parent + high, high, low);
         if (old == high) {
             if (telemetry_out && 1u < params.telemetry_count) {
                 atomicAdd(telemetry_out + 1, 1ull);

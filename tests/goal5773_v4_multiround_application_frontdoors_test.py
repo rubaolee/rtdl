@@ -98,6 +98,7 @@ class Goal5773MultiRoundApplicationFrontdoorsTest(unittest.TestCase):
             return {
                 "canonical_component_labels": (marker, marker),
                 "core_flags": (True, False),
+                "neighbor_counts": (min_points, min_points - 1),
             }
 
         app = SimpleNamespace(_expected_from_points=expected)

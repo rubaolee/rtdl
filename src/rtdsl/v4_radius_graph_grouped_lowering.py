@@ -59,7 +59,7 @@ class OptimizedRadiusGraphComponentsResult:
     callback_ptx_sha256: str
     exact_edge_count: int
     physical_lowering: str = (
-        "canonical_v4_spatial_emit_to_prepared_optix_grouped_union_numba_v1")
+        "canonical_v4_spatial_emit_to_prepared_optix_grouped_union_numba_v2")
 
 
 class PreparedVerifiedRadiusGraphGroupedV4:
@@ -74,6 +74,7 @@ class PreparedVerifiedRadiusGraphGroupedV4:
         points: np.ndarray,
         radius: float,
         native_library_path: str | Path,
+        boundary_assignment_policy: str = "single_pass_candidate_root_rebased",
     ) -> None:
         if not isinstance(authority, VerifiedMultiRoundSpatialAuthority):
             raise TypeError("verified multi-round authority is required")
@@ -92,6 +93,12 @@ class PreparedVerifiedRadiusGraphGroupedV4:
         radius = float(np.float32(radius))
         if not np.isfinite(radius) or radius <= 0.0:
             raise ValueError("positive finite radius is required")
+        if boundary_assignment_policy not in (
+            "single_pass_candidate_root_rebased",
+            "lowest_candidate_then_root",
+            "lowest_component_root_two_pass",
+        ):
+            raise ValueError("unsupported grouped boundary-assignment policy")
         native_path = Path(native_library_path).resolve()
         if not native_path.is_file():
             raise FileNotFoundError(native_path)
@@ -109,6 +116,7 @@ class PreparedVerifiedRadiusGraphGroupedV4:
         self._native_sha256 = _file_sha256(native_path)
         self._points = point_values
         self._radius = radius
+        self._boundary_assignment_policy = boundary_assignment_policy
         rows = tuple(Point3D(
             id=index, x=float(row[0]), y=float(row[1]), z=float(row[2]))
             for index, row in enumerate(point_values))
@@ -118,7 +126,11 @@ class PreparedVerifiedRadiusGraphGroupedV4:
         self._library = _load_optix_library()
         self._prepared = (
             prepare_optix_numba_radius_graph_grouped_stream_continuation_3d(
-                rows, radius=radius, partner="numba"))
+                rows,
+                radius=radius,
+                partner="numba",
+                boundary_assignment_policy=boundary_assignment_policy,
+            ))
         self._closed = False
         self._owner_pid = os.getpid()
         self._owner_thread = threading.get_ident()
@@ -130,7 +142,8 @@ class PreparedVerifiedRadiusGraphGroupedV4:
             "points": hashlib.sha256(point_values.tobytes()).hexdigest(),
             "radius_f32": float(np.float32(radius)),
             "physical_lowering": (
-                "canonical_v4_spatial_emit_to_prepared_optix_grouped_union_numba_v1"),
+                "canonical_v4_spatial_emit_to_prepared_optix_grouped_union_numba_v2"),
+            "boundary_assignment_policy": boundary_assignment_policy,
         })
 
     def _guard(self) -> None:
@@ -150,7 +163,8 @@ class PreparedVerifiedRadiusGraphGroupedV4:
             "callback_ptx_sha256": self._callback_ptx_sha256,
             "native_library_sha256": self._native_sha256,
             "physical_lowering": (
-                "canonical_v4_spatial_emit_to_prepared_optix_grouped_union_numba_v1"),
+                "canonical_v4_spatial_emit_to_prepared_optix_grouped_union_numba_v2"),
+            "boundary_assignment_policy": self._boundary_assignment_policy,
             "execution_count": self._execution_count,
             "process_bound": True,
             "thread_bound": True,
@@ -211,7 +225,8 @@ class PreparedVerifiedRadiusGraphGroupedV4:
                     "native": self._native_sha256,
                     "callback_ptx": self._callback_ptx_sha256,
                     "physical_lowering": (
-                        "canonical_v4_spatial_emit_to_prepared_optix_grouped_union_numba_v1"),
+                        "canonical_v4_spatial_emit_to_prepared_optix_grouped_union_numba_v2"),
+                    "boundary_assignment_policy": self._boundary_assignment_policy,
                 }),
                 output_digest=output_sha,
                 route_identity=(
@@ -261,13 +276,15 @@ def prepare_verified_radius_graph_grouped_v4(
     points: np.ndarray,
     radius: float,
     native_library_path: str | Path,
+    boundary_assignment_policy: str = "single_pass_candidate_root_rebased",
 ) -> PreparedVerifiedRadiusGraphGroupedV4:
     started = time.perf_counter()
     owner = PreparedVerifiedRadiusGraphGroupedV4(
         authority, executable,
         any_hit_proof_authority=any_hit_proof_authority,
         points=points, radius=radius,
-        native_library_path=native_library_path)
+        native_library_path=native_library_path,
+        boundary_assignment_policy=boundary_assignment_policy)
     owner.prepare_seconds = time.perf_counter() - started
     return owner
 

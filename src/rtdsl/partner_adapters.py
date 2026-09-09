@@ -43,6 +43,7 @@ _CUPY_GROUPED_VECTOR_SUM_OFFSETS_F64X2_KERNEL = None
 _NUMBA_RADIUS_GRAPH_COMPONENTS_3D_GRID_KERNELS = None
 _NUMBA_RADIUS_GRAPH_COMPONENTS_3D_BORDER_CANDIDATE_LABEL_KERNEL = None
 _NUMBA_I32_PARENT_BORDER_INIT_KERNEL = None
+_NUMBA_UINT32_GREATER_EQUAL_FLAGS_KERNEL = None
 _NUMBA_I64_ZERO_KERNEL = None
 _NUMBA_I64_SIGNATURE_WORKSPACE_ZERO_KERNEL = None
 _NUMBA_RADIUS_GRAPH_COMPONENT_SIGNATURE_KERNEL = None
@@ -5175,6 +5176,20 @@ def _numba_i32_parent_border_init_kernel(cuda):
     return _NUMBA_I32_PARENT_BORDER_INIT_KERNEL
 
 
+def _numba_uint32_greater_equal_flags_kernel(cuda):
+    global _NUMBA_UINT32_GREATER_EQUAL_FLAGS_KERNEL
+    if _NUMBA_UINT32_GREATER_EQUAL_FLAGS_KERNEL is None:
+
+        @cuda.jit
+        def greater_equal_flags_kernel(values, threshold, flags, value_count):
+            index = cuda.grid(1)
+            if index < value_count:
+                flags[index] = 1 if values[index] >= threshold else 0
+
+        _NUMBA_UINT32_GREATER_EQUAL_FLAGS_KERNEL = greater_equal_flags_kernel
+    return _NUMBA_UINT32_GREATER_EQUAL_FLAGS_KERNEL
+
+
 _NUMBA_I32_FILL_KERNEL = None
 
 
@@ -7080,6 +7095,7 @@ class PreparedOptixCupyRadiusGraphGroupedStreamContinuation3D:
         self._cached_core_threshold: int | None = None
         self._cached_core_flags = None
         self._cached_neighbor_counts = None
+        self._exact_count_native_metadata: dict[str, object] | None = None
         self._cached_count_metadata: dict[str, object] | None = None
         self._cached_all_core_flags_true: bool | None = None
         self.parent_initial = self.cupy.arange(self.point_count, dtype=self.cupy.int32)
@@ -7396,6 +7412,9 @@ class PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D:
         self.border_core_candidate_workspace = cuda.device_array((self.point_count,), dtype=np.int32)
         self.labels_workspace = cuda.device_array((self.point_count,), dtype=np.int64)
         self.parent_border_init_kernel = _numba_i32_parent_border_init_kernel(cuda)
+        self.uint32_greater_equal_flags_kernel = (
+            _numba_uint32_greater_equal_flags_kernel(cuda)
+        )
         self.i32_fill_kernel = _numba_i32_fill_kernel(cuda)
         self.border_candidate_label_kernel = _numba_radius_graph_components_3d_border_candidate_label_kernel(cuda)
         self.i64_zero_kernel = _numba_i64_zero_kernel(cuda)
@@ -7437,31 +7456,58 @@ class PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D:
         core_flag_cache_reused = self._cached_core_threshold == min_neighbors
         if core_flag_cache_reused:
             return True
-        threshold_result = fixed_radius_count_threshold_3d_optix_prepared_partner_device_columns(
-            self.prepared_native,
-            self.point_rows,
-            radius=self.radius,
-            threshold=min_neighbors,
-            partner=self.partner,
-            output_columns=self.count_columns,
-            return_metadata=True,
+        exact_count_cache_reused = self._cached_neighbor_counts is not None
+        if not exact_count_cache_reused:
+            threshold_result = fixed_radius_count_threshold_3d_optix_prepared_partner_device_columns(
+                self.prepared_native,
+                self.point_rows,
+                radius=self.radius,
+                # A self-query can have at most point_count accepted hits.
+                # This disables truncation while preserving the generic
+                # native count-threshold contract.
+                threshold=self.point_count,
+                partner=self.partner,
+                output_columns=self.count_columns,
+                return_metadata=True,
+            )
+            self._cached_core_flags = _as_numba_radius_graph_device_array(
+                threshold_result["columns"]["threshold_flags"],
+                cuda=self.cuda,
+                np=self.np,
+                dtype=self.np.uint32,
+                name="threshold_flags",
+            )
+            self._cached_neighbor_counts = _as_numba_radius_graph_device_array(
+                threshold_result["columns"]["neighbor_counts"],
+                cuda=self.cuda,
+                np=self.np,
+                dtype=self.np.uint32,
+                name="neighbor_counts",
+            )
+            self._exact_count_native_metadata = dict(threshold_result["metadata"])
+        assert self._cached_core_flags is not None
+        assert self._cached_neighbor_counts is not None
+        assert self._exact_count_native_metadata is not None
+        self.uint32_greater_equal_flags_kernel[
+            self.label_blocks, self.threads
+        ](
+            self._cached_neighbor_counts,
+            min_neighbors,
+            self._cached_core_flags,
+            self.point_count,
         )
+        self.cuda.synchronize()
         self._cached_core_threshold = min_neighbors
-        self._cached_core_flags = _as_numba_radius_graph_device_array(
-            threshold_result["columns"]["threshold_flags"],
-            cuda=self.cuda,
-            np=self.np,
-            dtype=self.np.uint32,
-            name="threshold_flags",
-        )
-        self._cached_neighbor_counts = _as_numba_radius_graph_device_array(
-            threshold_result["columns"]["neighbor_counts"],
-            cuda=self.cuda,
-            np=self.np,
-            dtype=self.np.uint32,
-            name="neighbor_counts",
-        )
-        self._cached_count_metadata = dict(threshold_result["metadata"])
+        self._cached_count_metadata = {
+            **self._exact_count_native_metadata,
+            "native_count_threshold": self.point_count,
+            "core_flag_threshold": min_neighbors,
+            "exact_count_cache_reused": exact_count_cache_reused,
+            "neighbor_count_policy": (
+                "exact_full_degree_via_maximum_possible_threshold"
+            ),
+            "core_flag_policy": "numba_uint32_greater_equal_exact_count",
+        }
         flags_host = self.np.asarray(self._cached_core_flags.copy_to_host(), dtype=self.np.uint32)
         self._cached_all_core_flags_true = bool(flags_host.all())
         return False
@@ -7707,7 +7753,7 @@ class PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D:
             "prepared_grouped_stream_reused": grouped_reused,
             "grouped_stream_policy": grouped_stream_policy,
             "component_label_policy": "positive_root_index_labels_noise_minus_one",
-            "component_union_policy": "monotonic_atomic_min_from_rt_hit_stream_without_neighbor_index_materialization",
+            "component_union_policy": "root_conditional_atomic_cas_from_rt_hit_stream_without_neighbor_index_materialization",
             "fallback_candidate_policy": fallback_candidate_policy,
             "boundary_assignment_policy": self.boundary_assignment_policy,
             "boundary_assignment_canonical_policy": self.boundary_assignment_canonical_policy,
@@ -7731,7 +7777,7 @@ class PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D:
             "materializes_bounded_directed_adjacency_chunks": False,
             "adjacency_write_pass_count": 0,
             "grouped_stream_continuation_pass_count": continuation_pass_count,
-            "neighbor_count_policy": "threshold_capped_at_min_neighbors_not_exact_full_degree",
+            "neighbor_count_policy": "exact_full_degree_via_maximum_possible_threshold",
             "count_metadata": self._cached_count_metadata,
             "native_grouped_stream_metadata": native_metadata,
             "native_library_identity": (
@@ -7830,7 +7876,7 @@ class PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D:
             "grouped_stream_policy": grouped_stream_policy,
             "component_signature_policy": "direct_root_count_from_parent_workspace_and_border_candidates",
             "component_label_policy": "not_materialized_signature_counts_only",
-            "component_union_policy": "monotonic_atomic_min_from_rt_hit_stream_without_neighbor_index_materialization",
+            "component_union_policy": "root_conditional_atomic_cas_from_rt_hit_stream_without_neighbor_index_materialization",
             "fallback_candidate_policy": fallback_candidate_policy,
             "boundary_assignment_policy": self.boundary_assignment_policy,
             "boundary_assignment_canonical_policy": self.boundary_assignment_canonical_policy,
@@ -7855,7 +7901,7 @@ class PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D:
             "materializes_bounded_directed_adjacency_chunks": False,
             "adjacency_write_pass_count": 0,
             "grouped_stream_continuation_pass_count": continuation_pass_count,
-            "neighbor_count_policy": "threshold_capped_at_min_neighbors_not_exact_full_degree",
+            "neighbor_count_policy": "exact_full_degree_via_maximum_possible_threshold",
             "count_metadata": self._cached_count_metadata,
             "native_grouped_stream_metadata": native_metadata,
             "native_library_identity": (

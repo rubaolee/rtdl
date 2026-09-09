@@ -87,6 +87,8 @@ def load_real_scale_v4_input(root: str | Path) -> dict[str, object]:
             map(int, arrays["canonical_component_labels_i32.npy"])),
         "core_flags": tuple(
             bool(value) for value in arrays["core_flags_u8.npy"]),
+        "neighbor_counts": tuple(
+            map(int, arrays["neighbor_counts_u32.npy"])),
     }
     return {
         "points": points,
@@ -109,6 +111,7 @@ def build_v4_input():
         "expected": {
             "canonical_component_labels": expected["canonical_component_labels"],
             "core_flags": expected["core_flags"],
+            "neighbor_counts": expected["neighbor_counts"],
         },
         "input_sha256": _digest({
             "points": points.tolist(), "epsilon": 0.35, "min_points": 5,
@@ -160,6 +163,7 @@ class PreparedRtDbscanV4:
             "canonical_component_labels": result.value[
                 "canonical_component_labels"],
             "core_flags": result.value["core_flags"],
+            "neighbor_counts": result.value["neighbor_counts"],
         }
         elapsed = time.perf_counter() - started
         # Correctness-oracle work belongs outside the prepared endpoint timer.
@@ -181,13 +185,14 @@ class PreparedRtDbscanV4:
                 "canonical_component_labels": expected_full[
                     "canonical_component_labels"],
                 "core_flags": expected_full["core_flags"],
+                "neighbor_counts": expected_full["neighbor_counts"],
             }
             input_sha256 = _digest({
                 "points": self.points.tolist(), "epsilon": epsilon,
                 "min_points": min_points,
             })
         return {
-            "schema": "rtdl.paper_reproduction.rt_dbscan.v4.prepared.v1",
+            "schema": "rtdl.paper_reproduction.rt_dbscan.v4.prepared.v2",
             "input_sha256": input_sha256,
             "output": actual,
             "expected": expected,
@@ -252,6 +257,7 @@ def prepare_v4(
         points=point_values,
         radius=initial_radius,
         native_library_path=native_library_path,
+        boundary_assignment_policy="lowest_component_root_two_pass",
     )
     return PreparedRtDbscanV4(
         owner=owner,
@@ -296,10 +302,11 @@ def run_v4_complete(
         "canonical_component_labels": result.value[
             "canonical_component_labels"],
         "core_flags": result.value["core_flags"],
+        "neighbor_counts": result.value["neighbor_counts"],
     }
     elapsed = time.perf_counter() - started
     return {
-        "schema": "rtdl.paper_reproduction.rt_dbscan.v4.v1",
+        "schema": "rtdl.paper_reproduction.rt_dbscan.v4.v2",
         "input_sha256": data["input_sha256"],
         "output": actual,
         "expected": data["expected"],

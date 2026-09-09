@@ -68,6 +68,11 @@ class Goal5776RtDbscanRealScaleInputTest(unittest.TestCase):
             loaded = self.app.load_real_scale_v4_input(output)
             self.assertEqual(loaded["points"].shape, (4096, 3))
             self.assertEqual(len(loaded["expected"]["core_flags"]), 4096)
+            self.assertEqual(len(loaded["expected"]["neighbor_counts"]), 4096)
+            self.assertEqual(
+                sum(loaded["expected"]["neighbor_counts"]),
+                loaded["directed_edge_count"],
+            )
             self.assertTrue(loaded["route_independent_expected"])
             path = output / "core_flags_u8.npy"
             path.write_bytes(path.read_bytes() + b"corrupt")
@@ -103,9 +108,10 @@ class Goal5776RtDbscanRealScaleInputTest(unittest.TestCase):
             self.assertNotIn(forbidden, lowered)
         self.assertIn("consume_verified_multiround_spatial_executable", text)
         self.assertIn("callback.ir_sha256 != canonical.ir_sha256", text)
-        self.assertIn("prepared_optix_grouped_union_numba_v1", text)
+        self.assertIn("prepared_optix_grouped_union_numba_v2", text)
         app = APP.read_text()
         self.assertIn("prepare_verified_radius_graph_grouped_v4", app)
+        self.assertIn('boundary_assignment_policy="lowest_component_root_two_pass"', app)
 
 
 if __name__ == "__main__":
