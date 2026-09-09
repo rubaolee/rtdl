@@ -98,6 +98,8 @@ class AuthoredParticleTransitionEnsembleFormalCompareTest(unittest.TestCase):
                     "path_class": "public_pyoptix_native_closest_prepared",
                     "pyoptix_ptx_sha256": prereg["pyoptix_ptx"]["sha256"],
                     "prepared_query_batch_device_resident": True,
+                    "output_layout": "aos_u32x3_c_contiguous",
+                    "output_strides": [12, 4],
                     "prepared_query_batch_operation_counts": {
                         "query_h2d_copy_call_count": 7,
                         "query_h2d_bytes": count * 7 * 4,
@@ -117,6 +119,9 @@ class AuthoredParticleTransitionEnsembleFormalCompareTest(unittest.TestCase):
         return value
 
     def test_schedule_is_balanced_and_natural_scale_is_fixed(self):
+        self.assertEqual(
+            formal.SCHEMA,
+            "rtdl.v4.authored_particle.transition_ensemble_formal.v2")
         self.assertEqual(formal.QUERY_COUNT, 160_000_000)
         self.assertEqual(len(formal.ORDERS), 8)
         self.assertEqual(sum(row[0] == "rtdl" for row in formal.ORDERS), 4)
@@ -131,6 +136,21 @@ class AuthoredParticleTransitionEnsembleFormalCompareTest(unittest.TestCase):
         calibration = formal.worker_command(
             prereg, "pyoptix", samples=1, formal_worker=False)
         self.assertNotIn("--formal-worker", calibration)
+
+    def test_public_pyoptix_output_is_direct_contiguous_aos(self):
+        authored = (formal.ROOT / "experiments/v4_authored_particle" /
+                    "pyoptix_device.cu").read_text(encoding="utf-8")
+        paper = (formal.ROOT / "experiments/v4_paper_apps_pyoptix" /
+                 "particle_device.cu").read_text(encoding="utf-8")
+        owner = (formal.ROOT / "experiments/goal5814_particle" /
+                 "public_pyoptix_owner.py").read_text(encoding="utf-8")
+        for source in (authored, paper):
+            self.assertIn("const unsigned int row = 3u * query;", source)
+            self.assertGreaterEqual(source.count("[row] ="), 3)
+        self.assertIn("(shape.query_count, 3), np.uint32", owner)
+        self.assertIn("output_base + np.dtype(np.uint32).itemsize", owner)
+        self.assertNotIn(
+            "output_base + output_stride", owner)
 
     def test_both_worker_contracts_and_identity_drift(self):
         prereg = self._prereg()

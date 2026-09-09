@@ -18,7 +18,7 @@ import time
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SCHEMA = "rtdl.v4.authored_particle.transition_ensemble_formal.v1"
+SCHEMA = "rtdl.v4.authored_particle.transition_ensemble_formal.v2"
 PREREG_SCHEMA = f"{SCHEMA}.preregistration"
 QUERY_COUNT = 160_000_000
 WARMUPS = 1
@@ -260,6 +260,9 @@ def validate_worker(
                 or metadata.get("pyoptix_ptx_sha256") \
                     != prereg["pyoptix_ptx"]["sha256"] \
                 or metadata.get("prepared_query_batch_device_resident") is not True \
+                or metadata.get("output_layout") \
+                    != "aos_u32x3_c_contiguous" \
+                or metadata.get("output_strides") != [12, 4] \
                 or prepared.get("query_h2d_copy_call_count") != 7 \
                 or prepared.get("query_h2d_bytes") != QUERY_COUNT * 7 * 4 \
                 or prepared.get("pinned_host_allocation_call_count") != 0 \
@@ -282,6 +285,8 @@ def validate_prereg(path: str | Path) -> dict[str, object]:
             or root != ROOT \
             or git("status", "--porcelain") \
             or prereg.get("query_count") != QUERY_COUNT \
+            or prereg.get("pyoptix_output_layout") \
+                != "aos_u32x3_c_contiguous" \
             or prereg.get("warmups") != WARMUPS \
             or prereg.get("samples") != SAMPLES \
             or tuple(tuple(row) for row in prereg.get("orders", ())) != ORDERS \
@@ -507,6 +512,7 @@ def command_freeze(args: argparse.Namespace) -> int:
         "pyoptix_build": binding(args.pyoptix_build),
         "c_only_calibration": binding(calibration_root / "CALIBRATION.json"),
         "query_count": QUERY_COUNT,
+        "pyoptix_output_layout": "aos_u32x3_c_contiguous",
         "input_sha256": provisional["input_sha256"],
         "independent_oracle_sha256": provisional[
             "independent_oracle_sha256"],

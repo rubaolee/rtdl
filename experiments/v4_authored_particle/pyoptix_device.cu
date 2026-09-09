@@ -75,9 +75,10 @@ extern "C" __global__ void __raygen__rtdl_particle_strict_interior() {
         particle_first_error(query, PARTICLE_ERROR_OWNER);
         return;
     }
-    params.output_first[query] = primitive;
-    params.output_second[query] = selected;
-    params.output_third[query] = neighbor;
+    const unsigned int row = 3u * query;
+    params.output_first[row] = primitive;
+    params.output_second[row] = selected;
+    params.output_third[row] = neighbor;
     atomicAdd(&params.control->validated_row_count, 1u);
 }
 

@@ -205,6 +205,9 @@ def _prepare_pyoptix(args, base, queries, expected):
     prepared_counts = owner.prepared_input_operation_counts
     if prepared_counts is None:
         raise RuntimeError("PyOptiX Particle ensemble preparation lacked counters")
+    if not owner.host_output_rows.flags.c_contiguous \
+            or owner.host_output_rows.strides != (12, 4):
+        raise RuntimeError("PyOptiX Particle output is not contiguous AoS U32x3")
 
     def invoke():
         return owner.execute_prepared_exact_core(resident)
@@ -220,6 +223,8 @@ def _prepare_pyoptix(args, base, queries, expected):
         "path_class": "public_pyoptix_native_closest_prepared",
         "pyoptix_ptx_sha256": sha256(args.pyoptix_ptx),
         "prepared_query_batch_device_resident": True,
+        "output_layout": "aos_u32x3_c_contiguous",
+        "output_strides": list(owner.host_output_rows.strides),
         "prepared_query_batch_operation_counts": {
             name: int(getattr(prepared_counts, name))
             for name in prepared_counts.__dataclass_fields__

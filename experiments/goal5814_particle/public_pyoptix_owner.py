@@ -617,14 +617,9 @@ class PublicPyOptixParticleOwner:
         # caller staging lazily only for the compatibility SoA entry point.
         host_queries = None
         host_output = cls._pinned_array(
-            runtime, (3, shape.query_count), np.uint32,
+            runtime, (shape.query_count, 3), np.uint32,
             pinned_keepalive, counts)
-        host_output_rows = np.ndarray(
-            shape=(shape.query_count, 3), dtype=np.uint32,
-            buffer=host_output,
-            strides=(np.dtype(np.uint32).itemsize,
-                     shape.query_count * np.dtype(np.uint32).itemsize),
-        )
+        host_output_rows = host_output.view()
         host_output_rows.setflags(write=False)
         host_control = cls._pinned_array(
             runtime, (1,), CONTROL_DTYPE, pinned_keepalive, counts)
@@ -632,7 +627,6 @@ class PublicPyOptixParticleOwner:
             runtime, (1,), PARTICLE_PARAM_DTYPE, pinned_keepalive, counts)
 
         query_stride = shape.query_count * np.dtype(np.float32).itemsize
-        output_stride = shape.query_count * np.dtype(np.uint32).itemsize
         query_base = int(query_device.ptr)
         output_base = int(output_device.ptr)
         params = host_params[0]
@@ -646,8 +640,10 @@ class PublicPyOptixParticleOwner:
         params["primitive_count"] = np.uint32(shape.triangle_count)
         params["query_count"] = np.uint32(shape.query_count)
         params["output_selected"] = np.uint64(output_base)
-        params["output_neighbor"] = np.uint64(output_base + output_stride)
-        params["output_face"] = np.uint64(output_base + 2 * output_stride)
+        params["output_neighbor"] = np.uint64(
+            output_base + np.dtype(np.uint32).itemsize)
+        params["output_face"] = np.uint64(
+            output_base + 2 * np.dtype(np.uint32).itemsize)
         params["control"] = np.uint64(control_device.ptr)
 
         # accelBuild and static copies may be asynchronous with respect to the

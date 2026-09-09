@@ -218,14 +218,13 @@ class _FakeOptix:
             int(params["control"]), int(control.ctypes.data),
             CONTROL_DTYPE.itemsize)
         if self.next_output is not None:
-            for name, column in (
-                    ("output_selected", 0),
-                    ("output_neighbor", 1),
-                    ("output_face", 2)):
-                source = np.ascontiguousarray(
-                    self.next_output[:, column], dtype=np.uint32)
-                ctypes.memmove(
-                    int(params[name]), int(source.ctypes.data), source.nbytes)
+            output_base = int(params["output_selected"])
+            if int(params["output_neighbor"]) != output_base + 4 \
+                    or int(params["output_face"]) != output_base + 8:
+                raise AssertionError("Particle output pointers are not AoS")
+            source = np.ascontiguousarray(self.next_output, dtype=np.uint32)
+            ctypes.memmove(
+                output_base, int(source.ctypes.data), source.nbytes)
 
 
 def _ptx() -> bytes:
@@ -291,6 +290,8 @@ class Goal5814ParticlePublicPyOptixOwnerTest(unittest.TestCase):
         self.assertEqual(counts.h2d_copy_call_count, 7)
         self.assertEqual(counts.pinned_host_allocation_call_count, 3)
         self.assertIsNone(owner.host_queries)
+        self.assertTrue(owner.host_output_rows.flags.c_contiguous)
+        self.assertEqual(owner.host_output_rows.strides, (12, 4))
         build = fake_optix.context.build_input
         self.assertEqual(build.vertexFormat, fake_optix.VERTEX_FORMAT_FLOAT3)
         self.assertEqual(build.vertexStrideInBytes, 12)
