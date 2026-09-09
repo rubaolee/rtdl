@@ -5,6 +5,17 @@
     "paper_claim_authorized": false,
     "prepared_5000_query_internal_engineering_result": true
   },
+  "natural_scale_predecessor": {
+    "files": [
+      {"bytes": 2518665, "path": "formal_natural_7e4362ef9/RAW_FORMAL_EVIDENCE.tar.gz", "sha256": "b1b44fdc79b4214e419ed60f5b2f16a75e1ea9d0fcece680740cc9ca769790d0"},
+      {"bytes": 4745, "path": "formal_natural_7e4362ef9/INDEPENDENT_RECOUNT.json", "sha256": "3189c9d57bf4a5c32817e1404778db4b8701f371dd45c2084df0cf1c0adb5ea9"},
+      {"bytes": 2709, "path": "formal_natural_7e4362ef9/PREDECESSOR_STATUS.md", "sha256": "132d1376f11b474973d1e52e2676e3dc503806d50d08917f0df8588a27a62d17"}
+    ],
+    "limitation": "Public PyOptiX produced SoA columns and exposed a non-contiguous U32x3 view; replace it with a direct AoS strong baseline before final comparison.",
+    "source_commit": "7e4362ef98933c7390d7a86b536323b7fbfd236d",
+    "source_tree": "ee2c52d648b286074b63b64f558492d7c44641a3",
+    "status": "PRESERVED_PREDECESSOR_BASELINE_LAYOUT_NOT_FINAL"
+  },
   "current_transaction": {
     "files": [
       {"bytes": 85118, "path": "formal_7ac37e3fb/CALIBRATION.json", "sha256": "077f388f62408c639cd4abc219987b26558fb036e0e898a5d657ecf341b2b7b3"},
