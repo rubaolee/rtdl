@@ -1,0 +1,31 @@
+{
+  "schema": "rtdl.v4.authored_particle_exploratory_profile.v1",
+  "status": "ADVERSE_EXPLORATORY_ONLY",
+  "source_commit": "a1903c85212f5c6cc58e8d3cb90eb82ccb519818",
+  "machine": {
+    "gpu": "NVIDIA RTX 4000 Ada Generation",
+    "gpu_uuid": "GPU-2a00572b-6cef-b9e6-db0a-c127783a5d46",
+    "driver": "550.127.05",
+    "compute_capability": "8.9"
+  },
+  "sample_count_per_endpoint": 80,
+  "microbenchmark_sample_count": 1000,
+  "median_ns": {
+    "rtdl_public_with_external_oracle": 402398,
+    "rtdl_internal_with_external_oracle": 342787,
+    "rtdl_public_without_outer_hash": 353927,
+    "rtdl_public_without_outer_receipt_rebind": 400348,
+    "rtdl_public_without_outer_hash_or_receipt_rebind": 353917,
+    "public_outer_hash_only": 41521,
+    "public_outer_receipt_rebind_only": 550,
+    "external_numpy_array_equal_only": 5611,
+    "pyoptix_complete_soa": 304680,
+    "pyoptix_prevalidated_exact_core": 218353
+  },
+  "limitations": [
+    "Unpreregistered same-process decomposition used only to localize work.",
+    "Endpoints were measured sequentially rather than in paired fresh-process blocks.",
+    "The PyOptiX exact-core completion was materialized after each end clock.",
+    "No value in this file authorizes a public performance claim."
+  ]
+}

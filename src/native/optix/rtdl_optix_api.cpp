@@ -437,6 +437,47 @@ extern "C" int rtdl_optix_v4_execute_prepared_builtin_triangle_callback_columns_
     }, error_out, error_size);
 }
 
+// App-neutral device-resident successor for immutable prepared query batches.
+// Query admission and H2D transfer happen once at batch preparation; each
+// execute retains the same generated callback, traversal and compact status
+// boundary as the host-column route.
+extern "C" int rtdl_optix_v4_prepare_builtin_triangle_query_batch_columns_v1(
+        uint64_t prepared_token, const float* query_origins_xyz,
+        const float* query_directions_xyz, const float* query_tmax,
+        size_t query_count, uint64_t* query_batch_token_out,
+        char* error_out, size_t error_size) {
+    return handle_native_call([&]() {
+        if (!query_batch_token_out)
+            throw std::runtime_error(
+                "V4 built-in-triangle query batch output must not be null");
+        *query_batch_token_out = prepare_v4_builtin_triangle_query_batch(
+            prepared_token, query_origins_xyz, query_directions_xyz,
+            query_tmax, query_count);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_v4_execute_prepared_builtin_triangle_callback_batch_columns_v3(
+        uint64_t prepared_token, uint64_t query_batch_token,
+        uint32_t* output_0, uint32_t* output_1, uint32_t* output_2,
+        RtdlV4CallbackProductStatusSummary* output_summary,
+        char* error_out, size_t error_size) {
+    return handle_native_call([&]() {
+        if (!output_summary)
+            throw std::runtime_error(
+                "V4 built-in-triangle compact summary must not be null");
+        execute_v4_prepared_builtin_triangle_callback_query_batch(
+            prepared_token, query_batch_token,
+            output_0, output_1, output_2, output_summary);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_v4_destroy_prepared_builtin_triangle_query_batch_v1(
+        uint64_t query_batch_token, char* error_out, size_t error_size) {
+    return handle_native_call([&]() {
+        destroy_v4_prepared_builtin_triangle_query_batch(query_batch_token);
+    }, error_out, error_size);
+}
+
 extern "C" int rtdl_optix_v4_destroy_prepared_builtin_triangle_callback_v1(
         uint64_t prepared_token, char* error_out, size_t error_size) {
     return handle_native_call([&]() {

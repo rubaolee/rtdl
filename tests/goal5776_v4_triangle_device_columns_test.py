@@ -150,6 +150,109 @@ class Goal5776V4TriangleDeviceColumnsTest(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, "identity drifted"):
             right._prepared_query_batch_columns(batch)
 
+    def test_device_resident_query_batch_abi_is_additive_and_complete(self):
+        class Symbol:
+            argtypes = None
+            restype = None
+
+        self.assertEqual(
+            triangle_runtime._configure_device_resident_query_batches(
+                SimpleNamespace()),
+            (None, None, None),
+        )
+        with self.assertRaisesRegex(RuntimeError, "partial"):
+            triangle_runtime._configure_device_resident_query_batches(
+                SimpleNamespace(
+                    rtdl_optix_v4_prepare_builtin_triangle_query_batch_columns_v1=(
+                        Symbol()
+                    ),
+                )
+            )
+        prepare, execute, destroy = (Symbol(), Symbol(), Symbol())
+        configured = triangle_runtime._configure_device_resident_query_batches(
+            SimpleNamespace(
+                rtdl_optix_v4_prepare_builtin_triangle_query_batch_columns_v1=(
+                    prepare
+                ),
+                rtdl_optix_v4_execute_prepared_builtin_triangle_callback_batch_columns_v3=(
+                    execute
+                ),
+                rtdl_optix_v4_destroy_prepared_builtin_triangle_query_batch_v1=(
+                    destroy
+                ),
+            )
+        )
+        self.assertEqual(configured, (prepare, execute, destroy))
+        self.assertEqual(len(prepare.argtypes), 8)
+        self.assertEqual(len(execute.argtypes), 8)
+        self.assertEqual(len(destroy.argtypes), 3)
+        self.assertIs(prepare.restype, triangle_runtime.ctypes.c_int)
+        self.assertIs(execute.restype, triangle_runtime.ctypes.c_int)
+        self.assertIs(destroy.restype, triangle_runtime.ctypes.c_int)
+
+    def test_runtime_validated_execution_is_owner_and_output_bound(self):
+        owner = object()
+        output = np.zeros((2, 3), dtype=np.uint32)
+        receipt = object()
+        result = SimpleNamespace(
+            output=output,
+            output_sha256="a" * 64,
+            traversal_receipt=receipt,
+        )
+        authority = triangle_runtime._ValidatedPreparedTriangleExecution(
+            owner=owner,
+            output=output,
+            output_sha256="a" * 64,
+            receipt=receipt,
+            query_count=2,
+            composed_ptx_sha256="b" * 64,
+            native_library_sha256="c" * 64,
+            binding_digest="d" * 64,
+            token=triangle_runtime._VALIDATED_PREPARED_EXECUTION_TOKEN,
+        )
+        result._validated_prepared_execution = authority
+        self.assertIs(
+            triangle_runtime.validate_prepared_triangle_execution(
+                result,
+                owner=owner,
+                query_count=2,
+                composed_ptx_sha256="b" * 64,
+                native_library_sha256="c" * 64,
+                binding_digest="d" * 64,
+            ),
+            authority,
+        )
+        result.output = output.copy()
+        with self.assertRaisesRegex(RuntimeError, "binding differs"):
+            triangle_runtime.validate_prepared_triangle_execution(
+                result,
+                owner=owner,
+                query_count=2,
+                composed_ptx_sha256="b" * 64,
+                native_library_sha256="c" * 64,
+                binding_digest="d" * 64,
+            )
+
+    def test_device_resident_query_batch_native_section_is_app_neutral(self):
+        native = NATIVE.read_text(encoding="utf-8")
+        api = API.read_text(encoding="utf-8")
+        for symbol in (
+            "rtdl_optix_v4_prepare_builtin_triangle_query_batch_columns_v1",
+            "rtdl_optix_v4_execute_prepared_builtin_triangle_callback_batch_columns_v3",
+            "rtdl_optix_v4_destroy_prepared_builtin_triangle_query_batch_v1",
+        ):
+            self.assertIn(symbol, api)
+        begin = native.index("struct V4PreparedBuiltinTriangleQueryBatch")
+        end = native.index("struct V4SphereBuildFacts", begin)
+        section = native[begin:end].lower()
+        for forbidden in (
+            "particle", "tracking", "cell_transition", "neighbor_cell",
+            "triangle_counting", "raydb", "rayjoin", "barneshut",
+        ):
+            self.assertNotIn(forbidden, section)
+        self.assertIn("prepared_query_batch->query_columns", section)
+        self.assertIn("prepared_query_batch->program.get()", section)
+
     def test_compact_triangle_summary_is_fail_closed(self):
         summary = triangle_runtime._CompactLifecycleSummary()
         summary.schema_version = 2

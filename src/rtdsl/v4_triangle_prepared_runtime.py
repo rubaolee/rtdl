@@ -124,6 +124,49 @@ def _configure(library):
     return prepare, execute, execute_columns, destroy
 
 
+def _configure_device_resident_query_batches(library):
+    prepare = getattr(
+        library,
+        "rtdl_optix_v4_prepare_builtin_triangle_query_batch_columns_v1",
+        None,
+    )
+    execute = getattr(
+        library,
+        "rtdl_optix_v4_execute_prepared_builtin_triangle_callback_batch_columns_v3",
+        None,
+    )
+    destroy = getattr(
+        library,
+        "rtdl_optix_v4_destroy_prepared_builtin_triangle_query_batch_v1",
+        None,
+    )
+    symbols = (prepare, execute, destroy)
+    if all(symbol is None for symbol in symbols):
+        return symbols
+    if any(symbol is None for symbol in symbols):
+        raise RuntimeError(
+            "native library has a partial prepared triangle query-batch ABI")
+    prepare.argtypes = [
+        ctypes.c_uint64, ctypes.POINTER(ctypes.c_float),
+        ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+        ctypes.c_size_t, ctypes.POINTER(ctypes.c_uint64),
+        ctypes.POINTER(ctypes.c_char), ctypes.c_size_t,
+    ]
+    execute.argtypes = [
+        ctypes.c_uint64, ctypes.c_uint64,
+        ctypes.POINTER(ctypes.c_uint32), ctypes.POINTER(ctypes.c_uint32),
+        ctypes.POINTER(ctypes.c_uint32),
+        ctypes.POINTER(_CompactLifecycleSummary),
+        ctypes.POINTER(ctypes.c_char), ctypes.c_size_t,
+    ]
+    destroy.argtypes = [
+        ctypes.c_uint64, ctypes.POINTER(ctypes.c_char), ctypes.c_size_t,
+    ]
+    for symbol in symbols:
+        symbol.restype = ctypes.c_int
+    return symbols
+
+
 def _raise(status, error, label):
     if status:
         raise RuntimeError(
@@ -139,12 +182,13 @@ class PreparedBuiltinTriangleQueryBatch:
 
     __slots__ = (
         "_binding_digest", "_count", "_directions", "_owner",
-        "_origins", "_pointers", "_semantic_digest", "_tmax", "_token",
+        "_native_token", "_origins", "_pointers", "_semantic_digest",
+        "_tmax", "_token",
     )
 
     def __init__(
         self, *, owner, origins, directions, tmax, binding_digest,
-        semantic_digest, token,
+        semantic_digest, native_token, token,
     ):
         if token is not _PREPARED_QUERY_BATCH_TOKEN:
             raise RuntimeError("prepared triangle query batch requires its owner")
@@ -159,6 +203,7 @@ class PreparedBuiltinTriangleQueryBatch:
         )
         object.__setattr__(self, "_binding_digest", binding_digest)
         object.__setattr__(self, "_semantic_digest", semantic_digest)
+        object.__setattr__(self, "_native_token", int(native_token))
         object.__setattr__(self, "_token", token)
 
     def __setattr__(self, name, value):
@@ -169,6 +214,77 @@ class PreparedBuiltinTriangleQueryBatch:
 
     def __len__(self):
         return self._count
+
+    @property
+    def device_resident(self):
+        return self._native_token != 0
+
+
+_VALIDATED_PREPARED_EXECUTION_TOKEN = object()
+
+
+class _ValidatedPreparedTriangleExecution:
+    """Owner-created proof that runtime output and receipt were checked."""
+
+    __slots__ = (
+        "binding_digest", "native_library_sha256", "output", "output_sha256",
+        "output_snapshot", "owner", "query_count", "receipt", "token",
+        "composed_ptx_sha256",
+    )
+
+    def __init__(
+        self, *, owner, output, output_sha256, receipt, query_count,
+        composed_ptx_sha256, native_library_sha256, binding_digest, token,
+    ):
+        if token is not _VALIDATED_PREPARED_EXECUTION_TOKEN:
+            raise RuntimeError("validated prepared execution requires its owner")
+        object.__setattr__(self, "owner", owner)
+        object.__setattr__(self, "output", output)
+        object.__setattr__(self, "output_sha256", output_sha256)
+        object.__setattr__(self, "receipt", receipt)
+        object.__setattr__(self, "query_count", query_count)
+        object.__setattr__(self, "composed_ptx_sha256", composed_ptx_sha256)
+        object.__setattr__(self, "native_library_sha256", native_library_sha256)
+        object.__setattr__(self, "binding_digest", binding_digest)
+        object.__setattr__(
+            self, "output_snapshot",
+            (
+                id(output), int(output.ctypes.data), output.dtype.str,
+                tuple(output.shape), tuple(output.strides),
+                bool(output.flags.c_contiguous),
+            ),
+        )
+        object.__setattr__(self, "token", token)
+
+    def __setattr__(self, name, value):
+        raise AttributeError("validated prepared execution is immutable")
+
+
+def validate_prepared_triangle_execution(
+    result, *, owner, query_count, composed_ptx_sha256,
+    native_library_sha256, binding_digest,
+):
+    """Consume the runtime's in-process proof without rescanning output bytes."""
+
+    authority = getattr(result, "_validated_prepared_execution", None)
+    if type(authority) is not _ValidatedPreparedTriangleExecution \
+            or authority.token is not _VALIDATED_PREPARED_EXECUTION_TOKEN \
+            or authority.owner is not owner \
+            or authority.output is not result.output \
+            or authority.output_sha256 != result.output_sha256 \
+            or authority.receipt is not result.traversal_receipt \
+            or authority.query_count != query_count \
+            or authority.composed_ptx_sha256 != composed_ptx_sha256 \
+            or authority.native_library_sha256 != native_library_sha256 \
+            or authority.binding_digest != binding_digest \
+            or authority.output_snapshot != (
+                id(result.output), int(result.output.ctypes.data),
+                result.output.dtype.str, tuple(result.output.shape),
+                tuple(result.output.strides),
+                bool(result.output.flags.c_contiguous),
+            ):
+        raise RuntimeError("validated prepared triangle execution binding differs")
+    return authority
 
 
 class PreparedBuiltinTriangleOwner:
@@ -232,6 +348,11 @@ class PreparedBuiltinTriangleOwner:
         if native_sha != fresh.target.native_sha256:
             raise RuntimeError("executed native bytes do not match target authority")
         prepare, execute, execute_columns, destroy = _configure(library)
+        (
+            prepare_query_batch,
+            execute_query_batch,
+            destroy_query_batch,
+        ) = _configure_device_resident_query_batches(library)
         token = ctypes.c_uint64()
         error = ctypes.create_string_buffer(16384)
         _raise(int(prepare(
@@ -248,6 +369,9 @@ class PreparedBuiltinTriangleOwner:
         self._library = library
         self._execute = execute
         self._execute_columns = execute_columns
+        self._prepare_query_batch = prepare_query_batch
+        self._execute_query_batch = execute_query_batch
+        self._destroy_query_batch = destroy_query_batch
         self._destroy = destroy
         self._vertex_count = len(vertices)
         self._primitive_count = len(triangles)
@@ -261,6 +385,7 @@ class PreparedBuiltinTriangleOwner:
         self._closed = False
         self._execution_count = 0
         self._audit_sequence = 0
+        self._native_query_batch_tokens = set()
         self.prepare_seconds = time.perf_counter() - started
         self._session_identity = _digest({
             "schema": "rtdl.v4.prepared_builtin_triangle_owner.v1",
@@ -329,9 +454,27 @@ class PreparedBuiltinTriangleOwner:
         directions = frozen(query_array[:, 3:6], (count, 3))
         tmax = frozen(query_array[:, 6], (count,))
         binding_digest, semantic_digest = self._binding_identity(count)
+        native_token = 0
+        prepare_device_batch = getattr(self, "_prepare_query_batch", None)
+        if prepare_device_batch is not None:
+            returned_token = ctypes.c_uint64()
+            error = ctypes.create_string_buffer(16384)
+            _raise(int(prepare_device_batch(
+                self._token,
+                origins.ctypes.data_as(ctypes.POINTER(ctypes.c_float)),
+                directions.ctypes.data_as(ctypes.POINTER(ctypes.c_float)),
+                tmax.ctypes.data_as(ctypes.POINTER(ctypes.c_float)),
+                count, ctypes.byref(returned_token), error, len(error),
+            )), error, "prepared built-in triangle query batch prepare")
+            native_token = int(returned_token.value)
+            if native_token == 0:
+                raise RuntimeError(
+                    "prepared built-in triangle query batch returned zero token")
+            self._native_query_batch_tokens.add(native_token)
         return PreparedBuiltinTriangleQueryBatch(
             owner=self, origins=origins, directions=directions, tmax=tmax,
             binding_digest=binding_digest, semantic_digest=semantic_digest,
+            native_token=native_token,
             token=_PREPARED_QUERY_BATCH_TOKEN,
         )
 
@@ -342,6 +485,10 @@ class PreparedBuiltinTriangleOwner:
                 or value._token is not _PREPARED_QUERY_BATCH_TOKEN \
                 or value._owner is not self \
                 or value._count <= 0 \
+                or (value._native_token != 0 and (
+                    getattr(self, "_execute_query_batch", None) is None
+                    or value._native_token not in getattr(
+                        self, "_native_query_batch_tokens", ()))) \
                 or tuple(int(item.ctypes.data) for item in columns) \
                     != value._pointers \
                 or value._origins.shape != (value._count, 3) \
@@ -464,11 +611,18 @@ class PreparedBuiltinTriangleOwner:
             )
             try:
                 if compact_columns:
-                    _raise(int(self._execute_columns(
-                        self._token, origins_native, directions_native,
-                        tmax_native, count, output_0, output_1, output_2,
-                        ctypes.byref(summary), error, len(error))), error,
-                        "prepared built-in triangle compact execute")
+                    if prepared_query_batch and queries._native_token:
+                        _raise(int(self._execute_query_batch(
+                            self._token, queries._native_token,
+                            output_0, output_1, output_2,
+                            ctypes.byref(summary), error, len(error))), error,
+                            "prepared built-in triangle device-batch execute")
+                    else:
+                        _raise(int(self._execute_columns(
+                            self._token, origins_native, directions_native,
+                            tmax_native, count, output_0, output_1, output_2,
+                            ctypes.byref(summary), error, len(error))), error,
+                            "prepared built-in triangle compact execute")
                     counter_rows = _validate_compact_lifecycle_summary(
                         summary, count)
                 else:
@@ -573,17 +727,45 @@ class PreparedBuiltinTriangleOwner:
                 "barycentric_y": None if int(observed_primitive[index]) == 0xFFFFFFFF else float(observed_by[index]),
             } for index in range(count)))
             self._execution_count += 1
-            return V4TriangleCallbackResult(
+            result = V4TriangleCallbackResult(
                 observed, hit_rows, counter_rows, status_rows, receipt,
                 output_sha, self._ptx_sha, self._native_sha, binding_digest)
+            object.__setattr__(
+                result,
+                "_validated_prepared_execution",
+                _ValidatedPreparedTriangleExecution(
+                    owner=self,
+                    output=observed,
+                    output_sha256=output_sha,
+                    receipt=receipt,
+                    query_count=count,
+                    composed_ptx_sha256=self._ptx_sha,
+                    native_library_sha256=self._native_sha,
+                    binding_digest=binding_digest,
+                    token=_VALIDATED_PREPARED_EXECUTION_TOKEN,
+                ),
+            )
+            return result
         finally:
             self._active.release()
 
     def close(self):
+        if self._closed:
+            return
         self._check()
         if not self._active.acquire(blocking=False):
             raise RuntimeError("cannot close prepared built-in triangle during execution")
         try:
+            destroy_query_batch = getattr(self, "_destroy_query_batch", None)
+            native_batch_tokens = getattr(
+                self, "_native_query_batch_tokens", set())
+            if destroy_query_batch is not None:
+                for batch_token in tuple(native_batch_tokens):
+                    error = ctypes.create_string_buffer(16384)
+                    _raise(int(destroy_query_batch(
+                        batch_token, error, len(error))), error,
+                        "prepared built-in triangle query batch destroy")
+                    native_batch_tokens.remove(batch_token)
             error = ctypes.create_string_buffer(16384)
             _raise(int(self._destroy(self._token, error, len(error))), error,
                    "prepared built-in triangle destroy")

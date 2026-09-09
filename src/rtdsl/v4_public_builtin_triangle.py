@@ -67,7 +67,7 @@ from .v4_typed_physical_schema import (
 
 _CONSTRUCTION_TOKEN = object()
 _EXPECTED_PREPARED_RUNTIME_SHA256 = (
-    "ca087e61b5538ef01db093eeb69cc2c96a937018e34c1a81201a23409d966e09"
+    "d5e05dfb5b02df29419d5e00dbbe997a095daeaef358ad4a53f15b84ed675f88"
 )
 _EXPECTED_PREPARED_RUNTIME_SYMBOLS = (
     "rtdl_optix_v4_prepare_builtin_triangle_callback_v1",
@@ -538,6 +538,12 @@ class PreparedBuiltinTriangleCallbackBatch:
     @property
     def query_count(self) -> int:
         return self._query_count
+
+    @property
+    def device_resident(self) -> bool:
+        """Whether the native owner retained query columns on the device."""
+
+        return bool(self._runtime_batch.device_resident)
 
 
 @dataclass(frozen=True)
@@ -1062,10 +1068,19 @@ def _continuation_projection(executable: object, abi: CompiledCallbackAbi) -> st
     error_guard_position = source.rfind("first_error_claimed", 0, output_position)
     runtime_path = Path(__file__).with_name("v4_triangle_prepared_runtime.py")
     runtime_source = runtime_path.read_text(encoding="utf-8")
+    result_return = (
+        "return V4TriangleCallbackResult" in runtime_source
+        or (
+            "result = V4TriangleCallbackResult" in runtime_source
+            and '"_validated_prepared_execution"' in runtime_source
+            and "_ValidatedPreparedTriangleExecution(" in runtime_source
+            and "return result" in runtime_source
+        )
+    )
     runtime_withholds = (
         "prepared built-in triangle returned device error" in runtime_source
         and "raise RuntimeError" in runtime_source
-        and "return V4TriangleCallbackResult" in runtime_source
+        and result_return
     )
     complete = (
         status_codes.get("ok") == 0
@@ -1433,18 +1448,40 @@ class PreparedBuiltinTriangleCallbackProgram:
                     f"observed {result.native_library_sha256}",
                 )
             observed_output = result.output
-            if uses_contiguous_columns:
-                # The runtime and public wrapper independently derive the same
-                # domain-separated digest directly from the contiguous output
-                # bytes.  Neither side creates per-row Python objects.
-                observed_output_sha = _bulk_u32x3_digest(observed_output)
-            else:
-                observed_output_sha = _digest(observed_output)
-            if result.output_sha256 != observed_output_sha:
-                _fail(
-                    "GC025_OUTPUT_IDENTITY_MISMATCH", "execute.output_sha256",
-                    f"expected {observed_output_sha}, observed {result.output_sha256}",
-                )
+            runtime_validated = False
+            if uses_contiguous_columns and getattr(
+                    result, "_validated_prepared_execution", None) is not None:
+                try:
+                    from .v4_triangle_prepared_runtime import (
+                        validate_prepared_triangle_execution,
+                    )
+                    validate_prepared_triangle_execution(
+                        result,
+                        owner=self._owner,
+                        query_count=query_count,
+                        composed_ptx_sha256=self._identity.composed_ptx_sha256,
+                        native_library_sha256=self._identity.native_library_sha256,
+                        binding_digest=result.buffer_binding_sha256,
+                    )
+                    runtime_validated = True
+                except (AttributeError, RuntimeError, TypeError, ValueError):
+                    _fail(
+                        "GC025_OUTPUT_IDENTITY_MISMATCH", "execute.runtime_proof",
+                        "runtime output/receipt proof binding failed",
+                    )
+            if not runtime_validated:
+                if uses_contiguous_columns:
+                    # Legacy runtimes do not issue the process-local proof, so
+                    # the public boundary independently rescans their bytes.
+                    observed_output_sha = _bulk_u32x3_digest(observed_output)
+                else:
+                    observed_output_sha = _digest(observed_output)
+                if result.output_sha256 != observed_output_sha:
+                    _fail(
+                        "GC025_OUTPUT_IDENTITY_MISMATCH", "execute.output_sha256",
+                        f"expected {observed_output_sha}, "
+                        f"observed {result.output_sha256}",
+                    )
             receipt = result.traversal_receipt
             if not isinstance(receipt, Mapping):
                 _fail("GC026_TRAVERSAL_RECEIPT_INVALID", "execute.receipt", type(receipt).__name__)
@@ -1454,7 +1491,9 @@ class PreparedBuiltinTriangleCallbackProgram:
                     validate_bound_compact_traversal_receipt,
                     validate_traversal_receipt,
                 )
-                if type(receipt) is ValidatedCompactTraversalReceipt:
+                if runtime_validated:
+                    pass
+                elif type(receipt) is ValidatedCompactTraversalReceipt:
                     validate_bound_compact_traversal_receipt(
                         receipt,
                         provider_library_sha256=(
