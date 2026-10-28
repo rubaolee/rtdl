@@ -1,3 +1,11 @@
+> **RTDL V4 student onboarding / V4 接手入口**
+>
+> Start with [the step-by-step V4 guide / 从 GitHub 开始接手](GITHUB_START_HERE_ZH.md): select the tested V4 commit, install a CPU environment, run the example and 24 IR/ABI tests, inspect generated IR, then follow the optional Linux GPU steps.
+>
+> This default branch retains the V3 source below. For V4, use the branch and exact commit specified in the guide.
+
+---
+
 # RTDL V3
 
 **Verified semantic lowering for non-graphical ray-tracing workloads on NVIDIA OptiX.**
